@@ -1,0 +1,89 @@
+<Page
+    x:Class="CryptoPortfolioTracker.Scenario1_MyCoinLibrary"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CryptoPortfolioTracker"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    
+    <Page.Resources>
+        <DataTemplate x:Key="ResultsListViewTemplate">
+            <Grid Margin="2" Padding=" 0,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" MinWidth="150"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Column="0" Grid.Row="0" Height="32" Width="32" Margin="0,5" VerticalAlignment="Top" HorizontalAlignment="Left">
+                    <Image Source="{Binding Path=WiFiImage}"
+                 Stretch="UniformToFill"/>
+                </Border>
+                <Border Grid.Column="1" Grid.Row="0"  Margin="5">
+                    <Rectangle Name="rctStatus" Width="10" Height="70"  Fill="{Binding StatusColor, Mode=OneWay}"/>
+                </Border>
+                <Border Grid.Column="2" Grid.Row="0"  Margin="5">
+                    <RelativePanel >
+                        <TextBlock Name="txtSsid" Text="{Binding Path=Ssid}" FontWeight="Bold" TextWrapping="Wrap" />
+                        <TextBlock Name="txtBssid" Text="{Binding Path=Bssid}" TextWrapping="Wrap" RelativePanel.Below="txtSsid" FontSize="12"/>
+                        <TextBlock Name="txtAvailable" Text="{Binding Path=IsAvailable}" TextWrapping="Wrap" RelativePanel.Below="txtBssid" FontSize="12"/>
+                        <TextBlock Name="txtConLevel"  Text="{Binding Path=ConnectivityLevel}" TextWrapping="Wrap" RelativePanel.Below="txtAvailable" FontSize="12"/>
+                        </RelativePanel>
+                </Border>
+            </Grid>
+        </DataTemplate>
+
+    </Page.Resources>
+
+    
+
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="12,20,12,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="1*"/>
+
+            </Grid.RowDefinitions>
+            <StackPanel Margin="0,0,0,20">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="My Coin Library" Style="{StaticResource SampleHeaderTextStyle}"/>
+                </StackPanel>
+                <TextBlock Style="{StaticResource ScenarioDescriptionTextStyle}" Margin="0,20,0,0" TextWrapping="Wrap"> My Coin Library -> explaining text to be implemented here</TextBlock>
+                <Button Content="Add Coin" Click="Button_Click_AddCoin" Name="AddCoinButton" Margin="0,10,0,0" IsEnabled="True"/>
+            </StackPanel>
+            <ProgressRing  x:Name="progressIndicator" Foreground="Green"/>
+            
+            <Border Grid.Row="1" BorderBrush="AntiqueWhite" BorderThickness="1">
+                <GridView x:Name="HotspotsList"              
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  SelectionMode="None"
+                  ItemTemplate="{StaticResource ResultsListViewTemplate}"
+                  ItemsSource="{Binding Path=MainPage.Current.mainHotspotCollection}">
+                </GridView>
+            </Border>
+            <Border Grid.Row="2" BorderBrush="AntiqueWhite" BorderThickness="1">
+
+                <TextBlock Text="test" Style="{StaticResource SampleHeaderTextStyle}" Margin=" 0,0,0,0"/>
+                
+            </Border>
+            <Border Grid.Row="3" BorderBrush="AntiqueWhite" BorderThickness="1">
+
+            </Border>
+
+
+        </Grid>
+
+
+
+
+    </Grid>
+
+</Page>

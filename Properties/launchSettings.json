@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CryptoPortfolioTracker (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "CryptoPortfolioTracker (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
