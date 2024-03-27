@@ -12,6 +12,18 @@ using System.Collections.ObjectModel;
 //using System.Management.Automation;
 using System.Threading.Tasks;
 using Windows.Devices.WiFi;
+using CryptoPortfolioTracker.Models;
+using System.Security.Cryptography;
+using CryptoPortfolioTracker.Services;
+using CryptoPortfolioTracker.Views;
+using CryptoPortfolioTracker.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.DataCollection;
+using Windows.UI.Core;
+using System.Linq;
+using System.Diagnostics;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using CryptoPortfolioTracker.Dialogs;
 
 
 
@@ -24,161 +36,67 @@ namespace CryptoPortfolioTracker
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
 
-
-
-    public sealed partial class MainPage : Page
+    public partial class MainPage : Page
     {
-
         public static MainPage Current;
-        public Frame scenarioFrame;
-        public SplitView splitter;
-        public ListView scenarioControl;
-        
-        
+        private IServiceScope _currentServiceScope;
+
+
         public MainPage()
         {
             this.InitializeComponent();
-            // This is a static public property that allows downstream pages to get a handle to the MainPage instance
-            // in order to call methods that are in this class.
             Current = this;
-            SampleTitle.Text = "Crypto Portfolio Tracker";
-            scenarioFrame = this.ScenarioFrame;
-            splitter = this.Splitter;
-            scenarioControl = this.ScenarioControl;
-            
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            // Populate the scenario list from the SampleConfiguration.cs file
-            var itemCollection = new List<Scenario>();
+            nvSample.SelectedItem = nvSample.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().First();
 
-            foreach (Scenario s in scenarios)
+            //LoadView(typeof(AssetsView));
+        }
+      
+        private async void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
+        {
+            NavigationViewItem selectedItem = (Microsoft.UI.Xaml.Controls.NavigationViewItem)args.SelectedItem;
+            
+            //-- TO DO help window 
+            if ((string)selectedItem.Tag == "HelpView")
             {
-                itemCollection.Add(new Scenario { Title = $" {s.Title}", ClassType = s.ClassType });
+                MsgBoxDialog dialog = new MsgBoxDialog("© MK-OSFT (mk_osft@hotmail.com) \r\nTo be implemented -> open pdf help file");
+                var test = contentFrame.Content.GetType();
+                dialog.XamlRoot = contentFrame.XamlRoot;
+                dialog.Title = "Help";
+                var result = await dialog.ShowAsync();
+                return;
+
             }
-            ScenarioControl.ItemsSource = itemCollection;
 
-            if (Current == null || Current.Width < 640)
+            if (args.IsSettingsSelected)
             {
-                ScenarioControl.SelectedIndex = -1;
-
+                //contentFrame.Navigate(typeof(SampleSettingsPage));
             }
             else
             {
-                ScenarioControl.SelectedIndex = 0;
-                scenarioFrame.Navigate(typeof(Scenario1_MyCoinLibrary));
-                if (Current.Width < 640)
+                
+                if (selectedItem != null)
                 {
-                    Splitter.IsPaneOpen = false;
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// Called whenever the user changes selection in the scenarios list.  This method will navigate to the respective
-        /// sample scenario page.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ScenarioControl_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            // Clear the status block when navigating scenarios.
-            NotifyUser(String.Empty, NotifyType.StatusMessage);
-
-            ListView scenarioListView = sender as ListView;
-            Scenario s = e.ClickedItem as Scenario;
-            if (s != null)
-            {
-
-                scenarioFrame.Navigate(s.ClassType);
-                if (Current.Width < 640)
-                {
-                    Splitter.IsPaneOpen = false;
+                    Type pageType = Type.GetType("CryptoPortfolioTracker.Views." + (string)selectedItem.Tag);
+                    Debug.WriteLine("LoadView: " + (string)selectedItem.Tag);
+                    if (pageType != null) LoadView(pageType);
                 }
             }
         }
-
-        public List<Scenario> Scenarios
+        private void LoadView(Type viewType)
         {
-            get { return this.scenarios; }
+            if (_currentServiceScope != null)
+            {
+                _currentServiceScope.Dispose();
+            }
+            _currentServiceScope = App.Container.CreateAsyncScope();
+            
+            contentFrame.Content = _currentServiceScope.ServiceProvider.GetService(viewType);
         }
-
-        /// <summary>
-        /// Display a message to the user.
-        /// This method may be called from any thread.
-        /// </summary>
-        /// <param name="strMessage"></param>
-        /// <param name="type"></param>
-        public void NotifyUser(string strMessage, NotifyType type)
-        {
-            // If called from the UI thread, then update immediately.
-            // Otherwise, schedule a task on the UI thread to perform the update.
-            if (Current.DispatcherQueue.HasThreadAccess)
-            {
-                UpdateStatus(strMessage, type);
-            }
-            else
-            {
-                var task = Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () => UpdateStatus(strMessage, type));
-            }
-        }
-
-        private void UpdateStatus(string strMessage, NotifyType type)
-        {
-
-            switch (type)
-            {
-                case NotifyType.StatusMessage:
-                    StatusBorder.Background = new SolidColorBrush(Microsoft.UI.Colors.Green);
-                    break;
-                case NotifyType.ErrorMessage:
-                    StatusBorder.Background = new SolidColorBrush(Microsoft.UI.Colors.Red);
-                    break;
-            }
-
-            StatusBlock.Text = strMessage;
-
-            // Collapse the StatusBlock if it has no text to conserve real estate.
-            StatusBorder.Visibility = (StatusBlock.Text != String.Empty) ? Visibility.Visible : Visibility.Collapsed;
-            if (StatusBlock.Text != String.Empty)
-            {
-                StatusBorder.Visibility = Visibility.Visible;
-                StatusPanel.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                StatusBorder.Visibility = Visibility.Collapsed;
-                StatusPanel.Visibility = Visibility.Collapsed;
-            }
-
-            // Raise an event if necessary to enable a screen reader to announce the status update.
-            var peer = FrameworkElementAutomationPeer.FromElement(StatusBlock);
-            if (peer != null)
-            {
-                peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
-            }
-        }
-
-        async void Footer_Click(object sender, RoutedEventArgs e)
-        {
-            await Windows.System.Launcher.LaunchUriAsync(new Uri(((HyperlinkButton)sender).Tag.ToString()));
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Splitter.IsPaneOpen = !Splitter.IsPaneOpen;
-        }
-       
-        
     }
-    public enum NotifyType
-    {
-        StatusMessage,
-        ErrorMessage
-    };
-
 
 }
 

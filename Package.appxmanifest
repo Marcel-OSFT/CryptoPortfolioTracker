@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
@@ -9,14 +8,14 @@
 
   <Identity
     Name="888d91d3-450f-43ca-bf3d-41d75f3c8b17"
-    Publisher="CN=marce"
-    Version="1.0.0.0" />
+    Publisher="CN=MK-OSFT"
+    Version="1.0.3.0" />
 
   <mp:PhoneIdentity PhoneProductId="888d91d3-450f-43ca-bf3d-41d75f3c8b17" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>CryptoPortfolioTracker</DisplayName>
-    <PublisherDisplayName>marce</PublisherDisplayName>
+    <DisplayName>Crypto Portfolio Tracker</DisplayName>
+    <PublisherDisplayName>MK-OSFT</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -26,7 +25,8 @@
   </Dependencies>
 
   <Resources>
-    <Resource Language="x-generate"/>
+    <Resource Language="en-US"/>
+    <Resource Language="nl-NL"/>
   </Resources>
 
   <Applications>
@@ -34,11 +34,10 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="CryptoPortfolioTracker"
-        Description="CryptoPortfolioTracker"
+        DisplayName="Crypto Portfolio Tracker"
+        Description="a tracker for your crypto assets"
         BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
+        Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\CPT256x256Icon.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
@@ -46,6 +45,6 @@
   </Applications>
 
   <Capabilities>
-    <rescap:Capability Name="runFullTrust" />
+	  <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 </Package>

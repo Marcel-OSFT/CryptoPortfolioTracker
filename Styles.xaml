@@ -107,6 +107,14 @@
     <Style x:Key="SampleHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
         <Setter Property="FontSize" Value="20"/>
     </Style>
+    <Style x:Key="ValueHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontSize" Value="32"/>
+        <Setter Property="TextAlignment" Value="Right"/>
+    </Style>
+    <Style x:Key="PercHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="TextAlignment" Value="Right"/>
+    </Style>
 
     <Style x:Key="ListItemTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
         <Setter Property="FontSize" Value="18"/>

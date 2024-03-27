@@ -1,0 +1,71 @@
+<Page
+    x:Class="CryptoPortfolioTracker.Views.AssetsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:CryptoPortfolioTracker.Models"
+    xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"
+    xmlns:converters="using:CryptoPortfolioTracker.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:controls="using:CryptoPortfolioTracker.Controls" 
+    d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
+ 
+    Loaded="AssetsView_loaded"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:ColourConverter x:Key="myColourConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
+        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        <converters:ThemeColorConverter x:Key="ThemeColorConverter"/>
+        <converters:AddPrefixConverter x:Key="AddPrefixConverter"/>
+
+        <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,5,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="125"/>
+                <RowDefinition Height="125"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="2" Height="250" VerticalAlignment="Top"/>
+            <RelativePanel Grid.Row="0">
+                <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="{Binding Foreground, ElementName=smallHeaderText, Converter={StaticResource ThemeColorConverter}}" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Name="txtAssets" Text="{Binding ListAssetTotals.Count, Converter={StaticResource AddPrefixConverter}, ConverterParameter='Assets (|)' }" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtAssets, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <!--Grid HorizontalAlignment="Right" Width="{Binding ElementName=HeaderGrid,Path=ActualWidth}" Margin="0,10,0,0"-->
+                    <RelativePanel RelativePanel.AlignRightWithPanel="True">
+                    <TextBlock x:Name="txtTotalAssetsValue" Text="{Binding TotalAssetsValue, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" Foreground="{Binding Foreground, ElementName=txtTotalAssetsValue, Converter={StaticResource ThemeColorConverter}}" Margin="36,15,20,0" Style="{StaticResource ValueHeaderTextStyle}" />
+                    <TextBlock x:Name="txtProfitLossPerc" Text="{Binding TotalAssetsPnLPerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Foreground, ElementName=txtProfitLossPerc, Converter={StaticResource ThemeColorConverter}}" Margin="36,0,20,0" Style="{StaticResource PercHeaderTextStyle}" RelativePanel.AlignRightWith="txtTotalAssetsValue" RelativePanel.Below="txtTotalAssetsValue" />
+                    </RelativePanel>
+                <!--/Grid-->
+            </RelativePanel>
+            <TextBlock Grid.Row="1" VerticalAlignment="Bottom" Margin="35,0,20,20"  Style="{StaticResource ScenarioDescriptionTextStyle}"  TextWrapping="Wrap" Text="Assets are the crypto currencies that you have in portfolio at one or more accounts.
+Crypto of your interest need to be added first to the Coin Library. Also one or more accounts need to be configured.
+                       &#x0d;&#x0a;Build up your assets by adding transactions using the 'Add a new Transaction' button at the bottom of this window."  />
+            <Border Grid.Row="2" VerticalAlignment="Stretch">
+                <Grid Name="AssetsContent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="0"/>
+                        <RowDefinition Height="0"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="0" />
+                    <controls:AssetAccountsGridViewControl Grid.Row="1" x:Name="MyAssetAccountsGridViewControl" Margin="0,0,0,0" x:FieldModifier="public" />
+                    <controls:AssetTransactionsListViewControl x:Name="MyAssetTransactionsListViewControl" x:FieldModifier="public" Grid.Row="2" />
+                    <Button x:Name="AddTransactionButton" Content="Add a new Transaction" Grid.Row="3" HorizontalAlignment="Stretch" Click="Button_Click_AddTransactionDialog" Margin="10,10,0,0" IsEnabled="True"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

@@ -14,7 +14,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 
 using Newtonsoft.Json;
-using CoinGecko.Clients;
+//using CoinGecko.Clients;
 using System.Net.Http;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -27,45 +27,10 @@ namespace CryptoPortfolioTracker
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-
-        string strTest;
-
         public MainWindow()
         {
             this.InitializeComponent();
-            //myButton.Content = "Click me";
-
-        }
-
-        public async void Test()
-        {
-            //myTextBox.Text = "Requesting...";
-            HttpClient httpClient = new HttpClient();
-            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
-
-            PingClient pingClient = new PingClient(httpClient, serializerSettings);
-            SimpleClient simpleClient = new SimpleClient(httpClient, serializerSettings);
-
-            // Check CoinGecko API status
-            if ((await pingClient.GetPingAsync()).GeckoSays != string.Empty)
-            {
-                // Getting current price of tether in usd
-                string ids = "bitcoin";
-                string vsCurrencies = "usd";
-                strTest = (await simpleClient.GetSimplePrice(new[] { ids }, new[] { vsCurrencies }))[ids]["usd"].ToString();
-                //Console.WriteLine((await simpleClient.GetSimplePrice(new[] { ids }, new[] { vsCurrencies }))["tether"]["usd"]);
-                //myTextBox.Text = strTest;
-            }
-        }
-
-
-
-        //private async void mybutton_click(object sender, routedeventargs e)
-        //{
-
-
-        //    test();
-
-        //}
+            
+        }  
     }
 }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="CryptoPortfolioTracker.Controls.AssetAccountsGridViewControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CryptoPortfolioTracker.Controls"
+    xmlns:converters="using:CryptoPortfolioTracker.Converters"    
+    xmlns:views="using:CryptoPortfolioTracker.Views"    
+    xmlns:models="using:CryptoPortfolioTracker.Models"    
+    xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
+    
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:ColourConverter x:Key="myColourConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
+        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+    </UserControl.Resources>
+
+
+    <GridView x:Name="AssetAccountsGridView"  x:FieldModifier="public" ItemsSource="{Binding ListAssetAccounts, Mode=TwoWay}" 
+              ScrollViewer.HorizontalScrollBarVisibility="Visible" 
+              ScrollViewer.HorizontalScrollMode="Enabled" 
+              SelectedIndex="0"
+                  IsItemClickEnabled="True" SelectionMode="Single" ItemClick="AssetAccountsGridView_ItemClick" Margin="30,0,10,10">
+        <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                <Setter Property="Margin" Value="5,5,5,5" />
+                <Setter Property="Height" Value="50" />
+            </Style>
+            </GridView.ItemContainerStyle>
+
+            <!-- An extra property also needs to be added to the GridView's ItemsWrapGrid.
+                        The following sets the maximum # of items to show before wrapping.-->
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid x:Name="MaxItemsWrapGrid"  MaximumRowsOrColumns="1" Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+        <GridView.ItemTemplate>
+                <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:AssetAccount">
+                <Grid Width="300" Margin="10,0,0,0">
+                        <RelativePanel >
+                            <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" FontSize="18" TextWrapping="Wrap" />
+                        <TextBlock Name="txtQty" Text="{Binding Qty, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" TextWrapping="Wrap" RelativePanel.Below="txtName"  FontSize="16"/>
+                            <TextBlock Name="txtSymbol" Text="{Binding Symbol}" TextWrapping="Wrap" RelativePanel.Below="txtName" RelativePanel.RightOf="txtQty" Margin="5,0,0,0" FontSize="16"/>
+                        </RelativePanel>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+
+
+    
+</UserControl>
