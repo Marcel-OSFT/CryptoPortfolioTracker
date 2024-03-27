@@ -153,7 +153,6 @@
     <Page Update="Dialogs\BlankWindow1.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="OpenAPIs\swagger.json" ClassName="ApiClient" />
     <Page Update="MK_Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -168,7 +167,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DataProviders\" />
-    <Folder Include="Helpers\" />
     <Folder Include="Migrations\" />
     <Folder Include="Resources\" />
   </ItemGroup>
