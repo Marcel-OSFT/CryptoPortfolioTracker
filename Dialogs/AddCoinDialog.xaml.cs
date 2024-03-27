@@ -43,12 +43,12 @@ using CryptoPortfolioTracker.Views;
 using System.Reflection.Metadata.Ecma335;
 using System.ComponentModel;
 using CryptoPortfolioTracker.Controls;
-using PollyDemos.OutputHelpers;
+//using PollyDemos.OutputHelpers;
 using System.Threading;
 
 namespace CryptoPortfolioTracker.Dialogs
 {
-    public sealed partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
+    public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     {
         public readonly CoinLibraryViewModel _viewModel;
         public static AddCoinDialog Current;

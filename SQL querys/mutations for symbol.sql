@@ -1,1 +1,0 @@
-Select * from transactions Left Join mutations on transactions.TransactionId == mutations.TransactionId left join assets on mutations.AssetId==assets.Id left join Coins on coins.id==assets.Id where coins.Symbol=="APEX"

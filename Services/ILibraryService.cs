@@ -2,7 +2,7 @@
 
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
-using PollyDemos.OutputHelpers;
+//using PollyDemos.OutputHelpers;
 using Polly.Retry;
 using Polly;
 using System.Collections.Generic;

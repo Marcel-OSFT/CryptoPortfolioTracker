@@ -1,1 +1,0 @@
-Select * from assets Left Join Coins on assets.coinId == coins.id where coins.Symbol=="APEX"
