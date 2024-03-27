@@ -3,7 +3,7 @@
 # Crypto Portfolio Tracker, a great overview of all your crypto HODL positions
 
 ## Description
-Those who are actively working on a crypto HODL or Swing portfolio or get the feeling at some point that they don't have a good view anymore where they have stored certain crypto coins. This is when they start using an excel-sheet to keep track of it. Or at least try to keep track of it.
+Those who are actively working on a crypto HODL or Swing portfolio will get the feeling at some point that they don't have a good view anymore where they have stored certain crypto coins. This is when they start using an excel-sheet to keep track of it. Or at least try to keep track of it.
 I have been at that same spot. And finally decided to develop my own desktop app for this. I know that there are websites offering you the same, but still your portfolio overview is 'somewhere out there' and might be visible for others. And even with these tracker services you need to add some coins and transactions manually because they are not supported.
 This app is retrieving its information via the GoinGecko public API.
 
@@ -17,12 +17,16 @@ This app is retrieving its information via the GoinGecko public API.
 * Transactions can be edited or deleted.
 * The Accounts overview includes the total market value of that account. Selecting an account will give you a detailed view all the coins in that account.
 
-## First Use
-* First, start with building up the Coin Library
-* Second, assign one or more accounts
-* Third, start building up your assets with adding transactions.
-
-
-
 Enjoy HODL-ing
 Marcel
+
+![CPT Assets_blurred_800](https://github.com/Marcel-OSFT/CryptoPortfolioTracker/assets/141166641/b7155ba5-184a-4d84-aa89-6d624a3c3d5b)
+
+![CPT Assets and Tx_blurred_800](https://github.com/Marcel-OSFT/CryptoPortfolioTracker/assets/141166641/b5597c08-4bc9-480c-b329-0279acca2bb3)
+
+![CPT accounts_blurred_800](https://github.com/Marcel-OSFT/CryptoPortfolioTracker/assets/141166641/57bc1e9f-2ce1-499d-86dd-384484c6d6bd)
+
+![CPT account and assets_blurred_800](https://github.com/Marcel-OSFT/CryptoPortfolioTracker/assets/141166641/7cf004fe-4bbc-4458-bfe2-d3da477c65e8)
+
+
+
