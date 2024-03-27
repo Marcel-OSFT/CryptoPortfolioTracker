@@ -1,6 +1,6 @@
 <!-- markdownlint-disable -->
 
-# Crypto Portfolio Tracker, a great overview of al your crypto HODL positions
+# Crypto Portfolio Tracker, a great overview of all your crypto HODL positions
 
 ## Description
 Those who are actively working on a crypto HODL or Swing portfolio or get the feeling at some point that they don't have a good view anymore where they have stored certain crypto coins. This is when they start using an excel-sheet to keep track of it. Or at least try to keep track of it.
