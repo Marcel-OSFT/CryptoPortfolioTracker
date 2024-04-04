@@ -175,7 +175,7 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="Migrations\Coin\" />
-    <Folder Include="Package\" />
+    <Folder Include="Docs\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
