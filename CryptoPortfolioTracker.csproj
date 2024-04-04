@@ -15,16 +15,17 @@
 	  <!--WindowsPackageType>MSIX</WindowsPackageType-->
 	  <PackageCertificateThumbprint>51B1624EF5C99ECC4567AC82426893BAF01F383E</PackageCertificateThumbprint>
 	  <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-	  <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+	  <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
 	  <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 	  <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
 	  <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
 	  <GenerateTestArtifacts>True</GenerateTestArtifacts>
-	  <AppxBundle>Auto</AppxBundle>
+	  <AppxBundle>Always</AppxBundle>
 	  <AppxBundlePlatforms>x64</AppxBundlePlatforms>
 	  <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 	  <AppxLogTelemetryFromSideloadingScript>False</AppxLogTelemetryFromSideloadingScript>
 	  <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
+	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/</AppInstallerUri>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-16.png" />
