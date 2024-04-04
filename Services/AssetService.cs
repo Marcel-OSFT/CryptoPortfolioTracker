@@ -1,30 +1,24 @@
 ﻿//using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.ViewModels;
+using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.UI.Popups;
-using LanguageExt.Common;
 
 namespace CryptoPortfolioTracker.Services
 {
     public class AssetService : IAssetService
     {
         private readonly PortfolioContext context;
+        public static AssetService Instance;
+
 
         public AssetService(PortfolioContext portfolioContext)
         {
+            Instance = this;
             context = portfolioContext;
         }
 
@@ -39,17 +33,17 @@ namespace CryptoPortfolioTracker.Services
                 .Select(assetGroup => new AssetTotals
                 {
                     Qty = assetGroup.Sum(x => x.Qty),
-                    CostBase =  assetGroup.Sum(x => (x.AverageCostPrice * x.Qty)),
+                    CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
                     Coin = assetGroup.Key,
                 })
                 .ToListAsync();
-                
+
             }
             catch (Exception ex)
             {
                 return new Result<List<AssetTotals>>(ex);
             }
-            if (assetsTotals == null) { assetsTotals =  new List<AssetTotals>(); }
+            if (assetsTotals == null) { assetsTotals = new List<AssetTotals>(); }
 
             return assetsTotals;
         }
@@ -60,17 +54,42 @@ namespace CryptoPortfolioTracker.Services
             AssetTotals assetTotals;
             try
             {
-                 assetTotals = await context.Assets
-                .Where(c => c.Coin.Id == coin.Id)
-                .Include(x => x.Coin)
-                .GroupBy(asset => asset.Coin)
-                .Select(assetGroup => new AssetTotals
-                {
-                    Qty = assetGroup.Sum(x => x.Qty),
-                    CostBase = assetGroup.Sum(x => (x.AverageCostPrice * x.Qty)),
-                    Coin = assetGroup.Key
-                })
-                .SingleAsync();
+                assetTotals = await context.Assets
+               .Where(c => c.Coin.Id == coin.Id)
+               .Include(x => x.Coin)
+               .GroupBy(asset => asset.Coin)
+               .Select(assetGroup => new AssetTotals
+               {
+                   Qty = assetGroup.Sum(x => x.Qty),
+                   CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
+                   Coin = assetGroup.Key
+               })
+               .SingleAsync();
+            }
+            catch (Exception ex)
+            {
+                return new Result<AssetTotals>(ex);
+            }
+            return assetTotals;
+        }
+        public async Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccount(Coin coin, Account account)
+        {
+            if (coin == null || account == null) { return new AssetTotals(); }
+            AssetTotals assetTotals;
+            try
+            {
+                assetTotals = await context.Assets
+               .Include(x => x.Coin)
+               .Include(y => y.Account)
+               .Where(c => c.Coin.Id == coin.Id && c.Account.Id == account.Id)
+               .GroupBy(asset => asset.Coin)
+               .Select(assetGroup => new AssetTotals
+               {
+                   Qty = assetGroup.Sum(x => x.Qty),
+                   CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
+                   Coin = assetGroup.Key
+               })
+               .SingleAsync();
             }
             catch (Exception ex)
             {
@@ -124,22 +143,22 @@ namespace CryptoPortfolioTracker.Services
                         Symbol = assets.Coin.Symbol,
                         AssetId = assets.Id,
 
-                    }).SingleAsync();
+                    }).SingleOrDefaultAsync();
             }
             catch (Exception ex)
             {
                 return new Result<AssetAccount>(ex);
             }
-            if (assetAccount == null) { assetAccount = new AssetAccount(); }
+          // if (assetAccount == null) { assetAccount = new AssetAccount(); }
 
             return assetAccount;
         }
 
-        
+
 
         public async Task<Result<List<AssetTransaction>>> GetTransactionsByAsset(int assetId)
         {
-            
+
             if (assetId <= 0) { return new List<AssetTransaction>(); }
             List<AssetTransaction> assetTransactions = null;
             try
@@ -154,10 +173,9 @@ namespace CryptoPortfolioTracker.Services
                     .Select(grouped => new AssetTransaction
                     {
                         Id = grouped.Key,
-                        //RequestedAsset = assetId,
-                        RequestedAsset = grouped.Select(a => a.Asset).Where(w => w.Id == assetId ).SingleOrDefault(),
+                        RequestedAsset = grouped.Select(a => a.Asset).Where(w => w.Id == assetId).SingleOrDefault(),
                         TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
-                        Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault(),
+                        Notes = grouped.Select(t => t.Transaction.Note).SingleOrDefault(),
                         Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault(),
                     })
                     .OrderByDescending(o => o.TimeStamp)
@@ -171,41 +189,6 @@ namespace CryptoPortfolioTracker.Services
 
             return assetTransactions;
         }
-        //public async Task<Result<AssetTransaction>> GetTransactionById(int transactionId)
-        //{
-        //    if (transactionId <= 0) { return new AssetTransaction(); }
-        //    AssetTransaction assetTransaction;
-        //    try
-        //    {
-        //        assetTransaction = await context.Mutations
-        //            .Include(t => t.Transaction)
-        //            .ThenInclude(m => m.Mutations)
-        //            .ThenInclude(a => a.Asset)
-        //            .ThenInclude(ac => ac.Account)
-        //            .Where(c => c.Transaction.Id == transactionId)
-        //            .GroupBy(g => g.Transaction.Id)
-        //            .Select(grouped => new AssetTransaction
-        //            {
-        //                Id = grouped.Key,
-        //                RequestedAsset = grouped.Select(a => a.Asset).SingleOrDefault(),
-        //                TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
-        //                Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault(),
-        //                Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault(),
-        //            })
-        //            .OrderByDescending(o => o.TimeStamp)
-        //            .SingleAsync();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new Result<AssetTransaction>(ex);
-        //    }
-        //    if (assetTransaction == null) { assetTransaction = new AssetTransaction(); }
-
-        //    return assetTransaction;
-        //}
-
-
-
 
     }
 }

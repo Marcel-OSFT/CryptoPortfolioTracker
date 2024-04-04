@@ -1,23 +1,20 @@
-﻿
-using CryptoPortfolioTracker.Dialogs;
-using CryptoPortfolioTracker.Infrastructure;
+﻿using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
+using LanguageExt;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
-using System.Linq;
+using System.Threading;
+using System.Xml.Serialization;
 using Windows.ApplicationModel.Activation;
 using WinUIEx;
 
@@ -30,7 +27,7 @@ namespace CryptoPortfolioTracker
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public partial class App :   Application
+    public partial class App : Application
     {
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -49,21 +46,80 @@ namespace CryptoPortfolioTracker
         public static string appPath;
         public static string appDataPath;
 
+        //public static CultureInfo cultureInfoNl = new CultureInfo("nl");
+        //public static CultureInfo cultureInfoEn = new CultureInfo("en");
+
+        //public static CultureInfo CultureInfo;
+        public static UserPreferences userPreferences;
+        public static bool isReadingUserPreferences;
 
         public static IServiceProvider Container { get; private set; }
 
-        
+
 
         public App()
         {
             this.InitializeComponent();
-
+            SetAppPaths();
+            GetUserPreferences();
             Container = RegisterServices();
 
             var context = App.Container.GetService<PortfolioContext>();
 
             context.Database.EnsureCreated();
             //if (context.Coins.ToList()==null) InitializeWithMocks();
+          
+        }
+
+        private void GetUserPreferences()
+        {
+            isReadingUserPreferences = true;    
+            userPreferences = new UserPreferences();
+
+            if (File.Exists(appPath + "\\prefs.xml"))
+            {
+                XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
+                FileStream myFileStream = new FileStream(appPath + "\\prefs.xml", FileMode.Open);
+
+                userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
+
+                // CultureInfo = userPreferences.CultureLanguage == "nl" ? cultureInfoNl : cultureInfoEn;
+                //CultureInfo.CurrentCulture = new CultureInfo(userPreferences.CultureLanguage);
+                //CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(userPreferences.CultureLanguage); //App.cultureInfoNl;
+                //CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(userPreferences.CultureLanguage); //App.cultureInfoNl;
+            }
+            else
+            {
+                //userPreferences.CultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
+                //userPreferences.IsHidingZeroBalances = false;
+                //SaveUserPreferences();
+            }
+            isReadingUserPreferences = false;
+        }
+
+        public static void SaveUserPreferences()
+        {
+            XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
+            StreamWriter myWriter = new StreamWriter(appPath + "\\prefs.xml");
+            mySerializer.Serialize(myWriter, userPreferences);
+            myWriter.Close();
+        }
+        private void SetAppPaths()
+        {
+            appPath = (System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory));
+
+            appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
+            if (!Directory.Exists(appDataPath)) Directory.CreateDirectory(appDataPath);
+            AppDomain.CurrentDomain.SetData("DataDirectory", appDataPath);
+
+        }
+
+        public void GetCurrentCulture()
+        {
+            //CultureInfo = cultureInfoEn;
+            //CultureInfo.DefaultThreadCurrentCulture = CultureInfo;
+            //CultureInfo.DefaultThreadCurrentUICulture = CultureInfo;
+
         }
 
         private IServiceProvider RegisterServices()
@@ -71,24 +127,26 @@ namespace CryptoPortfolioTracker
             var services = new ServiceCollection();
 
             //services.AddScoped<TransactionDialog>();
-            
+
             services.AddScoped<AssetsView>();
             services.AddScoped<AccountsView>();
             services.AddScoped<CoinLibraryView>();
+            services.AddScoped<HelpView>();
+            services.AddScoped<SettingsView>();
 
             services.AddScoped<AssetsViewModel>();
             services.AddScoped<AccountsViewModel>();
             services.AddScoped<CoinLibraryViewModel>();
+            services.AddScoped<HelpViewModel>();
+            services.AddScoped<SettingsViewModel>();
 
-            appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
-            if (!Directory.Exists(appDataPath)) Directory.CreateDirectory(appDataPath);
-            AppDomain.CurrentDomain.SetData("DataDirectory", appDataPath);
-
+            
             services.AddDbContext<PortfolioContext>(options =>
             {
                 options.UseSqlite("Data Source=|DataDirectory|sqlCPT.db");
-            }); 
-            
+                //options.UseSqlite("Data Source=C:\\Users\\marce\\AppData\\Local\\CryptoPortfolioTracker\\sqlCPT.db");
+            });
+
             services.AddDbContext<CoinContext>(options =>
             {
                 options.UseSqlite("Data Source=|DataDirectory|sqlCPT.db");
@@ -100,9 +158,9 @@ namespace CryptoPortfolioTracker
             services.AddScoped<ILibraryService, LibraryService>();
             services.AddScoped<IPriceUpdateBackgroundService, PriceUpdateBackgroundService>(serviceProvider =>
             {
-               return new(TimeSpan.FromSeconds(300));
+                return new(TimeSpan.FromSeconds(300));
             });
-            
+
             return services.BuildServiceProvider();
         }
 
@@ -114,9 +172,9 @@ namespace CryptoPortfolioTracker
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            
+
             m_window = new MainWindow();
-           
+
 
             Frame rootFrame = m_window.Content as Frame;
 
@@ -139,9 +197,9 @@ namespace CryptoPortfolioTracker
             }
             m_window.SetWindowSize(1200, 1000);
             m_window.Title = "Crypto Portfolio Tracker";
-            
+
             //-- TO DO icon path below
-            
+
             m_window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
             m_window.SetTitleBar(null);
             m_window.Activate();
@@ -192,16 +250,16 @@ namespace CryptoPortfolioTracker
         {
             throw new NotImplementedException();
         }
-        
+
         private void InitializeWithMocks()
         {
             //var context = new PortfolioContext();
             var context = App.Container.GetService<PortfolioContext>();
 
             context.Database.EnsureCreated();
-            
+
             AccountMockService myMockAccount = new AccountMockService();
-            
+
             context.Coins.Add(CoinMockService.MockCoin1);
             context.Coins.Add(CoinMockService.MockCoin2);
 

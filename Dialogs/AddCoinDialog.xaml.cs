@@ -1,50 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Microsoft.UI.Xaml;
-
-using Microsoft.UI.Xaml.Controls;
-
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
-
-using Microsoft.UI.Xaml.Navigation;
-using System.Threading.Tasks;
-
+using CryptoPortfolioTracker.Controls;
 //using CoinGecko.Clients;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
+using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.ViewModels;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 //using CoinGecko.Interfaces;
 //using CoinGecko.Parameters;
 using System.Diagnostics;
-using Newtonsoft.Json;
-using System.Net.Http;
-using Microsoft.UI.Dispatching;
-using Windows.Networking.Connectivity;
-using System.Collections.ObjectModel;
-using CommunityToolkit.WinUI.UI;
-using Microsoft.UI.Xaml.Documents;
-using Windows.Graphics.Imaging;
-using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
-using Windows.Storage.Streams;
-using Windows.Storage;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Infrastructure;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Windows.UI.Popups;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.Views;
-using System.Reflection.Metadata.Ecma335;
-using System.ComponentModel;
-using CryptoPortfolioTracker.Controls;
 //using PollyDemos.OutputHelpers;
-using System.Threading;
 
 namespace CryptoPortfolioTracker.Dialogs
 {
@@ -64,7 +39,7 @@ namespace CryptoPortfolioTracker.Dialogs
                 if (value != coinCollection)
                 {
                     coinCollection = value;
-                    OnPropertyChanged(nameof(CoinCollection));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -77,7 +52,7 @@ namespace CryptoPortfolioTracker.Dialogs
                 if (value != coinName)
                 {
                     coinName = value;
-                    OnPropertyChanged(nameof(CoinName));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -91,7 +66,7 @@ namespace CryptoPortfolioTracker.Dialogs
                 if (value != bePatientVisibility)
                 {
                     bePatientVisibility = value;
-                    OnPropertyChanged(nameof(BePatientVisibility));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -124,7 +99,7 @@ namespace CryptoPortfolioTracker.Dialogs
 
         private async void AutoSuggestBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key==Windows.System.VirtualKey.Enter && (sender as AutoSuggestBoxWithValidation).IsEntryMatched)
+            if (e.Key == Windows.System.VirtualKey.Enter && (sender as AutoSuggestBoxWithValidation).IsEntryMatched)
             {
                 VisualStateRequestBusy(true);
                 coinFullDataById = await GetCoinDetails((sender as AutoSuggestBoxWithValidation).MyText);
@@ -145,7 +120,7 @@ namespace CryptoPortfolioTracker.Dialogs
                 TheProgressRing.IsActive = false;
                 DetailsStack1.Opacity = 1;
                 DetailsStack2.Opacity = 1;
-                BePatientVisibility= Visibility.Collapsed;
+                BePatientVisibility = Visibility.Collapsed;
             }
         }
 
@@ -189,7 +164,7 @@ namespace CryptoPortfolioTracker.Dialogs
             }
             catch (Exception ex)
             {
-                MessageDialog msgbox = new MessageDialog("Adding coin to the Library failed - " + ex.Message );
+                MessageDialog msgbox = new MessageDialog("Adding coin to the Library failed - " + ex.Message);
             }
 
         }
@@ -198,9 +173,9 @@ namespace CryptoPortfolioTracker.Dialogs
         {
             IsPrimaryButtonEnabled = false;
 
-            CoinFullDataById coinDetails=null;
+            CoinFullDataById coinDetails = null;
             var coinFullDataByIdResult = await _viewModel._libraryService.GetCoinDetails(coinId);
-            coinFullDataByIdResult.IfSucc( async details =>
+            coinFullDataByIdResult.IfSucc(async details =>
             {
                 BitmapImage image = details.Image.Small.AbsoluteUri != null ? new BitmapImage(new Uri(base.BaseUri, details.Image.Small.AbsoluteUri)) : null;
                 CoinImage.Source = image;
@@ -248,14 +223,17 @@ namespace CryptoPortfolioTracker.Dialogs
         public async Task<bool> IsCoinAlreadyInLibrary(string coinId)
         {
             var getCoinResult = await _viewModel._libraryService.GetCoin(coinId);
-            return getCoinResult.Match(Succ: s => true, Fail: f => false );
+            return getCoinResult.Match(Succ: s => true, Fail: f => false);
         }
 
-        
+        //public event PropertyChangedEventHandler PropertyChanged;
+        //protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
 
         //******* EventHandlers
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string name)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             if (MainPage.Current == null) return;
             MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
@@ -265,7 +243,7 @@ namespace CryptoPortfolioTracker.Dialogs
                 PropertyChangedEventHandler handler = PropertyChanged;
                 if (handler != null)
                 {
-                    handler(this, new PropertyChangedEventArgs(name));
+                    handler(this, new PropertyChangedEventArgs(propertyName));
                 }
             });
         }

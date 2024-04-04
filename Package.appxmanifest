@@ -7,16 +7,16 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="888d91d3-450f-43ca-bf3d-41d75f3c8b17"
-    Publisher="CN=MK-OSFT"
-    Version="1.0.3.0" />
+    Name="MK-OSFT.CryptoPortfolioTracker"
+    Publisher="CN=MK-OSFT, O=MK-OSFT, C=NL, E=mk_osft@hotmail.com"
+    Version="1.0.9.0" />
 
   <mp:PhoneIdentity PhoneProductId="888d91d3-450f-43ca-bf3d-41d75f3c8b17" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>Crypto Portfolio Tracker</DisplayName>
     <PublisherDisplayName>MK-OSFT</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\CPT256x256Icon.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -36,10 +36,15 @@
       <uap:VisualElements
         DisplayName="Crypto Portfolio Tracker"
         Description="a tracker for your crypto assets"
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\CPT256x256Icon.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        BackgroundColor="transparent" Square44x44Logo="Assets\CPT256x256Icon.png" Square150x150Logo="Assets\CPT256x256Icon.png">
+        <uap:DefaultTile  Square71x71Logo="Assets\CPT256x256Icon.png" Wide310x150Logo="Assets\CPT256x256Icon.png" Square310x310Logo="Assets\CPT256x256Icon.png">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo"/>
+            <uap:ShowOn Tile="wide310x150Logo"/>
+            <uap:ShowOn Tile="square310x310Logo"/>
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile >
+        <uap:SplashScreen Image="Assets\CPT256x256Icon.png" />
       </uap:VisualElements>
     </Application>
   </Applications>

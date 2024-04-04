@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Views;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Text;
@@ -10,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,6 +20,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -24,19 +28,21 @@ using System.Windows.Input;
 
 namespace CryptoPortfolioTracker.Models
 {
-    public class Validator : BaseModel
-    { 
+    public partial class Validator : BaseModel, INotifyPropertyChanged
+    {
+        CancellationTokenSource tokenSource2 = new CancellationTokenSource();
 
         public Validator(int numberOfItemsToValidate, bool directStart)
         {
-            RegisterValidationItems(numberOfItemsToValidate, directStart); 
+            IsValidEntryCollection = new ObservableCollection<bool>();
+;            RegisterValidationItems(numberOfItemsToValidate, directStart); 
             IsAllEntriesValid = false;
         }
 
-        CancellationTokenSource tokenSource2 = new CancellationTokenSource();
+        [ObservableProperty]
+        private ObservableCollection<bool> isValidEntryCollection;
+        [ObservableProperty] private int nrOfValidEntriesNeeded;
 
-        
-        public ObservableCollection<bool> IsValidEntryCollection { get; set; } = new ObservableCollection<bool>();
 
         private bool isAllEntriesValid;
         public bool IsAllEntriesValid
@@ -46,29 +52,13 @@ namespace CryptoPortfolioTracker.Models
             {
                 if (value == isAllEntriesValid) return;
                 isAllEntriesValid = value;
-                OnPropertyChanged(nameof(IsAllEntriesValid));
+                OnPropertyChanged();
             }
         }
-
-
-        private int nrOfValidEntriesNeeded;
-        public int NrOfValidEntriesNeeded
-        {
-            get { return nrOfValidEntriesNeeded; }
-            set
-            {
-                if (value != nrOfValidEntriesNeeded)
-                {
-                    nrOfValidEntriesNeeded = value;
-                    OnPropertyChanged(nameof(NrOfValidEntriesNeeded));
-                }
-            }
-        }
-
 
         public void Start()
         {
-            ValidateEntriesAsync();
+           ValidateEntriesAsync();
         }
         public void Stop()
         {
@@ -116,6 +106,25 @@ namespace CryptoPortfolioTracker.Models
             }, tokenSource2.Token); // Pass same token to Task.Run.
             return task;
         }
+
+
+        //******* EventHandlers
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            if (MainPage.Current == null) return;
+            MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+            {
+                PropertyChangedEventHandler handler = PropertyChanged;
+                if (handler != null)
+                {
+                    handler(this, new PropertyChangedEventArgs(name));
+                }
+            });
+        }
+
+
+
 
     }
 }

@@ -1,38 +1,24 @@
 ﻿
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Net.Http;
-using System.Net.NetworkInformation;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
-using Windows.Devices.WiFi;
-using Windows.Storage.Provider;
-using Windows.UI.Popups;
-using LanguageExt.Common;
-
+using System.Windows.Input;
 namespace CryptoPortfolioTracker.ViewModels
 {
     public sealed partial class AccountsViewModel : BaseViewModel
@@ -46,28 +32,16 @@ namespace CryptoPortfolioTracker.ViewModels
         #endregion instances related to Services
 
         #region Fields and Proporties for DataBinding with the View
-        private ObservableCollection<Account> listAccounts;
-        public ObservableCollection<Account> ListAccounts
-        {
-            get { return listAccounts; }
-            set
-            {
-                if (listAccounts == value) return;
-                listAccounts = value;
-                OnPropertyChanged(nameof(ListAccounts));
-            }
-        }
-        private ObservableCollection<AssetTotals> listAssetTotals;
-        public ObservableCollection<AssetTotals> ListAssetTotals
-        {
-            get { return listAssetTotals; }
-            set
-            {
-                if (listAssetTotals == value) return;
-                listAssetTotals = value;
-                OnPropertyChanged(nameof(ListAssetTotals));
-            }
-        }
+
+        [ObservableProperty] ObservableCollection<Account> listAccounts;
+        [ObservableProperty] ObservableCollection<AssetTotals> listAssetTotals;
+
+        [ObservableProperty]
+       [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
+        bool isHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
+
+        private Account selectedAccount = null;
+        
         #endregion variables and proporties for DataBinding with the View
 
         public AccountsViewModel(IAccountService accountService)
@@ -75,7 +49,12 @@ namespace CryptoPortfolioTracker.ViewModels
             Current = this;
             _accountService = accountService;
             SetDataSource();
+           
         }
+        
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ShowAccountDialogToAddCommand))]
+        private bool isExtendedView = false;
 
         #region MAIN methods or Tasks
         private async Task SetDataSource()
@@ -83,32 +62,21 @@ namespace CryptoPortfolioTracker.ViewModels
             (await _accountService.GetAccounts())
                 .IfSucc(list => ListAccounts = new ObservableCollection<Account>(list));
         }
-        public async Task ShowAccountDialog(DialogAction dialogAction, int accountId = 0)
+        
+        [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
+        public async Task ShowAccountDialogToAdd()
         {
-            Account accountToEdit = null;
             try
             {
-                if (dialogAction == DialogAction.Edit)
-                {
-                    accountToEdit = ListAccounts.Where(t => t.Id == accountId).Single();
-                }
-                AccountDialog dialog = new AccountDialog(Current, dialogAction, accountToEdit);
+                AccountDialog dialog = new AccountDialog(Current, DialogAction.Add);
                 dialog.XamlRoot = AccountsView.Current.XamlRoot;
                 var result = await dialog.ShowAsync();
-            
+
                 if (result == ContentDialogResult.Primary)
                 {
-                    if (dialogAction == DialogAction.Add)
-                    {
-                        await (await _accountService.CreateAccount(dialog.newAccount))
-                         .Match(Succ: succ => AddToListAccounts(dialog.newAccount),
-                             Fail: async err => await ShowMessageBox("Adding account failed - " + err.Message));
-                    }
-                    else
-                    {
-                         (await _accountService.EditAccount(dialog.newAccount, accountToEdit))
-                            .IfFail( async err => await ShowMessageBox("Updating account failed - " + err.Message));
-                    }
+                    await (await _accountService.CreateAccount(dialog.newAccount))
+                        .Match(Succ: succ => AddToListAccounts(dialog.newAccount),
+                            Fail: async err => await ShowMessageBox("Adding account failed - " + err.Message));
                 }
             }
             catch (Exception ex)
@@ -116,6 +84,36 @@ namespace CryptoPortfolioTracker.ViewModels
                 await ShowMessageBox("Failure on showing Account Dialog (" + ex.Message + ")");
             }
         }
+        private bool CanShowAccountDialogToAdd()
+        {
+            return !IsExtendedView;
+        }
+
+        [RelayCommand]
+        public async Task ShowAccountDialogToEdit(int accountId)
+        {
+            Account accountToEdit = null;
+            try
+            {
+                accountToEdit = ListAccounts.Where(t => t.Id == accountId).Single();
+                AccountDialog dialog = new AccountDialog(Current, DialogAction.Edit);
+                dialog.XamlRoot = AccountsView.Current.XamlRoot;
+                var result = await dialog.ShowAsync();
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    
+                    (await _accountService.EditAccount(dialog.newAccount, accountToEdit))
+                        .IfFail(async err => await ShowMessageBox("Updating account failed - " + err.Message));
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowMessageBox("Failure on showing Account Dialog (" + ex.Message + ")");
+            }
+        }
+
+        [RelayCommand(CanExecute = nameof(CanDeleteAccount))]
         public async Task DeleteAccount(int accountId)
         {
             // *** Delete option normally never available when an Account contains assets
@@ -136,14 +134,82 @@ namespace CryptoPortfolioTracker.ViewModels
             }
 
         }
+        private bool CanDeleteAccount(int accountId)
+        {
+            bool result=false;
+            try
+            {
+                result = !ListAccounts.Where(x => x.Id == accountId).Single().IsHoldingAsset;
+            }
+            catch (Exception)
+            {
+                //Element just removed from the list...
+            }
+            return result;
+        }
+       
+        [RelayCommand]
+        public async Task AccountItemClicked(Account clickedAccount)
+        {
+            //Clicked a new Account.... -> Resize Account ListView to small and Show Assets for this Account
+            if (selectedAccount == null || selectedAccount != clickedAccount)
+            {
+                await ShowAssets(clickedAccount);
+                IsExtendedView = true;
+            }
+            //clicked the already selected Account.... ->
+            if (selectedAccount != null && selectedAccount == clickedAccount)
+            {
+                // if Assets are not shown -> Decrease Account Listview to small and show assets for this account
+                if (!IsExtendedView)
+                {
+                    await ShowAssets(clickedAccount);
+                    IsExtendedView= true;
+                }
+                else //if Assets are shown -> close Assets List and resize Accounts Listview to full-size
+                {
+                    ListAssetTotals.Clear();
+                    IsExtendedView = false;
+                }
+            }
+            selectedAccount = clickedAccount;
+        }
+
+        [RelayCommand]
+        public void HideZeroBalances(bool param)
+        {
+            if (ListAssetTotals == null) return;
+            //IsHideZeroBalances = param;
+            if (param)
+            {
+                var itemsToHide = ListAssetTotals.Where(x => x.MarketValue <= 0).ToList();
+                foreach (var item in itemsToHide)
+                {
+                    item.IsHidden = true; ;
+                }
+            }
+            else
+            {
+                foreach (var item in ListAssetTotals)
+                {
+                    item.IsHidden = false; ;
+                }
+            }
+        }
+
+
+
         public async Task ShowAssets(Account clickedAccount)
         {
             (await _accountService.GetAssetsByAccount(clickedAccount.Id))
                 .IfSucc(list => ListAssetTotals = new ObservableCollection<AssetTotals>(list.OrderByDescending(x => x.MarketValue)));
+            HideZeroBalances(IsHidingZeroBalances);
         }
         #endregion MAIN methods or Tasks
 
         #region SUB methods or Tasks
+
+        
         public Task<bool> RemoveFromListAccounts(int accountId)
         {
             try

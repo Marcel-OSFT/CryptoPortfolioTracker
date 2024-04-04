@@ -3,23 +3,24 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:CryptoPortfolioTracker.Models"
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"
+    xmlns:enums="using:CryptoPortfolioTracker.Enums"
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"
     xmlns:converters="using:CryptoPortfolioTracker.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:CryptoPortfolioTracker.Controls" 
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
- 
-    Loaded="AssetsView_loaded"
     mc:Ignorable="d">
 
     <Page.Resources>
         <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
         <converters:ThemeColorConverter x:Key="ThemeColorConverter"/>
         <converters:AddPrefixConverter x:Key="AddPrefixConverter"/>
+        <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
@@ -55,15 +56,16 @@ Crypto of your interest need to be added first to the Coin Library. Also one or 
             <Border Grid.Row="2" VerticalAlignment="Stretch">
                 <Grid Name="AssetsContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="0"/>
-                        <RowDefinition Height="0"/>
+                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=120|1*}"/>
+                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=85|0}"/>
+                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=0.7*|0}"/>
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
-                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="0" />
-                    <controls:AssetAccountsGridViewControl Grid.Row="1" x:Name="MyAssetAccountsGridViewControl" Margin="0,0,0,0" x:FieldModifier="public" />
-                    <controls:AssetTransactionsListViewControl x:Name="MyAssetTransactionsListViewControl" x:FieldModifier="public" Grid.Row="2" />
-                    <Button x:Name="AddTransactionButton" Content="Add a new Transaction" Grid.Row="3" HorizontalAlignment="Stretch" Click="Button_Click_AddTransactionDialog" Margin="10,10,0,0" IsEnabled="True"/>
+                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="0"  />
+                    <controls:AssetAccountsGridViewControl x:Name="MyAssetAccountsGridViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="1" />
+                    <controls:AssetTransactionsListViewControl x:Name="MyAssetTransactionsListViewControl" x:FieldModifier="public"  Margin="0,-5,0,0" Grid.Row="2" />
+                    <Button x:Name="AddTransactionButton" Content="Add a new Transaction" Visibility="Visible" HorizontalAlignment="Stretch" Margin="10,10,0,0" Grid.Row="3"
+                            Command="{Binding ShowTransactionDialogToAddCommand}"/>
                 </Grid>
             </Border>
         </Grid>

@@ -21,36 +21,50 @@ namespace CryptoPortfolioTracker.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
 
                     b.Property<string>("About")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("About");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Asset", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
 
-                    b.Property<int?>("AccountId")
-                        .HasColumnType("INTEGER");
+                    b.Property<int>("AccountId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("AccountId");
 
                     b.Property<double>("AverageCostPrice")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("AverageCostPrice");
 
-                    b.Property<int?>("CoinId")
-                        .HasColumnType("INTEGER");
+                    b.Property<int>("CoinId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("CoinId");
 
                     b.Property<double>("Qty")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("Qty");
+
+                    b.Property<double>("RealizedPnL")
+                        .HasColumnType("REAL")
+                        .HasColumnName("RealizedPnL");
 
                     b.HasKey("Id");
 
@@ -58,85 +72,113 @@ namespace CryptoPortfolioTracker.Migrations
 
                     b.HasIndex("CoinId");
 
-                    b.ToTable("Assets");
+                    b.ToTable("Assets", (string)null);
                 });
 
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Coin", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
 
                     b.Property<string>("About")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("About");
 
                     b.Property<string>("ApiId")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ApiId");
 
                     b.Property<double>("Ath")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("Ath");
 
                     b.Property<double>("Change1Month")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("Change1Month");
 
                     b.Property<double>("Change24Hr")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("Change24Hr");
 
                     b.Property<double>("Change52Week")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("Change52Week");
 
                     b.Property<string>("ImageUri")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ImageUri");
 
                     b.Property<bool>("IsAsset")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IsAsset");
 
                     b.Property<double>("MarketCap")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("MarketCap");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
 
                     b.Property<string>("Note")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Note");
 
                     b.Property<double>("Price")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("Price");
 
                     b.Property<long>("Rank")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Rank");
 
                     b.Property<string>("Symbol")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Symbol");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Coins");
+                    b.ToTable("Coins", (string)null);
                 });
 
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Mutation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
 
-                    b.Property<int?>("AssetId")
-                        .HasColumnType("INTEGER");
+                    b.Property<int>("AssetId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("AssetId");
 
                     b.Property<int>("Direction")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Direction");
 
                     b.Property<double>("Price")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("Price");
 
                     b.Property<double>("Qty")
-                        .HasColumnType("REAL");
+                        .HasColumnType("REAL")
+                        .HasColumnName("Qty");
 
-                    b.Property<int?>("TransactionId")
-                        .HasColumnType("INTEGER");
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("TransactionId");
 
                     b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Type");
 
                     b.HasKey("Id");
 
@@ -144,7 +186,7 @@ namespace CryptoPortfolioTracker.Migrations
 
                     b.HasIndex("TransactionId");
 
-                    b.ToTable("Mutations");
+                    b.ToTable("Mutations", (string)null);
                 });
 
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Transaction", b =>
@@ -155,6 +197,7 @@ namespace CryptoPortfolioTracker.Migrations
                         .HasColumnName("TransactionId");
 
                     b.Property<string>("Note")
+                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("Note");
 
@@ -171,11 +214,15 @@ namespace CryptoPortfolioTracker.Migrations
                 {
                     b.HasOne("CryptoPortfolioTracker.Models.Account", "Account")
                         .WithMany("Assets")
-                        .HasForeignKey("AccountId");
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CryptoPortfolioTracker.Models.Coin", "Coin")
                         .WithMany("Assets")
-                        .HasForeignKey("CoinId");
+                        .HasForeignKey("CoinId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Account");
 
@@ -186,11 +233,15 @@ namespace CryptoPortfolioTracker.Migrations
                 {
                     b.HasOne("CryptoPortfolioTracker.Models.Asset", "Asset")
                         .WithMany("Mutations")
-                        .HasForeignKey("AssetId");
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CryptoPortfolioTracker.Models.Transaction", "Transaction")
                         .WithMany("Mutations")
-                        .HasForeignKey("TransactionId");
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Asset");
 

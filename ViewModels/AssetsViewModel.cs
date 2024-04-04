@@ -2,46 +2,24 @@
 #region Using
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Controls;
+using CommunityToolkit.Mvvm.Input;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Infrastructure;
+using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+using LanguageExt;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Threading;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Windows.Devices.WiFi;
-using Windows.UI.Core;
-using Windows.UI.Popups;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using LanguageExt;
-using System.Collections;
-using LanguageExt.Common;
-using System.Transactions;
 using WinRT;
-using Windows.UI;
 #endregion Using
 
 namespace CryptoPortfolioTracker.ViewModels
@@ -55,82 +33,36 @@ namespace CryptoPortfolioTracker.ViewModels
         #region instances related to Services
         public readonly IAssetService _assetService;
         public readonly IPriceUpdateBackgroundService _priceUpdateBackgroundService;
-        private readonly ITransactionService _transactionService;
+        public readonly ITransactionService _transactionService;
 
         #endregion instances related to Services
 
         #region Fields and Proporties for DataBinding with the View
-        private double totalAssetsValue;
-        public double TotalAssetsValue
-        {
-            get { return totalAssetsValue; }
-            set
-            {
-                if (totalAssetsValue == value) return;
-                totalAssetsValue = value;
-                OnPropertyChanged(nameof(TotalAssetsValue));
-            }
-        }
-        private double totalAssetsCostBase;
-        public double TotalAssetsCostBase
-        {
-            get { return totalAssetsCostBase; }
-            set
-            {
-                if (totalAssetsCostBase == value) return;
-                totalAssetsCostBase = value;
-                OnPropertyChanged(nameof(TotalAssetsCostBase));
-            }
-        }
-        private double totalAssetsPnLPerc;
-        public double TotalAssetsPnLPerc
-        {
-            get { return totalAssetsPnLPerc; }
-            set
-            {
-                if (totalAssetsPnLPerc == value) return;
-                totalAssetsPnLPerc = value;
-                OnPropertyChanged(nameof(TotalAssetsPnLPerc));
-            }
-        }
+        
+        [ObservableProperty] double totalAssetsValue;
+        [ObservableProperty] double totalAssetsCostBase;
+        [ObservableProperty] double totalAssetsPnLPerc;
 
-        private ObservableCollection<AssetTotals> listAssetTotals;
-        public ObservableCollection<AssetTotals> ListAssetTotals
-        {
-            get { return listAssetTotals; }
-            set
-            {
-                if (listAssetTotals == value) return;
-                listAssetTotals = value;
-                OnPropertyChanged(nameof(ListAssetTotals));
-            }
-        }
-        private ObservableCollection<AssetAccount> listAssetAccounts;
-        public ObservableCollection<AssetAccount> ListAssetAccounts
-        {
-            get { return listAssetAccounts; }
-            set
-            {
-                if (listAssetAccounts == value) return;
-                listAssetAccounts = value;
-                OnPropertyChanged(nameof(ListAssetAccounts));
-            }
-        }
-        private ObservableCollection<AssetTransaction> listAssetTransactions;
-        public ObservableCollection<AssetTransaction> ListAssetTransactions
-        {
-            get { return listAssetTransactions; }
-            set
-            {
-                if (listAssetTransactions == value) return;
-                listAssetTransactions = value;
-                OnPropertyChanged(nameof(ListAssetTransactions));
-            }
-        }
+        [ObservableProperty] ObservableCollection<AssetTotals> listAssetTotals;
+        [ObservableProperty] ObservableCollection<AssetAccount> listAssetAccounts;
+        [ObservableProperty] ObservableCollection<AssetTransaction> listAssetTransactions;
+
+        private AssetTotals selectedAsset = null;
+        private AssetAccount selectedAccount = null;
+        
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ShowTransactionDialogToAddCommand))]
+        private bool isExtendedView = false;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
+        bool isHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
+
+
+        public static List<CoinList> coinListGecko;
+       
 
         #endregion variables and proporties for DataBinding with the View
-        
-
 
         //Constructor
         public AssetsViewModel(IAssetService assetService, IPriceUpdateBackgroundService priceUpdateBackgroundService, ITransactionService transactionService)
@@ -142,54 +74,71 @@ namespace CryptoPortfolioTracker.ViewModels
             _priceUpdateBackgroundService = priceUpdateBackgroundService;
             _transactionService = transactionService;
             _priceUpdateBackgroundService.Start();
-            
+
         }
 
         #region MAIN methods or Tasks
         private async Task SetDataSource()
         {
-           (await _assetService.GetAssetTotals())
-                .Match(Succ: s => CreateListAssetTotals(s), Fail: e => CreateListWithDummyAssetTotals());
+            (await _assetService.GetAssetTotals())
+                 .Match(Succ: s => CreateListAssetTotals(s), Fail: e => CreateListWithDummyAssetTotals());
         }
-        public async Task ShowTransactionDialog(DialogAction dialogAction, int transactionId = 0)
+
+
+        [RelayCommand]
+        public async Task AssetItemClicked(AssetTotals clickedAsset)
         {
-            //*** ListAssetTransactions=null soms na ICommandEdit while tr.Id != 0
-            AssetTransaction transactionToEdit = null;
-            AssetAccount accountAffected = null;
-            
+            //new item clicked and selected?
+            if (selectedAsset == null || selectedAsset != clickedAsset)
+            {
+                await ShowAccountsAndTransactions(clickedAsset);
+                IsExtendedView = true;
+            }
+            //clicked already selected item
+            if (selectedAsset != null && selectedAsset == clickedAsset)
+            {
+                if (!IsExtendedView)
+                {
+                    await ShowAccountsAndTransactions(clickedAsset);
+                    IsExtendedView = true;
+                }
+                else
+                {
+                    await ShowAccountsAndTransactions(null);
+                    IsExtendedView = false;
+                }
+            }
+            selectedAsset = clickedAsset;
+        }
+
+        [RelayCommand]
+        public async Task AccountItemClicked(AssetAccount clickedAccount)
+        {
+            //new item clicked and selected?
+            if (selectedAccount == null || selectedAccount != clickedAccount)
+            {
+
+                await ShowAssetTransactions(clickedAccount);
+            }
+            selectedAccount = clickedAccount;
+        }
+
+
+        [RelayCommand(CanExecute = nameof(CanShowTransactionDialogToAdd))]
+        public async Task ShowTransactionDialogToAdd()
+        {
             try
             {
-                if (dialogAction == DialogAction.Edit)
-                {
-                    transactionToEdit = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
-                    //*** editing a transaction also involves a change for an element in the ListAssetAccounts
-                    accountAffected = ListAssetAccounts.Where(t => t.AssetId == transactionToEdit.RequestedAsset.Id).Single();
-                    
-                }
-                var dialog = new TransactionDialog(_transactionService, dialogAction, transactionToEdit);
+                var dialog = new TransactionDialog(_transactionService, DialogAction.Add);
                 dialog.XamlRoot = AssetsView.Current.XamlRoot;
                 var result = await dialog.ShowAsync();
 
                 if (dialog.Exception != null) throw dialog.Exception;
                 if (result == ContentDialogResult.Primary)
                 {
-                    
-                    if (dialogAction == DialogAction.Add)
-                    {
-                        await (await _transactionService.AddTransaction(dialog.transactionNew))
-                         .Match(Succ: newAsset => UpdateListAssetTotals(dialog.transactionNew),
-                             Fail: async err => await ShowMessageBox("Adding transaction failed (" + err.Message + ")"));
-
-                    }
-                    else if (dialogAction == DialogAction.Edit)
-                    {
-                       await (await _transactionService.EditTransaction(dialog.transactionNew, transactionToEdit))
-                            .Match(Succ: async newAsset => {
-                                await UpdateListAssetTotals(dialog.transactionNew);
-                                await UpdateListAssetAccount(accountAffected);
-                            },
-                                Fail: async err => await ShowMessageBox("Updating transaction failed (" + err.Message + ")"));
-                    }
+                    await (await _transactionService.AddTransaction(dialog.transactionNew))
+                        .Match(Succ: newAsset => UpdateListAssetTotals(dialog.transactionNew),
+                            Fail: async err => await ShowMessageBox("Adding transaction failed (" + err.Message + ")"));
                     CalculateAssetsTotalValues();
                 }
             }
@@ -198,6 +147,49 @@ namespace CryptoPortfolioTracker.ViewModels
                 await ShowMessageBox("Failure on showing Transaction Dialog (" + ex.Message + ")");
             }
         }
+        private bool CanShowTransactionDialogToAdd()
+        {
+            return !IsExtendedView;
+        }
+
+        [RelayCommand]
+        public async Task ShowTransactionDialogToEdit(int transactionId)
+        {
+            AssetTransaction transactionToEdit = null;
+            AssetAccount accountAffected = null;
+
+            try
+            {
+                transactionToEdit = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
+                //*** editing a transaction also involves a change for an element in the ListAssetAccounts
+                accountAffected = ListAssetAccounts.Where(t => t.AssetId == transactionToEdit.RequestedAsset.Id).Single();
+
+                var dialog = new TransactionDialog(_transactionService, DialogAction.Edit, transactionToEdit);
+                dialog.XamlRoot = AssetsView.Current.XamlRoot;
+                var result = await dialog.ShowAsync();
+
+                if (dialog.Exception != null) throw dialog.Exception;
+                if (result == ContentDialogResult.Primary)
+                {
+                    await (await _transactionService.EditTransaction(dialog.transactionNew, transactionToEdit))
+                            .Match(Succ: async newAsset =>
+                            {
+                                await UpdateListAssetTotals(dialog.transactionNew);
+                                await UpdateListAssetAccount(accountAffected);
+                                await UpdateListAssetTransaction(dialog.transactionNew, transactionToEdit);
+
+                            },
+                                Fail: async err => await ShowMessageBox("Updating transaction failed (" + err.Message + ")"));
+                    CalculateAssetsTotalValues();
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowMessageBox("Failure on showing Transaction Dialog (" + ex.Message + ")");
+            }
+        }
+
+        [RelayCommand]
         public async Task DeleteTransaction(int transactionId)
         {
             try
@@ -206,7 +198,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 dialog.XamlRoot = AssetsView.Current.XamlRoot;
                 dialog.Title = "Delete Transaction";
                 var result = await dialog.ShowAsync();
-                
+
                 if (result == ContentDialogResult.Primary)
                 {
                     var transactionToDelete = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
@@ -214,10 +206,12 @@ namespace CryptoPortfolioTracker.ViewModels
                     var accountAffected = ListAssetAccounts.Where(t => t.AssetId == transactionToDelete.RequestedAsset.Id).Single();
 
                     await (await _transactionService.DeleteTransaction(transactionToDelete, accountAffected))
-                             .Match(Succ: async s => {
+                             .Match(Succ: async s =>
+                             {
                                  await UpdateListAssetTotals(transactionToDelete);
+                                 await UpdateListAssetAccount(accountAffected);
                                  await RemoveFromListAssetTransactions(transactionToDelete);
-                                 },
+                             },
                                     Fail: err => ShowMessageBox("Deleting transaction failed (" + err.Message + ")"));
                 }
             }
@@ -247,10 +241,12 @@ namespace CryptoPortfolioTracker.ViewModels
             }
             else
             {
-                ListAssetAccounts = null;
-                ListAssetTransactions = null;
+                //ListAssetAccounts = null;
+                ListAssetAccounts.Clear();
+                //ListAssetTransactions = null;
+                ListAssetTransactions.Clear();
             }
-            
+
         }
         public async Task ClearAccountsAndTransactions(AssetTotals clickedAsset)
         {
@@ -264,24 +260,48 @@ namespace CryptoPortfolioTracker.ViewModels
             }
         }
 
-
+        [RelayCommand]
+        public void HideZeroBalances(bool param)
+        {
+            if (ListAssetTotals == null) return;
+            if (param)
+            {
+                var itemsToHide = ListAssetTotals.Where(x => x.MarketValue <= 0).ToList();
+                foreach (var item in itemsToHide)
+                {
+                    item.IsHidden = true; ;
+                }
+            }
+            else
+            {
+                foreach (var item in ListAssetTotals)
+                {
+                    item.IsHidden = false; ;
+                }
+            }
+        }
 
         #endregion MAIN methods or Tasks
 
         #region SUB methods or Tasks
-      
+
 
         public async Task UpdateListAssetAccount(AssetAccount accountAffected)
         {
             (await _assetService.GetAccountByAsset(accountAffected.AssetId))
-                .IfSucc(s => {
-
-                   var index = ListAssetAccounts.IndexOf(accountAffected);
-                    ListAssetAccounts[index] = s;
+                .IfSucc(s =>
+                {
+                    var index = ListAssetAccounts.IndexOf(accountAffected);
+                    if (s != null)
+                    {
+                        ListAssetAccounts[index] = s;
+                    }
+                    else
+                    {
+                        ListAssetAccounts.RemoveAt(index);
+                    }
                 });
         }
-
-
 
         public async Task UpdateListAssetTotals(AssetTransaction transaction)
         {
@@ -290,14 +310,14 @@ namespace CryptoPortfolioTracker.ViewModels
             //for updating purpose of the View, the affected elements of the data source List has to be updated
             //*** First retrieve the coin(s) (max 2) affected by the transaction
             var coinsAffected = transaction.Mutations.Select(x => x.Asset.Coin).Distinct().ToList();
-            
+
 
             // Check if one isn't in the assetsList yet, if so then add it.
             foreach (var coin in coinsAffected)
             {
                 var assetAffected = (AssetTotals)ListAssetTotals.Where(x => x.Coin == coin).SingleOrDefault();
                 var index = ListAssetTotals.IndexOf(assetAffected);
-                
+
                 if (assetAffected == null)
                 {
                     assetAffected = new AssetTotals();
@@ -310,15 +330,23 @@ namespace CryptoPortfolioTracker.ViewModels
                 }
                 else
                 {
-                    assetAffected = (await _assetService.GetAssetTotalsByCoin(coin)).Match(Succ: s => s, Fail: err => null);
-                    ListAssetTotals[index] = assetAffected;
-                    await Task.Delay(500);
+                    var editedAT = (await _assetService.GetAssetTotalsByCoin(coin)).Match(Succ: s => s, Fail: err => null);
+                    ListAssetTotals[index] = editedAT;
+
                 }
             }
+        }
+        public Task UpdateListAssetTransaction(AssetTransaction transactionNew, AssetTransaction transactionToEdit)
+        {
+            var index = ListAssetTransactions.IndexOf(transactionToEdit);
+            ListAssetTransactions[index] = transactionNew;
+            return Task.CompletedTask;
         }
         public bool CreateListAssetTotals(List<AssetTotals> list)
         {
             ListAssetTotals = new ObservableCollection<AssetTotals>(list.OrderByDescending(x => x.MarketValue));
+            HideZeroBalances(IsHidingZeroBalances);
+            CalculateAssetsTotalValues();
             return ListAssetTotals.Any();
         }
         public bool CreateListAssetAcounts(List<AssetAccount> list)
@@ -334,7 +362,7 @@ namespace CryptoPortfolioTracker.ViewModels
         private bool CreateListWithDummyAssetTotals()
         {
             Coin dummyCoin = new Coin()
-            { 
+            {
                 Name = "EXCEPTIONAL ERROR",
                 Symbol = "EXCEPTIONAL ERROR"
             };
@@ -351,10 +379,10 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             var transactionToUpdate = ListAssetTransactions.Where(x => x.Id == deletedTransaction.Id).Single();
             ListAssetTransactions.Remove(deletedTransaction);
-           
+
             return Task.FromResult(true);
         }
-        
+
         public void CalculateAssetsTotalValues()
         {
             if (ListAssetTotals != null && ListAssetTotals.Count > 0 && ListAssetTotals[0].Coin.Symbol != "EXCEPTIONAL ERROR")

@@ -2,15 +2,10 @@
 
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
-//using PollyDemos.OutputHelpers;
-using Polly.Retry;
-using Polly;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System;
-using Microsoft.UI;
 using LanguageExt.Common;
+//using PollyDemos.OutputHelpers;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Services
 {

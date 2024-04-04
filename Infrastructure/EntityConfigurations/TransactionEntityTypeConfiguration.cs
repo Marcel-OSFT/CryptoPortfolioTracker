@@ -1,28 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using CryptoPortfolioTracker.Models;
 using Microsoft.EntityFrameworkCore;
-using CryptoPortfolioTracker.Models;
-using System;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace CryptoPortfolioTracker.Infrastructure.EntityConfigurations;
 
 class TransactionEntityTypeConfiguration : IEntityTypeConfiguration<Transaction>
 {
-    public void Configure(EntityTypeBuilder<Transaction> TransactionConfiguration)
+    public void Configure(EntityTypeBuilder<Transaction> configuration)
     {
-        TransactionConfiguration.ToTable("Transactions");
+        configuration.ToTable("Transactions");
 
-        TransactionConfiguration.HasKey(x => x.Id);
+        configuration.HasKey(x => x.Id);
 
-        TransactionConfiguration
+        configuration
             .Property("Id")
+            .ValueGeneratedOnAdd()
             .HasColumnName("TransactionId");
 
-        TransactionConfiguration
+        configuration
             .Property("TimeStamp")
             .HasColumnName("TimeStamp");
 
-        TransactionConfiguration
+        configuration
             .Property("Note")
             .HasColumnName("Note");
+
+        configuration.Navigation("Mutations");
+
     }
 }

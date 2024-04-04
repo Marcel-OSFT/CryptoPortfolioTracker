@@ -1,21 +1,12 @@
 ﻿//using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
+using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.UserDataTasks;
-using Windows.UI.Popups;
-using LanguageExt.Common;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -128,6 +119,26 @@ namespace CryptoPortfolioTracker.Services
             }
             return accounts;
         }
+        public async Task<Result<Account>> GetAccountByName(string name)
+        {
+            Account account;
+            try
+            {
+                account = await context.Accounts
+                    .Include(x => x.Assets)
+                    .ThenInclude(c => c.Coin)
+                    .Where(x => x.Name.ToLower() == name.ToLower())
+                    .SingleAsync();
+                
+                    account.CalculateTotalValue();
+                    account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0 ? true : false;
+            }
+            catch (Exception ex)
+            {
+                return new Result<Account>(ex);
+            }
+            return account;
+        }
 
         //public async Task<Result<List<Account>>> GetAccountsOrderByName()
         //{
@@ -142,7 +153,7 @@ namespace CryptoPortfolioTracker.Services
         //    }
         //    return accountList != null ? accountList : new List<Account>();
         //}
-        
+
         public async Task<Result<List<AssetTotals>>> GetAssetsByAccount(int accountId)
         {
             List<AssetTotals> assetsTotals;
@@ -156,7 +167,7 @@ namespace CryptoPortfolioTracker.Services
                 .Select(assetGroup => new AssetTotals
                 {
                     Qty = assetGroup.Sum(x => x.Qty),
-                    CostBase = assetGroup.Sum(x => (x.AverageCostPrice * x.Qty)),
+                    CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
                     Coin = assetGroup.Key
                 })
                 .ToListAsync();

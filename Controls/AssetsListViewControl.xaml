@@ -9,17 +9,21 @@
     xmlns:views="using:CryptoPortfolioTracker.Views"    
     xmlns:models="using:CryptoPortfolioTracker.Models"    
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
+   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    x:Name="Root"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     mc:Ignorable="d">
 
     <UserControl.Resources>
 
         <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
 
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
@@ -32,7 +36,7 @@
 
     </UserControl.Resources>
 
-
+   
     <Grid Name="ColumnHeadersAndListView" Margin="15,0,5,0" Padding="10,8,0,0" x:FieldModifier="public" >
         <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -49,12 +53,18 @@
             <ColumnDefinition Width="0.18*"/>
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
-        <RichTextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" >
-            <Paragraph TextAlignment="Left" >
-                <Run FontSize="12" FontStyle="Italic" >Name</Run>
-            </Paragraph>
-        </RichTextBlock>
-
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Orientation="Horizontal" >
+            <RichTextBlock x:Name="rtbName"  Margin="0,0,0,0" VerticalAlignment="Center">
+                <Paragraph TextAlignment="Left" >
+                    <Run Text="Name" FontSize="12" FontStyle="Italic" />
+                </Paragraph>
+            </RichTextBlock>
+            <CheckBox x:Name="CheckBoxHideZeroBalances" x:FieldModifier="public" FontSize="12" FontStyle="Italic" 
+                Content="Hide zero balance" Margin="30,0,0,0" VerticalAlignment="Center"
+                IsChecked="{Binding IsHidingZeroBalances, Mode=TwoWay}" 
+                Command="{Binding HideZeroBalancesCommand}" 
+                CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"/>
+        </StackPanel>
         <RichTextBlock Grid.Row="0" Grid.Column="2" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" >
             <Paragraph TextAlignment="Right">
                 <Run FontSize="12" FontStyle="Italic" >Quantity</Run>
@@ -97,8 +107,9 @@
         <Rectangle Fill="#eebc3f" Grid.Row="1" Grid.ColumnSpan="8" Height="2" Margin="5,0,8,0"/>
 
 
-        <ListView x:Name="AssetsListView" Grid.Row="2" Grid.ColumnSpan="8" x:FieldModifier="public" ItemsSource="{Binding ListAssetTotals}" BorderBrush="Transparent" BorderThickness="1"                             
-                        IsItemClickEnabled="True" SelectionMode="Single" ItemClick="AssetsListView_ItemClick"
+        <ListView x:Name="AssetsListView" Grid.Row="2" Grid.ColumnSpan="8" x:FieldModifier="public" ItemsSource="{Binding ListAssetTotals, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
+                        IsItemClickEnabled="True" SelectionMode="Single" 
+                  ui:ListViewExtensions.Command="{Binding AssetItemClickedCommand}" ItemClick="AssetsListView_ItemClick" SizeChanged="AssetsListView_SizeChanged"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                         CanReorderItems="false" AllowDrop="false" Margin="10,0,10,10"  >
         
@@ -106,7 +117,7 @@
             <DataTemplate x:DataType="models:AssetTotals" >
                 <UserControl >
                     <Grid >
-                        <SwipeControl x:Name="AssetsListHoverSwipeContainer" >
+                        <SwipeControl x:Name="AssetsListHoverSwipeContainer" Visibility="{Binding IsHidden, Converter={StaticResource BoolToVisibilityConverter}}" >
                             <Grid>
                                     <Grid Name="theGrid" x:FieldModifier="public" VerticalAlignment="Center" Margin="2,0,0,0" HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>

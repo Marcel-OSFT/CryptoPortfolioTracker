@@ -1,32 +1,22 @@
 ﻿//using CoinGecko.Clients;
+using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
+using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.ViewModels;
+using LanguageExt;
+using LanguageExt.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Polly;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Http;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CryptoPortfolioTracker.Infrastructure;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Models;
-using Microsoft.UI.Dispatching;
-using CryptoPortfolioTracker.Views;
-using System.Xml.Linq;
-using Windows.Web.Http;
-using HttpClient = System.Net.Http.HttpClient;
-using CoinGeckoFluentApi.Client;
-
-using System.Text;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
-using Polly.Retry;
-using Polly;
-using Microsoft.UI;
-using LanguageExt.Common;
-using LanguageExt;
-using Microsoft.Extensions.DependencyInjection;
+using HttpClient = System.Net.Http.HttpClient;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -41,7 +31,7 @@ namespace CryptoPortfolioTracker.Services
         public PriceUpdateBackgroundService(TimeSpan timerInterval)
         {
             currentContextScope = null;
-            
+
             timer = new(timerInterval);
         }
 
@@ -79,10 +69,10 @@ namespace CryptoPortfolioTracker.Services
             cts.Cancel();
             cts.Dispose();
             currentContextScope.Dispose();
-           //coinContext.Dispose();
+            //coinContext.Dispose();
             WriteToLog("PUBS PriceUpdateBackgroundService stopped");
         }
-        
+
         private async Task<Result<bool>> UpdatePricesAllCoins()
         {
 
@@ -106,15 +96,15 @@ namespace CryptoPortfolioTracker.Services
             int nrOfPages = Convert.ToInt16(Math.Ceiling((double)coinIds.Count / dataPerPage));
             Result<bool> result = new Result<bool>();
 
-            string[] coinIdsPerPage =  SplitCoinIdsPerPageAndJoin(coinIds, dataPerPage, nrOfPages);
+            string[] coinIdsPerPage = SplitCoinIdsPerPageAndJoin(coinIds, dataPerPage, nrOfPages);
 
             for (int pageNr = 1; pageNr <= nrOfPages; pageNr++)
             {
-                var coinMarketsResult = await GetMarketDataFromGecko(coinIdsPerPage[pageNr-1], dataPerPage);
+                var coinMarketsResult = await GetMarketDataFromGecko(coinIdsPerPage[pageNr - 1], dataPerPage);
                 result = coinMarketsResult.Match<Result<bool>>(
                    Succ: m => UpdatePricesWithMarketData(m).Result,
                    Fail: err => new Result<bool>(err));
-                
+
                 await Task.Delay(TimeSpan.FromSeconds(30));
                 await coinContext.SaveChangesAsync();
             }
@@ -127,9 +117,9 @@ namespace CryptoPortfolioTracker.Services
             try
             {
                 for (int pageNr = 1; pageNr <= nrOfPages; pageNr++)
-                {   
+                {
                     int dataToTake = dataToGo <= dataPerPage ? dataToGo : dataPerPage;
-                    coinIdsPerPage[pageNr-1] = string.Join(",", coinIds.ToArray(), (pageNr-1) * dataPerPage, dataToTake);
+                    coinIdsPerPage[pageNr - 1] = string.Join(",", coinIds.ToArray(), (pageNr - 1) * dataPerPage, dataToTake);
                     dataToGo -= dataToTake;
                 }
             }
@@ -164,7 +154,7 @@ namespace CryptoPortfolioTracker.Services
                 }
             }).Build();
 
-            
+
             HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
@@ -175,7 +165,7 @@ namespace CryptoPortfolioTracker.Services
             Exception error = null;
             List<CoinMarkets> coinMarketsPage = null;
 
-            while (!(cancellationToken.IsCancellationRequested))
+            while (!cancellationToken.IsCancellationRequested)
             {
                 TotalRequests++;
 
@@ -185,23 +175,24 @@ namespace CryptoPortfolioTracker.Services
                     //double nrOfPages = Math.Ceiling((double)nrOfCoins / dataPerPage);
 
                     //for (int pageNr = 1; pageNr <= nrOfPages; pageNr++)
-                   // {
-                        await strategy.ExecuteAsync(async token => {
-                            WriteToLog("PUBS GetAsync (Retries: " + Retries.ToString() + ")");
+                    // {
+                    await strategy.ExecuteAsync(async token =>
+                    {
+                        WriteToLog("PUBS GetAsync (Retries: " + Retries.ToString() + ")");
 
-                            coinMarketsPage = await coinsClient.Coins.Markets
-                                .Ids(coinIds)
-                                .VsCurrency("usd")
-                                .Order("market_cap_desc")
-                                .Page(1).PerPage(dataPerPage)
-                                .IncludeSparkline(false)
-                                .PriceChangePercentage("24h,30d,1y")
-                                .GetAsync<List<CoinMarkets>>();
-                        }, cancellationToken);
+                        coinMarketsPage = await coinsClient.Coins.Markets
+                            .Ids(coinIds)
+                            .VsCurrency("usd")
+                            .Order("market_cap_desc")
+                            .Page(1).PerPage(dataPerPage)
+                            .IncludeSparkline(false)
+                            .PriceChangePercentage("24h,30d,1y")
+                            .GetAsync<List<CoinMarkets>>();
+                    }, cancellationToken);
 
-                       // if (coinMarketsPage != null) coinMarketsFinal.AddRange(coinMarketsPage);
-                        //*** time delay to prevent too many requests....
-                        // await Task.Delay(TimeSpan.FromSeconds(30));
+                    // if (coinMarketsPage != null) coinMarketsFinal.AddRange(coinMarketsPage);
+                    //*** time delay to prevent too many requests....
+                    // await Task.Delay(TimeSpan.FromSeconds(30));
                     //}
                     WriteToLog("PUBS Response CoinMarkets (Count: " + coinMarketsPage.Count.ToString() + ")");
                 }
@@ -211,7 +202,7 @@ namespace CryptoPortfolioTracker.Services
                     error = ex;
                     //isValidResult = false;
                 }
-                finally 
+                finally
                 {
                     tokenSource2.Cancel();
                     tokenSource2.Dispose();
@@ -225,14 +216,14 @@ namespace CryptoPortfolioTracker.Services
         private async Task<Result<bool>> UpdatePricesWithMarketData(List<CoinMarkets> marketDataList)
         {
             Exception error = null;
-          
+
             foreach (var coinData in marketDataList)
             {
                 var coinResult = await UpdatePriceCoin(coinData);
                 coinResult.IfSucc(c => RefreshAssetsView(c));
-                coinResult.IfFail(err => error = err );
+                coinResult.IfFail(err => error = err);
             }
-            return error != null ? true : new Result<bool>(error) ;
+            return error != null ? true : new Result<bool>(error);
         }
 
         private async Task<Result<Coin>> UpdatePriceCoin(CoinMarkets coinData)
@@ -252,7 +243,7 @@ namespace CryptoPortfolioTracker.Services
                 coin.Change52Week = coinData.PriceChangePercentage1YInCurrency != null ? (double)coinData.PriceChangePercentage1YInCurrency : 0;
 
                 coinContext.Coins.Update(coin);
-               // await coinContext.SaveChangesAsync();
+                // await coinContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
