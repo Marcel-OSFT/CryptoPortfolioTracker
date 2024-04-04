@@ -1,0 +1,240 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>CryptoPortfolioTracker</RootNamespace>
+    <Platforms>x86;x64</Platforms>
+	<RuntimeIdentifiers>win10-x86;win10-x64</RuntimeIdentifiers>
+    <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
+    <UseWinUI>true</UseWinUI>
+	<EnableMsixTooling>true</EnableMsixTooling>
+	  <!--GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile-->
+	  <ApplicationIcon>Assets\AppIcons\CryptoPortfolioTracker.ico</ApplicationIcon>
+	  <ApplicationManifest>app.manifest</ApplicationManifest>
+	  <!--WindowsPackageType>MSIX</WindowsPackageType-->
+	  <PackageCertificateThumbprint>51B1624EF5C99ECC4567AC82426893BAF01F383E</PackageCertificateThumbprint>
+	  <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+	  <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+	  <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+	  <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+	  <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+	  <GenerateTestArtifacts>True</GenerateTestArtifacts>
+	  <AppxBundle>Always</AppxBundle>
+	  <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+	  <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+	  <AppxLogTelemetryFromSideloadingScript>False</AppxLogTelemetryFromSideloadingScript>
+	  <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
+	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker</AppInstallerUri>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-16.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-24.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-256.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-32.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-48.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-16.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-24.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-256.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-32.png" />
+    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="AddCoinDialog.xaml" />
+    <None Remove="Assets\CPT256x256Icon.scale-100.png" />
+    <None Remove="Assets\CPT256x256Icon.scale-125.png" />
+    <None Remove="Assets\CPT256x256Icon.scale-150.png" />
+    <None Remove="Assets\CPT256x256Icon.scale-200.png" />
+    <None Remove="Assets\CPT256x256Icon.scale-400.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-16.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-24.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-24_altform-lightunplated.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-24_altform-unplated.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-256.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-256_altform-lightunplated.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-256_altform-unplated.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-32.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-32_altform-lightunplated.png" />
+    <None Remove="Assets\CPT256x256Icon.targetsize-48.png" />
+    <None Remove="CoinDescriptionDialog.xaml" />
+    <None Remove="Controls\AssetAccountsGridViewControl.xaml" />
+    <None Remove="Controls\AssetTransactionsListViewControl.xaml" />
+    <None Remove="Controls\AutoSuggestBoxWithValidation.xaml" />
+    <None Remove="Dialogs\AccountDialog.xaml" />
+    <None Remove="Controls\AccountsListViewControl.xaml" />
+    <None Remove="Controls\AssetsListViewControl.xaml" />
+    <None Remove="Controls\CoinLibraryListViewControl.xaml" />
+    <None Remove="Dialogs\AddNoteDialog.xaml" />
+    <None Remove="Dialogs\BlankWindow1.xaml" />
+    <None Remove="Dialogs\TransactionDialog.xaml" />
+    <None Remove="MK_Styles.xaml" />
+    <None Remove="Views\SettingsView.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CoinGeckoFluentApi.Client" Version="1.0.0-preview.1" />
+    <PackageReference Include="ColorCode.WinUI" Version="2.0.15" />
+    <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+    <PackageReference Include="CommunityToolkit.WinUI" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Animations" Version="7.1.2" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="LanguageExt.Core" Version="4.4.8" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="7.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.15">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.4" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="14.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Polly.Core" Version="8.3.0" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
+    <PackageReference Include="WinUIEx" Version="2.2.0" />
+    <PackageReference Include="WinUIEx.TestTools" Version="1.0.0" />
+    <PackageReference Include="WinUIEx.TestTools.MSTest" Version="1.0.0" />
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!-- 
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="CoinDescriptionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Dialogs\AccountDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Controls\AutoSuggestBoxWithValidation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Controls\AssetTransactionsListViewControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Controls\AssetAccountsGridViewControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Dialogs\AddNoteDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Dialogs\BlankWindow1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="MK_Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Templates\CoinLibraryListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="AddCoinDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Migrations\Coin\" />
+    <Folder Include="Docs\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Dialogs\TransactionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <!-- 
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if 
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+	<Target Name="RemoveFoldersWithMuiFiles" AfterTargets="Build">
+		<ItemGroup>
+			<RemovingFiles Include="$(OutDir)*\*.mui" Exclude="$(OutDir)en-us\*.mui" />
+			<RemovingFolders Include="@(RemovingFiles->'%(RootDir)%(Directory)')" />
+		</ItemGroup>
+		<RemoveDir Directories="@(RemovingFolders)" />
+	</Target>
+</Project>
