@@ -1,5 +1,5 @@
-using System;
 using Newtonsoft.Json;
+using System;
 
 namespace CryptoPortfolioTracker.Infrastructure.Response.Coins
 {
@@ -14,13 +14,13 @@ namespace CryptoPortfolioTracker.Infrastructure.Response.Coins
         [JsonProperty("market_cap")] public double? MarketCap { get; set; }
         [JsonProperty("ath")] public double? Ath { get; set; }
 
-        [JsonProperty("price_change_percentage_1y_in_currency",NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("price_change_percentage_1y_in_currency", NullValueHandling = NullValueHandling.Ignore)]
         public double? PriceChangePercentage1YInCurrency { get; set; }
 
-        [JsonProperty("price_change_percentage_24h_in_currency",NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("price_change_percentage_24h_in_currency", NullValueHandling = NullValueHandling.Ignore)]
         public double? PriceChangePercentage24HInCurrency { get; set; }
 
-        [JsonProperty("price_change_percentage_30d_in_currency",NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("price_change_percentage_30d_in_currency", NullValueHandling = NullValueHandling.Ignore)]
         public double? PriceChangePercentage30DInCurrency { get; set; }
     }
 

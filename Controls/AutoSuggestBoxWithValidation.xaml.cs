@@ -1,30 +1,13 @@
-using CommunityToolkit.WinUI.UI.Animations;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Security.Cryptography.Certificates;
-using Windows.Storage.Provider;
 using Windows.System;
-using WinRT;
-using static CommunityToolkit.WinUI.UI.Animations.Expressions.ExpressionValues;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -41,7 +24,7 @@ namespace CryptoPortfolioTracker.Controls
             //** PointerPressedEvent needs to be added is this 'special' way.
             //This because its handled earlier in the system and not passed through.
             innerASBox.AddHandler(TextBox.PointerPressedEvent, new PointerEventHandler(innerASBox_PointerPressed), true);
-            innerASBox.AddHandler(TextBox.KeyDownEvent, new KeyEventHandler (innerASBox_KeyDown), true);
+            innerASBox.AddHandler(TextBox.KeyDownEvent, new KeyEventHandler(innerASBox_KeyDown), true);
             innerASBox.Visibility = Visibility.Collapsed;
         }
 
@@ -65,9 +48,9 @@ namespace CryptoPortfolioTracker.Controls
         public string MyText
         {
             get { return (string)GetValue(MyTextProperty); }
-            set 
-            { 
-                SetValue(MyTextProperty, value); 
+            set
+            {
+                SetValue(MyTextProperty, value);
             }
         }
 
@@ -86,7 +69,7 @@ namespace CryptoPortfolioTracker.Controls
         {
             innerASBox.IsEnabled = true;
             innerASBox.IsSuggestionListOpen = true;
-        }  
+        }
         private void TextEntryChanged(object sender, AutoSuggestBoxTextChangedEventArgs args)
         {
         }
@@ -100,9 +83,9 @@ namespace CryptoPortfolioTracker.Controls
         private static void TextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AutoSuggestBox inner = ((AutoSuggestBoxWithValidation)d).innerASBox;
-            AutoSuggestBoxWithValidation thisInstance = ((AutoSuggestBoxWithValidation)d);
+            AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d;
 
-            if (inner.Visibility==Visibility.Collapsed  &&  (string)e.NewValue=="" ) inner.Visibility = Visibility.Visible;
+            if (inner.Visibility == Visibility.Collapsed && (string)e.NewValue == "") inner.Visibility = Visibility.Visible;
 
             inner.IsSuggestionListOpen = false;
             thisInstance.PopulateSuitableItems();
@@ -115,8 +98,8 @@ namespace CryptoPortfolioTracker.Controls
         {
             List<string> result = (List<string>)d.GetValue(ItemsSourceProperty);
             AutoSuggestBox inner = (d as AutoSuggestBoxWithValidation).innerASBox;
-          
-            if (inner.ItemsSource == null || !(inner.ItemsSource.Equals(d.GetValue(ItemsSourceProperty)))) inner.ItemsSource = d.GetValue(ItemsSourceProperty);
+
+            if (inner.ItemsSource == null || !inner.ItemsSource.Equals(d.GetValue(ItemsSourceProperty))) inner.ItemsSource = d.GetValue(ItemsSourceProperty);
 
             if (result.Count == 1)
             {
@@ -143,7 +126,7 @@ namespace CryptoPortfolioTracker.Controls
         }
 
 
-    private bool DoesEntryMatch()
+        private bool DoesEntryMatch()
         {
             return ItemsSource.Contains(MyText);
         }
@@ -169,7 +152,7 @@ namespace CryptoPortfolioTracker.Controls
                 if (found)
                 {
                     suitableItems.Add(item);
-                    if (MyText.ToLower() == item.ToLower()   && MyText != item) MyText = item;
+                    if (MyText.ToLower() == item.ToLower() && MyText != item) MyText = item;
                 }
             }
             if (suitableItems.Count == 0)
@@ -200,8 +183,8 @@ namespace CryptoPortfolioTracker.Controls
 
         private void innerASBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key == VirtualKey.Enter) 
-            { 
+            if (e.Key == VirtualKey.Enter)
+            {
                 Debug.WriteLine("enter-key");
                 IsEntryMatched = DoesEntryMatch();
                 KeyDown?.Invoke(this, e);

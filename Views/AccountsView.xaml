@@ -12,10 +12,11 @@
      mc:Ignorable="d">
     <Page.Resources>
         <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
         <converters:ThemeColorConverter x:Key="ThemeColorConverter"/>
+        <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
@@ -42,13 +43,14 @@
             <Border Grid.Row="2" VerticalAlignment="Stretch" Margin="10,0,0,0">
                 <Grid Name="AccountsContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="0"/>
+                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=110|1*}"/>
+                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=1*|0}"/>
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
-                    <controls:AccountsListViewControl x:Name="MyAccountsListViewControl" x:FieldModifier="public"  Grid.Row="0" />
-                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="1" />
-                    <Button Content="Add a new Account" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Click="Button_Click_AddAccountDialog" Name="AddAccountButton" Margin="10,10,0,0" IsEnabled="True"/>
+                    <controls:AccountsListViewControl x:Name="MyAccountsListViewControl" x:FieldModifier="public" Grid.Row="0" />
+                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Grid.Row="1" Margin="0,-8,0,0" />
+                    <Button Content="Add a new Account" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
+                        Command="{Binding ShowAccountDialogToAddCommand}" Name="AddAccountButton" Margin="10,10,0,0"/>
                 </Grid>
             </Border>
         </Grid>

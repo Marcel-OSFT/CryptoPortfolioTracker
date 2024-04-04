@@ -1,29 +1,13 @@
+using CommunityToolkit.WinUI.UI;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
-using CommunityToolkit.WinUI.UI;
-using System.Xml.Linq;
-using CryptoPortfolioTracker.Converters;
-using Microsoft.UI.Xaml.Shapes;
-using System.Diagnostics;
-using System.Reflection;
 using System.ComponentModel;
-using System.Windows.Markup;
-using System.Reflection.Metadata;
-using System.Buffers.Binary;
-using System.Runtime.Intrinsics.Arm;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Microsoft.UI;
-using CryptoPortfolioTracker;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -41,13 +25,12 @@ namespace CryptoPortfolioTracker.Controls
         RegExPhone
     }
 
-    public sealed class RegExTextBox : TextBox, INotifyPropertyChanged
+    public class RegExTextBox : TextBox, INotifyPropertyChanged
     {
 
         public event EventHandler TextChanged;
         public event EventHandler<PointerRoutedEventArgs> PointerPressed;
 
-        public event PropertyChangedEventHandler PropertyChanged;
         public RegExTextBox()
         {
             this.DefaultStyleKey = typeof(TextBox);
@@ -93,7 +76,7 @@ namespace CryptoPortfolioTracker.Controls
                 if (value == customRegEx) return;
                 customRegEx = value;
                 TextBoxExtensions.SetRegex(this, customRegEx);
-                OnPropertyChanged(nameof(CustomRegEx));
+                OnPropertyChanged();
             }
         }
         public string MyText
@@ -115,7 +98,7 @@ namespace CryptoPortfolioTracker.Controls
 
         private static void MyTextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            
+
         }
 
         private static void IsEntryValidChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -126,13 +109,13 @@ namespace CryptoPortfolioTracker.Controls
             }
         }
 
-        
+
 
         private void TextEntryChanged(object sender, RoutedEventArgs e)
         {
             // Raise an event on the custom control when 'like' is clicked
-            
-            if ((this.Text == "" || ( this.Text == "0" && !IsZeroAllowed)) && (SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone))
+
+            if ((this.Text == "" || (this.Text == "0" && !IsZeroAllowed)) && SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone)
             {
                 IsEntryValid = false;
                 Debug.WriteLine("GetIsValid(1) - " + TextBoxExtensions.GetIsValid(this).ToString());
@@ -159,7 +142,7 @@ namespace CryptoPortfolioTracker.Controls
         }
         private void InitBorderBrush()
         {
-            if ((this.Text == "0" && !IsZeroAllowed) && (SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone))
+            if (this.Text == "0" && !IsZeroAllowed && SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone)
             {
                 this.BorderBrush = new SolidColorBrush(Colors.Green);
             }
@@ -173,10 +156,14 @@ namespace CryptoPortfolioTracker.Controls
             switch (SelectedRegEx)
             {
                 case MyEnum.RegExPositiveDecimal:
-                    regExChoosen = App.Current.Resources["RegExPositiveDecimal"] as string;
+                    regExChoosen = App.userPreferences.CultureLanguage == "en" ?  
+                        App.Current.Resources["RegExPositiveDecimalEn"] as string : 
+                            App.Current.Resources["RegExPositiveDecimalNl"] as string;
                     break;
                 case MyEnum.RegExPositiveInt:
-                    regExChoosen = App.Current.Resources["RegExPositiveInt"] as string;
+                    regExChoosen = App.userPreferences.CultureLanguage == "en" ? 
+                        App.Current.Resources["RegExPositiveIntEn"] as string : 
+                            App.Current.Resources["RegExPositiveIntNl"] as string;
                     break;
                 case MyEnum.RegExEmail:
                     regExChoosen = App.Current.Resources["RegExEmail"] as string;
@@ -185,10 +172,14 @@ namespace CryptoPortfolioTracker.Controls
                     // To-Do -> regExChoosen = @"^([0 - 9]) * (\.[0 - 9]+)?$";
                     break;
                 case MyEnum.RegExDecimal:
-                    regExChoosen = App.Current.Resources["RegExDecimal"] as string;
+                    regExChoosen = App.userPreferences.CultureLanguage == "en" ? 
+                        App.Current.Resources["RegExDecimalEn"] as string : 
+                            App.Current.Resources["RegExDecimalNl"] as string;
                     break;
                 case MyEnum.RegExInt:
-                    regExChoosen = App.Current.Resources["RegExInt"] as string;
+                    regExChoosen = App.userPreferences.CultureLanguage == "en" ? 
+                        App.Current.Resources["RegExIntEn"] as string : 
+                            App.Current.Resources["RegExIntNl"] as string;
                     break;
                 default:
                     break;
@@ -201,11 +192,11 @@ namespace CryptoPortfolioTracker.Controls
         {
             PointerPressed?.Invoke(this, e);
         }
-        public void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
 
     }
 

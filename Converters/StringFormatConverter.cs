@@ -1,11 +1,6 @@
-﻿using LanguageExt.Common;
-using Microsoft.UI.Xaml.Data;
+﻿using Microsoft.UI.Xaml.Data;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Converters
 {
@@ -18,10 +13,11 @@ namespace CryptoPortfolioTracker.Converters
 
             if (parameter == null)
                 return value;
-            NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
 
-            //return string.Format(nfi, (string)parameter,(double)value);
-            return string.Format(CultureInfo.InvariantCulture, (string)parameter,(double)value);
+            var ci = new CultureInfo(App.userPreferences.CultureLanguage);
+            
+           // return string.Format(CultureInfo.InvariantCulture, (string)parameter, (double)value);
+            return string.Format(ci, (string)parameter, (double)value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -29,9 +25,11 @@ namespace CryptoPortfolioTracker.Converters
             double result;
             try
             {
-                result = System.Convert.ToDouble((string)value, CultureInfo.InvariantCulture);
+                var ci = new CultureInfo(App.userPreferences.CultureLanguage);
+                // result = System.Convert.ToDouble((string)value, CultureInfo.InvariantCulture);
+                result = System.Convert.ToDouble((string)value, ci);
             }
-            catch 
+            catch
             {
                 result = 0;
             }

@@ -68,6 +68,7 @@ using NuGet.Frameworks;
 using Microsoft.Extensions.DependencyInjection;
 using LanguageExt.Common;
 using LanguageExt;
+using System.Globalization;
 
 namespace CryptoPortfolioTracker.Dialogs
 {
@@ -78,7 +79,7 @@ namespace CryptoPortfolioTracker.Dialogs
         public AssetTransaction transactionToEdit;
         public AssetTransaction transactionNew;
         private ITransactionService _transactionService;
-       // private Transaction transaction;
+       // private TransactionDetails transactionDetails;
         private TransactionKind transactionType;
         private Brush defaultBrush;
         private Brush notValidBrush = new SolidColorBrush(Colors.Red);
@@ -109,7 +110,6 @@ namespace CryptoPortfolioTracker.Dialogs
         private string notes;
         private DateTimeOffset timeStamp;
         private Validator validator;
-
 
         #endregion fields
 
@@ -254,7 +254,6 @@ namespace CryptoPortfolioTracker.Dialogs
                     {
                         GetMaxQtyAndPrice();
                     }
-                    UpdateListFeeCoin(accountFrom);
                     OnPropertyChanged(nameof(AccountFrom));
                 }
             }
@@ -326,7 +325,7 @@ namespace CryptoPortfolioTracker.Dialogs
             {
                 if (value != headerAccountFrom)
                 {
-                    headerAccountFrom = value;                   
+                    headerAccountFrom = value;
                     OnPropertyChanged(nameof(HeaderAccountFrom));
                 }
             }
@@ -427,7 +426,6 @@ namespace CryptoPortfolioTracker.Dialogs
                 if (value != feeQty)
                 {
                     feeQty = value;
-                    if (feeQty != 0) UpdateListFeeCoin(accountFrom);
                     OnPropertyChanged(nameof(FeeQty));
                 }
             }
@@ -446,16 +444,18 @@ namespace CryptoPortfolioTracker.Dialogs
         }
         public DateTimeOffset TimeStamp
         {
-            get { return timeStamp; }
+            get { return DateTimeOffset.Parse(timeStamp.ToString(ci)); }
             set
             {
                 if (value != timeStamp)
                 {
-                    timeStamp = value;
+                    timeStamp = DateTimeOffset.Parse(value.ToString(ci)); ;
                     OnPropertyChanged(nameof(TimeStamp));
                 }
             }
         }
+        CultureInfo ci = new CultureInfo(App.userPreferences.CultureLanguage);
+
         #endregion Public Properties
 
         #region Constructor(s)
@@ -468,11 +468,11 @@ namespace CryptoPortfolioTracker.Dialogs
             transactionToEdit = transaction;
             InitializeAllFields() ;
             defaultBrush = ASBoxCoinA.Background;
-            TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
+            TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString(ci));
             Validator = new Validator(10, true);
             if (dialogAction == DialogAction.Edit)
             {
-                var index = TransactionTypeRadioButtons.Items.ToList().IndexOf(transactionToEdit.TransactionType.ToString());
+                var index = TransactionTypeRadioButtons.Items.ToList().IndexOf(transactionToEdit.Details.TransactionType.ToString());
                 TransactionTypeRadioButtons.SelectedIndex = index;
             }
             else TransactionTypeRadioButtons.SelectedIndex = 0;
@@ -501,16 +501,11 @@ namespace CryptoPortfolioTracker.Dialogs
                 ActualPriceA = PriceA = (await _transactionService.GetPriceFromLibrary(CoinA)).Match(Succ: price => price , Fail: err => 0);
             }           
         }
-        
-        private async Task UpdateListFeeCoin(string accountName)
-        {
-            ListFeeCoin = (await _transactionService.GetFeeCoinSymbols(accountName)).Match(Succ: list => list, Fail: err => new List<string>());
-        }
+
         private async Task<AssetTransaction> WrapUpTransactionData()
         {
             AssetTransaction transactionToAdd = new AssetTransaction();
             List<Mutation> newMutations = new List<Mutation>();
-
 
             Mutation mutationToAdd;
 
@@ -545,22 +540,26 @@ namespace CryptoPortfolioTracker.Dialogs
                         .Match(Succ: mutation => mutation, Fail: err => throw err);
                         newMutations.Add(mutationToAdd);
                     }
-                        break;
+                    break;
                 case "Convert":
                 case "Buy":
                 case "Sell":
-                    //** OUT portion
-                    mutationToAdd = (await GetMutation(transactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
-                        .Match(Succ: mutation => mutation, Fail: err => throw err);
-                    newMutations.Add(mutationToAdd);
-                    //** IN portion
-                    mutationToAdd = (await GetMutation(transactionType, MutationDirection.In, CoinB, QtyB, PriceB, AccountFrom))
-                        .Match(Succ: mutation => mutation, Fail: err => throw err);
-                    newMutations.Add(mutationToAdd);
-                    if (AccountFrom != AccountTo)
+                    //Do we have a Tx combined with TRansfer
+                    if (AccountFrom == AccountTo) // Not combined with transfer
                     {
                         //** OUT portion
-                        mutationToAdd = (await GetMutation(TransactionKind.Transfer, MutationDirection.Out, CoinB, QtyB, PriceB, AccountFrom))
+                        mutationToAdd = (await GetMutation(transactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
+                            .Match(Succ: mutation => mutation, Fail: err => throw err);
+                        newMutations.Add(mutationToAdd);
+                        //** IN portion
+                        mutationToAdd = (await GetMutation(transactionType, MutationDirection.In, CoinB, QtyB, PriceB, AccountFrom))
+                            .Match(Succ: mutation => mutation, Fail: err => throw err);
+                        newMutations.Add(mutationToAdd);
+                    }
+                    else // combined with Transfer
+                    {
+                        //** OUT portion
+                        mutationToAdd = (await GetMutation(transactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
                             .Match(Succ: mutation => mutation, Fail: err => throw err);
                         newMutations.Add(mutationToAdd);
                         //** IN portion
@@ -576,12 +575,33 @@ namespace CryptoPortfolioTracker.Dialogs
                         newMutations.Add(mutationToAdd);
                     }
                     break;
+            }
+            var transactionDetails = new TransactionDetails
+            {
+                AccountFrom = AccountFrom,
+                AccountTo = AccountTo,
+                FeeQty = FeeQty,
+                CoinA = CoinA,
+                CoinB = CoinB,
+                PriceA = PriceA,
+                PriceB = PriceB,
+                FeeCoin = FeeCoin,
+                QtyA = QtyA,
+                QtyB = QtyB,
+                TransactionType = transactionType,
             };
-
+            transactionToAdd.Notes = Notes;
             transactionToAdd.TimeStamp = DateTime.Parse(TimeStamp.ToString());
 
-            transactionToAdd.Note = notes;
+            transactionToAdd.Details = transactionDetails;
             transactionToAdd.Mutations = newMutations;
+
+            if (dialogAction == DialogAction.Edit && transactionToEdit != null)
+            {
+                transactionToAdd.RequestedAsset = transactionToEdit.RequestedAsset;
+                transactionToAdd.Id = transactionToEdit.Id;
+            }
+
 
             return transactionToAdd;
         }
@@ -597,7 +617,7 @@ namespace CryptoPortfolioTracker.Dialogs
                 mutation.Asset.Account = (await _transactionService.GetAccountByName(account))
                     .Match(Succ: account => account, Fail: err => throw new Exception(err.Message, err));
                 mutation.Asset.Id = (await _transactionService.GetAssetIdByCoinAndAccount(mutation.Asset.Coin, mutation.Asset.Account))
-                                    .Match(Succ: account => account, Fail: err => throw new Exception(err.Message, err));
+                                     .Match(Succ: account => account, Fail: err => throw new Exception(err.Message, err));
                 mutation.Qty = qty;
                 mutation.Price = price;
                 //mutation.Transaction = transaction;
@@ -794,9 +814,7 @@ namespace CryptoPortfolioTracker.Dialogs
                         ListCoinB = (await _transactionService.GetCoinSymbolsFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
                         ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
                         ListAccountTo = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
-                        // ListFeeCoin = ListCoinA;
-                        ListFeeCoin = new List<string>();
-
+                        ListFeeCoin = ListCoinA;
                         break;
                     case "Buy":
                         Validator.NrOfValidEntriesNeeded = 10;
@@ -807,8 +825,7 @@ namespace CryptoPortfolioTracker.Dialogs
                         ListCoinB = (await _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
                         ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
                         ListAccountTo = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
-                        //ListFeeCoin = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
-                        ListFeeCoin = new List<string>();
+                        ListFeeCoin = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
                         break;
                     case "Sell":
                         Validator.NrOfValidEntriesNeeded = 10;
@@ -819,45 +836,33 @@ namespace CryptoPortfolioTracker.Dialogs
                         ListCoinB = (await _transactionService.GetUsdtUsdcSymbolsFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
                         ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
                         ListAccountTo = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
-                        //ListFeeCoin = ListCoinA;
-                        ListFeeCoin = new List<string>();
-
-
+                        ListFeeCoin = ListCoinA;
+                        
                         break;
                 }
                 if (dialogAction == DialogAction.Add)
                 {
-                    TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
+                    TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString(ci));
                 }
                 else if (dialogAction == DialogAction.Edit)
                 {
-                    CoinA = transactionToEdit.CoinA;
-                    CoinB = transactionToEdit.CoinB;
-                    AccountFrom = transactionToEdit.AccountFrom;
-                    AccountTo = transactionToEdit.AccountTo;
-                    QtyA = transactionToEdit.QtyA;
-                    QtyB = transactionToEdit.QtyB;
-                    PriceA = transactionToEdit.PriceA;
-                    PriceB = transactionToEdit.PriceB;
-                    FeeQty = transactionToEdit.FeeQty;
-                    if (FeeQty == 0)
-                    {
-                        FeeCoin = CoinA;
-                    }
-                    else
-                    {
-                       FeeCoin = transactionToEdit.FeeCoin;
-                    }
-                    Notes = transactionToEdit.Note;
-                    TimeStamp = DateTimeOffset.Parse(transactionToEdit.TimeStamp.ToString());
-                    //await Task.Delay(1000);
+                    CoinA = transactionToEdit.Details.CoinA;
+                    CoinB = transactionToEdit.Details.CoinB;
+                    AccountFrom = transactionToEdit.Details.AccountFrom;
+                    AccountTo = transactionToEdit.Details.AccountTo;
+                    QtyA = transactionToEdit.Details.QtyA;
+                    QtyB = transactionToEdit.Details.QtyB;
+                    PriceA = transactionToEdit.Details.PriceA;
+                    PriceB = transactionToEdit.Details.PriceB;
+                    FeeCoin = transactionToEdit.Details.FeeCoin;
+                    FeeQty = transactionToEdit.Details.FeeQty;
+                    Notes = transactionToEdit.Notes;
+                    TimeStamp = DateTimeOffset.Parse(transactionToEdit.TimeStamp.ToString(ci));
                     TransactionTypeRadioButtons.IsEnabled = false;
                     ASBoxCoinA.IsEnabled = false;
                     ASBoxCoinB.IsEnabled = false;
                     ASBoxAccountFrom.IsEnabled = false;
                     ASBoxAccountTo.IsEnabled = false;
-
-
                 }
             }
         }
@@ -996,17 +1001,15 @@ namespace CryptoPortfolioTracker.Dialogs
                 OnPropertyChanged(nameof(PriceA));
             }
         }
-
-        
         #endregion TBoxPriceA Events
 
         #region PrimaryButton events
-        public void PrimaryButton_AcceptTransaction(ContentDialog sender, ContentDialogButtonClickEventArgs e)
+        public async void PrimaryButton_AcceptTransaction(ContentDialog sender, ContentDialogButtonClickEventArgs e)
         {
             try
             {
                 Validator.Stop();
-                transactionNew = WrapUpTransactionData().Result;
+                transactionNew = await WrapUpTransactionData();
             }
             catch (Exception ex)
             {
@@ -1040,7 +1043,6 @@ namespace CryptoPortfolioTracker.Dialogs
         {
             Validator.Stop();
         }
-
         #endregion Dialog Events
 
         

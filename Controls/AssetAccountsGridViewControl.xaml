@@ -10,20 +10,21 @@
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     
     mc:Ignorable="d">
 
     <UserControl.Resources>
         <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
     </UserControl.Resources>
 
 
     <GridView x:Name="AssetAccountsGridView"  x:FieldModifier="public" ItemsSource="{Binding ListAssetAccounts, Mode=TwoWay}" 
-              ScrollViewer.HorizontalScrollBarVisibility="Visible" 
+              ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
               ScrollViewer.HorizontalScrollMode="Enabled" 
               SelectedIndex="0"
                   IsItemClickEnabled="True" SelectionMode="Single" ItemClick="AssetAccountsGridView_ItemClick" Margin="30,0,10,10">

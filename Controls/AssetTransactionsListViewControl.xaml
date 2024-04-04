@@ -7,6 +7,7 @@
     xmlns:local="using:CryptoPortfolioTracker.Controls"    
     xmlns:converters="using:CryptoPortfolioTracker.Converters"    
     xmlns:views="using:CryptoPortfolioTracker.Views"    
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
     xmlns:models="using:CryptoPortfolioTracker.Models"    
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
@@ -17,7 +18,7 @@
     <UserControl.Resources>
 
         <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:DoubleToVisibilityConverter x:Key="DoubleToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
@@ -58,7 +59,7 @@
 
 
         <ListView x:Name="AssetTransactionListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding ListAssetTransactions}" BorderBrush="Transparent" BorderThickness="1"                             
-                        IsItemClickEnabled="True" SelectionMode="None" ItemClick="AssetsListView_ItemClick" Loaded="AssetTransactionListView_Loaded"
+                        IsItemClickEnabled="True" SelectionMode="None" ItemClick="AssetsListView_ItemClick" 
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                         CanReorderItems="false" AllowDrop="false" Margin="10,0,10,10"  >
 
@@ -102,12 +103,12 @@
 
                                         <Border Grid.Row="0" Grid.Column="0"  Margin="10,0,0,0"  VerticalAlignment="Center">
                                             <RelativePanel>
-                                                <Image Name="ImageDirection" Source="{Binding TransactionDirection, Converter={StaticResource TransactionDirectionConverter}}" Width="28" Height="28"  Margin="0,0,0,0" />
+                                                <Image Name="ImageDirection" Source="{Binding Details.TransactionDirection, Converter={StaticResource TransactionDirectionConverter}}" Width="28" Height="28"  Margin="0,0,0,0" />
                                             </RelativePanel>
                                             </Border>
                                         <Border Grid.Row="0" Grid.Column="1"  Margin="5,0,0,0"  VerticalAlignment="Center" >
                                             <StackPanel>
-                                                <TextBlock Name="txtType" Text="{Binding TransactionType, Converter={StaticResource TransactionTypeConverter} }" FontWeight="Bold" FontSize="18" />
+                                                <TextBlock Name="txtType" Text="{Binding Details.TransactionType, Converter={StaticResource TransactionTypeConverter} }" FontWeight="Bold" FontSize="18" />
                                                 <TextBlock Name="txtTimeStamp" Text="{Binding TimeStamp }" FontWeight="Normal" FontSize="12" />
                                                 <TextBlock Name="txtId" Text="{Binding Id }" FontWeight="Normal" FontSize="12" />
                                             </StackPanel>
@@ -115,65 +116,66 @@
 
                                         <Border Grid.Row="0" Grid.Column="2"  Margin="10,0,0,0"  VerticalAlignment="Center" >
                                             <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right">
-                                                <TextBlock Name="txtQtyA"  Text="{Binding QtyA, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" FontWeight="Normal" FontSize="18"/>
-                                                <TextBlock Name="txtCoinA"  Text="{Binding CoinA}" FontWeight="Normal" FontSize="18" Margin="5,0,0,0"/>
-                                                <Image Name="ImageA" Source="{Binding ImageUriA, Converter={StaticResource ImageConverter}}" Height="24"  Margin="5,0,0,0" />
+                                                <TextBlock Name="txtQtyA"  Text="{Binding Details.QtyA, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" FontWeight="Normal" FontSize="18"/>
+                                                <TextBlock Name="txtCoinA"  Text="{Binding Details.CoinA}" FontWeight="Normal" FontSize="18" Margin="5,0,0,0"/>
+                                                <Image Name="ImageA" Source="{Binding Details.ImageUriA, Converter={StaticResource ImageConverter}}" Height="24"  Margin="5,0,0,0" />
                                             </StackPanel>
                                         </Border>
 
                                         <Border Grid.Row="0" Grid.Column="3"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                                 <RelativePanel x:Name="PanelFrom" HorizontalAlignment="Right">
-                                                    <TextBlock Name="txtValueA"  Text="{Binding ValueA, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" FontWeight="Normal" FontSize="14" Margin="0,-2,0,0"
+                                                <TextBlock Name="txtValueA"  Text="{Binding Details.ValueA, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" FontWeight="Normal" FontSize="14" Margin="0,-2,0,0"
                                                                RelativePanel.LeftOf="txtPricePrefixA" />
-                                                    <TextBlock Name="txtPricePrefixA"  Text="{Binding CoinA, Converter={StaticResource AddPrefixConverter}, ConverterParameter='(1 | = '}" FontWeight="Normal" FontSize="11" Margin="5,0,0,0" 
+                                                <TextBlock Name="txtPricePrefixA"  Text="{Binding Details.CoinA, Converter={StaticResource AddPrefixConverter}, ConverterParameter='(1 | = '}" FontWeight="Normal" FontSize="11" Margin="5,0,0,0" 
                                                                RelativePanel.LeftOf="txtPriceA"/>
-                                                    <TextBlock Name="txtPriceA"  Text="{Binding PriceA, Converter={StaticResource AddSuffixConverter}, ConverterParameter=')|G7'}" FontWeight="Normal" FontSize="11"  Margin="2,0,0,0" 
+                                                <TextBlock Name="txtPriceA"  Text="{Binding Details.PriceA, Converter={StaticResource AddSuffixConverter}, ConverterParameter=')|G7'}" FontWeight="Normal" FontSize="11"  Margin="2,0,0,0" 
                                                                RelativePanel.AlignRightWithPanel="True"/>
-                                                    <TextBlock Name="txtAccountFrom"  Text="{Binding AccountFrom}" FontWeight="Normal" FontSize="11"  Margin="2,0,0,0" 
+                                                <TextBlock Name="txtAccountFrom"  Text="{Binding Details.AccountFrom}" FontWeight="Normal" FontSize="11"  Margin="2,0,0,0" 
                                                                RelativePanel.Below="txtPriceA" 
                                                                RelativePanel.AlignRightWithPanel="True"/>
-                                                    <StackPanel Orientation="Horizontal" Visibility="{Binding FeeQty, Converter={StaticResource DoubleToVisibilityConverter }}" HorizontalAlignment="Right"
+                                                <StackPanel Orientation="Horizontal" Visibility="{Binding Details.FeeQty, Converter={StaticResource DoubleToVisibilityConverter }}" HorizontalAlignment="Right"
                                                                 RelativePanel.Below="txtAccountFrom"
                                                                 RelativePanel.AlignRightWithPanel="True" >
-                                                        <TextBlock Name="txtQtyFee"  Text="{Binding FeeQty, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}Fee: {0:G7}'}" FontWeight="Normal" FontSize="12" />
-                                                        <TextBlock Name="txtCoinFee"  Text="{Binding FeeCoin}" FontWeight="Normal" FontSize="12" Margin="5,0,0,0" />
+                                                    <TextBlock Name="txtQtyFee"  Text="{Binding Details.FeeQty, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}Fee: {0:G7}'}" FontWeight="Normal" FontSize="12" />
+                                                    <TextBlock Name="txtCoinFee"  Text="{Binding Details.FeeCoin}" FontWeight="Normal" FontSize="12" Margin="5,0,0,0" />
                                                     </StackPanel>
                                                 </RelativePanel>
                                             </Border>
 
                                         <Border Grid.Row="0" Grid.Column="5"  Margin="10,0,0,0"  VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal" Visibility="{Binding TransactionType, Converter={StaticResource TransactionTypeToVisibilityConverter}}" HorizontalAlignment="Right">
-                                                <TextBlock Name="txtQtyB"  Text="{Binding QtyB, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" FontWeight="Normal" FontSize="18" />
-                                                <TextBlock Name="txtCoinB"  Text="{Binding CoinB}" FontWeight="Normal" FontSize="18" Margin="5,0,0,0" />
-                                                <Image Name="ImageB" Source="{Binding ImageUriB, Converter={StaticResource ImageConverter}}" Height="24"  Margin="5,0,0,0"/>
+                                            <StackPanel Orientation="Horizontal" Visibility="{Binding Details.TransactionType, Converter={StaticResource TransactionTypeToVisibilityConverter}}" HorizontalAlignment="Right">
+                                                <TextBlock Name="txtQtyB"  Text="{Binding Details.QtyB, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" FontWeight="Normal" FontSize="18" />
+                                                <TextBlock Name="txtCoinB"  Text="{Binding Details.CoinB}" FontWeight="Normal" FontSize="18" Margin="5,0,0,0" />
+                                                <Image Name="ImageB" Source="{Binding Details.ImageUriB, Converter={StaticResource ImageConverter}}" Height="24"  Margin="5,0,0,0"/>
                                             </StackPanel>
                                         </Border>
 
                                         <Border Grid.Row="0" Grid.Column="6"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                             <StackPanel>
-                                                <RelativePanel x:Name="PanelTo" Visibility="{Binding TransactionType, Converter={StaticResource TransactionTypeToVisibilityConverter}}" HorizontalAlignment="Right" >
-                                                <TextBlock Name="txtValueB"  Text="{Binding ValueB, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" FontWeight="Normal" FontSize="14" Margin="0,-2,0,0"
+                                                <RelativePanel x:Name="PanelTo" Visibility="{Binding Details.TransactionType, Converter={StaticResource TransactionTypeToVisibilityConverter}}" HorizontalAlignment="Right" >
+                                                    <TextBlock Name="txtValueB"  Text="{Binding Details.ValueB, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" FontWeight="Normal" FontSize="14" Margin="0,-2,0,0"
                                                                 RelativePanel.LeftOf="txtPricePrefixB" />
-                                                    <TextBlock Name="txtPricePrefixB"  Text="{Binding CoinB, Converter={StaticResource AddPrefixConverter}, ConverterParameter='(1 | = '}" FontWeight="Normal" FontSize="11" Margin="5,0,0,0" 
+                                                    <TextBlock Name="txtPricePrefixB"  Text="{Binding Details.CoinB, Converter={StaticResource AddPrefixConverter}, ConverterParameter='(1 | = '}" FontWeight="Normal" FontSize="11" Margin="5,0,0,0" 
                                                                 RelativePanel.LeftOf="txtPriceB" />
-                                                    <TextBlock Name="txtPriceB"  Text="{Binding PriceB, Converter={StaticResource AddSuffixConverter}, ConverterParameter=')|G7'}" FontWeight="Normal" FontSize="11"  Margin="2,0,0,0" 
+                                                    <TextBlock Name="txtPriceB"  Text="{Binding Details.PriceB, Converter={StaticResource AddSuffixConverter}, ConverterParameter=')|G7'}" FontWeight="Normal" FontSize="11"  Margin="2,0,0,0" 
                                                                 RelativePanel.AlignRightWithPanel="True"/>
                                                 </RelativePanel>
-                                                <TextBlock Name="txtAccountTo"  Text="{Binding AccountTo}" FontWeight="Normal" FontSize="11"  Margin="2,0,0,0" HorizontalAlignment="Right" />
+                                                <TextBlock Name="txtAccountTo"  Text="{Binding Details.AccountTo}" FontWeight="Normal" FontSize="11"  Margin="2,0,0,0" HorizontalAlignment="Right" />
                                             </StackPanel>
                                         </Border>
                                         <RelativePanel Grid.Row="0" Grid.Column="7"  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                                            <CommandBar Name="HoverCommandBar" Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
+                                            <CommandBar Name="HoverCommandBar" Visibility="Visible" helpers:AncestorSource.AncestorType="ListView" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                                 <CommandBar.SecondaryCommands>
                                                     <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                    <!--AppBarButton Icon="Setting" Label="Dummy" Visibility="Collapsed" /-->
-                                                     <AppBarButton Icon="{Binding CommandEdit}" Label="{Binding CommandEdit}" Visibility="Visible" x:Name="HoverButtonEdit"  Command="{x:Bind CommandEdit}" CommandParameter="{x:Bind Id}"/>
-                                                    <AppBarButton Icon="Delete" Label="{Binding CommandDel}" x:Name="HoverButtonDel" Visibility="Visible" Command="{x:Bind CommandDel}" CommandParameter="{x:Bind Id}"/>
+                                                    <AppBarButton Label="Edit" Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowTransactionDialogToEditCommand, ElementName=HoverCommandBar}"  CommandParameter="{x:Bind Id}">
+                                                        <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
+                                                    </AppBarButton>
+                                                    <AppBarButton Icon="Delete" Label="Delete Transaction" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteTransactionCommand, ElementName=HoverCommandBar}" CommandParameter="{x:Bind Id}"/>
                                                 </CommandBar.SecondaryCommands>
                                             </CommandBar>
                                         </RelativePanel>
                                         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
-                                                <TextBlock Name="txtNote"  Text="{Binding Note}" Visibility="Collapsed" FontWeight="Normal" FontSize="18" TextWrapping="WrapWholeWords" Margin="2,5,0,5" HorizontalAlignment="Left" />
+                                                <TextBlock Name="txtNote"  Text="{Binding Notes}" Visibility="Collapsed" FontWeight="Normal" FontSize="18" TextWrapping="WrapWholeWords" Margin="2,5,0,5" HorizontalAlignment="Left" />
                                         </Border>
                                     </Grid>
                                 </Grid>

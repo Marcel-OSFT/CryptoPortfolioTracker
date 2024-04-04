@@ -1,43 +1,22 @@
-﻿using CryptoPortfolioTracker.Infrastructure.Response.Coins;
-using CoinGeckoFluentApi.Client;
+﻿using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Infrastructure;
+using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
+using LanguageExt;
+using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
+using Polly;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Windows.UI.Popups;
-using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
-using Polly.Retry;
-using Polly;
 using System.Threading;
+using System.Threading.Tasks;
+using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 //using PollyDemos.OutputHelpers;
 //using CoinGecko.Interfaces;
-using ABI.System;
-using TimeSpan = System.TimeSpan;
 using Exception = System.Exception;
-using System.Data.Common;
-using System.Runtime.InteropServices;
-using WinRT;
-using CryptoPortfolioTracker.Dialogs;
-using CryptoPortfolioTracker.Views;
-using LanguageExt.Common;
-using System.Reflection.Metadata.Ecma335;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using LanguageExt;
-using Windows.UI;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Controls;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -143,11 +122,12 @@ namespace CryptoPortfolioTracker.Services
             //bool isValidResult;
 
             Exception error = null;
-            while (!(cancellationToken.IsCancellationRequested))
+            while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    await strategy.ExecuteAsync(async token => {
+                    await strategy.ExecuteAsync(async token =>
+                    {
                         coinList = await coinsClient.Coins.List.GetAsync<List<CoinList>>();
 
                     }, cancellationToken);
@@ -201,12 +181,13 @@ namespace CryptoPortfolioTracker.Services
             //bool isValidResult;
 
             Exception error = null;
-            while (!(cancellationToken.IsCancellationRequested))
+            while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    
-                    await strategy.ExecuteAsync(async token => {
+
+                    await strategy.ExecuteAsync(async token =>
+                    {
                         coinFullDataById = await coinsClient.Coins[coinId].GetAsync<CoinFullDataById>();
                     }, cancellationToken);
                 }

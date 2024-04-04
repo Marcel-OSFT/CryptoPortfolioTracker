@@ -156,6 +156,7 @@
                                 MyText="{Binding AccountTo, ElementName=Root, Mode=TwoWay}" 
                                 Header="{Binding HeaderAccountTo, ElementName=Root}" 
                                 IsEntryMatched="{Binding Validator.IsValidEntryCollection[3], ElementName=Root, Mode=TwoWay}"
+                                IsEnabled="{Binding IsAccountsLinked, Converter={StaticResource myInvertBoolConverter}}"
                                 AnimateBorder="True"
                                 Width="300"
                                 Margin="8,0,0,0"
@@ -227,8 +228,8 @@
             <RelativePanel Name="TimeStampSelection"  HorizontalAlignment="Stretch" Margin="0,0,0,0"  >
                 <DatePicker x:Name="DatePicker" 
                             Header="Date" 
-                            Date="{Binding TimeStamp, Mode=TwoWay}" 
-                            Style="{StaticResource MK_DatePickerStyle}" 
+                            Date="{Binding TimeStamp, Mode=TwoWay}"
+                            Style="{StaticResource MK_DatePickerStyle}"
                             Margin="5,0,0,0"/>
                 <TimePicker x:Name="TimePicker" 
                             Header="Time" 
@@ -237,6 +238,7 @@
                             ClockIdentifier="24HourClock" 
                             Margin="5,0,0,0" 
                             RelativePanel.RightOf="DatePicker" />
+               
             </RelativePanel>
             <StackPanel Name="FeeSelection"  HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="125,0,0,0">
                 <controls:RegExTextBox x:Name="TBoxQtyFee" 

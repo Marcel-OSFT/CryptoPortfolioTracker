@@ -1,36 +1,26 @@
 ﻿//using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
+using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Design;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Windows.UI.Popups;
-using LanguageExt.Common;
-using Windows.Devices.AllJoyn;
-using SQLitePCL;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CryptoPortfolioTracker.Services
 {
     public class TransactionService : ITransactionService
     {
         private readonly PortfolioContext _context;
-      
+        public static TransactionService Instance;
+
         public TransactionService(PortfolioContext context)
         {
+            Instance = this;
             _context = context;
         }
 
@@ -102,7 +92,7 @@ namespace CryptoPortfolioTracker.Services
                     .Include(y => y.Account)
                     .Where(x => x.Coin == coin && x.Account == account)
                     .SingleOrDefaultAsync();
-                    
+
             }
             catch (Exception ex)
             {
@@ -132,7 +122,7 @@ namespace CryptoPortfolioTracker.Services
         {
             List<string> _result;
             try
-            { 
+            {
                 _result = await _context.Assets
                     .Include(x => x.Coin)
                     .Include(y => y.Account)
@@ -235,7 +225,7 @@ namespace CryptoPortfolioTracker.Services
         public async Task<Result<double>> GetPriceFromLibrary(string coinSymbol)
         {
             double _result;
-            if (coinSymbol == null || coinSymbol == "" ) { return 0; }
+            if (coinSymbol == null || coinSymbol == "") { return 0; }
             try
             {
                 _result = await _context.Coins
@@ -382,7 +372,7 @@ namespace CryptoPortfolioTracker.Services
         //    }
         //    return (coin != null && account != null);
         //}
-       
+
         private Result<Asset> RecalculateAsset(Mutation mutation, Asset asset)
         {
             try
@@ -459,7 +449,7 @@ namespace CryptoPortfolioTracker.Services
                         asset.Qty = asset.Qty - mutationNew.Qty;
                         break;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -473,7 +463,7 @@ namespace CryptoPortfolioTracker.Services
             Asset assetNew = null;
             try
             {
-                 
+
                 if (mutationToEdit.Asset.Id != mutationNew.Asset.Id || mutationToEdit.Qty != mutationNew.Qty)
                 {
                     //*** FEE is always "OUT":
@@ -498,13 +488,18 @@ namespace CryptoPortfolioTracker.Services
             }
             return assetNew;
         }
-        private Task<Result<Asset>> CreateNewAsset(Mutation mutation)
+        private async Task<Result<Asset>> CreateNewAsset(Mutation mutation)
         {
-            Asset asset=null;
+            Asset asset = null;
             if (mutation.Direction == MutationDirection.In) // && currentAsset == NULL
             {
                 try
                 {
+                    // if (mutation.Asset.Coin.Id == 0) mutation.Asset.Coin = (await GetCoinBySymbol(mutation.Asset.Coin.Symbol))
+                    //.Match(Succ: coin => coin, Fail: err => throw new Exception(err.Message, err));
+                    //mutation.Asset.Account.Name = account;
+                    //if (mutation.Asset.Account.Id == 0) mutation.Asset.Account = (await GetAccountByName(mutation.Asset.Account.Name))
+                    //    .Match(Succ: account => account, Fail: err => throw new Exception(err.Message, err));
                     mutation.Asset.AverageCostPrice = mutation.Price;
                     mutation.Asset.Qty = mutation.Qty;
                     mutation.Asset.Coin.IsAsset = true;
@@ -514,10 +509,10 @@ namespace CryptoPortfolioTracker.Services
                 }
                 catch (Exception ex)
                 {
-                    return Task.FromResult(new Result<Asset>(ex));
+                    return new Result<Asset>(ex);
                 }
             }
-            return Task.FromResult(new Result<Asset>(asset));
+            return new Result<Asset>(asset);
         }
         private async Task<Result<Asset>> ReverseAndRecalculateAsset(Mutation mutation)
         {
@@ -574,7 +569,7 @@ namespace CryptoPortfolioTracker.Services
                .Select(assetGroup => new AssetTotals
                {
                    Qty = assetGroup.Sum(x => x.Qty),
-                   CostBase = assetGroup.Sum(x => (x.AverageCostPrice * x.Qty)),
+                   CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
                    Coin = assetGroup.Key
                })
                .SingleAsync();
@@ -587,15 +582,13 @@ namespace CryptoPortfolioTracker.Services
         }
 
 
-        public async Task<Result<bool>> AddTransaction(AssetTransaction transaction)
+        public async Task<Result<int>> AddTransaction(AssetTransaction transaction)
         {
             int result = 0;
             Asset addedAsset = null;
-            if (transaction == null || transaction.Mutations == null) return false;
+            if (transaction == null || transaction.Mutations == null) return 0;
 
             var mutations = transaction.Mutations.OrderByDescending(x => x.Direction).OrderBy(y => y.Type);
-
-            Debug.WriteLine("");
 
             try
             {
@@ -606,12 +599,16 @@ namespace CryptoPortfolioTracker.Services
                         .Where(x => x.Coin.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutation.Asset.Account.Name.ToLower())
                         .SingleOrDefaultAsync();
 
-                    if (currentAsset == null && addedAsset != null) currentAsset = addedAsset;
+                    if (currentAsset == null && addedAsset != null)
+                    {
+                        currentAsset = addedAsset;
+                        addedAsset = null;
+                    }
 
                     if (currentAsset != null)
                     {
                         mutation.Asset = RecalculateAsset(mutation, currentAsset)
-                           .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err)); 
+                           .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
                     }
                     else
                     {
@@ -626,27 +623,63 @@ namespace CryptoPortfolioTracker.Services
                 Transaction transactionNew = new Transaction();
                 transactionNew.Mutations = transaction.Mutations;
                 transactionNew.TimeStamp = transaction.TimeStamp;
-                transactionNew.Note = transaction.Note;
+                transactionNew.Note = transaction.Notes;
 
                 _context.Transactions.Update(transactionNew);
                 result = await _context.SaveChangesAsync();
+
+                return transactionNew.Id; 
 
             }
             catch (Exception ex)
             {
                 RejectChanges();
-                return new Result<bool>(ex);
+                return new Result<int>(ex);
             }
-            // newAsset will be set and passed to the caller for Updating View purpose
-            return result > 0; ;
+            
+            return result; ;
         }
-        
-        
 
-        public async Task<Result<bool>> EditTransaction(AssetTransaction transactionNew, AssetTransaction _transactionToEdit)
+        /// <summary>
+        /// Only used for the Run Tests
+        /// </summary>
+        /// <param name="coinName"></param>
+        /// <param name="accountName"></param>
+        /// <returns></returns>
+        public async Task<Result<AssetTransaction>> GetTransactionById(int transactionId)
+        {
+            AssetTransaction assetTransaction = null;
+            if (transactionId <= 0) return new Result<AssetTransaction>();  
+            try
+            {
+                assetTransaction = await _context.Mutations
+                    .Include(t => t.Transaction)
+                    .ThenInclude(m => m.Mutations)
+                    .ThenInclude(a => a.Asset)
+                    .ThenInclude(ac => ac.Account)
+                    .Where(c => c.Transaction.Id == transactionId)
+                    .GroupBy(g => g.Transaction.Id)
+                    .Select(grouped => new AssetTransaction
+                    {
+                        Id = grouped.Key,
+                        TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
+                        Notes = grouped.Select(t => t.Transaction.Note).SingleOrDefault(),
+                        Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault(),
+                    })
+                    .SingleAsync();
+            }
+            catch (Exception ex)
+            {
+                return new Result<AssetTransaction>(ex);
+            }
+            return assetTransaction;
+        }
+
+
+        public async Task<Result<int>> EditTransaction(AssetTransaction transactionNew, AssetTransaction _transactionToEdit)
         {
             int result = 0;
-            if (_transactionToEdit == null || transactionNew == null) return false;
+            if (_transactionToEdit == null || transactionNew == null) return 0;
             try
             {
                 var transactionToEdit = await _context.Transactions
@@ -663,11 +696,9 @@ namespace CryptoPortfolioTracker.Services
                 //*** the mutations side-by-side.
                 //*** Adding a dummy FEE mutation with qty 0 will equalize this
 
-                
                 if (mutationsNew.Count != mutationsToEdit.Count)
                 {
                     EqualizeMutationsForFee(mutationsNew, mutationsToEdit);
-                    
                 }
 
                 int numberOfMutations = mutationsNew.Count;
@@ -685,7 +716,6 @@ namespace CryptoPortfolioTracker.Services
                         mutationToEdit.Qty = mutationNew.Qty;
                         mutationToEdit.Price = mutationNew.Price;
                         //_context.Mutations.Update(mutationToEdit);
-
                     }
                     else // if 'Fee'
                     {
@@ -697,7 +727,7 @@ namespace CryptoPortfolioTracker.Services
                 } // *** end of all mutations
 
                 //*** update Notes and TimeStamp in case that might have changed
-                transactionToEdit.Note = transactionNew.Note;
+                transactionToEdit.Note = transactionNew.Notes;
                 transactionToEdit.TimeStamp = transactionNew.TimeStamp;
                 transactionToEdit.Mutations = mutationsToEdit;
 
@@ -706,20 +736,18 @@ namespace CryptoPortfolioTracker.Services
 
                 //*** reflect type 'Transaction' also to 'AssetTransaction' for Binding purpose
                 _transactionToEdit.Mutations = transactionToEdit.Mutations;
-
-
             }
             catch (Exception ex)
             {
                 RejectChanges();
-                return new Result<bool>(ex);
+                return new Result<int>(ex);
             }
-            return result > 0;
+            return _transactionToEdit.Id;
         }
-        public async Task<Result<bool>> DeleteTransaction(AssetTransaction _transactionToDelete, AssetAccount _accountAffected)
+        public async Task<Result<int>> DeleteTransaction(AssetTransaction _transactionToDelete, AssetAccount _accountAffected)
         {
             int result = 0;
-            
+
             try
             {
                 Transaction transaction = await _context.Transactions
@@ -737,29 +765,13 @@ namespace CryptoPortfolioTracker.Services
                 _context.Transactions.Remove(transaction);
                 result = _context.SaveChanges();
                 await RemoveAssetsWithoutMutations();
-
-                //*** Requery AssetAccount for binding purpose
-                var updatedAssetAccount = await _context.Assets
-                    .Where(c => c.Id == _accountAffected.AssetId)
-                    .Include(x => x.Coin)
-                    .Include(a => a.Account)
-                    .Select(assets => new AssetAccount
-                    {
-                        Qty = assets.Qty,
-                        Name = assets.Account.Name,
-                        Symbol = assets.Coin.Symbol,
-                        AssetId = assets.Id,
-
-                    }).SingleOrDefaultAsync();
-                _accountAffected.Qty = updatedAssetAccount != null ? updatedAssetAccount.Qty : 0;
-
             }
             catch (Exception ex)
             {
                 RejectChanges();
-                return new Result<bool>(ex);
+                return new Result<int>(ex);
             }
-            return result > 0;
+            return _transactionToDelete.Id;
         }
         public async Task<Result<bool>> RemoveAssetsWithoutMutations()
         {
@@ -794,7 +806,7 @@ namespace CryptoPortfolioTracker.Services
                 dummyMutation = (Mutation)CloneMutation(mutsNew.Last());
                 dummyMutation.Qty = 0;
                 mutsToEdit.Add(dummyMutation);
-                
+
             }
             else
             {
@@ -805,7 +817,7 @@ namespace CryptoPortfolioTracker.Services
         }
         private object CloneMutation(Mutation mut)
         {
-            var cloneMut =  new Mutation();
+            var cloneMut = new Mutation();
 
             var properties = mut.GetType().GetProperties();
             foreach (var property in properties)

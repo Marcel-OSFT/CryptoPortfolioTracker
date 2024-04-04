@@ -12,7 +12,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
         <converters:ThemeColorConverter x:Key="ThemeColorConverter"/>
@@ -47,7 +47,8 @@
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     <controls:CoinLibraryListViewControl x:Name="MyCoinLibraryListViewControl" x:FieldModifier="public" Grid.Row="0" />
-                    <Button Content="Add a Coin to the Library" IsEnabled="{Binding IsAllCoinDataRetrieved, Mode=TwoWay}" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Click="Button_Click_AddCoinDialog" Name="AddCoinButton" Margin="10,10,0,0"/>
+                    <Button Content="Add a Coin to the Library" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
+                            Command="{Binding ShowAddCoinDialogCommand}" Name="AddCoinButton" Margin="10,10,0,0"/>
                 </Grid>
             </Border>
         </Grid>

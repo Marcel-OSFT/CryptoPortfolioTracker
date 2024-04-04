@@ -1,40 +1,27 @@
 ﻿
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CryptoPortfolioTracker.Dialogs;
-using CryptoPortfolioTracker.Infrastructure;
+using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+using LanguageExt;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
-using Windows.Devices.WiFi;
-using Windows.UI.Popups;
-using LanguageExt;
-using Microsoft.UI;
-using CommunityToolkit.Common;
+using System.Windows.Input;
 
 namespace CryptoPortfolioTracker.ViewModels
 {
-    public sealed partial class CoinLibraryViewModel : BaseViewModel
+    public partial class CoinLibraryViewModel : BaseViewModel
     {
         #region Fields related to the MVVM design pattern
         public static CoinLibraryViewModel Current;
@@ -45,45 +32,29 @@ namespace CryptoPortfolioTracker.ViewModels
         #endregion instances related to Services
 
         #region Fields and Proporties for DataBinding with the View
-        private bool isAllCoinDataRetrieved;
-        public bool IsAllCoinDataRetrieved
-        {
-            get { return isAllCoinDataRetrieved; }
-            set
-            {
-                if (value != isAllCoinDataRetrieved)
-                {
-                    isAllCoinDataRetrieved = value;
-                    OnPropertyChanged(nameof(IsAllCoinDataRetrieved));
-                }
-            }
-        }
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
+        bool isAllCoinDataRetrieved;
+        
+        [ObservableProperty] ObservableCollection<Coin> listCoins;
+
         public static AddCoinDialog dialog;
 
-        private ObservableCollection<Coin> listCoins;
-        public ObservableCollection<Coin> ListCoins
-        {
-            get { return listCoins; }
-            set
-            {
-                if (value != listCoins)
-                {
-                    listCoins = value;
-                    OnPropertyChanged(nameof(ListCoins));
-                }
-            }
-        }
         #endregion variables and proporties for DataBinding with the View
 
         public static List<CoinList> coinListGecko;
-            
+
+
         public CoinLibraryViewModel(ILibraryService libraryService)
         {
             Current = this;
+            IsAllCoinDataRetrieved = false;
             _libraryService = libraryService;
             SetDataSource().ConfigureAwait(false);
             RetrieveAllCoinData();
         }
+       
 
         #region MAIN methods or Tasks
         private async Task SetDataSource()
@@ -93,13 +64,16 @@ namespace CryptoPortfolioTracker.ViewModels
         }
         public async void RetrieveAllCoinData()
         {
-            IsAllCoinDataRetrieved = false;
+            
             (await _libraryService.GetCoinListFromGecko())
-                .IfSucc(list => {
+                .IfSucc(list =>
+                {
                     coinListGecko = list;
                     IsAllCoinDataRetrieved = coinListGecko.Count > 0 ? true : false;
                 });
         }
+
+        [RelayCommand(CanExecute = nameof(CanShowAddCoinDialog))]
         public async Task ShowAddCoinDialog()
         {
             Debug.WriteLine("entered Dialog ");
@@ -115,8 +89,13 @@ namespace CryptoPortfolioTracker.ViewModels
                     Fail: async err => await ShowMessageBox("Adding coin failed - " + err.Message));
             }
             Debug.WriteLine("exited Dialog ");
-
         }
+        private bool CanShowAddCoinDialog()
+        {
+            return IsAllCoinDataRetrieved;
+        }
+
+        [RelayCommand]
         public async Task ShowAddNoteDialog(string coinId)
         {
             (await _libraryService.GetCoin(coinId))
@@ -132,13 +111,32 @@ namespace CryptoPortfolioTracker.ViewModels
                             .IfFail(async err => await ShowMessageBox("Updating note failed - " + err.Message));
                     }
                 });
+            
         }
+        
+        [RelayCommand(CanExecute = nameof(CanDeleteCoin))]
         public async Task DeleteCoin(string coinId)
         {
             await (await _libraryService.RemoveCoin(coinId))
                .Match(Succ: s => RemoveFromListCoins(coinId),
                        Fail: async err => await ShowMessageBox("Failed to delete Coin"));
         }
+        private bool CanDeleteCoin(string coinId)
+        {
+            bool result = false;
+            try
+            {
+                result = !ListCoins.Where(x => x.ApiId.ToLower() == coinId.ToLower()).Single().IsAsset;
+            }
+            catch (Exception)
+            {
+                //Element just removed from the list...
+            }
+            return result;
+        }
+
+
+        [RelayCommand]
         public async Task ShowDescription(string coinId)
         {
             if (coinId != null)

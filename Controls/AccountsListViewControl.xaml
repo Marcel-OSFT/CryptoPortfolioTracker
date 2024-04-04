@@ -6,14 +6,16 @@
     xmlns:local="using:CryptoPortfolioTracker.Controls"    
     xmlns:converters="using:CryptoPortfolioTracker.Converters"    
     xmlns:views="using:CryptoPortfolioTracker.Views"    
+   xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
     xmlns:models="using:CryptoPortfolioTracker.Models"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     mc:Ignorable="d">
 
     <UserControl.Resources>
         <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
 
@@ -55,29 +57,16 @@
 
         <Rectangle Grid.Row="1" Grid.ColumnSpan="3" Fill="#eebc3f" Height="2" Margin="5,0,8,0"/>
 
-        <ListView x:Name="AccountsListView" Grid.Row="2" Grid.ColumnSpan="3" x:FieldModifier="public" ItemsSource="{Binding ListAccounts}" BorderBrush="Transparent" BorderThickness="1" Loaded="AccountsListView_Loaded"                              
-                        IsItemClickEnabled="True" SelectionMode="Single" ItemClick="AccountsListView_ItemClick" 
+        <ListView x:Name="AccountsListView" Grid.Row="2" Grid.ColumnSpan="3" x:FieldModifier="public" ItemsSource="{Binding ListAccounts}" BorderBrush="Transparent" BorderThickness="1"                              
+                        IsItemClickEnabled="True" SelectionMode="Single" 
+                  ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" SizeChanged="ListView_SizeChanged"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                         CanReorderItems="False" AllowDrop="false" Margin="0,0,0,0" >
-        <ListView.ItemTemplate>
+            
+            <ListView.ItemTemplate>
             <DataTemplate x:DataType="models:Account">
-                    <UserControl PointerEntered="ListViewItem_PointerEntered" PointerExited="ListViewItem_PointerExited">
+                    <UserControl>
                     <Grid AutomationProperties.Name="{x:Bind Id}">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommandBar">
-                                    <VisualState x:Name="Normal" />
-                                    <VisualState x:Name="ShowCommandBar" >
-                                        <VisualState.Setters>
-                                            <Setter Target="HoverCommandBar.Visibility" Value="Visible" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="HideCommandBar" >
-                                        <VisualState.Setters>
-                                            <Setter Target="HoverCommandBar.Visibility" Value="Collapsed" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
                             <SwipeControl x:Name="AccountsListViewSwipeContainer" >
                             <Grid>
                                 <Grid VerticalAlignment="Center" Margin="2">
@@ -104,12 +93,13 @@
                                         </Border>
                                     </Grid>
                                     <RelativePanel HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                                        <CommandBar Name="HoverCommandBar" Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
+                                        <CommandBar Name="HoverCommandBar" helpers:AncestorSource.AncestorType="ListView" Visibility="{Binding DataContext.DataContext.IsExtendedView, ElementName=HoverCommandBar, Converter={StaticResource BoolToVisibilityConverter}}" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                             <CommandBar.SecondaryCommands>
                                                 <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                <!--AppBarButton Icon="Setting" Label="Dummy" Visibility="Collapsed" /-->
-                                                <AppBarButton Icon="{Binding CommandEdit}" Label="{Binding CommandEdit}" Visibility="Visible" x:Name="HoverButtonEdit"  Command="{x:Bind CommandEdit}" CommandParameter="{x:Bind Id}"/>
-                                                <AppBarButton Icon="Delete" Label="{Binding CommandDel}" x:Name="HoverButtonDel" Visibility="{Binding IsHoldingAsset, Converter={StaticResource VisibilityConverter}}" Command="{x:Bind CommandDel}" CommandParameter="{x:Bind Id}"/>
+                                                <AppBarButton Label="Edit" Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowAccountDialogToEditCommand, ElementName=HoverCommandBar}"  CommandParameter="{x:Bind Id}">
+                                                    <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
+                                                </AppBarButton>
+                                                <AppBarButton Icon="Delete" Label="Delete" x:Name="HoverButtonDel" Command="{Binding DataContext.DataContext.DeleteAccountCommand, ElementName=HoverCommandBar}" CommandParameter="{x:Bind Id}"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>

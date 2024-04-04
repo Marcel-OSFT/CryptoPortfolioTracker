@@ -8,15 +8,17 @@
     xmlns:views="using:CryptoPortfolioTracker.Views"    
     xmlns:models="using:CryptoPortfolioTracker.Models"    
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
+    x:Name="Root"
     d:DataContext="{d:DesignInstance Type=viewmodels:CoinLibraryViewModel}"
     mc:Ignorable="d">
 
 
     <UserControl.Resources>
         <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
@@ -79,8 +81,8 @@
             </RichTextBlock>
        
         <Rectangle Grid.Row="1" Grid.ColumnSpan="6" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
-        <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="6" x:FieldModifier="public" ItemsSource="{Binding ListCoins}" BorderBrush="Transparent" BorderThickness="1" Loaded="CoinLibraryListView_Loaded"                              
-                            IsItemClickEnabled="True" SelectionMode="None" 
+        <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="6" x:FieldModifier="public" ItemsSource="{Binding ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
+                            IsItemClickEnabled="True" SelectionMode="None"
                             ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                             CanReorderItems="False" AllowDrop="false" Margin="10,0,0,0" >
             <ListView.ItemTemplate>
@@ -134,13 +136,16 @@
                                         </Border>
                                     </Grid>
                                     <RelativePanel  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                                        <CommandBar Name="HoverCommandBar" Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
+                                        <CommandBar Name="HoverCommandBar" helpers:AncestorSource.AncestorType="ListView" Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                             <CommandBar.SecondaryCommands>
                                                 <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                <!--AppBarButton Icon="Setting" Label="Dummy" Visibility="Collapsed" /-->
-                                                <AppBarButton Icon="{Binding CommandAbout}" Label="{Binding CommandAbout}" Visibility="Visible" x:Name="HoverButtonAbout"  Command="{x:Bind CommandAbout}" CommandParameter="{x:Bind ApiId}"/>
-                                                <AppBarButton Icon="{Binding CommandNote}" Label="{Binding CommandNote}" Visibility="Visible" x:Name="HoverButtonNote"  Command="{x:Bind CommandNote}" CommandParameter="{x:Bind ApiId}"/>
-                                                <AppBarButton Icon="Delete" Label="{Binding CommandDel}" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource VisibilityConverter}}" Command="{x:Bind CommandDel}" CommandParameter="{x:Bind ApiId}"/>
+                                                <AppBarButton Label="About" Visibility="Visible" x:Name="HoverButtonAbout" Command="{Binding DataContext.DataContext.ShowDescriptionCommand, ElementName=HoverCommandBar}"  CommandParameter="{x:Bind ApiId}">
+                                                    <FontIcon  Glyph="&#xE946;" FontWeight="Normal"  />
+                                                </AppBarButton>
+                                                <AppBarButton Label="Add/Edit Note" Visibility="Visible" x:Name="HoverButtonNote" Command="{Binding DataContext.DataContext.ShowAddNoteDialogCommand, ElementName=HoverCommandBar}"  CommandParameter="{x:Bind ApiId}">
+                                                    <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
+                                                </AppBarButton>
+                                                <AppBarButton Icon="Delete" Label="Delete Coin" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=HoverCommandBar}" CommandParameter="{x:Bind ApiId}"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>

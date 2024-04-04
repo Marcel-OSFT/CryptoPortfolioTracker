@@ -1,30 +1,18 @@
-﻿using Microsoft.UI.Dispatching;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Dispatching;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace CryptoPortfolioTracker.ViewModels
 {
-    public abstract class BaseViewModel : INotifyPropertyChanged
+    public abstract class BaseViewModel : ObservableObject
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void OnPropertyChanged(string propertyName)
-        {
-            VerifyPropertyName(propertyName);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        [Conditional("DEBUG")]
-        private void VerifyPropertyName(string propertyName)
-        {
-            if (TypeDescriptor.GetProperties(this)[propertyName] == null)
-                throw new ArgumentNullException(GetType().Name + " does not contain property: " + propertyName);
-        }
 
         ////******* EventHandlers
         //public event PropertyChangedEventHandler PropertyChanged;
-        //public void OnPropertyChanged(string name)
+        //protected void OnPropertyChanged([CallerMemberName] string name = null)
         //{
         //    if (MainPage.Current == null) return;
         //    MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
@@ -36,7 +24,5 @@ namespace CryptoPortfolioTracker.ViewModels
         //        }
         //    });
         //}
-
-
     }
 }

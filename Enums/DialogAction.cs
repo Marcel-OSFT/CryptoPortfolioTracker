@@ -1,4 +1,9 @@
-﻿namespace CryptoPortfolioTracker.Enums;
+﻿using Microsoft.UI.Xaml.Markup;
+using System;
+
+namespace CryptoPortfolioTracker.Enums;
+
+
 
 public enum DialogAction
 {

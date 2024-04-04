@@ -22,10 +22,11 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Text;
+using System.Runtime.CompilerServices;
 
 namespace CryptoPortfolioTracker.Models
 {
-    public partial class BaseModel : INotifyPropertyChanged
+    public partial class BaseModel : ObservableObject
     {
 
         //***** Constructor     
@@ -34,54 +35,22 @@ namespace CryptoPortfolioTracker.Models
            
         }
 
-        public XamlUICommand InitXamlUICommand(XamlUICommand command, string glyph, FontWeight fontWeight, string description, string label, Windows.System.VirtualKey shortcutKey = Windows.System.VirtualKey.None, Windows.System.VirtualKeyModifiers shortcutModifier = Windows.System.VirtualKeyModifiers.None)
-        {
-            command.Description = description;
-            command.Label = label;
-            FontIconSource fontIconSource = new FontIconSource
-            {
-                Glyph = glyph,
-                FontWeight = fontWeight
-            };
-            command.IconSource = fontIconSource;
+        ////******* EventHandlers
+        //public event PropertyChangedEventHandler PropertyChanged;
+        //protected void OnPropertyChanged([CallerMemberName] string name = null)
+        //{
+        //    if (MainPage.Current == null) return;
+        //    MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+        //    {
+        //        //Debug.WriteLine("OnPropertyChanged (BaseModel) => " + name);
 
-            if (shortcutKey != Windows.System.VirtualKey.None)
-            {
-                var shortcut = new KeyboardAccelerator
-                {
-                    Modifiers = shortcutModifier,
-                    Key = shortcutKey
-                };
-                command.KeyboardAccelerators.Add(shortcut);
-            }
-            return command;
-
-        }
-        public StandardUICommand InitStandardUICommand(StandardUICommand command, StandardUICommandKind commandKind, string description, string label)
-        {
-            command.Kind = commandKind;
-            command.Description = description;
-            command.Label = label;
-
-            return command;
-        }
-
-        //******* EventHandlers
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string name)
-        {
-            if (MainPage.Current == null) return;
-            MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
-            {
-                //Debug.WriteLine("OnPropertyChanged (BaseModel) => " + name);
-
-                PropertyChangedEventHandler handler = PropertyChanged;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangedEventArgs(name));
-                }
-            });
-        }
+        //        PropertyChangedEventHandler handler = PropertyChanged;
+        //        if (handler != null)
+        //        {
+        //            handler(this, new PropertyChangedEventArgs(name));
+        //        }
+        //    });
+        //}
 
         //public event PropertyChangedEventHandler? PropertyChanged;
 

@@ -1,6 +1,6 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace CryptoPortfolioTracker.Infrastructure.Response.Coins
 {
@@ -15,7 +15,7 @@ namespace CryptoPortfolioTracker.Infrastructure.Response.Coins
         [JsonProperty("market_data", NullValueHandling = NullValueHandling.Ignore)] public MarketData MarketData { get; set; }
     }
 
-    public class MarketData 
+    public class MarketData
     {
         [JsonProperty("market_cap_rank")] public long? MarketCapRank { get; set; }
         [JsonProperty("ath")] public Dictionary<string, double?> Ath { get; set; }

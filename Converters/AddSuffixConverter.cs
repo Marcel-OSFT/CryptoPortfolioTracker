@@ -1,12 +1,6 @@
-﻿using Microsoft.UI;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media;
+﻿using Microsoft.UI.Xaml.Data;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Converters
 {
@@ -17,7 +11,7 @@ namespace CryptoPortfolioTracker.Converters
             if (parameter == null) return value;
             string[] parameters = { "", "", "" };
             parameters = (parameter as string).Split('|');
-           
+
             //NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
             string result = ((double)value).ToString((string)parameters[1], CultureInfo.InvariantCulture) + (string)parameters[0];
 
