@@ -25,7 +25,11 @@
 	  <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 	  <AppxLogTelemetryFromSideloadingScript>False</AppxLogTelemetryFromSideloadingScript>
 	  <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
+<<<<<<< Updated upstream
 	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker</AppInstallerUri>
+=======
+	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/</AppInstallerUri>
+>>>>>>> Stashed changes
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-16.png" />
