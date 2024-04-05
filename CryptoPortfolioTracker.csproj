@@ -17,7 +17,7 @@
 	  <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 	  <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
 	  <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-	  <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+	  <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
 	  <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
 	  <GenerateTestArtifacts>True</GenerateTestArtifacts>
 	  <AppxBundle>Always</AppxBundle>
@@ -26,7 +26,11 @@
 	  <AppxLogTelemetryFromSideloadingScript>False</AppxLogTelemetryFromSideloadingScript>
 	  <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker</AppInstallerUri>
+=======
+	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/</AppInstallerUri>
+>>>>>>> Stashed changes
 =======
 	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/</AppInstallerUri>
 >>>>>>> Stashed changes
