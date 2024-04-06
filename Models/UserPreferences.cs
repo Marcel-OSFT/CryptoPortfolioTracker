@@ -16,8 +16,8 @@ namespace CryptoPortfolioTracker.Models
         public UserPreferences() 
         {
             
-            CultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
-            IsHidingZeroBalances = false;
+            //CultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
+            //IsHidingZeroBalances = false;
             
         }
 
@@ -65,7 +65,7 @@ namespace CryptoPortfolioTracker.Models
         {
             if (App.isReadingUserPreferences) return;
             XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-            StreamWriter myWriter = new StreamWriter(App.appPath + "\\prefs.xml");
+            StreamWriter myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
             mySerializer.Serialize(myWriter, this);
             myWriter.Close();
         }

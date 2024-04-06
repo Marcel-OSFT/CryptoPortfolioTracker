@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace CryptoPortfolioTracker.Converters
@@ -13,7 +14,7 @@ namespace CryptoPortfolioTracker.Converters
 
             if (parameter == null)
                 return value;
-
+            
             var ci = new CultureInfo(App.userPreferences.CultureLanguage);
             
            // return string.Format(CultureInfo.InvariantCulture, (string)parameter, (double)value);

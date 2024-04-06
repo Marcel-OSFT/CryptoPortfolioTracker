@@ -76,10 +76,10 @@ namespace CryptoPortfolioTracker
             isReadingUserPreferences = true;    
             userPreferences = new UserPreferences();
 
-            if (File.Exists(appPath + "\\prefs.xml"))
+            if (File.Exists(appDataPath + "\\prefs.xml"))
             {
                 XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-                FileStream myFileStream = new FileStream(appPath + "\\prefs.xml", FileMode.Open);
+                FileStream myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
 
                 userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
 
@@ -90,8 +90,8 @@ namespace CryptoPortfolioTracker
             }
             else
             {
-                //userPreferences.CultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
-                //userPreferences.IsHidingZeroBalances = false;
+                userPreferences.CultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
+                userPreferences.IsHidingZeroBalances = false;
                 //SaveUserPreferences();
             }
             isReadingUserPreferences = false;
@@ -100,7 +100,7 @@ namespace CryptoPortfolioTracker
         public static void SaveUserPreferences()
         {
             XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-            StreamWriter myWriter = new StreamWriter(appPath + "\\prefs.xml");
+            StreamWriter myWriter = new StreamWriter(appDataPath + "\\prefs.xml");
             mySerializer.Serialize(myWriter, userPreferences);
             myWriter.Close();
         }

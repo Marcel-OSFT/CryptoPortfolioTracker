@@ -138,13 +138,13 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     await (await _transactionService.AddTransaction(dialog.transactionNew))
                         .Match(Succ: newAsset => UpdateListAssetTotals(dialog.transactionNew),
-                            Fail: async err => await ShowMessageBox("Adding transaction failed (" + err.Message + ")"));
+                            Fail: async err => await ShowMessageBox("Adding transaction failed", err.Message));
                     CalculateAssetsTotalValues();
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageBox("Failure on showing Transaction Dialog (" + ex.Message + ")");
+                await ShowMessageBox("Transaction Dialog Failure", ex.Message);
             }
         }
         private bool CanShowTransactionDialogToAdd()
@@ -179,13 +179,13 @@ namespace CryptoPortfolioTracker.ViewModels
                                 await UpdateListAssetTransaction(dialog.transactionNew, transactionToEdit);
 
                             },
-                                Fail: async err => await ShowMessageBox("Updating transaction failed (" + err.Message + ")"));
+                                Fail: async err => await ShowMessageBox("Updating transaction failed ", err.Message));
                     CalculateAssetsTotalValues();
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageBox("Failure on showing Transaction Dialog (" + ex.Message + ")");
+                await ShowMessageBox("Transaction Dialog Failure ", ex.Message);
             }
         }
 
@@ -212,12 +212,12 @@ namespace CryptoPortfolioTracker.ViewModels
                                  await UpdateListAssetAccount(accountAffected);
                                  await RemoveFromListAssetTransactions(transactionToDelete);
                              },
-                                    Fail: err => ShowMessageBox("Deleting transaction failed (" + err.Message + ")"));
+                                    Fail: err => ShowMessageBox("Deleting transaction failed", err.Message));
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageBox("Deleting transaction failed (" + ex.Message + ")");
+                await ShowMessageBox("Deleting transaction failed",  ex.Message);
             }
         }
         public async Task ShowAssetTransactions(AssetAccount clickedAccount)
@@ -392,13 +392,16 @@ namespace CryptoPortfolioTracker.ViewModels
                 TotalAssetsPnLPerc = 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase;
             }
         }
-        private async Task ShowMessageBox(string message, string primaryButtonText = "OK", string closeButtonText = "Close")
+        private async Task ShowMessageBox(string title, string message)
         {
-            var dlg = new MsgBoxDialog(message);
-            dlg.XamlRoot = AssetsView.Current.XamlRoot;
-            dlg.PrimaryButtonText = primaryButtonText;
-            dlg.CloseButtonText = closeButtonText;
-            await dlg.ShowAsync();
+            ContentDialog errorDialog = new ContentDialog()
+            {
+                Title = title,
+                XamlRoot = AssetsView.Current.XamlRoot,
+                Content = message,
+                PrimaryButtonText = "OK"
+            };
+            await errorDialog.ShowAsync();
         }
 
         public void Dispose()
