@@ -86,7 +86,7 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 await (await _libraryService.CreateCoin(dialog.selectedCoin))
                     .Match(Succ: succ => AddToListCoins(dialog.selectedCoin),
-                    Fail: async err => await ShowMessageBox("Adding coin failed - " + err.Message));
+                    Fail: async err => await ShowMessageBox("Adding coin failed", err.Message));
             }
             Debug.WriteLine("exited Dialog ");
         }
@@ -108,7 +108,7 @@ namespace CryptoPortfolioTracker.ViewModels
                     if (result == ContentDialogResult.Primary)
                     {
                         (await _libraryService.UpdateNote(coin, dialog.newNote))
-                            .IfFail(async err => await ShowMessageBox("Updating note failed - " + err.Message));
+                            .IfFail(async err => await ShowMessageBox("Updating note failed", err.Message));
                     }
                 });
             
@@ -119,7 +119,7 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             await (await _libraryService.RemoveCoin(coinId))
                .Match(Succ: s => RemoveFromListCoins(coinId),
-                       Fail: async err => await ShowMessageBox("Failed to delete Coin"));
+                       Fail: async err => await ShowMessageBox("Failed to delete Coin", err.Message));
         }
         private bool CanDeleteCoin(string coinId)
         {
@@ -173,13 +173,16 @@ namespace CryptoPortfolioTracker.ViewModels
 
             return Task.FromResult(true);
         }
-        private async Task ShowMessageBox(string message, string primaryButtonText = "OK", string closeButtonText = "Close")
+        private async Task ShowMessageBox(string title, string message)
         {
-            var dlg = new MsgBoxDialog(message);
-            dlg.XamlRoot = CoinLibraryView.Current.XamlRoot;
-            dlg.PrimaryButtonText = primaryButtonText;
-            dlg.CloseButtonText = closeButtonText;
-            await dlg.ShowAsync();
+            ContentDialog errorDialog = new ContentDialog()
+            {
+                Title = title,
+                XamlRoot = CoinLibraryView.Current.XamlRoot,
+                Content = message,
+                PrimaryButtonText = "OK"
+            };
+            await errorDialog.ShowAsync();
         }
         #endregion SUB methods or Tasks
 

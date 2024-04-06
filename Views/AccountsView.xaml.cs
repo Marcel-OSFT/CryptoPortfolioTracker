@@ -39,41 +39,7 @@ namespace CryptoPortfolioTracker.Views
             }
         }
        
-        //public async void AccountsListView_ItemClicked(object sender, ItemClickEventArgs args)
-        //{
-        //    ListView listView = (ListView)sender;
-        //    Account selectedAccount = listView.SelectedItem as Account;
-        //    Account clickedAccount = args.ClickedItem as Account;
-
-        //    //Clicked a new Account.... -> Resize Account ListView to small and Show Assets for this Account
-        //    if (selectedAccount == null || selectedAccount != args.ClickedItem)
-        //    {
-        //        await _viewModel.ShowAssets(clickedAccount);
-
-        //        ShowExtendedView(true);
-        //        listView.UpdateLayout();
-        //        listView.ScrollIntoView(clickedAccount);
-
-        //    }
-        //    //clicked the already selected Account.... ->
-        //    if (selectedAccount != null && selectedAccount == args.ClickedItem)
-        //    {
-        //        // if Assets are not shown -> Decrease Account Listview to small and show assets for this account
-        //        if (!isExtendedView)
-        //        {
-        //            await _viewModel.ShowAssets(clickedAccount);
-        //            ShowExtendedView(true);
-        //            listView.UpdateLayout();
-        //            listView.ScrollIntoView(clickedAccount);
-        //        }
-        //        else //if Assets are shown -> close Assets List and resize Accounts Listview to full-size
-        //        {
-        //            //_viewModel.ListAssetTotals = null;
-        //            _viewModel.ListAssetTotals.Clear();
-        //            ShowExtendedView(false);
-        //        }
-        //    }
-        //}
+        
 
         #endregion MAIN methods or Tasks
 
