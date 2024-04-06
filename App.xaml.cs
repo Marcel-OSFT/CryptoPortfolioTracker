@@ -13,7 +13,10 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Windows.ApplicationModel.Activation;
 using WinUIEx;
@@ -55,7 +58,7 @@ namespace CryptoPortfolioTracker
 
         public static IServiceProvider Container { get; private set; }
 
-
+        private string download_link = null;
 
         public App()
         {
@@ -68,7 +71,107 @@ namespace CryptoPortfolioTracker
 
             context.Database.EnsureCreated();
             //if (context.Coins.ToList()==null) InitializeWithMocks();
-          
+
+            //var exists = HTTP_URLExists("https://marcel-osft.github.io/CryptoPortfolioTracker/CryptoPortfolioTracker_setup.exe");
+            
+
+        }
+
+
+        public string CheckForUpdates()
+        {
+            /* Direct download link for the text file in your server */
+            var version_file = "http://www.yourserver.com/appname/update/version.txt";
+
+            /* Temporary output file to work with (located in AppData)*/
+            var temp_version_file = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\appname_version.txt";
+
+            /* Use the WebClient class to download the file from your server */
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+                    webClient.DownloadFile(address: version_file, fileName: temp_version_file);
+                }
+                catch (Exception)
+                {
+                    /* Handle exceptions */
+                    return "error";
+                }
+            }
+
+            /* Check if temporary file was downloaded of not */
+            if (File.Exists(temp_version_file))
+            {
+                /* Get the file content and split it in two */
+                string[] version_data = File.ReadAllText(temp_version_file).Split('=');
+
+                /* Variable to store the app new version */
+                string version = version_data[0];
+
+                /* Store the download link in the global variable already created */
+                download_link = version_data[1];
+
+                /* Compare the app current version with the version from the downloaded file */
+                if (Application.ProductVersion.ToString() == version)
+                {
+                    return "updated";
+                }
+                else
+                {
+                    return "needs_update";
+                }
+            }
+
+            /* Delete the temporary file after using it */
+            if (File.Exists(temp_version_file))
+            {
+                File.Delete(temp_version_file);
+            }
+        }
+
+        public async void RunUpdateCheck()
+        {
+            /* Maybe show a message to the user */
+            labelUpdateState.Text = "Checking for updates. Please wait...";
+
+            /* Variable to get the result from the check function */
+            string result = await Task.Run(() => CheckForUpdates());
+
+            /* Evaluate the result */
+            switch (result)
+            {
+                case "error":
+                    /* Do something here, maybe just notify the user */
+                    break;
+
+                case "updated":
+                    /* Do something here, maybe just notify the user */
+                    break;
+
+                case "needs_update":
+                    /* Perform the update operation, maybe just download
+                    *  the new version with any installed browser or 
+                    *  implement a download function with progressbar 
+                    *  and the like, that's your choice.
+                    *
+                    *  Example:
+                    */
+                    Process.Start(download_link);
+                    break;
+            }
+
+            /* (Optional)
+            *  Set the 'download_link' variable to null for future use. 
+            */
+            download_link = null;
+
+            /* (Optional - in case you have a backup feature)
+            *  Tell the user to backup any data that may be saved before installing
+            *  the new version in case the data is stored in the app install folder,
+            *  I recommend using the AppData folder for saving user data.
+            */
+            labelUpdateState.Text = "Please backup your data before installing the new version";
         }
 
         private void GetUserPreferences()
