@@ -45,13 +45,15 @@ namespace CryptoPortfolioTracker.Views
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            StorageFile helpFile = await StorageFile.GetFileFromPathAsync(App.appPath + "\\HelpFile.rtf");
             try
             {
+                editor.IsReadOnly = false;
+                StorageFile helpFile = await StorageFile.GetFileFromPathAsync(App.appPath + "\\HelpFile.rtf");
                 Windows.Storage.Streams.IRandomAccessStream randAccStream = await helpFile.OpenAsync(Windows.Storage.FileAccessMode.Read);
 
                 // Load the file into the Document property of the RichEditBox.
                 editor.Document.LoadFromStream(Microsoft.UI.Text.TextSetOptions.FormatRtf, randAccStream);
+                editor.IsReadOnly = true;
             }
             catch (Exception)
             {
@@ -70,6 +72,7 @@ namespace CryptoPortfolioTracker.Views
             {
                 try
                 {
+                    editor.IsReadOnly = false;
                     Windows.Storage.Streams.IRandomAccessStream randAccStream =  await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
 
                     // Load the file into the Document property of the RichEditBox.
