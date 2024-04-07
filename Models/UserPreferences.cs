@@ -16,12 +16,7 @@ namespace CryptoPortfolioTracker.Models
         public UserPreferences() 
         {
             
-            //CultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
-            //IsHidingZeroBalances = false;
-            
         }
-
-        
 
         private bool isHidingZeroBalances;
         public bool IsHidingZeroBalances
@@ -37,17 +32,30 @@ namespace CryptoPortfolioTracker.Models
             }
         }
 
-
-        internal string _CultureLanguage;
+        internal string cultureLanguage;
         public string CultureLanguage
         {
-            get { return _CultureLanguage; }
+            get { return cultureLanguage; }
             set
             {
-                if (value != _CultureLanguage)
+                if (value != cultureLanguage)
                 {
-                    _CultureLanguage = value;
+                    cultureLanguage = value;
                     SetCulture();
+                    SaveUserPreferences();
+                }
+            }
+        }
+
+        private bool isCheckForUpdate;
+        public bool IsCheckForUpdate
+        {
+            get { return isCheckForUpdate; }
+            set
+            {
+                if (value != isCheckForUpdate)
+                {
+                    isCheckForUpdate = value;
                     SaveUserPreferences();
                 }
             }

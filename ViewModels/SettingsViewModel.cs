@@ -45,7 +45,6 @@ namespace CryptoPortfolioTracker.ViewModels
             }
         }
 
-
         private bool isHidingZeroBalances;
         public bool IsHidingZeroBalances
         {
@@ -61,6 +60,24 @@ namespace CryptoPortfolioTracker.ViewModels
             }
         }
 
+
+        private bool isCheckForUpdate;
+        public bool IsCheckForUpdate
+        {
+            get { return isCheckForUpdate; }
+            set
+            {
+                if (value != isCheckForUpdate)
+                {
+                    isCheckForUpdate = value;
+                    App.userPreferences.IsCheckForUpdate = isCheckForUpdate;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+
         public SettingsViewModel()
 		{
 			Current = this;
@@ -71,6 +88,41 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             NumberFormatIndex = App.userPreferences.CultureLanguage == "nl" ? 0 : 1;
             IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
+            IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
+        }
+
+        [RelayCommand]
+        public async Task CheckUpdateNow()
+        {
+            AppUpdater appUpdater = new();
+            var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
+
+            if (result == AppUpdaterResult.NeedUpdate)
+            {
+                var dlgResult = await ShowMessageDialog("Update Checker","New version available. Do you want to install it?", "Install", "Cancel");
+                if (dlgResult == ContentDialogResult.Primary)
+                {
+                    appUpdater.Update();
+                }
+            }
+            else
+            {
+                var dlgResult = await ShowMessageDialog("Update Checker", "Version is up-to-date", "OK");
+            }
+        }
+
+        private async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
+        {
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = title,
+                XamlRoot = SettingsView.Current.XamlRoot,
+                Content = message,
+                PrimaryButtonText = primaryButtonText,
+                CloseButtonText = closeButtonText
+            };
+            var dlgResult = await dialog.ShowAsync();
+            return dlgResult;
         }
 
 

@@ -58,10 +58,19 @@
                         </ComboBox>
                     </ct:SettingsCard>
                     <ct:SettingsCard Description="Overall setting for Hiding Zero Balances. In the overview itself this can be turned ON or OFF, temporarely."
-                               Header="Hide Zero Balances"
-                               HeaderIcon="{ui:BitmapIcon Source=ms-appx:///Assets/AppTitleBar.scale-200.png}"
-                               IsEnabled="True">
+                       Header="Hide Zero Balances"
+                       HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
+                       IsEnabled="True">
                         <ToggleSwitch IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
+                    </ct:SettingsCard>
+                    <ct:SettingsCard x:Name="UpdateCard" Description="Enables automatic check if an update of the app is available."
+                        Header="Check for Update"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                        IsEnabled="True">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Check Now" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" />
+                            <ToggleSwitch IsOn="{Binding IsCheckForUpdate, Mode=TwoWay}" Margin="60,0,0,0" />
+                        </StackPanel>
                     </ct:SettingsCard>
                 </StackPanel>
             </Border>

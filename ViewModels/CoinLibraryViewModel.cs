@@ -86,7 +86,7 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 await (await _libraryService.CreateCoin(dialog.selectedCoin))
                     .Match(Succ: succ => AddToListCoins(dialog.selectedCoin),
-                    Fail: async err => await ShowMessageBox("Adding coin failed", err.Message));
+                    Fail: async err => await ShowMessageDialog("Adding coin failed", err.Message, "Close"));
             }
             Debug.WriteLine("exited Dialog ");
         }
@@ -108,7 +108,7 @@ namespace CryptoPortfolioTracker.ViewModels
                     if (result == ContentDialogResult.Primary)
                     {
                         (await _libraryService.UpdateNote(coin, dialog.newNote))
-                            .IfFail(async err => await ShowMessageBox("Updating note failed", err.Message));
+                            .IfFail(async err => await ShowMessageDialog("Updating note failed", err.Message, "Close"));
                     }
                 });
             
@@ -119,7 +119,7 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             await (await _libraryService.RemoveCoin(coinId))
                .Match(Succ: s => RemoveFromListCoins(coinId),
-                       Fail: async err => await ShowMessageBox("Failed to delete Coin", err.Message));
+                       Fail: async err => await ShowMessageDialog("Failed to delete Coin", err.Message, "Close"));
         }
         private bool CanDeleteCoin(string coinId)
         {
@@ -154,7 +154,7 @@ namespace CryptoPortfolioTracker.ViewModels
         #endregion MAIN methods or Tasks
 
         #region SUB methods or Tasks
-        private Task<bool> RemoveFromListCoins(string coinId)
+        private Task RemoveFromListCoins(string coinId)
         {
             try
             {
@@ -167,22 +167,24 @@ namespace CryptoPortfolioTracker.ViewModels
             }
             return Task.FromResult(true);
         }
-        private Task<bool> AddToListCoins(Coin coin)
+        private Task AddToListCoins(Coin coin)
         {
             ListCoins.Add(coin);
 
             return Task.FromResult(true);
         }
-        private async Task ShowMessageBox(string title, string message)
+        private async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
         {
-            ContentDialog errorDialog = new ContentDialog()
+            ContentDialog dialog = new ContentDialog()
             {
                 Title = title,
                 XamlRoot = CoinLibraryView.Current.XamlRoot,
                 Content = message,
-                PrimaryButtonText = "OK"
+                PrimaryButtonText = primaryButtonText,
+                CloseButtonText = closeButtonText
             };
-            await errorDialog.ShowAsync();
+            var dlgResult = await dialog.ShowAsync();
+            return dlgResult;
         }
         #endregion SUB methods or Tasks
 
