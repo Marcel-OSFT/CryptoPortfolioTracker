@@ -63,12 +63,13 @@
                        IsEnabled="True">
                         <ToggleSwitch IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
                     </ct:SettingsCard>
-                    <ct:SettingsCard x:Name="UpdateCard" Description="Enables automatic check if an update of the app is available."
+                    <ct:SettingsCard x:Name="UpdateCard" Description="Enables automatic checking for available updates of the app."
                         Header="Check for Update"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
                         IsEnabled="True">
                         <StackPanel Orientation="Horizontal">
-                            <Button Content="Check Now" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" />
+                            <TextBlock x:Name="VersionTxt" VerticalAlignment="Center"/> 
+                            <Button Content="Check Now" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" Margin="60,0,0,0" />
                             <ToggleSwitch IsOn="{Binding IsCheckForUpdate, Mode=TwoWay}" Margin="60,0,0,0" />
                         </StackPanel>
                     </ct:SettingsCard>

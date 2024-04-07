@@ -9,6 +9,7 @@ using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
+using LanguageExt;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -66,6 +67,7 @@ namespace CryptoPortfolioTracker.ViewModels
         [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
         public async Task ShowAccountDialogToAdd()
         {
+            App.isBusy = true;
             try
             {
                 AccountDialog dialog = new AccountDialog(Current, DialogAction.Add);
@@ -83,6 +85,7 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 await ShowMessageDialog("Account Dialog Failure", ex.Message, "Close");
             }
+            finally { App.isBusy = false; }
         }
         private bool CanShowAccountDialogToAdd()
         {
@@ -92,6 +95,7 @@ namespace CryptoPortfolioTracker.ViewModels
         [RelayCommand]
         public async Task ShowAccountDialogToEdit(int accountId)
         {
+            App.isBusy = true;
             Account accountToEdit = null;
             try
             {
@@ -111,28 +115,36 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 await ShowMessageDialog("Account Dialog Failure", ex.Message, "Close");
             }
+            finally { App.isBusy = false; }
         }
 
         [RelayCommand(CanExecute = nameof(CanDeleteAccount))]
         public async Task DeleteAccount(int accountId)
         {
+            App.isBusy = true;
             // *** Delete option normally never available when an Account contains assets
             //*** but nevertheless lets check it...
-
-            bool IsDeleteAllowed = (await _accountService.AccountHasNoAssets(accountId))
+            try
+            {
+                bool IsDeleteAllowed = (await _accountService.AccountHasNoAssets(accountId))
                 .Match<bool>(Succ: succ => succ, Fail: err => { return false; });
 
-            if (IsDeleteAllowed)
-            {
-                await (await _accountService.RemoveAccount(accountId))
-                    .Match(Succ: s => RemoveFromListAccounts(accountId),
-                        Fail: async err => await ShowMessageDialog("Failed to delete Account", err.Message, "Close"));
+                if (IsDeleteAllowed)
+                {
+                    await (await _accountService.RemoveAccount(accountId))
+                        .Match(Succ: s => RemoveFromListAccounts(accountId),
+                            Fail: async err => await ShowMessageDialog("Failed to delete Account", err.Message, "Close"));
+                }
+                else
+                {
+                    await ShowMessageDialog("Account deletion failure", "Account may have assets assigned.", "Close");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await ShowMessageDialog("Account deletion failure", "Account may have assets assigned.", "Close");
+                await ShowMessageDialog("Failed to delete Account", ex.Message, "Close");
             }
-
+            finally { App.isBusy = false; }
         }
         private bool CanDeleteAccount(int accountId)
         {

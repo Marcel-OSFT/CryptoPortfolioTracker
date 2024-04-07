@@ -83,29 +83,47 @@ namespace CryptoPortfolioTracker.ViewModels
             _priceUpdateBackgroundService = priceUpdateBackgroundService;
             _transactionService = transactionService;
             _priceUpdateBackgroundService.Start();
-            RunUpdateCheck();
+            if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
 
         }
 
-        public async void RunUpdateCheck()
+        public async Task CheckUpdateNow()
         {
-            if (!App.userPreferences.IsCheckForUpdate) return;
-
             AppUpdater appUpdater = new();
             var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
             if (result == AppUpdaterResult.NeedUpdate)
             {
-                var dlgResult = await ShowMessageDialog("Update Checker", "new version available, do you want to download it?", "Install", "Cancel");
+                var dlgResult = await ShowMessageDialog("Update Checker", "New version available. Do you want to download it? In the meanwhile you can continue using the app. You will be notified when the download has finished.", "Download", "Cancel");
                 if (dlgResult == ContentDialogResult.Primary)
                 {
-                    appUpdater.Update();
+                    var downloadResult = await appUpdater.DownloadSetupFile();
+                    //Download is running async, so the user can continue to do other stuff
+                    if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
+                    {   
+                        //*** Download is doen, wait till there is no other dialog box open
+                        while (App.isBusy)
+                        {
+                            await Task.Delay(5000);
+;                       }
 
+                        var installRequest = await ShowMessageDialog("Download Succesfull", "The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.", "Install", "Cancel");
+                        if (installRequest == ContentDialogResult.Primary)
+                        {
+                            appUpdater.ExecuteSetupFile();
+                        }
+                    }
+                    else
+                    {
+                        await ShowMessageDialog("Downloading Setup File failed", "Update will be postponed", "Close");
+                    }
                 }
             }
-
+            else
+            {
+                var dlgResult = await ShowMessageDialog("Update Checker", "Version is up-to-date", "OK");
+            }
         }
-
 
 
 
@@ -159,7 +177,8 @@ namespace CryptoPortfolioTracker.ViewModels
 
         [RelayCommand(CanExecute = nameof(CanShowTransactionDialogToAdd))]
         public async Task ShowTransactionDialogToAdd()
-        {
+        {   
+            App.isBusy = true;
             try
             {
                 var dialog = new TransactionDialog(_transactionService, DialogAction.Add);
@@ -179,6 +198,7 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 await ShowMessageDialog("Transaction Dialog Failure", ex.Message, "Close", "");
             }
+            finally { App.isBusy = false; }
         }
         private bool CanShowTransactionDialogToAdd()
         {
@@ -188,6 +208,8 @@ namespace CryptoPortfolioTracker.ViewModels
         [RelayCommand]
         public async Task ShowTransactionDialogToEdit(int transactionId)
         {
+            App.isBusy = true;
+
             AssetTransaction transactionToEdit = null;
             AssetAccount accountAffected = null;
 
@@ -220,11 +242,13 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 await ShowMessageDialog("Transaction Dialog Failure ", ex.Message, "Close");
             }
+            finally { App.isBusy = false; }
         }
 
         [RelayCommand]
         public async Task DeleteTransaction(int transactionId)
         {
+            App.isBusy = true;
             try
             {
                 var dlgResult = await ShowMessageDialog("Are you sure you want to delete this transaction? Select CONFIRM to delete and revert this transaction","Confirm", "Cancel");
@@ -248,6 +272,7 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 await ShowMessageDialog("Deleting transaction failed",  ex.Message, "Close");
             }
+            finally { App.isBusy = false; }
         }
         public async Task ShowAssetTransactions(AssetAccount clickedAccount)
         {

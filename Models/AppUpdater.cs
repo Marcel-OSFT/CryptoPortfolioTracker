@@ -20,14 +20,13 @@ namespace CryptoPortfolioTracker.Models
     public class AppUpdater
     {
         private string downloadLink = null;
+        private string downloadsFolderPath = null;
+        private string fileName = null;
 
         /// 2. Declare DownloadsFolder GUI and import SHGetKnownFolderPath method
         private static Guid FolderDownloads = new Guid("374DE290-123F-4565-9164-39C4925E467B");
         [DllImport("shell32.dll", CharSet = CharSet.Auto)]
         private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);
-
-
-
 
         public AppUpdater() { }
 
@@ -46,7 +45,7 @@ namespace CryptoPortfolioTracker.Models
                     if (!response.IsSuccessStatusCode)
                     {
                         // write an error
-                        return AppUpdaterResult.Error;
+                        return AppUpdaterResult.CheckingError;
                     }
 
                     using (var fs = new FileStream(temp_version_file, FileMode.Create))
@@ -57,7 +56,7 @@ namespace CryptoPortfolioTracker.Models
                 catch (Exception)
                 {
                     /* Handle exceptions */
-                    return AppUpdaterResult.Error;
+                    return AppUpdaterResult.CheckingError;
                 }
             }
 
@@ -89,10 +88,6 @@ namespace CryptoPortfolioTracker.Models
             return AppUpdaterResult.UpToDate;
         }
 
-        /// <summary>
-        /// Returns the absolute downloads directory specified on the system.
-        /// </summary>
-        /// <returns></returns>
         public static string GetDownloadsPath()
         {
             if (Environment.OSVersion.Version.Major < 6) throw new NotSupportedException();
@@ -125,60 +120,58 @@ namespace CryptoPortfolioTracker.Models
             return  sections.Length > 0 ? sections[sections.Length-1] : string.Empty;
         }
 
-        public async Task<AppUpdaterResult> Update()
+        public async Task<AppUpdaterResult> DownloadSetupFile()
         {
-            //-- TO DO implement downloading and installing
+            downloadsFolderPath = GetDownloadsPath();
+            fileName = ExtractFileName();
 
-            downloadLink = "https://marcel-osft.github.io/CryptoPortfolioTracker/CryptoPortfolioTracker_setup.exe";
-
-
-            var DownloadsFolderPath = GetDownloadsPath();
-            var fileName = ExtractFileName();
-
-            //Download the new installer
             using (var httpClient = new HttpClient())
             {
                 HttpResponseMessage response;
+                httpClient.Timeout = TimeSpan.FromSeconds(1000);
                 try
                 {
                     response = await httpClient.GetAsync(downloadLink);
-
                     if (!response.IsSuccessStatusCode)
                     {
                         // write an error
-                        return AppUpdaterResult.Error;
+                        return AppUpdaterResult.DownloadError;
                     }
-
-                    using (var fs = new FileStream(DownloadsFolderPath + fileName, FileMode.Create))
+                    using (var fs = new FileStream(downloadsFolderPath + fileName, FileMode.Create))
                     {
                         await response.Content.CopyToAsync(fs);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     /* Handle exceptions */
-                    return AppUpdaterResult.Error;
+                    Debug.WriteLine(ex.Message);
+                    return AppUpdaterResult.DownloadError;
                 }
-
             }
-            return AppUpdaterResult.UpdateSuccesfull;
+            return AppUpdaterResult.DownloadSuccesfull;
+        }
 
-            /* Perform the update operation, maybe just download
-            *  the new version with any installed browser or 
-            *  implement a download function with progressbar 
-            *  and the like, that's your choice.
-            *
-            *  Example:
-            */
-            //*** then run process.start to execute the installer...
-
-            // Process.Start(download_link); /SP- /silent /noicons "/dir=expand:{commonpf64}\{#MyAppName}"
-
+        public Task<AppUpdaterResult> ExecuteSetupFile()
+        {
+            try
+            {
+                Process process = new();
+                process.StartInfo.FileName = downloadsFolderPath + fileName;
+                process.StartInfo.Arguments = "/SP- /silent /noicons";
+                process.StartInfo.WorkingDirectory = App.appPath;
+                process.Start();
+                process.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Process : " + ex.Message);
+            }
             //After starting setup.exe, exit your application as soon as possible.Note that to avoid problems with updating your.exe, Setup has an auto retry feature.
             //Optionally you could also use the skipifsilent and skipifnotsilent flags and make your application aware of a '/updated' parameter to for example show a nice message box to inform the user that the update has completed.
 
+            return Task.FromResult(AppUpdaterResult.UpdateSuccesfull);
         }
-
 
 
     }
