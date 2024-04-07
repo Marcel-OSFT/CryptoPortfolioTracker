@@ -1,11 +1,18 @@
 using CryptoPortfolioTracker.Dialogs;
+using CryptoPortfolioTracker.Views;
+using LanguageExt.ClassInstances;
+
 //using System.Management.Automation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 
 
@@ -23,12 +30,15 @@ namespace CryptoPortfolioTracker
         public static MainPage Current;
         private IServiceScope _currentServiceScope;
 
-
+       
         public MainPage()
         {
             this.InitializeComponent();
             Current = this;
+       
         }
+
+        
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {

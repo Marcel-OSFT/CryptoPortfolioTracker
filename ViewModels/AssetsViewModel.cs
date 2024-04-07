@@ -11,15 +11,24 @@ using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
 using LanguageExt;
+using LanguageExt.Pipes;
+using LanguageExt.TypeClasses;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Windows.System;
 using WinRT;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 #endregion Using
 
 namespace CryptoPortfolioTracker.ViewModels
@@ -60,7 +69,7 @@ namespace CryptoPortfolioTracker.ViewModels
 
 
         public static List<CoinList> coinListGecko;
-       
+
 
         #endregion variables and proporties for DataBinding with the View
 
@@ -74,8 +83,31 @@ namespace CryptoPortfolioTracker.ViewModels
             _priceUpdateBackgroundService = priceUpdateBackgroundService;
             _transactionService = transactionService;
             _priceUpdateBackgroundService.Start();
+            RunUpdateCheck();
 
         }
+
+        public async void RunUpdateCheck()
+        {
+            if (!App.userPreferences.IsCheckForUpdate) return;
+
+            AppUpdater appUpdater = new();
+            var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
+
+            if (result == AppUpdaterResult.NeedUpdate)
+            {
+                var dlgResult = await ShowMessageDialog("Update Checker", "new version available, do you want to download it?", "Install", "Cancel");
+                if (dlgResult == ContentDialogResult.Primary)
+                {
+                    appUpdater.Update();
+
+                }
+            }
+
+        }
+
+
+
 
         #region MAIN methods or Tasks
         private async Task SetDataSource()
@@ -83,6 +115,7 @@ namespace CryptoPortfolioTracker.ViewModels
             (await _assetService.GetAssetTotals())
                  .Match(Succ: s => CreateListAssetTotals(s), Fail: e => CreateListWithDummyAssetTotals());
         }
+
 
 
         [RelayCommand]
@@ -138,13 +171,13 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     await (await _transactionService.AddTransaction(dialog.transactionNew))
                         .Match(Succ: newAsset => UpdateListAssetTotals(dialog.transactionNew),
-                            Fail: async err => await ShowMessageBox("Adding transaction failed", err.Message));
+                            Fail: async err => await ShowMessageDialog("Adding transaction failed", err.Message, "Close"));
                     CalculateAssetsTotalValues();
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageBox("Transaction Dialog Failure", ex.Message);
+                await ShowMessageDialog("Transaction Dialog Failure", ex.Message, "Close", "");
             }
         }
         private bool CanShowTransactionDialogToAdd()
@@ -179,13 +212,13 @@ namespace CryptoPortfolioTracker.ViewModels
                                 await UpdateListAssetTransaction(dialog.transactionNew, transactionToEdit);
 
                             },
-                                Fail: async err => await ShowMessageBox("Updating transaction failed ", err.Message));
+                                Fail: async err => await ShowMessageDialog("Updating transaction failed ", err.Message, "Close"));
                     CalculateAssetsTotalValues();
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageBox("Transaction Dialog Failure ", ex.Message);
+                await ShowMessageDialog("Transaction Dialog Failure ", ex.Message, "Close");
             }
         }
 
@@ -194,12 +227,8 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             try
             {
-                MsgBoxDialog dialog = new MsgBoxDialog("Are you sure you want to delete this transaction? Select CONFIRM to delete and revert this transaction");
-                dialog.XamlRoot = AssetsView.Current.XamlRoot;
-                dialog.Title = "Delete Transaction";
-                var result = await dialog.ShowAsync();
-
-                if (result == ContentDialogResult.Primary)
+                var dlgResult = await ShowMessageDialog("Are you sure you want to delete this transaction? Select CONFIRM to delete and revert this transaction","Confirm", "Cancel");
+                if (dlgResult == ContentDialogResult.Primary)
                 {
                     var transactionToDelete = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
                     //*** editing a transaction also involves a change for an element in the ListAssetAccounts
@@ -212,12 +241,12 @@ namespace CryptoPortfolioTracker.ViewModels
                                  await UpdateListAssetAccount(accountAffected);
                                  await RemoveFromListAssetTransactions(transactionToDelete);
                              },
-                                    Fail: err => ShowMessageBox("Deleting transaction failed", err.Message));
+                                    Fail: err => ShowMessageDialog("Deleting transaction failed", err.Message, "Close"));
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageBox("Deleting transaction failed",  ex.Message);
+                await ShowMessageDialog("Deleting transaction failed",  ex.Message, "Close");
             }
         }
         public async Task ShowAssetTransactions(AssetAccount clickedAccount)
@@ -291,7 +320,16 @@ namespace CryptoPortfolioTracker.ViewModels
             (await _assetService.GetAccountByAsset(accountAffected.AssetId))
                 .IfSucc(s =>
                 {
-                    var index = ListAssetAccounts.IndexOf(accountAffected);
+                    int index = -1;
+                    for (var i = 0; i < ListAssetAccounts.Count; i++)
+                    {
+                        if (ListAssetAccounts[i].Name == accountAffected.Name)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index == -1) return;
                     if (s != null)
                     {
                         ListAssetAccounts[index] = s;
@@ -316,7 +354,16 @@ namespace CryptoPortfolioTracker.ViewModels
             foreach (var coin in coinsAffected)
             {
                 var assetAffected = (AssetTotals)ListAssetTotals.Where(x => x.Coin == coin).SingleOrDefault();
-                var index = ListAssetTotals.IndexOf(assetAffected);
+
+                int index = -1;
+                for (var i = 0; i < ListAssetTotals.Count; i++)
+                {
+                    if (ListAssetTotals[i].Coin.Id == assetAffected.Coin.Id)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
 
                 if (assetAffected == null)
                 {
@@ -326,20 +373,29 @@ namespace CryptoPortfolioTracker.ViewModels
                     {
                         assetAffected = s;
                         ListAssetTotals.Add(assetAffected);
+                        Debug.WriteLine("added " + assetAffected.Coin.Name );
                     });
                 }
-                else
+                else if (index >= 0)
                 {
                     var editedAT = (await _assetService.GetAssetTotalsByCoin(coin)).Match(Succ: s => s, Fail: err => null);
                     ListAssetTotals[index] = editedAT;
-
+                    Debug.WriteLine("updated " + editedAT.Coin.Name);
                 }
             }
         }
         public Task UpdateListAssetTransaction(AssetTransaction transactionNew, AssetTransaction transactionToEdit)
         {
-            var index = ListAssetTransactions.IndexOf(transactionToEdit);
-            ListAssetTransactions[index] = transactionNew;
+            int index = -1;
+            for (var i = 0; i < ListAssetTransactions.Count; i++)
+            {
+                if (ListAssetTransactions[i].Id == transactionToEdit.Id)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            if (index >= 0) ListAssetTransactions[index] = transactionNew;
             return Task.CompletedTask;
         }
         public bool CreateListAssetTotals(List<AssetTotals> list)
@@ -392,16 +448,18 @@ namespace CryptoPortfolioTracker.ViewModels
                 TotalAssetsPnLPerc = 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase;
             }
         }
-        private async Task ShowMessageBox(string title, string message)
+        private async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
         {
-            ContentDialog errorDialog = new ContentDialog()
+            ContentDialog dialog = new ContentDialog()
             {
                 Title = title,
                 XamlRoot = AssetsView.Current.XamlRoot,
                 Content = message,
-                PrimaryButtonText = "OK"
+                PrimaryButtonText = primaryButtonText,
+                CloseButtonText = closeButtonText
             };
-            await errorDialog.ShowAsync();
+            var dlgResult = await dialog.ShowAsync();
+            return dlgResult;
         }
 
         public void Dispose()

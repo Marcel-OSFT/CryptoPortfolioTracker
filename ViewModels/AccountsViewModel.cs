@@ -76,12 +76,12 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     await (await _accountService.CreateAccount(dialog.newAccount))
                         .Match(Succ: succ => AddToListAccounts(dialog.newAccount),
-                            Fail: async err => await ShowMessageBox("Adding account failed", err.Message));
+                            Fail: async err => await ShowMessageDialog("Adding account failed", err.Message,"Close"));
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageBox("Account Dialog Failure", ex.Message);
+                await ShowMessageDialog("Account Dialog Failure", ex.Message, "Close");
             }
         }
         private bool CanShowAccountDialogToAdd()
@@ -104,12 +104,12 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     
                     (await _accountService.EditAccount(dialog.newAccount, accountToEdit))
-                        .IfFail(async err => await ShowMessageBox("Updating account failed", err.Message));
+                        .IfFail(async err => await ShowMessageDialog("Updating account failed", err.Message, "Close"));
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageBox("Account Dialog Failure", ex.Message);
+                await ShowMessageDialog("Account Dialog Failure", ex.Message, "Close");
             }
         }
 
@@ -126,11 +126,11 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 await (await _accountService.RemoveAccount(accountId))
                     .Match(Succ: s => RemoveFromListAccounts(accountId),
-                        Fail: async err => await ShowMessageBox("Failed to delete Account", err.Message));
+                        Fail: async err => await ShowMessageDialog("Failed to delete Account", err.Message, "Close"));
             }
             else
             {
-                await ShowMessageBox("Account deletion failure", "Account may have assets assigned.");
+                await ShowMessageDialog("Account deletion failure", "Account may have assets assigned.", "Close");
             }
 
         }
@@ -210,7 +210,7 @@ namespace CryptoPortfolioTracker.ViewModels
         #region SUB methods or Tasks
 
         
-        public Task<bool> RemoveFromListAccounts(int accountId)
+        public Task RemoveFromListAccounts(int accountId)
         {
             try
             {
@@ -223,28 +223,28 @@ namespace CryptoPortfolioTracker.ViewModels
             }
             return Task.FromResult(true);
         }
-        public Task<bool> AddToListAccounts(Account newAccount)
+        public Task AddToListAccounts(Account newAccount)
         {
             try
             {
                 ListAccounts.Add(newAccount);
             }
-            catch (Exception)
-            {
-                return Task.FromResult(false);
-            }
+            catch (Exception) { Task.FromResult(false); }
+            
             return Task.FromResult(true);
         }
-        private async Task ShowMessageBox(string title, string message)
+        private async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
         {
-            ContentDialog errorDialog = new ContentDialog()
+            ContentDialog dialog = new ContentDialog()
             {
                 Title = title,
                 XamlRoot = AccountsView.Current.XamlRoot,
                 Content = message,
-                PrimaryButtonText = "OK"
+                PrimaryButtonText = primaryButtonText,
+                CloseButtonText = closeButtonText
             };
-            await errorDialog.ShowAsync();
+            var dlgResult = await dialog.ShowAsync();
+            return dlgResult;
         }
         #endregion SUB methods or Tasks
 

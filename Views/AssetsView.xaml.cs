@@ -9,6 +9,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Views
 {
@@ -19,6 +22,7 @@ namespace CryptoPortfolioTracker.Views
         public static AssetsView Current;
         private bool isExtendedView = false;
 
+       
         public AssetsView(AssetsViewModel viewModel)// ** DI of viewModel into View
         {
             Current = this;

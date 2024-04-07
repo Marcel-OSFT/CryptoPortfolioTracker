@@ -474,8 +474,13 @@ namespace CryptoPortfolioTracker.Dialogs
             {
                 var index = TransactionTypeRadioButtons.Items.ToList().IndexOf(transactionToEdit.Details.TransactionType.ToString());
                 TransactionTypeRadioButtons.SelectedIndex = index;
+                Title = "Edit Transaction ";
             }
-            else TransactionTypeRadioButtons.SelectedIndex = 0;
+            else
+            {
+                TransactionTypeRadioButtons.SelectedIndex = 0;
+                Title = "Add Transaction";
+            }
         }
         #endregion Constructors
 
