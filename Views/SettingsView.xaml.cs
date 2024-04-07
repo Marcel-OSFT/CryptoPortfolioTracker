@@ -22,7 +22,8 @@ namespace CryptoPortfolioTracker.Views
             Current = this;
             _viewModel = viewModel;
             this.InitializeComponent();
-            DataContext = _viewModel;      
+            DataContext = _viewModel;  
+            VersionTxt.Text = "Current version: " + App.ProductVersion;
         }
 
         

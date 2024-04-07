@@ -76,19 +76,27 @@ namespace CryptoPortfolioTracker.ViewModels
         [RelayCommand(CanExecute = nameof(CanShowAddCoinDialog))]
         public async Task ShowAddCoinDialog()
         {
-            Debug.WriteLine("entered Dialog ");
-
-            dialog = new AddCoinDialog(coinListGecko, Current);
-            dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
-            var result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
+            App.isBusy = true;
+            try
             {
-                await (await _libraryService.CreateCoin(dialog.selectedCoin))
-                    .Match(Succ: succ => AddToListCoins(dialog.selectedCoin),
-                    Fail: async err => await ShowMessageDialog("Adding coin failed", err.Message, "Close"));
+                dialog = new AddCoinDialog(coinListGecko, Current);
+                dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
+                var result = await dialog.ShowAsync();
+
+                if (result == ContentDialogResult.Primary)
+                {
+                    await (await _libraryService.CreateCoin(dialog.selectedCoin))
+                        .Match(Succ: succ => AddToListCoins(dialog.selectedCoin),
+                        Fail: async err => await ShowMessageDialog("Adding coin failed", err.Message, "Close"));
+                }
             }
-            Debug.WriteLine("exited Dialog ");
+            catch (Exception ex)
+            {
+                await ShowMessageDialog("Add Coin Dialog failure", ex.Message, "Close");
+            }
+            finally {App.isBusy = false;}
+            
+            App.isBusy = false;
         }
         private bool CanShowAddCoinDialog()
         {
@@ -98,20 +106,28 @@ namespace CryptoPortfolioTracker.ViewModels
         [RelayCommand]
         public async Task ShowAddNoteDialog(string coinId)
         {
-            (await _libraryService.GetCoin(coinId))
-                .IfSucc(async coin =>
-                {
-                    AddNoteDialog dialog = new AddNoteDialog(coin);
-                    dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
-                    dialog.Title = "Add a note for " + coin.Name;
-                    var result = await dialog.ShowAsync();
-                    if (result == ContentDialogResult.Primary)
+            App.isBusy = true;
+            try
+            {
+                (await _libraryService.GetCoin(coinId))
+                    .IfSucc(async coin =>
                     {
-                        (await _libraryService.UpdateNote(coin, dialog.newNote))
-                            .IfFail(async err => await ShowMessageDialog("Updating note failed", err.Message, "Close"));
-                    }
-                });
-            
+                        AddNoteDialog dialog = new AddNoteDialog(coin);
+                        dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
+                        dialog.Title = "Add a note for " + coin.Name;
+                        var result = await dialog.ShowAsync();
+                        if (result == ContentDialogResult.Primary)
+                        {
+                            (await _libraryService.UpdateNote(coin, dialog.newNote))
+                                .IfFail(async err => await ShowMessageDialog("Updating note failed", err.Message, "Close"));
+                        }
+                    });
+            }
+            catch (Exception ex)
+            {
+                await ShowMessageDialog("Note Dialog failure", ex.Message, "Close");
+            }
+            finally {  App.isBusy = false;}
         }
         
         [RelayCommand(CanExecute = nameof(CanDeleteCoin))]
@@ -138,7 +154,8 @@ namespace CryptoPortfolioTracker.ViewModels
 
         [RelayCommand]
         public async Task ShowDescription(string coinId)
-        {
+        {   
+            App.isBusy = true;
             if (coinId != null)
             {
                 (await _libraryService.GetCoin(coinId))
@@ -150,6 +167,7 @@ namespace CryptoPortfolioTracker.ViewModels
                         await dialog.ShowAsync();
                     });
             }
+            App.isBusy = false;   
         }
         #endregion MAIN methods or Tasks
 

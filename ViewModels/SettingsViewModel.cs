@@ -99,10 +99,29 @@ namespace CryptoPortfolioTracker.ViewModels
 
             if (result == AppUpdaterResult.NeedUpdate)
             {
-                var dlgResult = await ShowMessageDialog("Update Checker","New version available. Do you want to install it?", "Install", "Cancel");
+                var dlgResult = await ShowMessageDialog("Update Checker", "New version available. Do you want to get it? in the meanwhile you can continue using the app. You will be notified when the download has finished.", "Get latest version", "Cancel");
                 if (dlgResult == ContentDialogResult.Primary)
                 {
-                    appUpdater.Update();
+                    var downloadResult = await appUpdater.DownloadSetupFile();
+                    if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
+                    {
+                        //*** Download is doen, wait till there is no other dialog box open
+                        while (App.isBusy)
+                        {
+                            await Task.Delay(5000);
+                            ;
+                        }
+                        var installRequest = await ShowMessageDialog("Download Succesfull", "The setup file has been saved in your Downloads folder. Click 'Install' to proceed with the installation. The application will close automatically.", "Install", "Cancel" );
+                        if (installRequest == ContentDialogResult.Primary)
+                        {
+                            appUpdater.ExecuteSetupFile();
+                        }
+                    }
+                    else
+                    {
+                        await ShowMessageDialog("Downloading Setup File failed", "Update will be postponed", "Close" );
+                    }
+                    
                 }
             }
             else

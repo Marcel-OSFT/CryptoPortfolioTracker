@@ -5,9 +5,11 @@ namespace CryptoPortfolioTracker.Enums;
 
 public enum AppUpdaterResult
 {
-    Error = 0,
+    CheckingError = 0,
     UpToDate = 1,
     NeedUpdate = 2,
     UpdateSuccesfull = 3,
-
+    DownloadSuccesfull = 4,
+    DownloadError = 5,
+    UpdateError = 6,
 }
