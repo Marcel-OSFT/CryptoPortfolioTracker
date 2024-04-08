@@ -378,7 +378,7 @@ namespace CryptoPortfolioTracker.ViewModels
             // Check if one isn't in the assetsList yet, if so then add it.
             foreach (var coin in coinsAffected)
             {
-                var assetAffected = (AssetTotals)ListAssetTotals.Where(x => x.Coin == coin).SingleOrDefault();
+                var assetAffected = (AssetTotals)ListAssetTotals.Where(x => x.Coin.Id == coin.Id).SingleOrDefault();
 
                 int index = -1;
                 for (var i = 0; i < ListAssetTotals.Count; i++)
