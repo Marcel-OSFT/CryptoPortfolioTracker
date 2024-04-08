@@ -44,7 +44,7 @@
             <uap:ShowOn Tile="square310x310Logo"/>
           </uap:ShowNameOnTiles>
         </uap:DefaultTile >
-        <uap:SplashScreen Image="Assets\CPT256x256Icon.png" />
+        <uap:SplashScreen BackgroundColor="transparent" Image="Assets\bitcoin1_HeaderImage.jpg"/>
       </uap:VisualElements>
     </Application>
   </Applications>
