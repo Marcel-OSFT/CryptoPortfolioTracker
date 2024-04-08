@@ -68,6 +68,7 @@ namespace CryptoPortfolioTracker
         public App()
         {
             this.InitializeComponent();
+
             ProductVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             SetAppPaths();
             GetUserPreferences();
@@ -77,9 +78,6 @@ namespace CryptoPortfolioTracker
 
             context.Database.EnsureCreated();
             //if (context.Coins.ToList()==null) InitializeWithMocks();
-
-          
-            
        
         }
 
