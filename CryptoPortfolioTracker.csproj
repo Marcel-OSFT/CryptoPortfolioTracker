@@ -27,6 +27,7 @@
 	  <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
 	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/.</AppInstallerUri>
 	  <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+	  <Version>1.0.1.0</Version>
 	</PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-16.png" />

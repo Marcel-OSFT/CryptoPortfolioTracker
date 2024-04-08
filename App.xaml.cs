@@ -15,6 +15,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -49,7 +50,7 @@ namespace CryptoPortfolioTracker
         public static string appPath;
         public static string appDataPath;
 
-        public const string ProductVersion = "1.0.1.0";
+        public static string ProductVersion;
         public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
         
         public static bool isBusy;
@@ -67,6 +68,7 @@ namespace CryptoPortfolioTracker
         public App()
         {
             this.InitializeComponent();
+            ProductVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             SetAppPaths();
             GetUserPreferences();
             Container = RegisterServices();
