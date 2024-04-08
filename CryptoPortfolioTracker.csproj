@@ -69,27 +69,6 @@
     <None Remove="Dialogs\AddNoteDialog.xaml" />
     <None Remove="Dialogs\BlankWindow1.xaml" />
     <None Remove="Dialogs\TransactionDialog.xaml" />
-    <None Remove="HelpFile.rtf" />
-    <None Remove="HelpFile_bestanden\colorschememapping.xml" />
-    <None Remove="HelpFile_bestanden\filelist.xml" />
-    <None Remove="HelpFile_bestanden\image001.png" />
-    <None Remove="HelpFile_bestanden\image002.png" />
-    <None Remove="HelpFile_bestanden\image003.png" />
-    <None Remove="HelpFile_bestanden\image004.png" />
-    <None Remove="HelpFile_bestanden\image005.jpg" />
-    <None Remove="HelpFile_bestanden\image006.png" />
-    <None Remove="HelpFile_bestanden\image007.png" />
-    <None Remove="HelpFile_bestanden\image008.png" />
-    <None Remove="HelpFile_bestanden\image009.png" />
-    <None Remove="HelpFile_bestanden\image010.png" />
-    <None Remove="HelpFile_bestanden\image011.png" />
-    <None Remove="HelpFile_bestanden\image012.png" />
-    <None Remove="HelpFile_bestanden\image013.png" />
-    <None Remove="HelpFile_bestanden\image014.jpg" />
-    <None Remove="HelpFile_bestanden\image015.png" />
-    <None Remove="HelpFile_bestanden\image016.png" />
-    <None Remove="HelpFile_bestanden\image017.png" />
-    <None Remove="HelpFile_bestanden\themedata.thmx" />
     <None Remove="MK_Styles.xaml" />
     <None Remove="Views\SettingsView.xaml" />
   </ItemGroup>
@@ -114,69 +93,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Wide310x150Logo.scale-200.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile.rtf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\colorschememapping.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\filelist.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image001.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image002.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image003.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image004.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image005.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image006.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image007.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image008.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image009.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image010.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image011.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image012.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image013.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image014.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image015.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image016.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\image017.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="HelpFile_bestanden\themedata.thmx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
