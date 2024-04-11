@@ -21,6 +21,9 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Windows.ApplicationModel.Activation;
 using WinUIEx;
+using System.Windows;
+using Windows.Devices.Enumeration;
+using System.Linq;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -85,23 +88,26 @@ namespace CryptoPortfolioTracker
         
         private void GetUserPreferences()
         {
-            isReadingUserPreferences = true;    
             userPreferences = new UserPreferences();
-
-            if (File.Exists(appDataPath + "\\prefs.xml"))
+            try
             {
-                XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-                FileStream myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
+                if (File.Exists(appDataPath + "\\prefs.xml"))
+                {
+                    isReadingUserPreferences = true;
+                    XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
+                    FileStream myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
 
-                userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
+                    userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
+                }
+                
             }
-            else
-            {
-                userPreferences.CultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
-                userPreferences.IsHidingZeroBalances = false;
-                //SaveUserPreferences();
+            catch { }
+            finally 
+            { 
+                isReadingUserPreferences = false; 
             }
-            isReadingUserPreferences = false;
+            
+            
         }
 
         public static void SaveUserPreferences()
@@ -179,6 +185,9 @@ namespace CryptoPortfolioTracker
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            
+
+
 
             m_window = new MainWindow();
 
@@ -202,10 +211,20 @@ namespace CryptoPortfolioTracker
                 // Place the frame in the current Window
                 m_window.Content = rootFrame;
             }
-            m_window.SetWindowSize(1200, 1000);
+
+            var monitor = MonitorInfo.GetDisplayMonitors().FirstOrDefault();
+            if (monitor != null && monitor.RectMonitor.Width <= 1024 && monitor.RectMonitor.Height <= 768)
+            {
+                m_window.SetWindowSize(monitor.RectMonitor.Width,monitor.RectMonitor.Height);
+            }
+            else
+            {
+                m_window.SetWindowSize(1024, 768);
+            }
+            m_window.CenterOnScreen();
             m_window.Title = "Crypto Portfolio Tracker";
 
-            //-- TO DO icon path below
+            //TODO icon path below
 
             m_window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
             m_window.SetTitleBar(null);

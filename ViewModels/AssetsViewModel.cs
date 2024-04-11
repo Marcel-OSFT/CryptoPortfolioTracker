@@ -52,9 +52,11 @@ namespace CryptoPortfolioTracker.ViewModels
         [ObservableProperty] double totalAssetsCostBase;
         [ObservableProperty] double totalAssetsPnLPerc;
 
+        
+
         [ObservableProperty] ObservableCollection<AssetTotals> listAssetTotals;
         [ObservableProperty] ObservableCollection<AssetAccount> listAssetAccounts;
-        [ObservableProperty] ObservableCollection<AssetTransaction> listAssetTransactions;
+        [ObservableProperty] ObservableCollection<Transaction> listAssetTransactions;
 
         private AssetTotals selectedAsset = null;
         private AssetAccount selectedAccount = null;
@@ -67,9 +69,12 @@ namespace CryptoPortfolioTracker.ViewModels
         [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
         bool isHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
 
+        
+
 
         public static List<CoinList> coinListGecko;
 
+       
 
         #endregion variables and proporties for DataBinding with the View
 
@@ -83,51 +88,14 @@ namespace CryptoPortfolioTracker.ViewModels
             _priceUpdateBackgroundService = priceUpdateBackgroundService;
             _transactionService = transactionService;
             _priceUpdateBackgroundService.Start();
-            if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
-
+           
         }
-
-        public async Task CheckUpdateNow()
-        {
-            AppUpdater appUpdater = new();
-            var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
-
-            if (result == AppUpdaterResult.NeedUpdate)
-            {
-                var dlgResult = await ShowMessageDialog("Update Checker", "New version available. Do you want to download it? In the meanwhile you can continue using the app. You will be notified when the download has finished.", "Download", "Cancel");
-                if (dlgResult == ContentDialogResult.Primary)
-                {
-                    var downloadResult = await appUpdater.DownloadSetupFile();
-                    //Download is running async, so the user can continue to do other stuff
-                    if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
-                    {   
-                        //*** Download is doen, wait till there is no other dialog box open
-                        while (App.isBusy)
-                        {
-                            await Task.Delay(5000);
-;                       }
-
-                        var installRequest = await ShowMessageDialog("Download Succesfull", "The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.", "Install", "Cancel");
-                        if (installRequest == ContentDialogResult.Primary)
-                        {
-                            appUpdater.ExecuteSetupFile();
-                        }
-                    }
-                    else
-                    {
-                        await ShowMessageDialog("Downloading Setup File failed", "Update will be postponed", "Close");
-                    }
-                }
-            }
-            else
-            {
-                var dlgResult = await ShowMessageDialog("Update Checker", "Version is up-to-date", "OK");
-            }
-        }
-
 
 
         #region MAIN methods or Tasks
+       
+
+
         private async Task SetDataSource()
         {
             (await _assetService.GetAssetTotals())
@@ -210,7 +178,7 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             App.isBusy = true;
 
-            AssetTransaction transactionToEdit = null;
+            Transaction transactionToEdit = null;
             AssetAccount accountAffected = null;
 
             try
@@ -251,13 +219,13 @@ namespace CryptoPortfolioTracker.ViewModels
             App.isBusy = true;
             try
             {
-                var dlgResult = await ShowMessageDialog("Are you sure you want to delete this transaction? Select CONFIRM to delete and revert this transaction","Confirm", "Cancel");
+                var dlgResult = await ShowMessageDialog("Delete Transaction Request","Please CONFIRM to delete and revert this transaction","Confirm", "Cancel");
                 if (dlgResult == ContentDialogResult.Primary)
                 {
                     var transactionToDelete = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
                     //*** editing a transaction also involves a change for an element in the ListAssetAccounts
                     var accountAffected = ListAssetAccounts.Where(t => t.AssetId == transactionToDelete.RequestedAsset.Id).Single();
-
+                    
                     await (await _transactionService.DeleteTransaction(transactionToDelete, accountAffected))
                              .Match(Succ: async s =>
                              {
@@ -366,7 +334,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 });
         }
 
-        public async Task UpdateListAssetTotals(AssetTransaction transaction)
+        public async Task UpdateListAssetTotals(Transaction transaction)
         {
             Debug.WriteLine("");
 
@@ -409,7 +377,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 }
             }
         }
-        public Task UpdateListAssetTransaction(AssetTransaction transactionNew, AssetTransaction transactionToEdit)
+        public Task UpdateListAssetTransaction(Transaction transactionNew, Transaction transactionToEdit)
         {
             int index = -1;
             for (var i = 0; i < ListAssetTransactions.Count; i++)
@@ -435,9 +403,9 @@ namespace CryptoPortfolioTracker.ViewModels
             ListAssetAccounts = new ObservableCollection<AssetAccount>(list.OrderByDescending(x => x.Qty));
             return ListAssetAccounts.Any();
         }
-        public bool CreateListAssetTransactions(List<AssetTransaction> list)
+        public bool CreateListAssetTransactions(List<Transaction> list)
         {
-            ListAssetTransactions = new ObservableCollection<AssetTransaction>(list);
+            ListAssetTransactions = new ObservableCollection<Transaction>(list);
             return ListAssetTransactions.Any();
         }
         private bool CreateListWithDummyAssetTotals()
@@ -456,7 +424,7 @@ namespace CryptoPortfolioTracker.ViewModels
             ListAssetTotals.Add(dummyAssetTotals);
             return ListAssetTotals.Any();
         }
-        public Task<bool> RemoveFromListAssetTransactions(AssetTransaction deletedTransaction)
+        public Task<bool> RemoveFromListAssetTransactions(Transaction deletedTransaction)
         {
             var transactionToUpdate = ListAssetTransactions.Where(x => x.Id == deletedTransaction.Id).Single();
             ListAssetTransactions.Remove(deletedTransaction);
@@ -473,23 +441,9 @@ namespace CryptoPortfolioTracker.ViewModels
                 TotalAssetsPnLPerc = 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase;
             }
         }
-        private async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
-        {
-            ContentDialog dialog = new ContentDialog()
-            {
-                Title = title,
-                XamlRoot = AssetsView.Current.XamlRoot,
-                Content = message,
-                PrimaryButtonText = primaryButtonText,
-                CloseButtonText = closeButtonText
-            };
-            var dlgResult = await dialog.ShowAsync();
-            return dlgResult;
-        }
+        
 
-        public void Dispose()
-        {
-        }
+       
         #endregion SUB methods or Tasks
 
     }

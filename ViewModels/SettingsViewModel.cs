@@ -24,11 +24,15 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Serialization;
 using Windows.Storage;
+using CryptoPortfolioTracker.Extensions;
+
 namespace CryptoPortfolioTracker.ViewModels
 {
     public sealed partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     {
         public static SettingsViewModel Current;
+        private readonly DispatcherQueue dispatcherQueue;
+
 
         private int numberFormatIndex;
         public int NumberFormatIndex
@@ -44,6 +48,21 @@ namespace CryptoPortfolioTracker.ViewModels
                 }
             }
         }
+        private double fontSize;
+        public double FontSize
+        {
+            get { return fontSize; }
+            set
+            {
+                if (value != fontSize)
+                {
+                    fontSize = value;
+                    App.userPreferences.FontSize = (AppFontSize)fontSize;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
 
         private bool isHidingZeroBalances;
         public bool IsHidingZeroBalances
@@ -76,11 +95,25 @@ namespace CryptoPortfolioTracker.ViewModels
             }
         }
 
-
+        private bool isScrollBarsExpanded;
+        public bool IsScrollBarsExpanded
+        {
+            get { return isScrollBarsExpanded; }
+            set
+            {
+                if (value != isScrollBarsExpanded)
+                {
+                    isScrollBarsExpanded = value;
+                    App.userPreferences.IsScrollBarsExpanded = isScrollBarsExpanded;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public SettingsViewModel()
 		{
 			Current = this;
+            this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             GetPreferences();
 		}
 
@@ -89,6 +122,8 @@ namespace CryptoPortfolioTracker.ViewModels
             NumberFormatIndex = App.userPreferences.CultureLanguage == "nl" ? 0 : 1;
             IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
             IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
+            FontSize = (double)App.userPreferences.FontSize;
+            IsScrollBarsExpanded = App.userPreferences.IsScrollBarsExpanded;
         }
 
         [RelayCommand]
@@ -130,33 +165,38 @@ namespace CryptoPortfolioTracker.ViewModels
             }
         }
 
-        private async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
-        {
-            ContentDialog dialog = new ContentDialog()
-            {
-                Title = title,
-                XamlRoot = SettingsView.Current.XamlRoot,
-                Content = message,
-                PrimaryButtonText = primaryButtonText,
-                CloseButtonText = closeButtonText
-            };
-            var dlgResult = await dialog.ShowAsync();
-            return dlgResult;
-        }
+        
 
 
-        //******* EventHandlers
+        ////******* EventHandlers
+        //public event PropertyChangedEventHandler PropertyChanged;
+        //protected void OnPropertyChanged([CallerMemberName] string name = null)
+        //{
+        //    if (MainPage.Current == null) return;
+        //    MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+        //    {
+        //        PropertyChangedEventHandler handler = PropertyChanged;
+        //        if (handler != null)
+        //        {
+        //            handler(this, new PropertyChangedEventArgs(name));
+        //        }
+        //    });
+        //}
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
-            if (MainPage.Current == null) return;
-            MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+            this.dispatcherQueue.TryEnqueue(() =>
             {
                 PropertyChangedEventHandler handler = PropertyChanged;
                 if (handler != null)
                 {
                     handler(this, new PropertyChangedEventArgs(name));
                 }
+            },
+            exception =>
+            {
+                throw new Exception(exception.Message);
             });
         }
 

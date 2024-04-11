@@ -209,6 +209,12 @@ namespace CryptoPortfolioTracker.ViewModels
             }
         }
 
+        [RelayCommand]
+        public async Task AssetItemClicked(AssetTotals clickedAsset)
+        {
+            //In the accountsView we ignore this command
+            
+        }
 
 
         public async Task ShowAssets(Account clickedAccount)
@@ -245,19 +251,7 @@ namespace CryptoPortfolioTracker.ViewModels
             
             return Task.FromResult(true);
         }
-        private async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
-        {
-            ContentDialog dialog = new ContentDialog()
-            {
-                Title = title,
-                XamlRoot = AccountsView.Current.XamlRoot,
-                Content = message,
-                PrimaryButtonText = primaryButtonText,
-                CloseButtonText = closeButtonText
-            };
-            var dlgResult = await dialog.ShowAsync();
-            return dlgResult;
-        }
+        
         #endregion SUB methods or Tasks
 
 

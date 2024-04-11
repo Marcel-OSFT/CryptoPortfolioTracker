@@ -29,6 +29,7 @@
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
     </Page.Resources>
+    
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
               Margin="0,0,5,10" VerticalAlignment="Stretch" >
@@ -42,35 +43,52 @@
             <RelativePanel>
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
                 <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="{Binding Foreground, ElementName=smallHeaderText, Converter={StaticResource ThemeColorConverter}}" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Name="txtSettings" Text="Settings" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtSettings, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock x:Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtSettings, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
             </RelativePanel>
             <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0">
                 <StackPanel Spacing="4">
 
-                    <ct:SettingsCard x:Name="settingsCard"
-                               Description="How do you want numbers to be presented"
-                               Header="Number format"
+                    <ct:SettingsCard x:Uid="Settings_NumberFormat"
                                HeaderIcon="{ui:FontIcon Glyph=&#xF110;}"
                                IsEnabled="true">
-                        <ComboBox x:Name="comboBoxNF" SelectedIndex="{Binding NumberFormatIndex, Mode=TwoWay}">
-                            <ComboBoxItem FontSize="20">1.234,56</ComboBoxItem>
-                            <ComboBoxItem FontSize="20">1,234.56</ComboBoxItem>
+                        <ComboBox x:Name="comboBoxNF"  SelectedIndex="{Binding NumberFormatIndex, Mode=TwoWay}">
+                            <ComboBoxItem Tag="nl" FontSize="20">1.234,56</ComboBoxItem>
+                            <ComboBoxItem Tag="en" FontSize="20">1,234.56</ComboBoxItem>
                         </ComboBox>
                     </ct:SettingsCard>
-                    <ct:SettingsCard Description="Overall setting for Hiding Zero Balances. In the overview itself this can be turned ON or OFF, temporarely."
-                       Header="Hide Zero Balances"
+                    <ct:SettingsCard x:Uid="Settings_FontSize"
+                           HeaderIcon="{ui:FontIcon Glyph=&#xE8D2;}"
+                           IsEnabled="true">
+                         <ComboBox x:Name="comboBoxFS" SelectedIndex="{Binding FontSize, Mode=TwoWay}">
+                            <ComboBoxItem x:Uid="Settings_FontSize_Item1" FontSize="12"/>
+                            <ComboBoxItem x:Uid="Settings_FontSize_Item2" FontSize="14"/>
+                            <ComboBoxItem x:Uid="Settings_FontSize_Item3" FontSize="16"/>
+                        </ComboBox>
+                    </ct:SettingsCard>
+
+                    <ct:SettingsCard x:Uid="Settings_HideZeroBalances"
                        HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
                        IsEnabled="True">
-                        <ToggleSwitch IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
+                        <ToggleSwitch x:Uid="Settings_HideZeroBalances_Toggle" IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
                     </ct:SettingsCard>
-                    <ct:SettingsCard x:Name="UpdateCard" Description="Enables automatic checking for available updates of the app."
+                    
+                    <ct:SettingsCard x:Uid="Settings_KeepScrollBarsExpanded"
+                       HeaderIcon="{ui:FontIcon Glyph=&#xF4A5;}"
+                       IsEnabled="True">
+                        <ToggleSwitch x:Uid="Settings_KeepScrollBarsExpanded_Toggle" IsOn="{Binding IsScrollBarsExpanded, Mode=TwoWay}" />
+                    </ct:SettingsCard>
+
+
+                    <ct:SettingsCard x:Uid="Settings_CheckUpdate" x:Name="SettingsCU"
+                                     Description="Enables automatic checking for available updates of the app."
                         Header="Check for Update"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
                         IsEnabled="True">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="VersionTxt" VerticalAlignment="Center"/> 
-                            <Button Content="Check Now" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" Margin="60,0,0,0" />
-                            <ToggleSwitch IsOn="{Binding IsCheckForUpdate, Mode=TwoWay}" Margin="60,0,0,0" />
+                            <TextBlock x:Uid="Settings_CheckUpdate_Version" VerticalAlignment="Center" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
+                            <TextBlock x:Name="VersionNumber" VerticalAlignment="Center" Margin="5,0,0,0" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
+                            <Button x:Uid="Settings_CheckUpdate_CheckNow" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" Margin="30,0,0,0" />
+                            <ToggleSwitch x:Uid="Settings_CheckUpdate_Toggle" IsOn="{Binding IsCheckForUpdate, Mode=TwoWay}" Margin="60,0,0,0" />
                         </StackPanel>
                     </ct:SettingsCard>
                 </StackPanel>

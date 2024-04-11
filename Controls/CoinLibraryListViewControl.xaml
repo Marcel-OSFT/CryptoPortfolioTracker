@@ -12,6 +12,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
     x:Name="Root"
+    xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:CoinLibraryViewModel}"
     mc:Ignorable="d">
 
@@ -21,8 +22,10 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        <converters:FontSizeToImageSizeConverter x:Key="FontSizeToImageSizeConverter"/>
+        
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-            <Setter Property="Height" Value="60"/>
+            <Setter Property="MinHeight" Value="20"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -38,10 +41,10 @@
         </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="70"/>
-                <ColumnDefinition Width="0.4*"/>
+                <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="0.2*"/>
-                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <RichTextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" >
@@ -82,7 +85,7 @@
        
         <Rectangle Grid.Row="1" Grid.ColumnSpan="6" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
         <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="6" x:FieldModifier="public" ItemsSource="{Binding ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
-                            IsItemClickEnabled="True" SelectionMode="None"
+                            IsItemClickEnabled="True" SelectionMode="None" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                             ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                             CanReorderItems="False" AllowDrop="false" Margin="10,0,0,0" >
             <ListView.ItemTemplate>
@@ -91,61 +94,67 @@
                         <Grid AutomationProperties.Name="{x:Bind ApiId}">
                             <SwipeControl x:Name="CoinListHoverSwipeContainer" >
                                 <Grid>
-                                    <Grid VerticalAlignment="Center" Margin="2">
+                                    <Grid VerticalAlignment="Center" Margin="0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="auto"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="0.4*"/>
+                                            <ColumnDefinition Width="0.3*"/>
                                             <ColumnDefinition Width="0.3*"/>
                                             <ColumnDefinition Width="0.2*"/>
-                                            <ColumnDefinition Width="0.25*"/>
+                                            <ColumnDefinition Width="0.3*"/>
                                             <ColumnDefinition Width="100"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" Grid.Row="0" Margin="5,0" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <Image Source="{Binding ImageUri, Converter={StaticResource ImageConverter}}" Stretch="UniformToFill" Height="40"/>
+                                        <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed" />
+                                        <Border Grid.Column="0" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                            <Image Stretch="UniformToFill" Margin="10,5,0,5">
+                                                <Image.Source>
+                                                    <BitmapImage DecodePixelHeight="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy, Converter={StaticResource FontSizeToImageSizeConverter}}"
+                                                    UriSource="{Binding ImageUri}"/>
+                                                </Image.Source>
+                                            </Image>
                                         </Border>
-                                        <Border Grid.Column="1" Grid.Row="0"  Margin="10" VerticalAlignment="Center" >
+                                        <Border Grid.Column="1" Margin="10" VerticalAlignment="Center" >
                                             <RelativePanel>
-                                                <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" FontSize="18" TextWrapping="Wrap" />
-                                                <TextBlock Name="txtSymbol" Text="{Binding Symbol}" TextWrapping="Wrap" RelativePanel.Below="txtName" FontSize="12"/>
-                                                <TextBlock Name="txtNote" Text="{Binding Note}" TextWrapping="Wrap" RelativePanel.Below="txtName" RelativePanel.RightOf="txtSymbol" FontSize="12" Margin="5,0,0,0"/>
+                                                <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" />
+                                                <TextBlock Name="txtSymbol" Text="{Binding Symbol}" TextWrapping="Wrap" RelativePanel.Below="txtName" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
+                                                <TextBlock Name="txtNote" Text="{Binding Note}" TextWrapping="Wrap" RelativePanel.Below="txtName" RelativePanel.RightOf="txtSymbol" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0"/>
                                             </RelativePanel>
                                         </Border>
-                                        <Border Grid.Column="2" Grid.Row="0" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <Border Grid.Column="2" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
-                                                <TextBlock Name="txtPrice" Text="{Binding Price, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:G7}'}" FontSize="18" TextWrapping="Wrap" />
-                                                <TextBlock Name="txtChange24Hr" Text="{Binding Change24Hr, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change24Hr, Converter={StaticResource myColourConverter}}" FontSize="16" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtPrice">
+                                                <TextBlock Name="txtPrice" Text="{Binding Price, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:G7}'}" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" />
+                                                <TextBlock Name="txtChange24Hr" Text="{Binding Change24Hr, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change24Hr, Converter={StaticResource myColourConverter}}" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtPrice">
 
                                                 </TextBlock>
                                             </RelativePanel>
                                         </Border>
-                                        <Border Grid.Column="3" Grid.Row="0" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <Border Grid.Column="3" Margin="0,2,0,2"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
-                                                <TextBlock Name="txtChange52Week" Text="{Binding Change52Week, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change52Week, Converter={StaticResource myColourConverter}}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="12"/>
-                                                <TextBlock Name="txtChange1Month" Text="{Binding Change1Month, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change1Month, Converter={StaticResource myColourConverter}}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange52Week" FontSize="12"/>
-                                                <TextBlock Name="txtATH" Text="{Binding Ath, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:G7}'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange1Month" FontSize="12"/>
+                                                <TextBlock Name="txtChange52Week" Text="{Binding Change52Week, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change52Week, Converter={StaticResource myColourConverter}}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
+                                                <TextBlock Name="txtChange1Month" Text="{Binding Change1Month, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change1Month, Converter={StaticResource myColourConverter}}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange52Week" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
+                                                <TextBlock Name="txtATH" Text="{Binding Ath, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:G7}'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange1Month" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>
-                                        <Border Grid.Column="4" Grid.Row="0"  Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <Border Grid.Column="4" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel  >
                                                 <TextBlock Name="txtMarketCap" Text="{Binding MarketCap, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" TextWrapping="Wrap" />
-                                                <TextBlock Name="txtRank" Text="{Binding Rank}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketCap" FontSize="18"/>
+                                                <TextBlock Name="txtRank" Text="{Binding Rank}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketCap" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>
                                     </Grid>
                                     <RelativePanel  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                                        <CommandBar Name="HoverCommandBar" helpers:AncestorSource.AncestorType="ListView" Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
+                                        <CommandBar Name="HoverCommandBar"  Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                             <CommandBar.SecondaryCommands>
                                                 <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                <AppBarButton Label="About" Visibility="Visible" x:Name="HoverButtonAbout" Command="{Binding DataContext.DataContext.ShowDescriptionCommand, ElementName=HoverCommandBar}"  CommandParameter="{x:Bind ApiId}">
+                                                <AppBarButton Label="About" Visibility="Visible" x:Name="HoverButtonAbout" Command="{Binding DataContext.DataContext.ShowDescriptionCommand, ElementName=proxy}"  CommandParameter="{x:Bind ApiId}">
                                                     <FontIcon  Glyph="&#xE946;" FontWeight="Normal"  />
                                                 </AppBarButton>
-                                                <AppBarButton Label="Add/Edit Note" Visibility="Visible" x:Name="HoverButtonNote" Command="{Binding DataContext.DataContext.ShowAddNoteDialogCommand, ElementName=HoverCommandBar}"  CommandParameter="{x:Bind ApiId}">
+                                                <AppBarButton Label="Add/Edit Note" Visibility="Visible" x:Name="HoverButtonNote" Command="{Binding DataContext.DataContext.ShowAddNoteDialogCommand, ElementName=proxy}"  CommandParameter="{x:Bind ApiId}">
                                                     <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                 </AppBarButton>
-                                                <AppBarButton Icon="Delete" Label="Delete Coin" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=HoverCommandBar}" CommandParameter="{x:Bind ApiId}"/>
+                                                <AppBarButton Icon="Delete" Label="Delete Coin" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=proxy}" CommandParameter="{x:Bind ApiId}"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>

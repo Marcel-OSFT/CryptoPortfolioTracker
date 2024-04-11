@@ -28,5 +28,11 @@ class TransactionEntityTypeConfiguration : IEntityTypeConfiguration<Transaction>
 
         configuration.Navigation("Mutations");
 
+
+        configuration
+            .Ignore("RequestedAsset");
+        configuration
+            .Ignore("Details");
+
     }
 }

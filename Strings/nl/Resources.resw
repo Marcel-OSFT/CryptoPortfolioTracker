@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Settings_NumberFormat.Description" xml:space="preserve">
+    <value>Hoe wilt u dat cijfers worden weergegeven?</value>
+  </data>
+  <data name="Settings_NumberFormat.Header" xml:space="preserve">
+    <value>Getalsnotatie</value>
+  </data>
+  <data name="Settings_CheckUpdate.Description" xml:space="preserve">
+    <value>Maakt automatisch controleren op updates mogelijk.</value>
+  </data>
+  <data name="Settings_CheckUpdate.Header" xml:space="preserve">
+    <value>Controleer op Updates.</value>
+  </data>
+  <data name="Settings_CheckUpdate_Version.Text" xml:space="preserve">
+    <value>Huidige versie</value>
+  </data>
+  <data name="Settings_FontSize.Description" xml:space="preserve">
+    <value>Stelt de gewenste lettergrootte in voor de verschillende weergaven.</value>
+  </data>
+  <data name="Settings_FontSize.Header" xml:space="preserve">
+    <value>Tekstgrootte</value>
+  </data>
+  <data name="Settings_FontSize_Item1.Content" xml:space="preserve">
+    <value>Klein</value>
+  </data>
+  <data name="Settings_FontSize_Item2.Content" xml:space="preserve">
+    <value>Normaal</value>
+  </data>
+  <data name="Settings_FontSize_Item3.Content" xml:space="preserve">
+    <value>Groot</value>
+  </data>
+  <data name="Settings_HideZeroBalances.Description" xml:space="preserve">
+    <value>Algemene instelling voor het verbergen van nulsaldi. In het overzicht zelf kan dit tijdelijk AAN of UIT worden gezet.</value>
+  </data>
+  <data name="Settings_HideZeroBalances.Header" xml:space="preserve">
+    <value>Nulsaldi verbergen</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded.Header" xml:space="preserve">
+    <value>Houd schuifbalken zichtbaar</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded.Description" xml:space="preserve">
+    <value>Standaard worden schuifbalken zichtbaar en worden groter wanneer de aanwijzer het gebied binnengaat. Zet dit op AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</value>
+  </data>
+  <data name="Settings_CheckUpdate_Toggle.OffContent" xml:space="preserve">
+    <value>Uit</value>
+  </data>
+  <data name="Settings_CheckUpdate_Toggle.OnContent" xml:space="preserve">
+    <value>Aan</value>
+  </data>
+  <data name="Settings_HideZeroBalances_Toggle.OffContent" xml:space="preserve">
+    <value>Uit</value>
+  </data>
+  <data name="Settings_HideZeroBalances_Toggle.OnContent" xml:space="preserve">
+    <value>Aan</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded_Toggle.OffContent" xml:space="preserve">
+    <value>Uit</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded_Toggle.OnContent" xml:space="preserve">
+    <value>Aan</value>
+  </data>
+  <data name="Settings_CheckUpdate_CheckNow.Content" xml:space="preserve">
+    <value>Controleer nu</value>
+  </data>
+  <data name="Settings_Title.Text" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="Navigation_Assets.Content" xml:space="preserve">
+    <value>Portefeuille</value>
+  </data>
+  <data name="Navigation_CoinLibrary.Content" xml:space="preserve">
+    <value>Bibliotheek</value>
+  </data>
+  <data name="Assets_Title.Text" xml:space="preserve">
+    <value>Portefeuille</value>
+  </data>
+  <data name="Assets_Explainer.Text" xml:space="preserve">
+    <value>Activa zijn de cryptovaluta die u op één of meerdere rekeningen in portefeuille heeft.
+Crypto van uw interesse moet eerst worden toegevoegd aan de muntenbibliotheek. Ook dient een of meerdere accounts te worden geconfigureerd.
+Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie Toevoegen' onderaan dit venster.</value>
+  </data>
+  <data name="Assets_TransactionButton.Content" xml:space="preserve">
+    <value>Transactie Toevoegen</value>
+  </data>
+  <data name="AssetsLV_24Hour.Text" xml:space="preserve">
+    <value>24 Uur</value>
+  </data>
+  <data name="AssetsLV_ActualPrice.Text" xml:space="preserve">
+    <value>Actuele Prijs</value>
+  </data>
+  <data name="AssetsLV_AverageCostPrice.Text" xml:space="preserve">
+    <value>Gem. Kostprijs</value>
+  </data>
+  <data name="AssetsLV_CostBase.Text" xml:space="preserve">
+    <value>Aankoop Waarde</value>
+  </data>
+  <data name="AssetsLV_HideZeroBalances.Content" xml:space="preserve">
+    <value>Verberg nulsaldi</value>
+  </data>
+  <data name="AssetsLV_MarketValue.Text" xml:space="preserve">
+    <value>Marktwaarde</value>
+  </data>
+  <data name="AssetsLV_ProfitLoss.Text" xml:space="preserve">
+    <value>Verlies/Winst</value>
+  </data>
+  <data name="AssetsLV_Quantity.Text" xml:space="preserve">
+    <value>Aantal</value>
+  </data>
+  <data name="AssetsLV_Name.Text" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="AssetsLV_Change.Text" xml:space="preserve">
+    <value>Verand. %</value>
+  </data>
+  <data name="AssetsLV_ProfitLossPerc.Text" xml:space="preserve">
+    <value>W/V %</value>
+  </data>
+</root>

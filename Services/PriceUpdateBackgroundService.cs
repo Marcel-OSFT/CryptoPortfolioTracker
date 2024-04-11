@@ -26,11 +26,13 @@ namespace CryptoPortfolioTracker.Services
         private readonly CancellationTokenSource cts = new();
         private Task timerTask;
         IServiceScope currentContextScope;
-        CoinContext coinContext;
+        PortfolioContext coinContext;
 
         public PriceUpdateBackgroundService(TimeSpan timerInterval)
         {
             currentContextScope = null;
+            coinContext = App.Container.GetService<PortfolioContext>();
+
 
             timer = new(timerInterval);
         }
@@ -68,7 +70,7 @@ namespace CryptoPortfolioTracker.Services
 
             cts.Cancel();
             cts.Dispose();
-            currentContextScope.Dispose();
+           // currentContextScope.Dispose();
             //coinContext.Dispose();
             WriteToLog("PUBS PriceUpdateBackgroundService stopped");
         }
@@ -76,19 +78,19 @@ namespace CryptoPortfolioTracker.Services
         private async Task<Result<bool>> UpdatePricesAllCoins()
         {
 
-            if (currentContextScope != null)
-            {
-                currentContextScope.Dispose();
-            }
-            currentContextScope = App.Container.CreateAsyncScope();
+            //if (currentContextScope != null)
+            //{
+            //    currentContextScope.Dispose();
+            //}
+            //currentContextScope = App.Container.CreateAsyncScope();
 
-            coinContext = currentContextScope.ServiceProvider.GetService<CoinContext>();
-            //coinContext = App.Container.GetService<CoinContext>();
-
+            //coinContext = currentContextScope.ServiceProvider.GetService<CoinContext>();
+           // coinContext = currentContextScope.ServiceProvider.GetService<PortfolioContext>();
+           
             var coinIds = await coinContext.Coins.Select(c => c.ApiId).ToListAsync();
             if (!coinIds.Any()) return false;
 
-            //-- TO DO cut nr of coins in pieces here instead of in GetMeket.... 
+            //TODO cut nr of coins in pieces here instead of in GetMeket.... 
             // and update prices also in smaller portions.
             // this prevents having a huge request-url
 

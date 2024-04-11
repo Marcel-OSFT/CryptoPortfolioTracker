@@ -69,6 +69,7 @@ using Microsoft.Extensions.DependencyInjection;
 using LanguageExt.Common;
 using LanguageExt;
 using System.Globalization;
+using CryptoPortfolioTracker.Extensions;
 
 namespace CryptoPortfolioTracker.Dialogs
 {
@@ -76,8 +77,8 @@ namespace CryptoPortfolioTracker.Dialogs
     {
         #region fields
         private DialogAction dialogAction;
-        public AssetTransaction transactionToEdit;
-        public AssetTransaction transactionNew;
+        public Transaction transactionToEdit;
+        public Transaction transactionNew;
         private ITransactionService _transactionService;
        // private TransactionDetails transactionDetails;
         private TransactionKind transactionType;
@@ -107,7 +108,7 @@ namespace CryptoPortfolioTracker.Dialogs
         private double priceB;
         private string feeCoin;
         private double feeQty;
-        private string notes;
+        private string note;
         private DateTimeOffset timeStamp;
         private Validator validator;
 
@@ -430,15 +431,15 @@ namespace CryptoPortfolioTracker.Dialogs
                 }
             }
         }
-        public string Notes
+        public string Note
         {
-            get { return notes; }
+            get { return note; }
             set
             {
-                if (value != notes)
+                if (value != note)
                 {
-                    notes = value;
-                    OnPropertyChanged(nameof(Notes));
+                    note = value;
+                    OnPropertyChanged(nameof(Note));
                 }
             }
         }
@@ -455,14 +456,16 @@ namespace CryptoPortfolioTracker.Dialogs
             }
         }
         CultureInfo ci = new CultureInfo(App.userPreferences.CultureLanguage);
+        private readonly DispatcherQueue dispatcherQueue;
 
         #endregion Public Properties
 
         #region Constructor(s)
         
-        public TransactionDialog(ITransactionService transactionService, DialogAction _dialogAction, AssetTransaction transaction = null)
+        public TransactionDialog(ITransactionService transactionService, DialogAction _dialogAction, Transaction transaction = null)
         {
             this.InitializeComponent();
+            this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             dialogAction = _dialogAction;
             _transactionService = transactionService;
             transactionToEdit = transaction;
@@ -507,9 +510,9 @@ namespace CryptoPortfolioTracker.Dialogs
             }           
         }
 
-        private async Task<AssetTransaction> WrapUpTransactionData()
+        private async Task<Transaction> WrapUpTransactionData()
         {
-            AssetTransaction transactionToAdd = new AssetTransaction();
+            Transaction transactionToAdd = new Transaction();
             List<Mutation> newMutations = new List<Mutation>();
 
             Mutation mutationToAdd;
@@ -595,7 +598,7 @@ namespace CryptoPortfolioTracker.Dialogs
                 QtyB = QtyB,
                 TransactionType = transactionType,
             };
-            transactionToAdd.Notes = Notes;
+            transactionToAdd.Note = Note;
             transactionToAdd.TimeStamp = DateTime.Parse(TimeStamp.ToString());
 
             transactionToAdd.Details = transactionDetails;
@@ -720,7 +723,7 @@ namespace CryptoPortfolioTracker.Dialogs
         }
         private void InitializeAllFields()
         {
-            CoinA = CoinB = AccountFrom = AccountTo = Notes = FeeCoin = "";
+            CoinA = CoinB = AccountFrom = AccountTo = Note = FeeCoin = "";
             HeaderCoinA = HeaderCoinB = HeaderAccountFrom = HeaderAccountTo = "";
 
             QtyA = 0;
@@ -861,7 +864,7 @@ namespace CryptoPortfolioTracker.Dialogs
                     PriceB = transactionToEdit.Details.PriceB;
                     FeeCoin = transactionToEdit.Details.FeeCoin;
                     FeeQty = transactionToEdit.Details.FeeQty;
-                    Notes = transactionToEdit.Notes;
+                    Note = transactionToEdit.Note;
                     TimeStamp = DateTimeOffset.Parse(transactionToEdit.TimeStamp.ToString(ci));
                     TransactionTypeRadioButtons.IsEnabled = false;
                     ASBoxCoinA.IsEnabled = false;
@@ -1029,16 +1032,21 @@ namespace CryptoPortfolioTracker.Dialogs
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name)
         {
-            if (MainPage.Current == null) return;
-            MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+            //if (MainPage.Current == null) return;
+            //MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+            
+            
+            this.dispatcherQueue.TryEnqueue(() =>
             {
-               // Debug.WriteLine("OnPropertyChanged (Dialog) => " + name);
-
                 PropertyChangedEventHandler handler = PropertyChanged;
                 if (handler != null)
                 {
                     handler(this, new PropertyChangedEventArgs(name));
                 }
+            },
+            exception =>
+            {
+                throw new Exception(exception.Message);
             });
         }
         #endregion Event Handlers

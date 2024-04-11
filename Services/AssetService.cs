@@ -156,11 +156,11 @@ namespace CryptoPortfolioTracker.Services
 
 
 
-        public async Task<Result<List<AssetTransaction>>> GetTransactionsByAsset(int assetId)
+        public async Task<Result<List<Transaction>>> GetTransactionsByAsset(int assetId)
         {
 
-            if (assetId <= 0) { return new List<AssetTransaction>(); }
-            List<AssetTransaction> assetTransactions = null;
+            if (assetId <= 0) { return new List<Transaction>(); }
+            List<Transaction> assetTransactions = null;
             try
             {
                 assetTransactions = await context.Mutations
@@ -170,12 +170,12 @@ namespace CryptoPortfolioTracker.Services
                     .ThenInclude(ac => ac.Account)
                     .Where(c => c.Asset.Id == assetId)
                     .GroupBy(g => g.Transaction.Id)
-                    .Select(grouped => new AssetTransaction
+                    .Select(grouped => new Transaction
                     {
                         Id = grouped.Key,
                         RequestedAsset = grouped.Select(a => a.Asset).Where(w => w.Id == assetId).SingleOrDefault(),
                         TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
-                        Notes = grouped.Select(t => t.Transaction.Note).SingleOrDefault(),
+                        Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault(),
                         Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault(),
                     })
                     .OrderByDescending(o => o.TimeStamp)
@@ -183,9 +183,9 @@ namespace CryptoPortfolioTracker.Services
             }
             catch (Exception ex)
             {
-                return new Result<List<AssetTransaction>>(ex);
+                return new Result<List<Transaction>>(ex);
             }
-            if (assetTransactions == null) { assetTransactions = new List<AssetTransaction>(); }
+            if (assetTransactions == null) { assetTransactions = new List<Transaction>(); }
 
             return assetTransactions;
         }

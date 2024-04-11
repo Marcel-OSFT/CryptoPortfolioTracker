@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="nl" original="CRYPTOPORTFOLIOTRACKER/STRINGS/EN-US/RESOURCES.RESW" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+    <header>
+      <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="1.0.0.0" tool-company="Microsoft" />
+    </header>
+    <body>
+      <group id="CRYPTOPORTFOLIOTRACKER/STRINGS/EN-US/RESOURCES.RESW" datatype="resx">
+        <trans-unit id="AppDisplayName" translate="yes" xml:space="preserve">
+          <source>Crypto Portfolio Tracker</source>
+          <target state="new">Crypto Portfolio Tracker</target>
+        </trans-unit>
+        <trans-unit id="AppDescription" translate="yes" xml:space="preserve">
+          <source>Crypto Portfolio Tracker</source>
+          <target state="new">Crypto Portfolio Tracker</target>
+        </trans-unit>
+        <trans-unit id="Settings_NumberFormat.Description" translate="yes" xml:space="preserve">
+          <source>How do you want numbers to be presented.</source>
+          <target state="translated">Hoe wilt u dat cijfers worden weergegeven?</target>
+        </trans-unit>
+        <trans-unit id="Settings_NumberFormat.Header" translate="yes" xml:space="preserve">
+          <source>Number Format</source>
+          <target state="translated">Getalsnotatie</target>
+        </trans-unit>
+        <trans-unit id="Settings_CheckUpdate.Description" translate="yes" xml:space="preserve">
+          <source>Enables automatic checking for available updates.</source>
+          <target state="translated">Maakt automatisch controleren op updates mogelijk.</target>
+        </trans-unit>
+        <trans-unit id="Settings_CheckUpdate.Header" translate="yes" xml:space="preserve">
+          <source>Check for Update</source>
+          <target state="translated">Controleer op Updates.</target>
+        </trans-unit>
+        <trans-unit id="Settings_CheckUpdate_Version.Text" translate="yes" xml:space="preserve">
+          <source>Current Version</source>
+          <target state="translated">Huidige versie</target>
+        </trans-unit>
+        <trans-unit id="Settings_FontSize.Description" translate="yes" xml:space="preserve">
+          <source>Sets the preferred font size for the different views.</source>
+          <target state="translated">Stelt de gewenste lettergrootte in voor de verschillende weergaven.</target>
+        </trans-unit>
+        <trans-unit id="Settings_FontSize.Header" translate="yes" xml:space="preserve">
+          <source>Font Size</source>
+          <target state="translated">Tekstgrootte</target>
+        </trans-unit>
+        <trans-unit id="Settings_FontSize_Item1.Content" translate="yes" xml:space="preserve">
+          <source>Small</source>
+          <target state="translated">Klein</target>
+        </trans-unit>
+        <trans-unit id="Settings_FontSize_Item2.Content" translate="yes" xml:space="preserve">
+          <source>Normal</source>
+          <target state="translated">Normaal</target>
+        </trans-unit>
+        <trans-unit id="Settings_FontSize_Item3.Content" translate="yes" xml:space="preserve">
+          <source>Large</source>
+          <target state="translated">Groot</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideZeroBalances.Description" translate="yes" xml:space="preserve">
+          <source>Overall setting for Hiding Zero Balances. In the overview itself this can be turned ON or OFF, temporarily.</source>
+          <target state="translated">Algemene instelling voor het verbergen van nulsaldi. In het overzicht zelf kan dit tijdelijk AAN of UIT worden gezet.</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideZeroBalances.Header" translate="yes" xml:space="preserve">
+          <source>Hide Zero Balances</source>
+          <target state="translated">Nulsaldi verbergen</target>
+        </trans-unit>
+        <trans-unit id="Settings_KeepScrollBarsExpanded.Header" translate="yes" xml:space="preserve">
+          <source>Keep ScrollBars Expanded</source>
+          <target state="translated">Houd schuifbalken zichtbaar</target>
+        </trans-unit>
+        <trans-unit id="Settings_KeepScrollBarsExpanded.Description" translate="yes" xml:space="preserve">
+          <source>By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items ore not.</source>
+          <target state="translated">Standaard worden schuifbalken zichtbaar en worden groter wanneer de aanwijzer het gebied binnengaat. Zet dit op AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</target>
+        </trans-unit>
+        <trans-unit id="Settings_CheckUpdate_Toggle.OffContent" translate="yes" xml:space="preserve">
+          <source>Off</source>
+          <target state="translated">Uit</target>
+        </trans-unit>
+        <trans-unit id="Settings_CheckUpdate_Toggle.OnContent" translate="yes" xml:space="preserve">
+          <source>On</source>
+          <target state="translated">Aan</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideZeroBalances_Toggle.OffContent" translate="yes" xml:space="preserve">
+          <source>Off</source>
+          <target state="translated">Uit</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideZeroBalances_Toggle.OnContent" translate="yes" xml:space="preserve">
+          <source>On</source>
+          <target state="translated">Aan</target>
+        </trans-unit>
+        <trans-unit id="Settings_KeepScrollBarsExpanded_Toggle.OffContent" translate="yes" xml:space="preserve">
+          <source>Off</source>
+          <target state="translated">Uit</target>
+        </trans-unit>
+        <trans-unit id="Settings_KeepScrollBarsExpanded_Toggle.OnContent" translate="yes" xml:space="preserve">
+          <source>On</source>
+          <target state="translated">Aan</target>
+        </trans-unit>
+        <trans-unit id="Settings_CheckUpdate_CheckNow.Content" translate="yes" xml:space="preserve">
+          <source>Check Now</source>
+          <target state="translated">Controleer nu</target>
+        </trans-unit>
+        <trans-unit id="Settings_Title.Text" translate="yes" xml:space="preserve">
+          <source>Settings</source>
+          <target state="translated">Instellingen</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Accounts.Content" translate="no" xml:space="preserve">
+          <source>Accounts</source>
+          <target state="final">Accounts</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Assets.Content" translate="yes" xml:space="preserve">
+          <source>Assets</source>
+          <target state="translated">Portefeuille</target>
+        </trans-unit>
+        <trans-unit id="Navigation_CoinLibrary.Content" translate="yes" xml:space="preserve">
+          <source>Coin Library</source>
+          <target state="translated">Bibliotheek</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Help.Content" translate="yes" xml:space="preserve">
+          <source>Help</source>
+          <target state="new">Help</target>
+        </trans-unit>
+        <trans-unit id="Assets_Title.Text" translate="yes" xml:space="preserve">
+          <source>Assets</source>
+          <target state="translated">Portefeuille</target>
+        </trans-unit>
+        <trans-unit id="Assets_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>Assets are the crypto currencies that you have in portfolio at one or more accounts.
+Crypto of your interest need to be added first to the Coin Library. Also one or more accounts need to be configured.
+Build up your assets by adding transactions using the 'Add a new Transaction' button at the bottom of this window.</source>
+          <target state="translated">Activa zijn de cryptovaluta die u op één of meerdere rekeningen in portefeuille heeft.
+Crypto van uw interesse moet eerst worden toegevoegd aan de muntenbibliotheek. Ook dient een of meerdere accounts te worden geconfigureerd.
+Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie Toevoegen' onderaan dit venster.</target>
+        </trans-unit>
+        <trans-unit id="Assets_TransactionButton.Content" translate="yes" xml:space="preserve">
+          <source>Add Transaction</source>
+          <target state="translated">Transactie Toevoegen</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_24Hour.Text" translate="yes" xml:space="preserve">
+          <source>24 Hour</source>
+          <target state="translated">24 Uur</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_ActualPrice.Text" translate="yes" xml:space="preserve">
+          <source>Actual Price</source>
+          <target state="translated">Actuele Prijs</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_AverageCostPrice.Text" translate="yes" xml:space="preserve">
+          <source>Average Cost Price</source>
+          <target state="translated">Gem. Kostprijs</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_CostBase.Text" translate="yes" xml:space="preserve">
+          <source>Cost Base</source>
+          <target state="translated">Aankoop Waarde</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_HideZeroBalances.Content" translate="yes" xml:space="preserve">
+          <source>Hide zero balance</source>
+          <target state="translated">Verberg nulsaldi</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_MarketValue.Text" translate="yes" xml:space="preserve">
+          <source>Market Value</source>
+          <target state="translated">Marktwaarde</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_ProfitLoss.Text" translate="yes" xml:space="preserve">
+          <source>Profit/Loss</source>
+          <target state="translated">Verlies/Winst</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_Quantity.Text" translate="yes" xml:space="preserve">
+          <source>Quantity</source>
+          <target state="translated">Aantal</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_Name.Text" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <target state="translated">Naam</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_Change.Text" translate="yes" xml:space="preserve">
+          <source>Change %</source>
+          <target state="translated">Verand. %</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_ProfitLossPerc.Text" translate="yes" xml:space="preserve">
+          <source>P/L %</source>
+          <target state="translated">W/V %</target>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>

@@ -191,19 +191,7 @@ namespace CryptoPortfolioTracker.ViewModels
 
             return Task.FromResult(true);
         }
-        private async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
-        {
-            ContentDialog dialog = new ContentDialog()
-            {
-                Title = title,
-                XamlRoot = CoinLibraryView.Current.XamlRoot,
-                Content = message,
-                PrimaryButtonText = primaryButtonText,
-                CloseButtonText = closeButtonText
-            };
-            var dlgResult = await dialog.ShowAsync();
-            return dlgResult;
-        }
+        
         #endregion SUB methods or Tasks
 
 

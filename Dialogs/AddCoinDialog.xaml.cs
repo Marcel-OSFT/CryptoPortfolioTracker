@@ -19,12 +19,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
-//using PollyDemos.OutputHelpers;
+using CryptoPortfolioTracker.Extensions;
 
 namespace CryptoPortfolioTracker.Dialogs
 {
     public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     {
+        private readonly DispatcherQueue dispatcherQueue;
         public readonly CoinLibraryViewModel _viewModel;
         public static AddCoinDialog Current;
         CoinFullDataById coinFullDataById;
@@ -74,6 +75,7 @@ namespace CryptoPortfolioTracker.Dialogs
 
         public AddCoinDialog(List<CoinList> coinList, CoinLibraryViewModel viewModel)
         {
+            this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             CoinName = "";
             Current = this;
             CoinCollection = coinList != null ? coinList.Select(x => x.Id).ToList() : new List<string>();
@@ -137,7 +139,7 @@ namespace CryptoPortfolioTracker.Dialogs
                 selectedCoin = null;
                 var coin = new Coin
                 {
-                    //-- TO DO: checkk for things that could miss or be null
+                    //TODO: checkk for things that could miss or be null
                     ApiId = coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : null,
                     Name = coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : null,
                     Symbol = coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : null,
@@ -232,21 +234,41 @@ namespace CryptoPortfolioTracker.Dialogs
 
 
         //******* EventHandlers
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            if (MainPage.Current == null) return;
-            MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
-            {
-                //Debug.WriteLine("OnPropertyChanged (BaseModel) => " + name);
+        //public event PropertyChangedEventHandler PropertyChanged;
+        //protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        //{
+        //    if (MainPage.Current == null) return;
+        //    MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+        //    {
+        //        //Debug.WriteLine("OnPropertyChanged (BaseModel) => " + name);
 
+        //        PropertyChangedEventHandler handler = PropertyChanged;
+        //        if (handler != null)
+        //        {
+        //            handler(this, new PropertyChangedEventArgs(propertyName));
+        //        }
+        //    });
+        //}
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            this.dispatcherQueue.TryEnqueue(() =>
+            {
                 PropertyChangedEventHandler handler = PropertyChanged;
                 if (handler != null)
                 {
-                    handler(this, new PropertyChangedEventArgs(propertyName));
+                    handler(this, new PropertyChangedEventArgs(name));
                 }
+            },
+            exception =>
+            {
+                throw new Exception(exception.Message);
             });
         }
+
+
+
     }
 }
 

@@ -1,4 +1,6 @@
 using CryptoPortfolioTracker.Dialogs;
+using CryptoPortfolioTracker.Enums;
+using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Views;
 using LanguageExt.ClassInstances;
 
@@ -35,10 +37,44 @@ namespace CryptoPortfolioTracker
         {
             this.InitializeComponent();
             Current = this;
-       
+            if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
+
         }
 
-        
+        public async Task CheckUpdateNow()
+        {
+            AppUpdater appUpdater = new();
+            var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
+
+            if (result == AppUpdaterResult.NeedUpdate)
+            {
+                var dlgResult = await ShowMessageDialog("Update Checker", "New version available. Do you want to download it? In the meanwhile you can continue using the app. You will be notified when the download has finished.", "Download", "Cancel");
+                if (dlgResult == ContentDialogResult.Primary)
+                {
+                    var downloadResult = await appUpdater.DownloadSetupFile();
+                    //Download is running async, so the user can continue to do other stuff
+                    if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
+                    {
+                        //*** Download is doen, wait till there is no other dialog box open
+                        while (App.isBusy)
+                        {
+                            await Task.Delay(5000);
+                            ;
+                        }
+
+                        var installRequest = await ShowMessageDialog("Download Succesfull", "The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.", "Install", "Cancel");
+                        if (installRequest == ContentDialogResult.Primary)
+                        {
+                            appUpdater.ExecuteSetupFile();
+                        }
+                    }
+                    else
+                    {
+                        await ShowMessageDialog("Downloading Setup File failed", "Update will be postponed", "Close");
+                    }
+                }
+            }
+        }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -75,6 +111,21 @@ namespace CryptoPortfolioTracker
 
             contentFrame.Content = _currentServiceScope.ServiceProvider.GetService(viewType);
         }
+        public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
+        {
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = title,
+                XamlRoot = Current.XamlRoot,
+                Content = message,
+                PrimaryButtonText = primaryButtonText,
+                CloseButtonText = closeButtonText
+            };
+            var dlgResult = await dialog.ShowAsync();
+            return dlgResult;
+        }
+
+
     }
 
 }
