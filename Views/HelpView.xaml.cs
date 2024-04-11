@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Windows.Storage.Pickers;
 using WinRT;
+using System.Diagnostics;
 
 namespace CryptoPortfolioTracker.Views
 {
@@ -131,8 +132,19 @@ namespace CryptoPortfolioTracker.Views
                 }
             }
         }
-
-
+        /// <summary>
+        /// hidden action to enable the editor function of the RichEditBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RTB_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if ((sender as RichTextBlock).SelectedText == "OSFT")
+            {
+                editor.IsReadOnly = false;
+                EditorButtons.Visibility = Visibility.Visible;
+            };
+        }
     }
 
 

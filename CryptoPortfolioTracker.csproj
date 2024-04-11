@@ -1,34 +1,41 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>CryptoPortfolioTracker</RootNamespace>
     <Platforms>x64</Platforms>
-	<RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
-	<EnableMsixTooling>true</EnableMsixTooling>
-	  <!--GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile-->
-	  <ApplicationIcon>Assets\AppIcons\CryptoPortfolioTracker.ico</ApplicationIcon>
-	  <ApplicationManifest>app.manifest</ApplicationManifest>
-	  <!--WindowsPackageType>MSIX</WindowsPackageType-->
-	  <PackageCertificateThumbprint>51B1624EF5C99ECC4567AC82426893BAF01F383E</PackageCertificateThumbprint>
-	  <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-	  <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
-	  <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-	  <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-	  <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
-	  <GenerateTestArtifacts>True</GenerateTestArtifacts>
-	  <AppxBundle>Always</AppxBundle>
-	  <AppxBundlePlatforms>x64</AppxBundlePlatforms>
-	  <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-	  <AppxLogTelemetryFromSideloadingScript>False</AppxLogTelemetryFromSideloadingScript>
-	  <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
-	  <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/.</AppInstallerUri>
-	  <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-	  <Version>1.0.1.0</Version>
-	</PropertyGroup>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <!--GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile-->
+    <ApplicationIcon>Assets\AppIcons\CryptoPortfolioTracker.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!--WindowsPackageType>MSIX</WindowsPackageType-->
+    <PackageCertificateThumbprint>51B1624EF5C99ECC4567AC82426893BAF01F383E</PackageCertificateThumbprint>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <AppxLogTelemetryFromSideloadingScript>False</AppxLogTelemetryFromSideloadingScript>
+    <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
+    <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/.</AppInstallerUri>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <Version>1.0.1.0</Version>
+  </PropertyGroup>
+  <PropertyGroup Label="MultilingualAppToolkit">
+    <MultilingualAppToolkitVersion>4.0</MultilingualAppToolkitVersion>
+    <MultilingualFallbackLanguage>en-US</MultilingualFallbackLanguage>
+    <TranslationReport Condition="'$(Configuration)' == 'Release'">true</TranslationReport>
+    <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
+  </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-16.png" />
     <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-24.png" />
@@ -70,9 +77,9 @@
     <None Remove="Dialogs\BlankWindow1.xaml" />
     <None Remove="Dialogs\TransactionDialog.xaml" />
     <None Remove="MK_Styles.xaml" />
+    <None Remove="MultilingualResources\CryptoPortfolioTracker.nl.xlf" />
     <None Remove="Views\SettingsView.xaml" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -96,8 +103,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
+    <PackageReference Include="AK.Toolkit.WinUI3.ScrollBarExtensions" Version="1.0.5" />
     <PackageReference Include="CoinGeckoFluentApi.Client" Version="1.0.0-preview.1" />
     <PackageReference Include="ColorCode.WinUI" Version="2.0.15" />
     <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
@@ -145,7 +152,6 @@
     <PackageReference Include="WinUIEx.TestTools.MSTest" Version="1.0.0" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
-
   <!-- 
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -193,6 +199,9 @@
     <Folder Include="Migrations\Coin\" />
     <Folder Include="Docs\" />
     <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <XliffResource Include="MultilingualResources\CryptoPortfolioTracker.nl.xlf" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\bitcoin1_HeaderImage.jpg">
@@ -259,6 +268,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\CryptoPortfolioTracker.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\CryptoPortfolioTracker48x48.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\ninegrid.gif">
@@ -328,7 +340,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-
   <!-- 
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
     Explorer "Package and Publish" context menu entry to be enabled for this project even if 
@@ -370,11 +381,15 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
   </PropertyGroup>
-	<Target Name="RemoveFoldersWithMuiFiles" AfterTargets="Build">
-		<ItemGroup>
-			<RemovingFiles Include="$(OutDir)*\*.mui" Exclude="$(OutDir)en-us\*.mui" />
-			<RemovingFolders Include="@(RemovingFiles->'%(RootDir)%(Directory)')" />
-		</ItemGroup>
-		<RemoveDir Directories="@(RemovingFolders)" />
-	</Target>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.PriResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.PriResources.targets')" />
+  <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.PriResources.targets')" Label="MultilingualAppToolkit">
+    <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
+  </Target>
+  <Target Name="RemoveFoldersWithMuiFiles" AfterTargets="Build">
+    <ItemGroup>
+      <RemovingFiles Include="$(OutDir)*\*.mui" Exclude="$(OutDir)en-us\*.mui" />
+      <RemovingFolders Include="@(RemovingFiles->'%(RootDir)%(Directory)')" />
+    </ItemGroup>
+    <RemoveDir Directories="@(RemovingFolders)" />
+  </Target>
 </Project>

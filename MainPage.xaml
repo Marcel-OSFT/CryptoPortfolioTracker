@@ -28,24 +28,24 @@
                 IsTabStop="False">
             
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Assets" Tag="AssetsView" >
+                <NavigationViewItem x:Uid="Navigation_Assets" Tag="AssetsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE825;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Accounts" Tag="AccountsView" >
+                <NavigationViewItem x:Uid="Navigation_Accounts" Tag="AccountsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE910;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                    <NavigationViewItem Content="Coin Library" Tag="CoinLibraryView" >
+                <NavigationViewItem x:Uid="Navigation_CoinLibrary" Tag="CoinLibraryView" >
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F1;"/>
                         </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem Content="Help" Tag="HelpView" >
+                <NavigationViewItem x:Uid="Navigation_Help" Tag="HelpView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE897;"/>
                     </NavigationViewItem.Icon>

@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Crypto Portfolio Tracker</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Crypto Portfolio Tracker</value>
+  </data>
+  <data name="Settings_NumberFormat.Description" xml:space="preserve">
+    <value>How do you want numbers to be presented.</value>
+  </data>
+  <data name="Settings_NumberFormat.Header" xml:space="preserve">
+    <value>Number Format</value>
+  </data>
+  <data name="Settings_CheckUpdate.Description" xml:space="preserve">
+    <value>Enables automatic checking for available updates.</value>
+  </data>
+  <data name="Settings_CheckUpdate.Header" xml:space="preserve">
+    <value>Check for Update</value>
+  </data>
+  <data name="Settings_CheckUpdate_Version.Text" xml:space="preserve">
+    <value>Current Version</value>
+  </data>
+  <data name="Settings_FontSize.Description" xml:space="preserve">
+    <value>Sets the preferred font size for the different views.</value>
+  </data>
+  <data name="Settings_FontSize.Header" xml:space="preserve">
+    <value>Font Size</value>
+  </data>
+  <data name="Settings_FontSize_Item1.Content" xml:space="preserve">
+    <value>Small</value>
+  </data>
+  <data name="Settings_FontSize_Item2.Content" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Settings_FontSize_Item3.Content" xml:space="preserve">
+    <value>Large</value>
+  </data>
+  <data name="Settings_HideZeroBalances.Description" xml:space="preserve">
+    <value>Overall setting for Hiding Zero Balances. In the overview itself this can be turned ON or OFF, temporarily.</value>
+  </data>
+  <data name="Settings_HideZeroBalances.Header" xml:space="preserve">
+    <value>Hide Zero Balances</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded.Description" xml:space="preserve">
+    <value>By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items ore not.</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded.Header" xml:space="preserve">
+    <value>Keep ScrollBars Expanded</value>
+  </data>
+  <data name="Settings_CheckUpdate_Toggle.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Settings_CheckUpdate_Toggle.OnContent" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Settings_HideZeroBalances_Toggle.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Settings_HideZeroBalances_Toggle.OnContent" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded_Toggle.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded_Toggle.OnContent" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Settings_CheckUpdate_CheckNow.Content" xml:space="preserve">
+    <value>Check Now</value>
+  </data>
+  <data name="Navigation_Accounts.Content" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="Navigation_Assets.Content" xml:space="preserve">
+    <value>Assets</value>
+  </data>
+  <data name="Navigation_CoinLibrary.Content" xml:space="preserve">
+    <value>Coin Library</value>
+  </data>
+  <data name="Navigation_Help.Content" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Settings_Title.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="AssetsLV_24Hour.Text" xml:space="preserve">
+    <value>24 Hour</value>
+  </data>
+  <data name="AssetsLV_ActualPrice.Text" xml:space="preserve">
+    <value>Actual Price</value>
+  </data>
+  <data name="AssetsLV_AverageCostPrice.Text" xml:space="preserve">
+    <value>Average Cost Price</value>
+  </data>
+  <data name="AssetsLV_Change.Text" xml:space="preserve">
+    <value>Change %</value>
+  </data>
+  <data name="AssetsLV_CostBase.Text" xml:space="preserve">
+    <value>Cost Base</value>
+  </data>
+  <data name="AssetsLV_HideZeroBalances.Content" xml:space="preserve">
+    <value>Hide zero balance</value>
+  </data>
+  <data name="AssetsLV_MarketValue.Text" xml:space="preserve">
+    <value>Market Value</value>
+  </data>
+  <data name="AssetsLV_Name.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AssetsLV_ProfitLoss.Text" xml:space="preserve">
+    <value>Profit/Loss</value>
+  </data>
+  <data name="AssetsLV_ProfitLossPerc.Text" xml:space="preserve">
+    <value>P/L %</value>
+  </data>
+  <data name="AssetsLV_Quantity.Text" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Assets_Explainer.Text" xml:space="preserve">
+    <value>Assets are the crypto currencies that you have in portfolio at one or more accounts.
+Crypto of your interest need to be added first to the Coin Library. Also one or more accounts need to be configured.
+Build up your assets by adding transactions using the 'Add a new Transaction' button at the bottom of this window.</value>
+  </data>
+  <data name="Assets_Title.Text" xml:space="preserve">
+    <value>Assets</value>
+  </data>
+  <data name="Assets_TransactionButton.Content" xml:space="preserve">
+    <value>Add Transaction</value>
+  </data>
+</root>

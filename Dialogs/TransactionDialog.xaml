@@ -146,7 +146,7 @@
                               Style="{StaticResource MK_AppBarButtonStyle}" Margin="0,15,0,0"
                               x:Name="LinkAccountsButton" Opacity="{Binding IsAccountsLinked, Converter={StaticResource myOpacityConverter}}">
                     <AppBarButton.Icon>
-                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE71B;"/>
+                        <FontIcon  Glyph="&#xE71B;"/>
                     </AppBarButton.Icon>
                 </AppBarButton>
             </Grid>

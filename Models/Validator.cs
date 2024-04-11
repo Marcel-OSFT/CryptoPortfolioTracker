@@ -24,6 +24,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CryptoPortfolioTracker.Extensions;
 
 
 namespace CryptoPortfolioTracker.Models
@@ -31,9 +32,11 @@ namespace CryptoPortfolioTracker.Models
     public partial class Validator : BaseModel, INotifyPropertyChanged
     {
         CancellationTokenSource tokenSource2 = new CancellationTokenSource();
+        private readonly DispatcherQueue dispatcherQueue;
 
         public Validator(int numberOfItemsToValidate, bool directStart)
         {
+            this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             IsValidEntryCollection = new ObservableCollection<bool>();
 ;            RegisterValidationItems(numberOfItemsToValidate, directStart); 
             IsAllEntriesValid = false;
@@ -109,21 +112,36 @@ namespace CryptoPortfolioTracker.Models
 
 
         //******* EventHandlers
+        //public event PropertyChangedEventHandler PropertyChanged;
+        //protected void OnPropertyChanged([CallerMemberName] string name = null)
+        //{
+        //    if (MainPage.Current == null) return;
+        //    MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+        //    {
+        //        PropertyChangedEventHandler handler = PropertyChanged;
+        //        if (handler != null)
+        //        {
+        //            handler(this, new PropertyChangedEventArgs(name));
+        //        }
+        //    });
+        //}
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
-            if (MainPage.Current == null) return;
-            MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+            this.dispatcherQueue.TryEnqueue(() =>
             {
                 PropertyChangedEventHandler handler = PropertyChanged;
                 if (handler != null)
                 {
                     handler(this, new PropertyChangedEventArgs(name));
                 }
+            },
+            exception =>
+            {
+                throw new Exception(exception.Message);
             });
         }
-
-
 
 
     }

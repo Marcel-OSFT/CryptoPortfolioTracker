@@ -14,8 +14,8 @@ namespace CryptoPortfolioTracker.Services
         public Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccount(Coin coin, Account account);
 
 
-        public Task<Result<List<AssetTransaction>>> GetTransactionsByAsset(int assetId);
-        //public Task<Result<AssetTransaction>> GetTransactionById(int transactionId);
+        public Task<Result<List<Transaction>>> GetTransactionsByAsset(int assetId);
+        //public Task<Result<Transaction>> GetTransactionById(int transactionId);
     }
 }
 

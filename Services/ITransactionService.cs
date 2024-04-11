@@ -23,11 +23,11 @@ namespace CryptoPortfolioTracker.Services
         public Task<Result<List<string>>> GetUsdtUsdcSymbolsFromLibrary();
         public Task<Result<double[]>> GetMaxQtyAndPrice(string coinSymbol, string accountName);
         public Task<Result<double>> GetPriceFromLibrary(string coinSymbol);
-        public Task<Result<int>> AddTransaction(AssetTransaction transaction);
-        public Task<Result<int>> DeleteTransaction(AssetTransaction transactionToDelete, AssetAccount assetAccountAffected);
-        public Task<Result<int>> EditTransaction(AssetTransaction transactionNew, AssetTransaction transactionOld);
+        public Task<Result<int>> AddTransaction(Transaction transaction);
+        public Task<Result<int>> DeleteTransaction(Transaction transactionToDelete, AssetAccount assetAccountAffected);
+        public Task<Result<int>> EditTransaction(Transaction transactionNew, Transaction transactionOld);
        
-        public Task<Result<AssetTransaction>> GetTransactionById(int transactionId);
+        public Task<Result<Transaction>> GetTransactionById(int transactionId);
 
 
     }

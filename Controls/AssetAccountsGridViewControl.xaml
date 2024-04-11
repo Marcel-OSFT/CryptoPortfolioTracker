@@ -11,6 +11,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
+    xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     
     mc:Ignorable="d">
@@ -23,17 +25,16 @@
     </UserControl.Resources>
 
 
-    <GridView x:Name="AssetAccountsGridView"  x:FieldModifier="public" ItemsSource="{Binding ListAssetAccounts, Mode=TwoWay}" 
-              ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
-              ScrollViewer.HorizontalScrollMode="Enabled" 
-              SelectedIndex="0"
-                  IsItemClickEnabled="True" SelectionMode="Single" ItemClick="AssetAccountsGridView_ItemClick" Margin="30,0,10,10">
+    <GridView x:Name="AssetAccountsGridView" x:FieldModifier="public" ItemsSource="{Binding ListAssetAccounts, Mode=TwoWay}" 
+        ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
+        ScrollViewer.HorizontalScrollMode="Enabled" SelectedIndex="0" Tag="10" SelectionChanged="GridView_SelectionChanged"
+        IsItemClickEnabled="True" SelectionMode="Single"  Margin="30,0,10,10" toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}"  >
         <GridView.ItemContainerStyle>
-                <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+            <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
                 <Setter Property="Margin" Value="5,5,5,5" />
-                <Setter Property="Height" Value="50" />
+                <Setter Property="MinHeight" Value="20" />
             </Style>
-            </GridView.ItemContainerStyle>
+        </GridView.ItemContainerStyle>
 
             <!-- An extra property also needs to be added to the GridView's ItemsWrapGrid.
                         The following sets the maximum # of items to show before wrapping.-->
@@ -44,13 +45,19 @@
             </GridView.ItemsPanel>
         <GridView.ItemTemplate>
                 <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:AssetAccount">
-                <Grid Width="300" Margin="10,0,0,0">
-                        <RelativePanel >
-                            <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" FontSize="18" TextWrapping="Wrap" />
-                        <TextBlock Name="txtQty" Text="{Binding Qty, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" TextWrapping="Wrap" RelativePanel.Below="txtName"  FontSize="16"/>
-                            <TextBlock Name="txtSymbol" Text="{Binding Symbol}" TextWrapping="Wrap" RelativePanel.Below="txtName" RelativePanel.RightOf="txtQty" Margin="5,0,0,0" FontSize="16"/>
-                        </RelativePanel>
-                    </Grid>
+                <Grid  Margin="10,0,0,0" HorizontalAlignment="Stretch">
+                    <RelativePanel Grid.Column="0" HorizontalAlignment="Stretch">
+                    <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="GridView" Visibility="Collapsed" />
+                    <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" Margin="0,5,5,0"
+                               Width="{Binding Tag, ElementName=AssetAccountsGridView}"
+                                FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="NoWrap" />
+                    <TextBlock Name="txtQty" Text="{Binding Qty, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" TextWrapping="NoWrap" RelativePanel.Below="txtName"  
+                               HorizontalAlignment="Stretch" 
+                               FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                    <TextBlock Name="txtSymbol" Text="{Binding Symbol}" TextWrapping="NoWrap" RelativePanel.Below="txtName" RelativePanel.RightOf="txtQty" Margin="5,0,0,5" 
+                                FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                    </RelativePanel>
+                </Grid>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>

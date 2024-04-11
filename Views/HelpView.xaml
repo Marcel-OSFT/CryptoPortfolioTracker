@@ -40,7 +40,7 @@
             <RelativePanel>
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
                 <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="{Binding Foreground, ElementName=smallHeaderText, Converter={StaticResource ThemeColorConverter}}" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Name="txtHelp" Text="Help" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtHelps, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock x:Name="txtHelp" Text="Help" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtHelp, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
             </RelativePanel>
             <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0">
                 <Grid>
@@ -49,9 +49,9 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-                    <RichTextBlock SelectionHighlightColor="Green" Margin="0,0,10,0" Grid.Row="0" >
-                        <Paragraph TextAlignment="Right">
-                            <Run FontSize="16" Text="MK-OSFT" FontStyle="Italic"  />
+                    <RichTextBlock SelectionHighlightColor="Green" Margin="0,0,10,0" Grid.Row="0" SelectionChanged="RTB_SelectionChanged" >
+                        <Paragraph TextAlignment="Right" >
+                            <Run FontSize="16" Text="MK-OSFT" FontStyle="Italic" />
                         </Paragraph>
                         <Paragraph TextAlignment="Right">
                             <Run FontSize="16" Text="mk_osft@hotmail.com" FontStyle="Italic"  />
@@ -63,7 +63,7 @@
                     <RichEditBox x:Name="editor" Loaded="OnLoaded" CornerRadius="8,8,8,8" Grid.Row="1" 
                      Margin="0,0,0,0" Style="{StaticResource MK_RichEditBoxStyle}"
                      IsReadOnly="True" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
-                    <StackPanel Visibility="Collapsed" Orientation="Horizontal" Grid.Row="2" >
+                    <StackPanel x:Name="EditorButtons" Visibility="Collapsed" Orientation="Horizontal" Grid.Row="2" >
                         <Button Click="OpenButton_Click">Open File</Button>
                         <Button Click="SaveButton_Click">Save File</Button>
                     </StackPanel>
