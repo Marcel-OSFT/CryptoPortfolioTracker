@@ -163,6 +163,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                     if (installRequest == ContentDialogResult.Primary)
                     {
                         appUpdater.ExecuteSetupFile();
+                        // Close application....
+                        
                     }
                 }
                 else
