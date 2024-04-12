@@ -30,7 +30,6 @@ namespace CryptoPortfolioTracker.Views
             this.InitializeComponent();
             DataContext = _viewModel;
             MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
-            App.userPreferences.SaveUserPreferences("_AssetsView");
         }
 
         public void Dispose()

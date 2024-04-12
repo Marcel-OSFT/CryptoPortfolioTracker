@@ -164,7 +164,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                     {
                         appUpdater.ExecuteSetupFile();
                         // Close application....
-                        
+                        Environment.Exit(0);
                     }
                 }
                 else
