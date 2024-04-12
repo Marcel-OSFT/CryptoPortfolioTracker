@@ -79,6 +79,7 @@ namespace CryptoPortfolioTracker
                         if (installRequest == ContentDialogResult.Primary)
                         {
                             appUpdater.ExecuteSetupFile();
+                            Environment.Exit(0);
                         }
                     }
                     else

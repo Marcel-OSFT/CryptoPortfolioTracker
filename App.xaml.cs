@@ -63,7 +63,6 @@ namespace CryptoPortfolioTracker
             Container = RegisterServices();
             var context = App.Container.GetService<PortfolioContext>();
             context.Database.EnsureCreated();
-            userPreferences.SaveUserPreferences("_App");
         }
         
         private void GetUserPreferences()
