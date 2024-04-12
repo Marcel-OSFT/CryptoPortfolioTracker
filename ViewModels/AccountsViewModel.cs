@@ -13,6 +13,7 @@ using LanguageExt;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.Windows.ApplicationModel.Resources;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -42,8 +43,9 @@ namespace CryptoPortfolioTracker.ViewModels
         bool isHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
 
         private Account selectedAccount = null;
-        
+
         #endregion variables and proporties for DataBinding with the View
+
 
         public AccountsViewModel(IAccountService accountService)
         {
@@ -68,6 +70,7 @@ namespace CryptoPortfolioTracker.ViewModels
         public async Task ShowAccountDialogToAdd()
         {
             App.isBusy = true;
+            ResourceLoader rl = new();
             try
             {
                 AccountDialog dialog = new AccountDialog(Current, DialogAction.Add);
@@ -78,12 +81,18 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     await (await _accountService.CreateAccount(dialog.newAccount))
                         .Match(Succ: succ => AddToListAccounts(dialog.newAccount),
-                            Fail: async err => await ShowMessageDialog("Adding account failed", err.Message,"Close"));
+                            Fail: async err => await ShowMessageDialog(
+                                rl.GetString("Messages_AccountAddFailed_Title"), 
+                                err.Message,
+                                rl.GetString("Common_CloseButton")));
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageDialog("Account Dialog Failure", ex.Message, "Close");
+                await ShowMessageDialog(
+                    rl.GetString("Messages_AccountDialogFailed_Title"), 
+                    ex.Message,
+                    rl.GetString("Common_CloseButton"));
             }
             finally { App.isBusy = false; }
         }
@@ -97,6 +106,7 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             App.isBusy = true;
             Account accountToEdit = null;
+            ResourceLoader rl = new();
             try
             {
                 accountToEdit = ListAccounts.Where(t => t.Id == accountId).Single();
@@ -108,12 +118,18 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     
                     (await _accountService.EditAccount(dialog.newAccount, accountToEdit))
-                        .IfFail(async err => await ShowMessageDialog("Updating account failed", err.Message, "Close"));
+                        .IfFail(async err => await ShowMessageDialog(
+                            rl.GetString("Messages_AccountUpdateFailed_Title"), 
+                            err.Message,
+                            rl.GetString("Common_CloseButton")));
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageDialog("Account Dialog Failure", ex.Message, "Close");
+                await ShowMessageDialog(
+                    rl.GetString("Messages_AccountDialogFailed_Title"), 
+                    ex.Message,
+                    rl.GetString("Common_CloseButton"));
             }
             finally { App.isBusy = false; }
         }
@@ -122,6 +138,7 @@ namespace CryptoPortfolioTracker.ViewModels
         public async Task DeleteAccount(int accountId)
         {
             App.isBusy = true;
+            ResourceLoader rl = new();
             // *** Delete option normally never available when an Account contains assets
             //*** but nevertheless lets check it...
             try
@@ -133,16 +150,25 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     await (await _accountService.RemoveAccount(accountId))
                         .Match(Succ: s => RemoveFromListAccounts(accountId),
-                            Fail: async err => await ShowMessageDialog("Failed to delete Account", err.Message, "Close"));
+                            Fail: async err => await ShowMessageDialog(
+                                rl.GetString("Messages_AccountDeleteFailed_Title"), 
+                                err.Message,
+                                rl.GetString("Common_CloseButton")));
                 }
                 else
                 {
-                    await ShowMessageDialog("Account deletion failure", "Account may have assets assigned.", "Close");
+                    await ShowMessageDialog(
+                        rl.GetString("Messages_AccountDeleteFailed_Title"),
+                        rl.GetString("Messages_AccountDeleteFailed_Msg"),
+                        rl.GetString("Common_CloseButton")); 
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageDialog("Failed to delete Account", ex.Message, "Close");
+                await ShowMessageDialog(
+                    rl.GetString("Messages_AccountDeleteFailed_Title"),
+                                ex.Message,
+                                rl.GetString("Common_CloseButton"));
             }
             finally { App.isBusy = false; }
         }
@@ -212,7 +238,7 @@ namespace CryptoPortfolioTracker.ViewModels
         [RelayCommand]
         public async Task AssetItemClicked(AssetTotals clickedAsset)
         {
-            //In the accountsView we ignore this command
+            //In the AccountsView we ignore this command. The AssetsListViewControl is used in the AssetsView as well.
             
         }
 

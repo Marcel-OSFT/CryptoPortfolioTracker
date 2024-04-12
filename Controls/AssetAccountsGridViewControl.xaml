@@ -26,12 +26,12 @@
 
 
     <GridView x:Name="AssetAccountsGridView" x:FieldModifier="public" ItemsSource="{Binding ListAssetAccounts, Mode=TwoWay}" 
-        ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
-        ScrollViewer.HorizontalScrollMode="Enabled" SelectedIndex="0" Tag="10" SelectionChanged="GridView_SelectionChanged"
-        IsItemClickEnabled="True" SelectionMode="Single"  Margin="30,0,10,10" toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}"  >
+              ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
+        ScrollViewer.HorizontalScrollMode="Enabled" SelectedIndex="0" SelectionChanged="GridView_SelectionChanged"
+        IsItemClickEnabled="True" SelectionMode="Single"  Margin="30,0,10,20" toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}"  >
         <GridView.ItemContainerStyle>
             <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
-                <Setter Property="Margin" Value="5,5,5,5" />
+                <Setter Property="Margin" Value="5,0,5,5" />
                 <Setter Property="MinHeight" Value="20" />
             </Style>
         </GridView.ItemContainerStyle>

@@ -32,8 +32,6 @@ namespace CryptoPortfolioTracker.Services
         {
             currentContextScope = null;
             coinContext = App.Container.GetService<PortfolioContext>();
-
-
             timer = new(timerInterval);
         }
 
@@ -70,30 +68,17 @@ namespace CryptoPortfolioTracker.Services
 
             cts.Cancel();
             cts.Dispose();
-           // currentContextScope.Dispose();
-            //coinContext.Dispose();
             WriteToLog("PUBS PriceUpdateBackgroundService stopped");
         }
 
         private async Task<Result<bool>> UpdatePricesAllCoins()
         {
-
-            //if (currentContextScope != null)
-            //{
-            //    currentContextScope.Dispose();
-            //}
-            //currentContextScope = App.Container.CreateAsyncScope();
-
-            //coinContext = currentContextScope.ServiceProvider.GetService<CoinContext>();
-           // coinContext = currentContextScope.ServiceProvider.GetService<PortfolioContext>();
-           
             var coinIds = await coinContext.Coins.Select(c => c.ApiId).ToListAsync();
             if (!coinIds.Any()) return false;
 
-            //TODO cut nr of coins in pieces here instead of in GetMeket.... 
+            //cut nr of coins in pieces here instead of in GetMeket.... 
             // and update prices also in smaller portions.
             // this prevents having a huge request-url
-
             int dataPerPage = 100;
             int nrOfPages = Convert.ToInt16(Math.Ceiling((double)coinIds.Count / dataPerPage));
             Result<bool> result = new Result<bool>();
@@ -173,11 +158,6 @@ namespace CryptoPortfolioTracker.Services
 
                 try
                 {
-                    //int dataPerPage = 3;
-                    //double nrOfPages = Math.Ceiling((double)nrOfCoins / dataPerPage);
-
-                    //for (int pageNr = 1; pageNr <= nrOfPages; pageNr++)
-                    // {
                     await strategy.ExecuteAsync(async token =>
                     {
                         WriteToLog("PUBS GetAsync (Retries: " + Retries.ToString() + ")");
@@ -192,17 +172,12 @@ namespace CryptoPortfolioTracker.Services
                             .GetAsync<List<CoinMarkets>>();
                     }, cancellationToken);
 
-                    // if (coinMarketsPage != null) coinMarketsFinal.AddRange(coinMarketsPage);
-                    //*** time delay to prevent too many requests....
-                    // await Task.Delay(TimeSpan.FromSeconds(30));
-                    //}
                     WriteToLog("PUBS Response CoinMarkets (Count: " + coinMarketsPage.Count.ToString() + ")");
                 }
                 catch (System.Exception ex)
                 {
                     WriteToLog($"PUBS Request {TotalRequests} finally failed with: {ex.Message}");
                     error = ex;
-                    //isValidResult = false;
                 }
                 finally
                 {
@@ -245,7 +220,6 @@ namespace CryptoPortfolioTracker.Services
                 coin.Change52Week = coinData.PriceChangePercentage1YInCurrency != null ? (double)coinData.PriceChangePercentage1YInCurrency : 0;
 
                 coinContext.Coins.Update(coin);
-                // await coinContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {

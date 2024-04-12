@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Data;
+using Microsoft.Windows.ApplicationModel.Resources;
 using System;
 using System.Globalization;
 
@@ -10,11 +11,15 @@ namespace CryptoPortfolioTracker.Converters
         {
             double _double = (double)value;
 
+            ResourceLoader rl = new ResourceLoader();
+
             //NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
 
-            string _string = "Qty (max. " + _double.ToString("G7", CultureInfo.InvariantCulture) + ")";
+            string withMaxQty = " (max. " + _double.ToString("G7", CultureInfo.InvariantCulture) + ")";
 
-            return _double >= 0 ? "Qty (max. " + _double.ToString("G7", CultureInfo.InvariantCulture) + ")" : "Qty";
+            return _double >= 0 
+                ? rl.GetString("TransactionDialog_QtyHeader") + withMaxQty 
+                : rl.GetString("TransactionDialog_QtyHeader");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

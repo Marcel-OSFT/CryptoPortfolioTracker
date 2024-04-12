@@ -37,9 +37,9 @@
             <RelativePanel>
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
                 <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="{Binding Foreground, ElementName=smallHeaderText, Converter={StaticResource ThemeColorConverter}}" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Name="txtAccounts" Text="Accounts" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtAccounts, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock x:Uid="Accounts_Title" x:Name="txtAccounts" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtAccounts, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
             </RelativePanel>
-            <TextBlock Grid.Row="1" VerticalAlignment="Bottom" Style="{StaticResource ScenarioDescriptionTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap">The Accounts list gives you an overview of locations where you have your crypto assets in custody.</TextBlock>
+            <TextBlock x:Uid="Accounts_Explainer" Grid.Row="1" VerticalAlignment="Bottom" Style="{StaticResource ScenarioDescriptionTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"/>
             <Border Grid.Row="2" VerticalAlignment="Stretch" Margin="10,0,0,0">
                 <Grid Name="AccountsContent">
                     <Grid.RowDefinitions>
@@ -49,7 +49,7 @@
                     </Grid.RowDefinitions>
                     <controls:AccountsListViewControl x:Name="MyAccountsListViewControl" x:FieldModifier="public" Grid.Row="0" />
                     <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Grid.Row="1" Margin="0,-8,0,0" />
-                    <Button Content="Add a new Account" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
+                    <Button x:Uid="Accounts_AddAccount" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
                         Command="{Binding ShowAccountDialogToAddCommand}" Name="AddAccountButton" Margin="10,10,0,0"/>
                 </Grid>
             </Border>

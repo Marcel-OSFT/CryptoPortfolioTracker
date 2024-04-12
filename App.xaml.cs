@@ -42,49 +42,28 @@ namespace CryptoPortfolioTracker
         /// </summary>
 
         private static Window m_window;
-
         public const string CoinGeckoApiKey = "";
-        //public const string CoinGeckoApiKey = "CG-Rrum93jyGvmSasVYijB4SegP";
-        //public const string CoinGeckoApiKey = "CG-2K3WZ2mjbpGtCseUByHU1Qhc"; // old
-        //public const string PublicApiPath = "https://api.coingecko.com/api/v3/";
-        //public const string ProApiPath = "https://pro-api.coingecko.com/api/v3/";
         public static string ApiPath = "https://api.coingecko.com/api/v3/";
-
         public static string appPath;
         public static string appDataPath;
-
         public static string ProductVersion;
         public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
-        
         public static bool isBusy;
-
-        //public static CultureInfo cultureInfoNl = new CultureInfo("nl");
-        //public static CultureInfo cultureInfoEn = new CultureInfo("en");
-
-        //public static CultureInfo CultureInfo;
         public static UserPreferences userPreferences;
         public static bool isReadingUserPreferences;
 
         public static IServiceProvider Container { get; private set; }
-
         
         public App()
         {
             this.InitializeComponent();
-
             ProductVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             SetAppPaths();
             GetUserPreferences();
             Container = RegisterServices();
-
             var context = App.Container.GetService<PortfolioContext>();
-
             context.Database.EnsureCreated();
-            //if (context.Coins.ToList()==null) InitializeWithMocks();
-       
         }
-
-
         
         private void GetUserPreferences()
         {
@@ -99,15 +78,12 @@ namespace CryptoPortfolioTracker
 
                     userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
                 }
-                
             }
             catch { }
             finally 
             { 
                 isReadingUserPreferences = false; 
             }
-            
-            
         }
 
         public static void SaveUserPreferences()
@@ -124,17 +100,7 @@ namespace CryptoPortfolioTracker
             appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
             if (!Directory.Exists(appDataPath)) Directory.CreateDirectory(appDataPath);
             AppDomain.CurrentDomain.SetData("DataDirectory", appDataPath);
-
         }
-
-        public void GetCurrentCulture()
-        {
-            //CultureInfo = cultureInfoEn;
-            //CultureInfo.DefaultThreadCurrentCulture = CultureInfo;
-            //CultureInfo.DefaultThreadCurrentUICulture = CultureInfo;
-
-        }
-
         private IServiceProvider RegisterServices()
         {
             var services = new ServiceCollection();
@@ -181,17 +147,9 @@ namespace CryptoPortfolioTracker
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-
-
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            
-
-
-
             m_window = new MainWindow();
-
-
             Frame rootFrame = m_window.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -200,18 +158,10 @@ namespace CryptoPortfolioTracker
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
-
                 rootFrame.NavigationFailed += OnNavigationFailed;
-
-                if (args.UWPLaunchActivatedEventArgs.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
-
                 // Place the frame in the current Window
                 m_window.Content = rootFrame;
             }
-
             var monitor = MonitorInfo.GetDisplayMonitors().FirstOrDefault();
             if (monitor != null && monitor.RectMonitor.Width <= 1024 && monitor.RectMonitor.Height <= 768)
             {
@@ -223,29 +173,16 @@ namespace CryptoPortfolioTracker
             }
             m_window.CenterOnScreen();
             m_window.Title = "Crypto Portfolio Tracker";
-
-            //TODO icon path below
-
             m_window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
             m_window.SetTitleBar(null);
             m_window.Activate();
-
             //if (args.UWPLaunchActivatedEventArgs.PrelaunchActivated == false)
             //{
             if (rootFrame.Content == null)
             {
-                // When the navigation stack isn't restored navigate to the first page,
-                // configuring the new page by passing required information as a navigation
-                // parameter
                 rootFrame.Navigate(typeof(MainPage), args.Arguments);
             }
-            //    // Ensure the current window is active
-            //    
-            //}
-
         }
-
-
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails
@@ -257,43 +194,9 @@ namespace CryptoPortfolioTracker
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
 
-        /// <summary>
-        /// Invoked when application execution is being suspended.  Application state is saved
-        /// without knowing whether the application will be terminated or resumed with the contents
-        /// of memory still intact.
-        /// </summary>
-        /// <param name="sender">The source of the suspend request.</param>
-
-        /// <param name="e">Details about the suspend request.</param>
-        //private void OnSuspending(object sender, SuspendingEventArgs e)
-        //{
-        //    var deferral = e.SuspendingOperation.GetDeferral();
-        //    //TODO: Save application state and stop any background activity
-        //    deferral.Complete();
-        //}
-
         private void RootFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new NotImplementedException();
-        }
-
-        private void InitializeWithMocks()
-        {
-            //var context = new PortfolioContext();
-            var context = App.Container.GetService<PortfolioContext>();
-
-            context.Database.EnsureCreated();
-
-            AccountMockService myMockAccount = new AccountMockService();
-
-            context.Coins.Add(CoinMockService.MockCoin1);
-            context.Coins.Add(CoinMockService.MockCoin2);
-
-            context.Accounts.Add(myMockAccount.MockAccount1);
-            context.Accounts.Add(myMockAccount.MockAccount2);
-
-            context.SaveChanges();
-
         }
 
     }

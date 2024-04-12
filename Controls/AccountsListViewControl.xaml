@@ -43,15 +43,15 @@
             </Grid.ColumnDefinitions>
         <RichTextBlock   Grid.Row="0" Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" >
             <Paragraph TextAlignment="Left" >
-                <Run FontSize="12" FontStyle="Italic" >Name</Run>
+                <Run x:Uid="AccountsLV_Name" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             <Paragraph TextAlignment="Left">
-                <Run FontSize="12" FontStyle="Italic" >ID</Run>
+                <Run x:Uid="AccountsLV_Note" FontSize="12" FontStyle="Italic" />
             </Paragraph>
         </RichTextBlock>
         <RichTextBlock   Grid.Row="0" Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" >
             <Paragraph TextAlignment="Right" >
-                <Run FontSize="12" FontStyle="Italic" >Market Value</Run>
+                <Run x:Uid="AccountsLV_MarketValue" FontSize="12" FontStyle="Italic" />
             </Paragraph>
         </RichTextBlock>
         
@@ -97,10 +97,10 @@
                                         <CommandBar Name="HoverCommandBar" Visibility="{Binding DataContext.DataContext.IsExtendedView, ElementName=HoverCommandBar, Converter={StaticResource BoolToVisibilityConverter}}" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                             <CommandBar.SecondaryCommands>
                                                 <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                <AppBarButton Label="Edit" Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowAccountDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind Id}">
+                                                <AppBarButton x:Uid="AccountsLV_Edit" Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowAccountDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind Id}">
                                                     <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                 </AppBarButton>
-                                                <AppBarButton Icon="Delete" Label="Delete" x:Name="HoverButtonDel" Command="{Binding DataContext.DataContext.DeleteAccountCommand, ElementName=proxy}" CommandParameter="{x:Bind Id}"/>
+                                                <AppBarButton x:Uid="AccountsLV_Delete" Icon="Delete"  x:Name="HoverButtonDel" Command="{Binding DataContext.DataContext.DeleteAccountCommand, ElementName=proxy}" CommandParameter="{x:Bind Id}"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>

@@ -8,6 +8,7 @@ using LanguageExt.ClassInstances;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Windows.ApplicationModel.Resources;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -43,12 +44,18 @@ namespace CryptoPortfolioTracker
 
         public async Task CheckUpdateNow()
         {
+            ResourceLoader rl = new();
             AppUpdater appUpdater = new();
             var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
             if (result == AppUpdaterResult.NeedUpdate)
             {
-                var dlgResult = await ShowMessageDialog("Update Checker", "New version available. Do you want to download it? In the meanwhile you can continue using the app. You will be notified when the download has finished.", "Download", "Cancel");
+                var dlgResult = await ShowMessageDialog(
+                    rl.GetString("Messages_UpdateChecker_NewVersionTitle"), 
+                    rl.GetString("Messages_UpdateChecker_NewVersionMsg"), 
+                    rl.GetString("Common_DownloadButton"), 
+                    rl.GetString("Common_CancelButton")); 
+
                 if (dlgResult == ContentDialogResult.Primary)
                 {
                     var downloadResult = await appUpdater.DownloadSetupFile();
@@ -62,7 +69,11 @@ namespace CryptoPortfolioTracker
                             ;
                         }
 
-                        var installRequest = await ShowMessageDialog("Download Succesfull", "The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.", "Install", "Cancel");
+                        var installRequest = await ShowMessageDialog(
+                            rl.GetString("Messages_UpdateChecker_DownloadSuccesTitle"),
+                            rl.GetString("Messages_UpdateChecker_DownloadSuccesMsg"),
+                            rl.GetString("Common_InstallButton"),
+                            rl.GetString("Common_CancelButton"));
                         if (installRequest == ContentDialogResult.Primary)
                         {
                             appUpdater.ExecuteSetupFile();
@@ -70,7 +81,10 @@ namespace CryptoPortfolioTracker
                     }
                     else
                     {
-                        await ShowMessageDialog("Downloading Setup File failed", "Update will be postponed", "Close");
+                        await ShowMessageDialog(
+                            rl.GetString("Messages_UpdateChecker_DownloadFailedTitle"),
+                            rl.GetString("Messages_UpdateChecker_DownloadFailedMsg"),
+                            rl.GetString("Common_CloseButton"));
                     }
                 }
             }

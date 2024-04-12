@@ -1,25 +1,45 @@
+using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace CryptoPortfolioTracker.Dialogs
+namespace CryptoPortfolioTracker.Dialogs;
+
+/// <summary>
+/// An empty window that can be used on its own or navigated to within a Frame.
+/// </summary>
+public sealed partial class DescriptionDialog : ContentDialog
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class DescriptionDialog : ContentDialog
+
+    private readonly ResourceLoader rl = new();
+
+
+    public DescriptionDialog(Coin coin)
     {
-        public DescriptionDialog(string description)
-        {
-            this.InitializeComponent();
+        this.InitializeComponent();
 
-            Run run = new Run();
-            run.Text = description;
-            par.Inlines.Clear();
-            par.Inlines.Add(run);
+        Run run = new Run();
 
-        }
+        //TODO Pull Coin Description from the Web API in a localized way 
+
+        // currently the 'About' is stored in the database and never refreshed
+        // we could pull it from the Web Api in a localized way
+        run.Text = coin.About;
+        
+        
+        
+        par.Inlines.Clear();
+        par.Inlines.Add(run);
+        SetDialogTitleAndButtons(coin);
+    }
+
+    private void SetDialogTitleAndButtons(Coin coin)
+    {
+        Title = rl.GetString("DescriptionDialog_Title") + " " + coin.Name; ;
+        CloseButtonText = rl.GetString("DescriptionDialog_CloseButton");
+        IsPrimaryButtonEnabled = false;
     }
 }

@@ -6,10 +6,6 @@
     xmlns:local="using:CryptoPortfolioTracker"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
-    PrimaryButtonText=""    
-    IsPrimaryButtonEnabled ="False"
-   
-    CloseButtonText="Close"    
     DefaultButton="Close">
 
     <Grid>
@@ -24,7 +20,6 @@
         <ScrollView Grid.Row="0" Grid.Column="0" VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled" >
             <RichTextBlock x:Name="Description" TextWrapping="WrapWholeWords" VerticalAlignment="Top" Margin="15,10,10,10">
                 <Paragraph x:Name="par" TextAlignment="Left" FontSize="14" Margin="0,0,0,10"></Paragraph>
-
             </RichTextBlock>
         </ScrollView>
 
