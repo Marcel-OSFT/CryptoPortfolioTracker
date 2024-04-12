@@ -245,4 +245,367 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="Assets_TransactionButton.Content" xml:space="preserve">
     <value>Add Transaction</value>
   </data>
+  <data name="AccountsLV_Edit.Label" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="AccountsLV_MarketValue.Text" xml:space="preserve">
+    <value>Market Value</value>
+  </data>
+  <data name="AccountsLV_Name.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AccountsLV_Note.Text" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Accounts_AddAccount.Content" xml:space="preserve">
+    <value>Add Account</value>
+  </data>
+  <data name="Accounts_Explainer.Text" xml:space="preserve">
+    <value>The Accounts list gives you an overview of locations where you have your crypto assets in custody.</value>
+  </data>
+  <data name="Accounts_Title.Text" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="AccountsLV_Delete.Label" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="LibraryLV_24HrChange.Text" xml:space="preserve">
+    <value>24 Hour Change</value>
+  </data>
+  <data name="LibraryLV_30DayChange.Text" xml:space="preserve">
+    <value>30 Day Change</value>
+  </data>
+  <data name="LibraryLV_52WeekChange.Text" xml:space="preserve">
+    <value>52 Week Change</value>
+  </data>
+  <data name="LibraryLV_About.Label" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="LibraryLV_AddEditNote.Label" xml:space="preserve">
+    <value>Add/Edit Note</value>
+  </data>
+  <data name="LibraryLV_Ath.Text" xml:space="preserve">
+    <value>ATH</value>
+  </data>
+  <data name="LibraryLV_Delete.Label" xml:space="preserve">
+    <value>Delete Coin</value>
+  </data>
+  <data name="LibraryLV_MarketCap.Text" xml:space="preserve">
+    <value>Market Cap</value>
+  </data>
+  <data name="LibraryLV_Name.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="LibraryLV_Price.Text" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="LibraryLV_Rank.Text" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="LibraryLV_Symbol.Text" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="Library_AddCoin.Content" xml:space="preserve">
+    <value>Add Coin</value>
+  </data>
+  <data name="Library_Explainer.Text" xml:space="preserve">
+    <value>The Library is a collection of crypto coins that you are interested in. So you won't be distracted or disturbed by the large amount of unimportant coins out there. The coins in the library can be used to build your portfolio.</value>
+  </data>
+  <data name="Library_Title.Text" xml:space="preserve">
+    <value>Coin Library</value>
+  </data>
+  <data name="TransactionsLV_Delete.Label" xml:space="preserve">
+    <value>Delete Transaction</value>
+  </data>
+  <data name="TransactionsLV_Edit.Label" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="TransactionsLV_From.Text" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="TransactionsLV_To.Text" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="TransactionsLV_Type.Text" xml:space="preserve">
+    <value>Transaction Type</value>
+  </data>
+  <data name="TransactionDialog_AccountFromHeader" xml:space="preserve">
+    <value>From Account</value>
+  </data>
+  <data name="TransactionDialog_AccountToHeader" xml:space="preserve">
+    <value>To Account</value>
+  </data>
+  <data name="TransactionDialog_Buy_Explainer" xml:space="preserve">
+    <value>A Buy is a conversion from a StableCoin to a Non-StableCoin and can be combined with a Transfer from accounts.</value>
+  </data>
+  <data name="TransactionDialog_CloseButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="TransactionDialog_CoinFromHeader" xml:space="preserve">
+    <value>From Coin</value>
+  </data>
+  <data name="TransactionDialog_CoinHeader" xml:space="preserve">
+    <value>Coin</value>
+  </data>
+  <data name="TransactionDialog_CoinToHeader" xml:space="preserve">
+    <value>To Coin</value>
+  </data>
+  <data name="TransactionDialog_Convert_Explainer" xml:space="preserve">
+    <value>A Convert is a conversion from Coin_A to Coin_B and can be combined with a Transfer from accounts.</value>
+  </data>
+  <data name="TransactionDialog_DatePicker.Header" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="TransactionDialog_Deposit_Explainer" xml:space="preserve">
+    <value>A Deposit is a transaction where 'new' crypto flows into your portfolio. The source could be any fiat bank account, but will not be registered. Only the receiving Account is registered.</value>
+  </data>
+  <data name="TransactionDialog_FeeCoin.Header" xml:space="preserve">
+    <value>Coin</value>
+  </data>
+  <data name="TransactionDialog_FeeQty.Header" xml:space="preserve">
+    <value>Fee</value>
+  </data>
+  <data name="TransactionDialog_FeeQty.PlaceholderText" xml:space="preserve">
+    <value>Set fee</value>
+  </data>
+  <data name="TransactionDialog_Note.Header" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="TransactionDialog_Note.PlaceholderText" xml:space="preserve">
+    <value>Set note...</value>
+  </data>
+  <data name="TransactionDialog_PriceB.PlaceholderText" xml:space="preserve">
+    <value>calculated price...</value>
+  </data>
+  <data name="TransactionDialog_PriceA.Header" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="TransactionDialog_PriceA.PlaceholderText" xml:space="preserve">
+    <value>Set price...</value>
+  </data>
+  <data name="TransactionDialog_PrimaryButton" xml:space="preserve">
+    <value>Accept Transaction</value>
+  </data>
+  <data name="TransactionDialog_QtyB.Header" xml:space="preserve">
+    <value>Qty</value>
+  </data>
+  <data name="TransactionDialog_QtyB.PlaceholderText" xml:space="preserve">
+    <value>Set quantity...</value>
+  </data>
+  <data name="TransactionDialog_QtyHeader" xml:space="preserve">
+    <value>Qty</value>
+  </data>
+  <data name="TransactionDialog_Sell_Explainer" xml:space="preserve">
+    <value>A Sell is a conversion from a Non-StableCoin to a StableCoin and can be combined with a Transfer from accounts.</value>
+  </data>
+  <data name="TransactionDialog_TimePicker.Header" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="TransactionDialog_Title_Add" xml:space="preserve">
+    <value>Add Transaction</value>
+  </data>
+  <data name="TransactionDialog_Title_Edit" xml:space="preserve">
+    <value>Edit Transaction</value>
+  </data>
+  <data name="TransactionDialog_TransactionType.Header" xml:space="preserve">
+    <value>Transaction Type</value>
+  </data>
+  <data name="TransactionDialog_Transfer_Explainer" xml:space="preserve">
+    <value>A Transfer is a 'transaction' where crypto moves from one account to another.</value>
+  </data>
+  <data name="TransactionDialog_Withdraw_Explainer" xml:space="preserve">
+    <value>A Withdraw is a transaction where crypto flows out of your portfolio. The destination could be any fiat bank account.</value>
+  </data>
+  <data name="TransactionType_Buy.Content" xml:space="preserve">
+    <value>Buy</value>
+  </data>
+  <data name="TransactionType_Convert.Content" xml:space="preserve">
+    <value>Convert</value>
+  </data>
+  <data name="TransactionType_Deposit.Content" xml:space="preserve">
+    <value>Deposit</value>
+  </data>
+  <data name="TransactionType_Sell.Content" xml:space="preserve">
+    <value>Sell</value>
+  </data>
+  <data name="TransactionType_Transfer.Content" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="TransactionType_Withdraw.Content" xml:space="preserve">
+    <value>Withdraw</value>
+  </data>
+  <data name="TransactionDialog_PriceB.Header" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="AccountDialog_Description.Header" xml:space="preserve">
+    <value>Account Description</value>
+  </data>
+  <data name="AccountDialog_Description.PlaceholderText" xml:space="preserve">
+    <value>Description goes here....</value>
+  </data>
+  <data name="AccountDialog_Name.Header" xml:space="preserve">
+    <value>Account Name</value>
+  </data>
+  <data name="AccountDialog_Name.PlaceholderText" xml:space="preserve">
+    <value>ex: Bybit Funding...</value>
+  </data>
+  <data name="AccountDialog_CloseButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AccountDialog_PrimaryButton_Add" xml:space="preserve">
+    <value>Accept Account</value>
+  </data>
+  <data name="AccountDialog_PrimaryButton_Edit" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="AccountDialog_Title_Add" xml:space="preserve">
+    <value>Add Account</value>
+  </data>
+  <data name="AccountDialog_Title_Edit" xml:space="preserve">
+    <value>Edit Account</value>
+  </data>
+  <data name="CoinDialog_BePatient.Text" xml:space="preserve">
+    <value>* Be patient - busy at CoinGecko API at the moment.</value>
+  </data>
+  <data name="CoinDialog_CloseButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CoinDialog_Id.Text" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="CoinDialog_MarketCapRank.Text" xml:space="preserve">
+    <value>Market Cap Rank</value>
+  </data>
+  <data name="CoinDialog_Name.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="CoinDialog_Price.Text" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="CoinDialog_PrimaryButton" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="CoinDialog_Symbol.Text" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="CoinDialog_Title" xml:space="preserve">
+    <value>Add Coin to Library</value>
+  </data>
+  <data name="CoinDialog_PrimaryButton_CoinExists" xml:space="preserve">
+    <value>Coin Already In Library</value>
+  </data>
+  <data name="NoteDialog_CloseButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="NoteDialog_Note.Header" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="NoteDialog_Note.PlaceholderText" xml:space="preserve">
+    <value>Note goes here....</value>
+  </data>
+  <data name="NoteDialog_PrimaryButton" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="NoteDialog_Title" xml:space="preserve">
+    <value>Note for</value>
+  </data>
+  <data name="DescriptionDialog_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="DescriptionDialog_Title" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Common_AcceptButton" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="Common_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Common_ConfirmButton" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="Common_DownloadButton" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Common_InstallButton" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Common_OkButton" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Messages_AccountAddFailed_Title" xml:space="preserve">
+    <value>Adding account failed</value>
+  </data>
+  <data name="Messages_AccountDeleteFailed_Msg" xml:space="preserve">
+    <value>Account may have assets assigned.</value>
+  </data>
+  <data name="Messages_AccountDeleteFailed_Title" xml:space="preserve">
+    <value>Failed to delete Account</value>
+  </data>
+  <data name="Messages_AccountDialogFailed_Title" xml:space="preserve">
+    <value>Account Dialog Failure</value>
+  </data>
+  <data name="Messages_AccountUpdateFailed_Title" xml:space="preserve">
+    <value>Updating account failed</value>
+  </data>
+  <data name="Messages_CoinAddFailed_Title" xml:space="preserve">
+    <value>Adding Coin Failed</value>
+  </data>
+  <data name="Messages_CoinDeleteFailed_Title" xml:space="preserve">
+    <value>Failed to delete Coin</value>
+  </data>
+  <data name="Messages_CoinDialogFailed_Title" xml:space="preserve">
+    <value>Add Coin Dialog failure</value>
+  </data>
+  <data name="Messages_NoteAddFailed_Title" xml:space="preserve">
+    <value>Updating Note Failed</value>
+  </data>
+  <data name="Messages_NoteDialogFailed_Title" xml:space="preserve">
+    <value>Note Dialog Failure</value>
+  </data>
+  <data name="Messages_TransactionAddFailed_Title" xml:space="preserve">
+    <value>Adding transaction failed</value>
+  </data>
+  <data name="Messages_TransactionDeleteFailed_Title" xml:space="preserve">
+    <value>Deleting transaction failed</value>
+  </data>
+  <data name="Messages_TransactionDelete_Msg" xml:space="preserve">
+    <value>Please Confirm to delete and revert this transaction</value>
+  </data>
+  <data name="Messages_TransactionDelete_Title" xml:space="preserve">
+    <value>Delete Transaction Request</value>
+  </data>
+  <data name="Messages_TransactionDialogFailed_Title" xml:space="preserve">
+    <value>Transaction Dialog Failure</value>
+  </data>
+  <data name="Messages_TransactionUpdateFailed_Title" xml:space="preserve">
+    <value>Updating transaction failed</value>
+  </data>
+  <data name="Messages_UpdateChecker_DownloadFailedMsg" xml:space="preserve">
+    <value>Update will be postponed.</value>
+  </data>
+  <data name="Messages_UpdateChecker_DownloadFailedTitle" xml:space="preserve">
+    <value>Downloading Setup File failed</value>
+  </data>
+  <data name="Messages_UpdateChecker_DownloadSucces" xml:space="preserve">
+    <value>Download Succesfull</value>
+  </data>
+  <data name="Messages_UpdateChecker_DownloadSuccesMsg" xml:space="preserve">
+    <value>The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.</value>
+  </data>
+  <data name="Messages_UpdateChecker_NewVersionMsg" xml:space="preserve">
+    <value>Do you want to download it? In the meanwhile you can continue using the app. You will be notified when the download has finished.</value>
+  </data>
+  <data name="Messages_UpdateChecker_NewVersionTitle" xml:space="preserve">
+    <value>New Version Available!</value>
+  </data>
+  <data name="Messages_UpdateChecker_UpToDate_Msg" xml:space="preserve">
+    <value>Version is up-to-date</value>
+  </data>
+  <data name="Messages_UpdateChecker_UpToDate_Title" xml:space="preserve">
+    <value>Update Checker</value>
+  </data>
 </root>

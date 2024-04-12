@@ -25,181 +25,180 @@ using System.Windows.Input;
 using System.Xml.Serialization;
 using Windows.Storage;
 using CryptoPortfolioTracker.Extensions;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
+using Microsoft.Windows.ApplicationModel.Resources;
 
-namespace CryptoPortfolioTracker.ViewModels
+namespace CryptoPortfolioTracker.ViewModels;
+
+public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 {
-    public sealed partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
+    public static SettingsViewModel Current;
+    private readonly DispatcherQueue dispatcherQueue;
+
+
+    private int numberFormatIndex;
+    public int NumberFormatIndex
     {
-        public static SettingsViewModel Current;
-        private readonly DispatcherQueue dispatcherQueue;
-
-
-        private int numberFormatIndex;
-        public int NumberFormatIndex
+        get => numberFormatIndex;
+        set
         {
-            get { return numberFormatIndex; }
-            set
+            if (value != numberFormatIndex)
             {
-                if (value != numberFormatIndex)
-                {
-                    numberFormatIndex = value;
-                    App.userPreferences.CultureLanguage = numberFormatIndex == 0 ? "nl" : "en";
-                    OnPropertyChanged();
-                }
+                numberFormatIndex = value;
+                App.userPreferences.CultureLanguage = numberFormatIndex == 0 ? "nl" : "en";
+                OnPropertyChanged();
             }
         }
-        private double fontSize;
-        public double FontSize
+    }
+    private double fontSize;
+    public double FontSize
+    {
+        get => fontSize;
+        set
         {
-            get { return fontSize; }
-            set
+            if (value != fontSize)
             {
-                if (value != fontSize)
-                {
-                    fontSize = value;
-                    App.userPreferences.FontSize = (AppFontSize)fontSize;
-                    OnPropertyChanged();
-                }
+                fontSize = value;
+                App.userPreferences.FontSize = (AppFontSize)fontSize;
+                OnPropertyChanged();
             }
         }
+    }
 
 
-        private bool isHidingZeroBalances;
-        public bool IsHidingZeroBalances
+    private bool isHidingZeroBalances;
+    public bool IsHidingZeroBalances
+    {
+        get => isHidingZeroBalances;
+        set
         {
-            get { return isHidingZeroBalances; }
-            set
+            if (value != isHidingZeroBalances)
             {
-                if (value != isHidingZeroBalances)
-                {
-                    isHidingZeroBalances = value;
-                    App.userPreferences.IsHidingZeroBalances = isHidingZeroBalances;
-                    OnPropertyChanged();
-                }
+                isHidingZeroBalances = value;
+                App.userPreferences.IsHidingZeroBalances = isHidingZeroBalances;
+                OnPropertyChanged();
             }
         }
+    }
 
 
-        private bool isCheckForUpdate;
-        public bool IsCheckForUpdate
+    private bool isCheckForUpdate;
+    public bool IsCheckForUpdate
+    {
+        get => isCheckForUpdate;
+        set
         {
-            get { return isCheckForUpdate; }
-            set
+            if (value != isCheckForUpdate)
             {
-                if (value != isCheckForUpdate)
-                {
-                    isCheckForUpdate = value;
-                    App.userPreferences.IsCheckForUpdate = isCheckForUpdate;
-                    OnPropertyChanged();
-                }
+                isCheckForUpdate = value;
+                App.userPreferences.IsCheckForUpdate = isCheckForUpdate;
+                OnPropertyChanged();
             }
         }
+    }
 
-        private bool isScrollBarsExpanded;
-        public bool IsScrollBarsExpanded
+    private bool isScrollBarsExpanded;
+    public bool IsScrollBarsExpanded
+    {
+        get => isScrollBarsExpanded;
+        set
         {
-            get { return isScrollBarsExpanded; }
-            set
+            if (value != isScrollBarsExpanded)
             {
-                if (value != isScrollBarsExpanded)
-                {
-                    isScrollBarsExpanded = value;
-                    App.userPreferences.IsScrollBarsExpanded = isScrollBarsExpanded;
-                    OnPropertyChanged();
-                }
+                isScrollBarsExpanded = value;
+                App.userPreferences.IsScrollBarsExpanded = isScrollBarsExpanded;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public SettingsViewModel()
-		{
-			Current = this;
-            this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-            GetPreferences();
-		}
+    public SettingsViewModel()
+	{
+		Current = this;
+        this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+        GetPreferences();
+	}
 
-        private void GetPreferences()
+    private void GetPreferences()
+    {
+        NumberFormatIndex = App.userPreferences.CultureLanguage == "nl" ? 0 : 1;
+        IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
+        IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
+        FontSize = (double)App.userPreferences.FontSize;
+        IsScrollBarsExpanded = App.userPreferences.IsScrollBarsExpanded;
+    }
+
+    [RelayCommand]
+    public async Task CheckUpdateNow()
+    {
+        AppUpdater appUpdater = new();
+        ResourceLoader rl = new();
+        var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
+
+        if (result == AppUpdaterResult.NeedUpdate)
         {
-            NumberFormatIndex = App.userPreferences.CultureLanguage == "nl" ? 0 : 1;
-            IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
-            IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
-            FontSize = (double)App.userPreferences.FontSize;
-            IsScrollBarsExpanded = App.userPreferences.IsScrollBarsExpanded;
-        }
+            var dlgResult = await ShowMessageDialog(
+                rl.GetString("Messages_UpdateChecker_NewVersionTitle"), 
+                rl.GetString("Messages_UpdateChecker_NewVersionMsg"), 
+                rl.GetString("Common_DownloadButton"), 
+                rl.GetString("Common_CancelButton"));
 
-        [RelayCommand]
-        public async Task CheckUpdateNow()
-        {
-            AppUpdater appUpdater = new();
-            var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
-
-            if (result == AppUpdaterResult.NeedUpdate)
+            if (dlgResult == ContentDialogResult.Primary)
             {
-                var dlgResult = await ShowMessageDialog("Update Checker", "New version available. Do you want to get it? in the meanwhile you can continue using the app. You will be notified when the download has finished.", "Get latest version", "Cancel");
-                if (dlgResult == ContentDialogResult.Primary)
+                var downloadResult = await appUpdater.DownloadSetupFile();
+                if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
                 {
-                    var downloadResult = await appUpdater.DownloadSetupFile();
-                    if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
+                    //*** Download is doen, wait till there is no other dialog box open
+                    while (App.isBusy)
                     {
-                        //*** Download is doen, wait till there is no other dialog box open
-                        while (App.isBusy)
-                        {
-                            await Task.Delay(5000);
-                            ;
-                        }
-                        var installRequest = await ShowMessageDialog("Download Succesfull", "The setup file has been saved in your Downloads folder. Click 'Install' to proceed with the installation. The application will close automatically.", "Install", "Cancel" );
-                        if (installRequest == ContentDialogResult.Primary)
-                        {
-                            appUpdater.ExecuteSetupFile();
-                        }
+                        await Task.Delay(5000);
+                        ;
                     }
-                    else
+                    var installRequest = await ShowMessageDialog(
+                        rl.GetString("Messages_UpdateChecker_DownloadSuccesTitle"),
+                        rl.GetString("Messages_UpdateChecker_DownloadSuccesMsg"),
+                        rl.GetString("Common_InstallButton"),
+                        rl.GetString("Common_CancelButton"));
+
+                    if (installRequest == ContentDialogResult.Primary)
                     {
-                        await ShowMessageDialog("Downloading Setup File failed", "Update will be postponed", "Close" );
+                        appUpdater.ExecuteSetupFile();
                     }
-                    
                 }
-            }
-            else
-            {
-                var dlgResult = await ShowMessageDialog("Update Checker", "Version is up-to-date", "OK");
-            }
-        }
-
-        
-
-
-        ////******* EventHandlers
-        //public event PropertyChangedEventHandler PropertyChanged;
-        //protected void OnPropertyChanged([CallerMemberName] string name = null)
-        //{
-        //    if (MainPage.Current == null) return;
-        //    MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
-        //    {
-        //        PropertyChangedEventHandler handler = PropertyChanged;
-        //        if (handler != null)
-        //        {
-        //            handler(this, new PropertyChangedEventArgs(name));
-        //        }
-        //    });
-        //}
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            this.dispatcherQueue.TryEnqueue(() =>
-            {
-                PropertyChangedEventHandler handler = PropertyChanged;
-                if (handler != null)
+                else
                 {
-                    handler(this, new PropertyChangedEventArgs(name));
+                    await ShowMessageDialog(
+                        rl.GetString("Messages_UpdateChecker_DownloadFailedTitle"),
+                        rl.GetString("Messages_UpdateChecker_DownloadFailedMsg"),
+                        rl.GetString("Common_CloseButton"));
                 }
-            },
-            exception =>
-            {
-                throw new Exception(exception.Message);
-            });
+            }
         }
+        else
+        {
+            await ShowMessageDialog(
+                rl.GetString("Messages_UpdateChecker_UpToDate_Title"),
+                rl.GetString("Messages_UpdateChecker_UpToDate_Msg"),
+                rl.GetString("Common_OkButton"));
+        }
+    }
 
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    {
+        this.dispatcherQueue.TryEnqueue(() =>
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        },
+        exception =>
+        {
+            throw new Exception(exception.Message);
+        });
     }
 
 }

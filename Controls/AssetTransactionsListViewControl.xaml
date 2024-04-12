@@ -53,9 +53,9 @@
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Name="txtType"  Text="Transaction Type" Grid.Column="0" FontWeight="Light" FontSize="16" Margin="20,0,0,0" HorizontalAlignment="Right"/>
-        <TextBlock Name="txtFrom" Text="From" Grid.Column="1" FontWeight="Light" FontSize="18" HorizontalAlignment="Center"/>
-        <TextBlock Name="txtTo" Text="To" Grid.Column="2" FontWeight="Light" FontSize="18" HorizontalAlignment="Center" />
+        <TextBlock x:Uid="TransactionsLV_Type" Name="txtType" Grid.Column="0" FontWeight="Light" FontSize="16" Margin="20,0,0,0" HorizontalAlignment="Right"/>
+        <TextBlock x:Uid="TransactionsLV_From" Name="txtFrom" Grid.Column="1" FontWeight="Light" FontSize="18" HorizontalAlignment="Center"/>
+        <TextBlock x:Uid="TransactionsLV_To" Name="txtTo" Grid.Column="2" FontWeight="Light" FontSize="18" HorizontalAlignment="Center" />
         
         <!--Rectangle Fill="#eebc3f" Grid.Row="0"  Height="1" Margin="5,0,8,0"/-->
 
@@ -169,10 +169,10 @@
                                             <CommandBar Name="HoverCommandBar" Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                                 <CommandBar.SecondaryCommands>
                                                     <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                    <AppBarButton Label="Edit" Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowTransactionDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind Id}">
+                                                    <AppBarButton x:Uid="TransactionsLV_Edit"  Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowTransactionDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind Id}">
                                                         <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                     </AppBarButton>
-                                                    <AppBarButton Icon="Delete" Label="Delete Transaction" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteTransactionCommand, ElementName=proxy}" CommandParameter="{x:Bind Id}"/>
+                                                    <AppBarButton x:Uid="TransactionsLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteTransactionCommand, ElementName=proxy}" CommandParameter="{x:Bind Id}"/>
                                                 </CommandBar.SecondaryCommands>
                                             </CommandBar>
                                         </RelativePanel>

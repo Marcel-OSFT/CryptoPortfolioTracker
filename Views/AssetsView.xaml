@@ -56,13 +56,13 @@
             <Border Grid.Row="2" VerticalAlignment="Stretch">
                 <Grid Name="AssetsContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=120|1*}"/>
+                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=110|1*}"/>
                         <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=75|0}"/>
                         <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=0.7*|0}"/>
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="0"  />
-                    <controls:AssetAccountsGridViewControl x:Name="MyAssetAccountsGridViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="1" />
+                    <controls:AssetAccountsGridViewControl x:Name="MyAssetAccountsGridViewControl" x:FieldModifier="public" Margin="0,-7,0,0" Grid.Row="1" />
                     <controls:AssetTransactionsListViewControl x:Name="MyAssetTransactionsListViewControl" x:FieldModifier="public"  Margin="0,-5,0,0" Grid.Row="2" />
                     <Button x:Uid="Assets_TransactionButton" Visibility="Visible" HorizontalAlignment="Stretch" Margin="10,10,0,0" Grid.Row="3"
                             Command="{Binding ShowTransactionDialogToAddCommand}"/>

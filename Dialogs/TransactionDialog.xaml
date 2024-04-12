@@ -7,9 +7,6 @@
     xmlns:converters="using:CryptoPortfolioTracker.Converters"
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
     xmlns:ext="using:CommunityToolkit.WinUI"
-    Title="Add a new transaction"
-    PrimaryButtonText="Accept Transaction"
-    CloseButtonText="Cancel"
     CloseButtonClick="CloseButton_Cancel"
     DefaultButton="Primary"
     PrimaryButtonClick="PrimaryButton_AcceptTransaction"
@@ -77,13 +74,13 @@
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
             </StackPanel.Background>
             <RelativePanel Name="TypeSelection" HorizontalAlignment="Stretch" Margin="0,0,0,0" >
-                <RadioButtons x:Name="TransactionTypeRadioButtons" TabIndex="0" Style="{StaticResource MK_RButtonsStyle}"  MaxColumns="6" Header="Transaction Type" FontWeight="SemiBold" SelectionChanged="TransactionType_SelectionChanged" Margin="20,10,0,0">
-                    <x:String>Deposit</x:String>
-                    <x:String>Withdraw</x:String>
-                    <x:String>Transfer</x:String>
-                    <x:String>Convert</x:String>
-                    <x:String>Buy</x:String>
-                    <x:String>Sell</x:String>
+                <RadioButtons x:Uid="TransactionDialog_TransactionType" x:Name="TransactionTypeRadioButtons" TabIndex="0" Style="{StaticResource MK_RButtonsStyle}"  MaxColumns="6" FontWeight="SemiBold" SelectionChanged="TransactionType_SelectionChanged" Margin="20,10,0,0">
+                    <RadioButton x:Uid="TransactionType_Deposit"/>
+                    <RadioButton x:Uid="TransactionType_Withdraw"/>
+                    <RadioButton x:Uid="TransactionType_Transfer"/>
+                    <RadioButton x:Uid="TransactionType_Convert"/>
+                    <RadioButton x:Uid="TransactionType_Buy"/>
+                    <RadioButton x:Uid="TransactionType_Sell"/>
                 </RadioButtons>
                 <TextBlock x:Name="ExplainTypeText" Text="{Binding TransactionText}"  Width="680" TextWrapping="WrapWholeWords"  RelativePanel.Below="TransactionTypeRadioButtons" Margin="20,10,10,0"/>
             </RelativePanel>
@@ -177,44 +174,37 @@
                                        Header="{Binding MaxQtyA, Converter={StaticResource myMaxQtyAConverter}}" 
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[4], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}"
-                                       PlaceholderText="Set quantity..."
                                        PointerPressed="QtyOrPrice_pressed" 
                                        Width="150" Margin="5,0,5,0"/>
-                <controls:RegExTextBox x:Name ="TBoxPriceA" 
+                <controls:RegExTextBox x:Uid="TransactionDialog_PriceA" x:Name ="TBoxPriceA" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
                                        Text="{Binding PriceA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
-                                       Header="Price" 
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[5], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}" 
-                                       Width="140" 
+                                       Width="140"
                                        TextChanged="TBoxPriceA_TextChanged" 
                                        PointerPressed="QtyOrPrice_pressed"
-                                       PlaceholderText="Set price..."
                                        Margin="5,0,5,0" 
                                        RelativePanel.RightOf="TBoxQtyA" />
                 
             </RelativePanel>
             <RelativePanel Name="QtyAndPriceSelectionB"  HorizontalAlignment="Stretch" Margin="0,0,0,0" >
-                <controls:RegExTextBox x:Name ="TBoxQtyB" 
+                <controls:RegExTextBox x:Uid="TransactionDialog_QtyB" x:Name ="TBoxQtyB" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
                                        Text="{Binding QtyB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
-                                       Header="Qty" 
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[6], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}"
                                        PointerPressed="QtyOrPrice_pressed"
-                                       PlaceholderText="Set quantity..."
                                        Width="150" 
                                        Margin="5,0,5,0"/>
-                <controls:RegExTextBox x:Name ="TBoxPriceB" 
+                <controls:RegExTextBox x:Uid="TransactionDialog_PriceB" x:Name ="TBoxPriceB" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
                                        Text="{Binding PriceB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
-                                       Header="Price" 
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[7], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}" 
-                                       PlaceholderText="calculated price..."
                                        Width="135" 
                                        IsEnabled="False" 
                                        Margin="5,0,5,0" 
@@ -226,13 +216,11 @@
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
             </StackPanel.Background>
             <RelativePanel Name="TimeStampSelection"  HorizontalAlignment="Stretch" Margin="0,0,0,0"  >
-                <DatePicker x:Name="DatePicker" 
-                            Header="Date" 
+                <DatePicker x:Uid="TransactionDialog_DatePicker" x:Name="DatePicker" 
                             Date="{Binding TimeStamp, Mode=TwoWay}"
                             Style="{StaticResource MK_DatePickerStyle}"
                             Margin="5,0,0,0"/>
-                <TimePicker x:Name="TimePicker" 
-                            Header="Time" 
+                <TimePicker x:Uid="TransactionDialog_TimePicker" x:Name="TimePicker" 
                             Time="{Binding TimeStamp.TimeOfDay, Mode=TwoWay}" 
                             Style="{StaticResource MK_TimePickerStyle}" 
                             ClockIdentifier="24HourClock" 
@@ -241,21 +229,18 @@
                
             </RelativePanel>
             <StackPanel Name="FeeSelection"  HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="125,0,0,0">
-                <controls:RegExTextBox x:Name="TBoxQtyFee" 
+                <controls:RegExTextBox x:Uid="TransactionDialog_FeeQty" x:Name="TBoxQtyFee" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="True" 
                                        Text="{Binding FeeQty, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[8], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}" 
-                                       Header="Fee (gas)" 
-                                       PlaceholderText="Set fee..."
                                        PointerPressed="QtyOrPrice_pressed"
                                        Width="85" 
                                        Margin="5,0,10,0"/>
-                <controls:AutoSuggestBoxWithValidation x:Name ="ASBoxFeeCoin" 
+                <controls:AutoSuggestBoxWithValidation x:Uid="TransactionDialog_FeeCoin" x:Name ="ASBoxFeeCoin" 
                                 ItemsSource="{Binding ListFeeCoin, ElementName=Root, Mode=TwoWay}" 
                                 MyText="{Binding FeeCoin, ElementName=Root, Mode=TwoWay}" 
-                                Header="Coin" 
                                 IsEntryMatched="{Binding Validator.IsValidEntryCollection[9], ElementName=Root, Mode=TwoWay}"
                                 TextChanged="ASBoxFeeCoin_TextChanged"
                                 SuggestionChosen="ASBoxFeeCoin_SuggestionChosen"
@@ -269,11 +254,9 @@
             <StackPanel.Background>
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
             </StackPanel.Background>
-            <TextBox  x:Name ="TBoxNote" 
+            <TextBox  x:Uid="TransactionDialog_Note" x:Name ="TBoxNote" 
                       TabIndex="0" 
-                      Header="Notes" 
                       Style="{StaticResource MK_TextBoxStyle}" 
-                      PlaceholderText="Set note..." 
                       Width="675" 
                       Text="{Binding Notes, Mode=TwoWay}" 
                       Margin="5,0,0,0" 
