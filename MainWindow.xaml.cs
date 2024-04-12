@@ -14,6 +14,7 @@ namespace CryptoPortfolioTracker
         public MainWindow()
         {
             this.InitializeComponent();
+            
 
         }
     }
