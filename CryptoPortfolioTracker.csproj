@@ -391,4 +391,9 @@
     </ItemGroup>
     <RemoveDir Directories="@(RemovingFolders)" />
   </Target>
+  <ItemGroup>
+    <PRIResource Update="Strings\en-us\Resources.resw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </PRIResource>
+  </ItemGroup>
 </Project>
