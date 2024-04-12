@@ -86,6 +86,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         _priceUpdateBackgroundService = priceUpdateBackgroundService;
         _transactionService = transactionService;
         _priceUpdateBackgroundService.Start();
+        
     }
 
     #region MAIN methods or Tasks

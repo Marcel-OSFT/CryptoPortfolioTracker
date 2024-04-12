@@ -109,6 +109,7 @@ namespace CryptoPortfolioTracker.Models
 
         }
 
+
         public void SaveUserPreferences()
         {
             if (App.isReadingUserPreferences) return;

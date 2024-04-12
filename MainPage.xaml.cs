@@ -39,8 +39,10 @@ namespace CryptoPortfolioTracker
             this.InitializeComponent();
             Current = this;
             if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
-
+            
         }
+
+
 
         public async Task CheckUpdateNow()
         {
