@@ -608,4 +608,25 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="Messages_UpdateChecker_UpToDate_Title" xml:space="preserve">
     <value>Update Checker</value>
   </data>
+  <data name="CoinDialog_GetDetails_Failed" xml:space="preserve">
+    <value>Error while getting Details</value>
+  </data>
+  <data name="Messages_AccountDeleteNotAllowd_Title" xml:space="preserve">
+    <value>Deleting not allowed!</value>
+  </data>
+  <data name="Messages_AccountDeleteNotAllowed_Msg" xml:space="preserve">
+    <value>The Account is holding assets.</value>
+  </data>
+  <data name="Settings_AppTheme_Toggle.OffContent" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Settings_AppTheme_Toggle.OnContent" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Settings_AppTheme.Description" xml:space="preserve">
+    <value>Select Dark or Light color theme for the application. Change will take affect after restarting the application.</value>
+  </data>
+  <data name="Settings_AppTheme.Header" xml:space="preserve">
+    <value>Theme</value>
+  </data>
 </root>

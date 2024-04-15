@@ -75,14 +75,14 @@ namespace CryptoPortfolioTracker.Services
             return coinList != null ? coinList : new List<Coin>();
         }
 
-        public async Task<Result<bool>> RemoveCoin(string coinId)
+        public async Task<Result<bool>> RemoveCoin(Coin coin)
         {
             bool _result;
-            if (coinId == null || coinId == "") { return false; }
+            if (coin == null ) { return false; }
             try
             {
-                var coin = await context.Coins.Where(x => x.ApiId == coinId).SingleAsync();
-                context.Coins.Remove(coin);
+                var coinToRemove = await context.Coins.Where(x => x.ApiId == coin.ApiId).SingleAsync();
+                context.Coins.Remove(coinToRemove);
                 _result = await context.SaveChangesAsync() > 0;
             }
             catch (Exception ex)

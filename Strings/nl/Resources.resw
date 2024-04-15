@@ -473,4 +473,25 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_UpdateChecker_UpToDate_Msg" xml:space="preserve">
     <value>Versie is up-to-date</value>
   </data>
+  <data name="CoinDialog_GetDetails_Failed" xml:space="preserve">
+    <value>Fout bij het ophalen van de details</value>
+  </data>
+  <data name="Messages_AccountDeleteNotAllowd_Title" xml:space="preserve">
+    <value>Verwijderen niet toegestaan!</value>
+  </data>
+  <data name="Messages_AccountDeleteNotAllowed_Msg" xml:space="preserve">
+    <value>Deze account maakt nog onderdeel uit van uw portefeuille.</value>
+  </data>
+  <data name="Settings_AppTheme_Toggle.OffContent" xml:space="preserve">
+    <value>Licht</value>
+  </data>
+  <data name="Settings_AppTheme_Toggle.OnContent" xml:space="preserve">
+    <value>Donker</value>
+  </data>
+  <data name="Settings_AppTheme.Description" xml:space="preserve">
+    <value>Selecteer een donker of licht kleurenthema voor de toepassing. De wijziging wordt van kracht nadat de app opnieuw is gestart.</value>
+  </data>
+  <data name="Settings_AppTheme.Header" xml:space="preserve">
+    <value>Thema</value>
+  </data>
 </root>

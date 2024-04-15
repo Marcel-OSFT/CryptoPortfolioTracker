@@ -27,6 +27,8 @@ using Windows.Storage;
 using CryptoPortfolioTracker.Extensions;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Serilog;
+using Serilog.Core;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
@@ -34,6 +36,22 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 {
     public static SettingsViewModel Current;
     private readonly DispatcherQueue dispatcherQueue;
+
+
+    private ApplicationTheme appTheme;
+    public ApplicationTheme AppTheme
+    {
+        get => appTheme;
+        set
+        {
+            if (value != appTheme)
+            {
+                appTheme = value;
+                App.userPreferences.AppTheme = appTheme;
+                OnPropertyChanged();
+            }
+        }
+    }
 
 
     private int numberFormatIndex;
@@ -112,12 +130,15 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
+
     public SettingsViewModel()
-	{
-		Current = this;
+    {
+        //Logger = Log.Logger.ForContext<SettingsViewModel>();
+        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
+        Current = this;
         this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         GetPreferences();
-	}
+    }
 
     private void GetPreferences()
     {
@@ -126,17 +147,21 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
         FontSize = (double)App.userPreferences.FontSize;
         IsScrollBarsExpanded = App.userPreferences.IsScrollBarsExpanded;
+        AppTheme = App.userPreferences.AppTheme;
     }
 
     [RelayCommand]
     public async Task CheckUpdateNow()
     {
+        Logger.Information("Checking for updates"); 
         AppUpdater appUpdater = new();
         ResourceLoader rl = new();
         var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
         if (result == AppUpdaterResult.NeedUpdate)
         {
+            Logger.Information("Update Available");
+
             var dlgResult = await ShowMessageDialog(
                 rl.GetString("Messages_UpdateChecker_NewVersionTitle"), 
                 rl.GetString("Messages_UpdateChecker_NewVersionMsg"), 
@@ -145,6 +170,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 
             if (dlgResult == ContentDialogResult.Primary)
             {
+                Logger.Information("Downloading update");
+
                 var downloadResult = await appUpdater.DownloadSetupFile();
                 if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
                 {
@@ -154,6 +181,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                         await Task.Delay(5000);
                         ;
                     }
+                    Logger.Information("Download Succesfull");
+
                     var installRequest = await ShowMessageDialog(
                         rl.GetString("Messages_UpdateChecker_DownloadSuccesTitle"),
                         rl.GetString("Messages_UpdateChecker_DownloadSuccesMsg"),
@@ -162,6 +191,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 
                     if (installRequest == ContentDialogResult.Primary)
                     {
+                        Logger.Information("Closing Application and Installing Update");
+
                         appUpdater.ExecuteSetupFile();
                         // Close application....
                         Environment.Exit(0);
@@ -169,6 +200,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 }
                 else
                 {
+                    Logger.Warning("Download failed");
+
                     await ShowMessageDialog(
                         rl.GetString("Messages_UpdateChecker_DownloadFailedTitle"),
                         rl.GetString("Messages_UpdateChecker_DownloadFailedMsg"),
@@ -178,6 +211,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
         else
         {
+            Logger.Information("Appication is up-to-date");
+
             await ShowMessageDialog(
                 rl.GetString("Messages_UpdateChecker_UpToDate_Title"),
                 rl.GetString("Messages_UpdateChecker_UpToDate_Msg"),

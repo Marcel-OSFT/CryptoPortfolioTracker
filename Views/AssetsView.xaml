@@ -18,7 +18,6 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ThemeColorConverter x:Key="ThemeColorConverter"/>
         <converters:AddPrefixConverter x:Key="AddPrefixConverter"/>
         <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
 
@@ -41,18 +40,18 @@
             <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="3" Height="265" VerticalAlignment="Top"/>
             <RelativePanel Grid.Row="0">
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
-                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="{Binding Foreground, ElementName=smallHeaderText, Converter={StaticResource ThemeColorConverter}}" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
                 
-                <TextBlock x:Uid="Assets_Title" x:Name="txtAssets" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtAssets, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
-                <TextBlock Text="{Binding ListAssetTotals.Count, Converter={StaticResource AddPrefixConverter}, ConverterParameter=' (|)' }" Margin="0,10,0,0" Foreground="{Binding Foreground, ElementName=txtAssets, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" RelativePanel.RightOf="txtAssets" />
+                <TextBlock x:Uid="Assets_Title" x:Name="txtAssets" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock Text="{Binding ListAssetTotals.Count, Converter={StaticResource AddPrefixConverter}, ConverterParameter=' (|)' }" Margin="0,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" RelativePanel.RightOf="txtAssets" />
                 <!--Grid HorizontalAlignment="Right" Width="{Binding ElementName=HeaderGrid,Path=ActualWidth}" Margin="0,10,0,0"-->
                     <RelativePanel RelativePanel.AlignRightWithPanel="True">
-                    <TextBlock x:Name="txtTotalAssetsValue" Text="{Binding TotalAssetsValue, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" Foreground="{Binding Foreground, ElementName=txtTotalAssetsValue, Converter={StaticResource ThemeColorConverter}}" Margin="36,15,20,0" Style="{StaticResource ValueHeaderTextStyle}" />
-                    <TextBlock x:Name="txtProfitLossPerc" Text="{Binding TotalAssetsPnLPerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Foreground, ElementName=txtProfitLossPerc, Converter={StaticResource ThemeColorConverter}}" Margin="36,0,20,0" Style="{StaticResource PercHeaderTextStyle}" RelativePanel.AlignRightWith="txtTotalAssetsValue" RelativePanel.Below="txtTotalAssetsValue" />
+                    <TextBlock x:Name="txtTotalAssetsValue" Text="{Binding TotalAssetsValue, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" Foreground="DarkGoldenrod" Margin="36,15,20,0" Style="{StaticResource ValueHeaderTextStyle}" />
+                    <TextBlock x:Name="txtProfitLossPerc" Text="{Binding TotalAssetsPnLPerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="DarkGoldenrod" Margin="36,0,20,0" Style="{StaticResource PercHeaderTextStyle}" RelativePanel.AlignRightWith="txtTotalAssetsValue" RelativePanel.Below="txtTotalAssetsValue" />
                     </RelativePanel>
                 <!--/Grid-->
             </RelativePanel>
-            <TextBlock x:Uid="Assets_Explainer" Grid.Row="1" VerticalAlignment="Bottom" Margin="35,0,20,20"  Style="{StaticResource ScenarioDescriptionTextStyle}"  TextWrapping="Wrap" />
+            <TextBlock x:Uid="Assets_Explainer" Grid.Row="1" VerticalAlignment="Bottom" Margin="35,0,20,20" Style="{StaticResource ExplainerTextStyle}"   TextWrapping="Wrap" />
             <Border Grid.Row="2" VerticalAlignment="Stretch">
                 <Grid Name="AssetsContent">
                     <Grid.RowDefinitions>

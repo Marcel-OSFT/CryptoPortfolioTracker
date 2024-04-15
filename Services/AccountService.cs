@@ -56,27 +56,6 @@ namespace CryptoPortfolioTracker.Services
             }
             return _result;
         }
-        //public async Task<bool> EditAccount(Account newAccount, Account accountToEdit)
-        //{
-        //    bool _result;
-        //    if (newAccount == null || newAccount.Name == "" || accountToEdit == null) { return false; }
-        //    try
-        //    {
-        //        var account = await context.Accounts
-        //            .Where(x => x.Id == accountToEdit.Id)
-        //            .SingleAsync();
-
-        //        account.Name = newAccount.Name;
-        //        account.About = newAccount.About;
-        //        context.Accounts.Update(account);
-        //        _result = await context.SaveChangesAsync() > 0;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return false;
-        //    }
-        //    return _result;
-        //}
 
         public async Task<Result<bool>> RemoveAccount(int accountId)
         {

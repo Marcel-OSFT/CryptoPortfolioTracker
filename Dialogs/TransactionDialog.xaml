@@ -186,8 +186,8 @@
                                        TextChanged="TBoxPriceA_TextChanged" 
                                        PointerPressed="QtyOrPrice_pressed"
                                        Margin="5,0,5,0" 
-                                       RelativePanel.RightOf="TBoxQtyA" />
-                
+                                       RelativePanel.RightOf="TBoxQtyA"
+                                       ToolTipService.ToolTip="The price of the underlying coin"/>
             </RelativePanel>
             <RelativePanel Name="QtyAndPriceSelectionB"  HorizontalAlignment="Stretch" Margin="0,0,0,0" >
                 <controls:RegExTextBox x:Uid="TransactionDialog_QtyB" x:Name ="TBoxQtyB" 

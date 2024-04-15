@@ -16,6 +16,8 @@ using LanguageExt.TypeClasses;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Serilog;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -45,7 +47,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
 
     #region instances related to Services
     public readonly IAssetService _assetService;
-    public readonly IPriceUpdateBackgroundService _priceUpdateBackgroundService;
+    public readonly IPriceUpdateService _priceUpdateBackgroundService;
     public readonly ITransactionService _transactionService;
 
     #endregion instances related to Services
@@ -78,8 +80,10 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     #endregion variables and proporties for DataBinding with the View
 
     //Constructor
-    public AssetsViewModel(IAssetService assetService, IPriceUpdateBackgroundService priceUpdateBackgroundService, ITransactionService transactionService)
+    public AssetsViewModel(IAssetService assetService, IPriceUpdateService priceUpdateBackgroundService, ITransactionService transactionService)
     {
+        //Logger = Log.Logger.ForContext<AssetsViewModel>();
+        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
         _assetService = assetService;
         SetDataSource();
@@ -142,6 +146,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         ResourceLoader rl = new();
         try
         {
+            Logger.Information("Showing Transaction Dialog for Adding");
             var dialog = new TransactionDialog(_transactionService, DialogAction.Add);
             dialog.XamlRoot = AssetsView.Current.XamlRoot;
             var result = await dialog.ShowAsync();
@@ -149,17 +154,22 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
             if (dialog.Exception != null) throw dialog.Exception;
             if (result == ContentDialogResult.Primary)
             {
+                Logger.Information("Adding a new Transaction - {0}", dialog.transactionNew.Details.TransactionType);
                 await (await _transactionService.AddTransaction(dialog.transactionNew))
                     .Match(Succ: newAsset => UpdateListAssetTotals(dialog.transactionNew),
-                        Fail: async err => await ShowMessageDialog(
-                            rl.GetString("Messages_TransactionAddFailed_Title"), 
+                        Fail: async err => {
+                            await ShowMessageDialog(
+                            rl.GetString("Messages_TransactionAddFailed_Title"),
                             err.Message,
-                            rl.GetString("Common_CloseButton")));
+                            rl.GetString("Common_CloseButton"));
+                            Logger.Error(err, "Adding Transaction failed");
+                        });
                 CalculateAssetsTotalValues();
             }
         }
         catch (Exception ex)
         {
+            Logger.Error(ex, "Failed to show Transaction Dialog");
             await ShowMessageDialog(
                 rl.GetString("Messages_TransactionDialogFailed_Title"), 
                 ex.Message,
@@ -173,7 +183,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    public async Task ShowTransactionDialogToEdit(int transactionId)
+    public async Task ShowTransactionDialogToEdit(Transaction transaction)
     {
         App.isBusy = true;
 
@@ -182,34 +192,43 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         ResourceLoader rl = new();
         try
         {
-            transactionToEdit = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
-            //*** editing a transaction also involves a change for an element in the ListAssetAccounts
-            accountAffected = ListAssetAccounts.Where(t => t.AssetId == transactionToEdit.RequestedAsset.Id).Single();
+            Logger.Information("Showing Transaction Dialog for Editing");
 
-            var dialog = new TransactionDialog(_transactionService, DialogAction.Edit, transactionToEdit);
+            //transactionToEdit = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
+            //*** editing a transaction also involves a change for an element in the ListAssetAccounts
+            accountAffected = ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
+
+            var dialog = new TransactionDialog(_transactionService, DialogAction.Edit, transaction);
             dialog.XamlRoot = AssetsView.Current.XamlRoot;
             var result = await dialog.ShowAsync();
 
             if (dialog.Exception != null) throw dialog.Exception;
             if (result == ContentDialogResult.Primary)
             {
-                await (await _transactionService.EditTransaction(dialog.transactionNew, transactionToEdit))
+                Logger.Information("Editing Transaction ({0}) - {1}", transaction.Id, transaction.Details.TransactionType);
+                await (await _transactionService.EditTransaction(dialog.transactionNew, transaction))
                         .Match(Succ: async newAsset =>
                         {
                             await UpdateListAssetTotals(dialog.transactionNew);
                             await UpdateListAssetAccount(accountAffected);
-                            await UpdateListAssetTransaction(dialog.transactionNew, transactionToEdit);
+                            await UpdateListAssetTransaction(dialog.transactionNew, transaction);
 
                         },
-                            Fail: async err => await ShowMessageDialog(
-                                rl.GetString("Messages_TransactionUpdateFailed_Title"), 
+                            Fail: async err => {
+                                await ShowMessageDialog(
+                                rl.GetString("Messages_TransactionUpdateFailed_Title"),
                                 err.Message,
-                                rl.GetString("Common_CloseButton")));
+                                rl.GetString("Common_CloseButton"));
+                                Logger.Error(err, "Editing Transaction failed");
+
+                            });
                 CalculateAssetsTotalValues();
             }
         }
         catch (Exception ex)
         {
+            Logger.Error(ex, "Failed to show Transaction Dialog");
+
             await ShowMessageDialog(
                 rl.GetString("Messages_TransactionDialogFailed_Title"),
                 ex.Message,
@@ -219,12 +238,14 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     }
 
     [RelayCommand]
-    public async Task DeleteTransaction(int transactionId)
+    public async Task DeleteTransaction(Transaction transaction)
     {
         App.isBusy = true;
         ResourceLoader rl = new();
         try
         {
+            Logger.Information("Deletion Request for Transaction ({0}) - {1}", transaction.Id, transaction.Details.TransactionType);
+
             var dlgResult = await ShowMessageDialog(
                 rl.GetString("Messages_TransactionDelete_Title"),
                 rl.GetString("Messages_TransactionDelete_Msg"),
@@ -233,25 +254,33 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
 
             if (dlgResult == ContentDialogResult.Primary)
             {
-                var transactionToDelete = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
+                Logger.Information("Deleting Transaction");
+
+                // var transactionToDelete = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
                 //*** editing a transaction also involves a change for an element in the ListAssetAccounts
-                var accountAffected = ListAssetAccounts.Where(t => t.AssetId == transactionToDelete.RequestedAsset.Id).Single();
+                var accountAffected = ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
                 
-                await (await _transactionService.DeleteTransaction(transactionToDelete, accountAffected))
+                await (await _transactionService.DeleteTransaction(transaction, accountAffected))
                          .Match(Succ: async s =>
                          {
-                             await UpdateListAssetTotals(transactionToDelete);
+                             await UpdateListAssetTotals(transaction);
                              await UpdateListAssetAccount(accountAffected);
-                             await RemoveFromListAssetTransactions(transactionToDelete);
+                             await RemoveFromListAssetTransactions(transaction);
                          },
-                                Fail: err => ShowMessageDialog(
-                                    rl.GetString("Messages_TransactionDeleteFailed_Title"), 
+                            Fail: async err => {
+                                await ShowMessageDialog(
+                                    rl.GetString("Messages_TransactionDeleteFailed_Title"),
                                     err.Message,
-                                    rl.GetString("Common_CloseButton")));
+                                    rl.GetString("Common_CloseButton"));
+                                Logger.Error(err, "Deleting Transaction failed");
+
+                            });
             }
         }
         catch (Exception ex)
         {
+            Logger.Error(ex, "Deleting Transaction failed");
+
             await ShowMessageDialog(
                 rl.GetString("Messages_TransactionDeleteFailed_Title"),  
                 ex.Message,

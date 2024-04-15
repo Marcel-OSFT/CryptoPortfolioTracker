@@ -169,10 +169,10 @@
                                             <CommandBar Name="HoverCommandBar" Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                                 <CommandBar.SecondaryCommands>
                                                     <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                    <AppBarButton x:Uid="TransactionsLV_Edit"  Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowTransactionDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind Id}">
+                                                    <AppBarButton x:Uid="TransactionsLV_Edit"  Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowTransactionDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                         <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                     </AppBarButton>
-                                                    <AppBarButton x:Uid="TransactionsLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteTransactionCommand, ElementName=proxy}" CommandParameter="{x:Bind Id}"/>
+                                                    <AppBarButton x:Uid="TransactionsLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteTransactionCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
                                                 </CommandBar.SecondaryCommands>
                                             </CommandBar>
                                         </RelativePanel>

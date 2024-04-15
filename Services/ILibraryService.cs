@@ -15,7 +15,7 @@ namespace CryptoPortfolioTracker.Services
         public Task<Result<Coin>> GetCoin(string coinId);
         public Task<Result<List<Coin>>> GetCoinsOrderedByRank();
         public Task<Result<CoinFullDataById>> GetCoinDetails(string coinId);
-        public Task<Result<bool>> RemoveCoin(string coinId);
+        public Task<Result<bool>> RemoveCoin(Coin coin);
         public Task<Result<List<CoinList>>> GetCoinListFromGecko();
         public Task<Result<bool>> UpdateNote(Coin coin, string note);
     }

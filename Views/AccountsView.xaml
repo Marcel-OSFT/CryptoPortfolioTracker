@@ -15,7 +15,6 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ThemeColorConverter x:Key="ThemeColorConverter"/>
         <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
@@ -36,10 +35,10 @@
             <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="3" Height="265" VerticalAlignment="Top"/>
             <RelativePanel>
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
-                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="{Binding Foreground, ElementName=smallHeaderText, Converter={StaticResource ThemeColorConverter}}" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Uid="Accounts_Title" x:Name="txtAccounts" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtAccounts, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Uid="Accounts_Title" x:Name="txtAccounts" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
             </RelativePanel>
-            <TextBlock x:Uid="Accounts_Explainer" Grid.Row="1" VerticalAlignment="Bottom" Style="{StaticResource ScenarioDescriptionTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"/>
+            <TextBlock x:Uid="Accounts_Explainer" Grid.Row="1" VerticalAlignment="Bottom" Style="{StaticResource ExplainerTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"/>
             <Border Grid.Row="2" VerticalAlignment="Stretch" Margin="10,0,0,0">
                 <Grid Name="AccountsContent">
                     <Grid.RowDefinitions>

@@ -148,13 +148,13 @@
                                         <CommandBar Name="HoverCommandBar"  Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                             <CommandBar.SecondaryCommands>
                                                 <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                <AppBarButton x:Uid="LibraryLV_About" Visibility="Visible" x:Name="HoverButtonAbout" Command="{Binding DataContext.DataContext.ShowDescriptionCommand, ElementName=proxy}"  CommandParameter="{x:Bind ApiId}">
+                                                <AppBarButton x:Uid="LibraryLV_About" Visibility="Visible" x:Name="HoverButtonAbout" Command="{Binding DataContext.DataContext.ShowDescriptionCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                     <FontIcon  Glyph="&#xE946;" FontWeight="Normal"  />
                                                 </AppBarButton>
-                                                <AppBarButton x:Uid="LibraryLV_AddEditNote" Visibility="Visible" x:Name="HoverButtonNote" Command="{Binding DataContext.DataContext.ShowAddNoteDialogCommand, ElementName=proxy}"  CommandParameter="{x:Bind ApiId}">
+                                                <AppBarButton x:Uid="LibraryLV_AddEditNote" Visibility="Visible" x:Name="HoverButtonNote" Command="{Binding DataContext.DataContext.ShowAddNoteDialogCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                     <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                 </AppBarButton>
-                                                <AppBarButton x:Uid="LibraryLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=proxy}" CommandParameter="{x:Bind ApiId}"/>
+                                                <AppBarButton x:Uid="LibraryLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>

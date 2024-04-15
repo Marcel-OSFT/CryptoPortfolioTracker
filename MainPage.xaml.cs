@@ -6,16 +6,22 @@ using LanguageExt.ClassInstances;
 
 //using System.Management.Automation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Serilog;
+using Serilog.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using Windows.Storage;
 
 
 
@@ -32,26 +38,84 @@ namespace CryptoPortfolioTracker
     {
         public static MainPage Current;
         private IServiceScope _currentServiceScope;
+        public  LogWindow logWindow;
 
-       
+        private ILogger Logger { get; set; }
+
         public MainPage()
         {
+            ConfigureLogger();
+           
+            //GetUserPreferences();
+
             this.InitializeComponent();
             Current = this;
             if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
+         }
+
+        private void ConfigureLogger()
+        {
+            if (App.isLogWindowEnabled)
+            {
+                logWindow = new LogWindow();
+                logWindow.Title = Assembly.GetExecutingAssembly().GetName().Name.ToString() + " Event Log";
+                logWindow.Activate();
+            }
+            else
+            {
+                Log.Logger = new LoggerConfiguration()
+                    .WriteTo.File(App.appDataPath + "\\log.txt",
+                       rollingInterval: RollingInterval.Day,
+                       retainedFileCountLimit: 3,
+                       outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
+              .CreateLogger();
+
+            }
+
+            // Logger = Log.Logger.ForContext<MainPage>();
+            Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
+
             
         }
+        //private void GetUserPreferences()
+        //{
 
+        //    if (App.Current. is Application appElement)
+        //    {
+        //        appElement.RequestedTheme = (ApplicationTheme)ElementTheme.Light; 
+        //    }
 
+        //    Log.Information("Initialize App; Loading UserPreferences");
+        //    App.userPreferences = new UserPreferences();
+        //    try
+        //    {
+        //        if (File.Exists(App.appDataPath + "\\prefs.xml"))
+        //        {
+        //            App.isReadingUserPreferences = true;
+        //            XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
+        //            FileStream myFileStream = new FileStream(App.appDataPath + "\\prefs.xml", FileMode.Open);
+
+        //            App.userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
+        //        }
+        //    }
+        //    catch { }
+        //    finally
+        //    {
+        //        App.isReadingUserPreferences = false;
+        //    }
+        //}
 
         public async Task CheckUpdateNow()
         {
+            Logger.Information("Checking for updates");
             ResourceLoader rl = new();
             AppUpdater appUpdater = new();
             var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
             if (result == AppUpdaterResult.NeedUpdate)
             {
+                Logger.Information("Update Available");
+
                 var dlgResult = await ShowMessageDialog(
                     rl.GetString("Messages_UpdateChecker_NewVersionTitle"), 
                     rl.GetString("Messages_UpdateChecker_NewVersionMsg"), 
@@ -60,6 +124,7 @@ namespace CryptoPortfolioTracker
 
                 if (dlgResult == ContentDialogResult.Primary)
                 {
+                    Logger.Information("Downloading update");
                     var downloadResult = await appUpdater.DownloadSetupFile();
                     //Download is running async, so the user can continue to do other stuff
                     if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
@@ -70,7 +135,7 @@ namespace CryptoPortfolioTracker
                             await Task.Delay(5000);
                             ;
                         }
-
+                        Logger.Information("Download Succesfull");
                         var installRequest = await ShowMessageDialog(
                             rl.GetString("Messages_UpdateChecker_DownloadSuccesTitle"),
                             rl.GetString("Messages_UpdateChecker_DownloadSuccesMsg"),
@@ -78,12 +143,14 @@ namespace CryptoPortfolioTracker
                             rl.GetString("Common_CancelButton"));
                         if (installRequest == ContentDialogResult.Primary)
                         {
+                            Logger.Information("Closing Application and Installing Update");
                             appUpdater.ExecuteSetupFile();
                             Environment.Exit(0);
                         }
                     }
                     else
                     {
+                        Logger.Warning("Download failed");
                         await ShowMessageDialog(
                             rl.GetString("Messages_UpdateChecker_DownloadFailedTitle"),
                             rl.GetString("Messages_UpdateChecker_DownloadFailedMsg"),
@@ -108,6 +175,8 @@ namespace CryptoPortfolioTracker
             {
                 pageType = Type.GetType("CryptoPortfolioTracker.Views.SettingsView");
                 if (pageType != null) LoadView(pageType);
+                Logger.Information("Navigated to {0}", "SettingsView");
+
             }
             else
             {
@@ -115,6 +184,7 @@ namespace CryptoPortfolioTracker
                 {
                     pageType = Type.GetType("CryptoPortfolioTracker.Views." + (string)selectedItem.Tag);
                     if (pageType != null) LoadView(pageType);
+                    Logger.Information("Navigated to {0}", (string)selectedItem.Tag); ;
                 }
             }
         }
