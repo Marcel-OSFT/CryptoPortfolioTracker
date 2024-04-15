@@ -638,10 +638,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Downloading Setup File failed</source>
           <target state="final">Fout bij het downloaden van de Setup File.</target>
         </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_DownloadSucces" translate="yes" xml:space="preserve">
-          <source>Download Succesfull</source>
-          <target state="final">Download gereed</target>
-        </trans-unit>
         <trans-unit id="Messages_UpdateChecker_DownloadSuccesMsg" translate="yes" xml:space="preserve">
           <source>The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.</source>
           <target state="final">Het installatiebestand is opgeslagen in uw Downloads map. Klik op 'Installeren' om door te gaan met de installatie. De applicatie wordt automatisch gesloten.</target>
@@ -689,6 +685,10 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="Settings_AppTheme.Header" translate="yes" xml:space="preserve">
           <source>Theme</source>
           <target state="translated">Thema</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_DownloadSuccesTitle" translate="yes" xml:space="preserve">
+          <source>Download Succesfull</source>
+          <target state="translated">Download gereed</target>
         </trans-unit>
       </group>
     </body>

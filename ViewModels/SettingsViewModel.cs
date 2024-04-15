@@ -179,7 +179,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                     while (App.isBusy)
                     {
                         await Task.Delay(5000);
-                        ;
                     }
                     Logger.Information("Download Succesfull");
 
@@ -211,7 +210,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
         else
         {
-            Logger.Information("Appication is up-to-date");
+            Logger.Information("Application is up-to-date");
 
             await ShowMessageDialog(
                 rl.GetString("Messages_UpdateChecker_UpToDate_Title"),

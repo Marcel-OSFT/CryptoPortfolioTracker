@@ -458,9 +458,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_UpdateChecker_DownloadFailedTitle" xml:space="preserve">
     <value>Fout bij het downloaden van de Setup File.</value>
   </data>
-  <data name="Messages_UpdateChecker_DownloadSucces" xml:space="preserve">
-    <value>Download gereed</value>
-  </data>
   <data name="Messages_UpdateChecker_DownloadSuccesMsg" xml:space="preserve">
     <value>Het installatiebestand is opgeslagen in uw Downloads map. Klik op 'Installeren' om door te gaan met de installatie. De applicatie wordt automatisch gesloten.</value>
   </data>
@@ -493,5 +490,8 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="Settings_AppTheme.Header" xml:space="preserve">
     <value>Thema</value>
+  </data>
+  <data name="Messages_UpdateChecker_DownloadSuccesTitle" xml:space="preserve">
+    <value>Download gereed</value>
   </data>
 </root>

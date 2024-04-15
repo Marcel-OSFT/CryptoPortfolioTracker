@@ -169,7 +169,7 @@ namespace CryptoPortfolioTracker
 
             await Task.Delay(1000);
             splash.Close();
-            MainPage.Current.CheckUpdateNow();
+            await MainPage.Current.CheckUpdateNow();
         }
 
         private void ConfigureWindow(Window window)
