@@ -61,22 +61,9 @@ namespace CryptoPortfolioTracker
                 logWindow.Title = Assembly.GetExecutingAssembly().GetName().Name.ToString() + " Event Log";
                 logWindow.Activate();
             }
-            else
-            {
-                Log.Logger = new LoggerConfiguration()
-                    .WriteTo.File(App.appDataPath + "\\log.txt",
-                       rollingInterval: RollingInterval.Day,
-                       retainedFileCountLimit: 3,
-                       outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
-              .CreateLogger();
-
-            }
-
             // Logger = Log.Logger.ForContext<MainPage>();
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
         }
-
-
 
         public async Task CheckUpdateNow()
         {
