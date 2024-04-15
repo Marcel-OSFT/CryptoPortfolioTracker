@@ -152,7 +152,7 @@ namespace CryptoPortfolioTracker.Models
             return AppUpdaterResult.DownloadSuccesfull;
         }
 
-        public Task<AppUpdaterResult> ExecuteSetupFile()
+        public void ExecuteSetupFile()
         {
             try
             {
@@ -161,7 +161,7 @@ namespace CryptoPortfolioTracker.Models
                 process.StartInfo.Arguments = "/SP- /silent /noicons";
                 process.StartInfo.WorkingDirectory = App.appPath;
                 process.Start();
-                process.WaitForExit();
+               // process.WaitForExit();
             }
             catch (Exception ex)
             {
@@ -169,8 +169,8 @@ namespace CryptoPortfolioTracker.Models
             }
             //After starting setup.exe, exit your application as soon as possible.Note that to avoid problems with updating your.exe, Setup has an auto retry feature.
             //Optionally you could also use the skipifsilent and skipifnotsilent flags and make your application aware of a '/updated' parameter to for example show a nice message box to inform the user that the update has completed.
+            Environment.Exit(0);
 
-            return Task.FromResult(AppUpdaterResult.UpdateSuccesfull);
         }
 
 

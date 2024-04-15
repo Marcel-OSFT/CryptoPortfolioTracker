@@ -105,7 +105,6 @@ namespace CryptoPortfolioTracker
                         {
                             Logger.Information("Closing Application and Installing Update");
                             appUpdater.ExecuteSetupFile();
-                            Environment.Exit(0);
                         }
                     }
                     else
