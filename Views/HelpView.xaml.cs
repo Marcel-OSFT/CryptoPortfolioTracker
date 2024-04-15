@@ -46,10 +46,13 @@ namespace CryptoPortfolioTracker.Views
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
+            var helpFilePath = App.appPath + "\\HelpFile.rtf"; 
             try
             {
+                if (App.userPreferences.CultureLanguage == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
+
                 editor.IsReadOnly = false;
-                StorageFile helpFile = await StorageFile.GetFileFromPathAsync(App.appPath + "\\HelpFile.rtf");
+                StorageFile helpFile = await StorageFile.GetFileFromPathAsync(helpFilePath);
                 Windows.Storage.Streams.IRandomAccessStream randAccStream = await helpFile.OpenAsync(Windows.Storage.FileAccessMode.Read);
 
                 // Load the file into the Document property of the RichEditBox.
