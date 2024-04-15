@@ -590,7 +590,7 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="Messages_UpdateChecker_DownloadFailedTitle" xml:space="preserve">
     <value>Downloading Setup File failed</value>
   </data>
-  <data name="Messages_UpdateChecker_DownloadSucces" xml:space="preserve">
+  <data name="Messages_UpdateChecker_DownloadSuccesTitle" xml:space="preserve">
     <value>Download Succesfull</value>
   </data>
   <data name="Messages_UpdateChecker_DownloadSuccesMsg" xml:space="preserve">
