@@ -64,6 +64,8 @@ namespace CryptoPortfolioTracker
 
         public App()
         {
+
+            //TODO reorganise constructor and OnLaunched te get Splash quickly
             SetAppPaths();
             InitializeLogger();
             GetUserPreferences();

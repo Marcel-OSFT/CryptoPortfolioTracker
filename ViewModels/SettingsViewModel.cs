@@ -191,10 +191,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                     if (installRequest == ContentDialogResult.Primary)
                     {
                         Logger.Information("Closing Application and Installing Update");
-
                         appUpdater.ExecuteSetupFile();
-                        // Close application....
-                        Environment.Exit(0);
                     }
                 }
                 else
