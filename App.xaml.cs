@@ -24,6 +24,11 @@ using WinUIEx;
 using System.Windows;
 using Windows.Devices.Enumeration;
 using System.Linq;
+using Serilog;
+using Serilog.Sinks.SystemConsole;
+using Polly.Registry;
+using Flurl.Util;
+using Serilog.Core;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -41,7 +46,7 @@ namespace CryptoPortfolioTracker
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
 
-        private static Window m_window;
+        public static Window Window;
         public const string CoinGeckoApiKey = "";
         public static string ApiPath = "https://api.coingecko.com/api/v3/";
         public static string appPath;
@@ -52,47 +57,46 @@ namespace CryptoPortfolioTracker
         public static UserPreferences userPreferences;
         public static bool isReadingUserPreferences;
 
+        public static bool isLogWindowEnabled;
+        private ILogger Logger;
+
         public static IServiceProvider Container { get; private set; }
-        
+
         public App()
         {
+            SetAppPaths();
+            InitializeLogger();
+            GetUserPreferences();
             this.InitializeComponent();
             ProductVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            SetAppPaths();
-            GetUserPreferences();
             Container = RegisterServices();
             var context = App.Container.GetService<PortfolioContext>();
             context.Database.EnsureCreated();
         }
-        
+
         private void GetUserPreferences()
         {
-            userPreferences = new UserPreferences();
+            Log.Information("Initialize App; Loading UserPreferences");
+            App.userPreferences = new UserPreferences();
             try
             {
-                if (File.Exists(appDataPath + "\\prefs.xml"))
+                if (File.Exists(App.appDataPath + "\\prefs.xml"))
                 {
-                    isReadingUserPreferences = true;
+                    App.isReadingUserPreferences = true;
                     XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-                    FileStream myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
+                    FileStream myFileStream = new FileStream(App.appDataPath + "\\prefs.xml", FileMode.Open);
 
-                    userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
+                    App.userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
                 }
             }
             catch { }
-            finally 
-            { 
-                isReadingUserPreferences = false; 
+            finally
+            {
+                RequestedTheme = App.userPreferences.AppTheme;
+                App.isReadingUserPreferences = false;
             }
         }
 
-        public static void SaveUserPreferences()
-        {
-            XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-            StreamWriter myWriter = new StreamWriter(appDataPath + "\\prefs.xml");
-            mySerializer.Serialize(myWriter, userPreferences);
-            myWriter.Close();
-        }
         private void SetAppPaths()
         {
             appPath = (System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory));
@@ -135,7 +139,7 @@ namespace CryptoPortfolioTracker
             services.AddScoped<IAssetService, AssetService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ILibraryService, LibraryService>();
-            services.AddScoped<IPriceUpdateBackgroundService, PriceUpdateBackgroundService>(serviceProvider =>
+            services.AddScoped<IPriceUpdateService, PriceUpdateService>(serviceProvider =>
             {
                 return new(TimeSpan.FromSeconds(300));
             });
@@ -147,41 +151,62 @@ namespace CryptoPortfolioTracker
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            Frame rootFrame = m_window.Content as Frame;
 
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
-            if (rootFrame == null)
-            {
-                // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
-                rootFrame.NavigationFailed += OnNavigationFailed;
-                // Place the frame in the current Window
-                m_window.Content = rootFrame;
-            }
+            Window = new MainWindow();
+            var splash = new SplashScreen();
+            splash.CenterOnScreen();
+            splash.Activate();
+            await Task.Delay(3000);
+
+            Frame rootFrame = new Frame();
+            Window.Content = rootFrame;
+            ConfigureWindow(Window);
+          
+            Window.Activate();
+            rootFrame.Navigate(typeof(MainPage), args.Arguments);
+
+            await Task.Delay(1000);
+            splash.Close();
+        }
+
+        private void ConfigureWindow(Window window)
+        {
             var monitor = MonitorInfo.GetDisplayMonitors().FirstOrDefault();
             if (monitor != null && monitor.RectMonitor.Width <= 1024 && monitor.RectMonitor.Height <= 768)
             {
-                m_window.SetWindowSize(monitor.RectMonitor.Width,monitor.RectMonitor.Height);
+                window.SetWindowSize(monitor.RectMonitor.Width, monitor.RectMonitor.Height);
             }
             else
             {
-                m_window.SetWindowSize(1024, 768);
+                window.SetWindowSize(1024, 768);
             }
-            m_window.CenterOnScreen();
-            m_window.Title = "Crypto Portfolio Tracker";
-            m_window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
-            m_window.SetTitleBar(null);
-            m_window.Activate();
-            //if (args.UWPLaunchActivatedEventArgs.PrelaunchActivated == false)
-            //{
-            if (rootFrame.Content == null)
+            Window.CenterOnScreen();
+            Window.Title = "Crypto Portfolio Tracker";
+            Window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
+            Window.SetTitleBar(null);
+        }
+
+        private void InitializeLogger()
+        {
+            string[] commandLineArgs = Environment.GetCommandLineArgs();
+
+            if (commandLineArgs.Length > 1 && commandLineArgs[1].Substring(1).ToLower() == "log")
             {
-                rootFrame.Navigate(typeof(MainPage), args.Arguments);
+                isLogWindowEnabled = true; // the Logger window is created in MainPage...
             }
+            else
+            {
+#if DEBUG
+                Log.Logger = new LoggerConfiguration()
+                   .WriteTo.Debug(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
+                   .CreateLogger();
+#endif
+            }
+            Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
+            Log.Information("------------------------------------");
+            Log.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
         }
 
         /// <summary>

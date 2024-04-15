@@ -28,13 +28,15 @@
     <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
     <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/.</AppInstallerUri>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.0.2.0</Version>
+    <Version>1.0.3.0</Version>
+    <StartupObject></StartupObject>
   </PropertyGroup>
   <PropertyGroup Label="MultilingualAppToolkit">
     <MultilingualAppToolkitVersion>4.0</MultilingualAppToolkitVersion>
     <MultilingualFallbackLanguage>en-US</MultilingualFallbackLanguage>
     <TranslationReport Condition="'$(Configuration)' == 'Release'">true</TranslationReport>
     <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
+    <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-16.png" />
@@ -76,7 +78,9 @@
     <None Remove="Dialogs\AddNoteDialog.xaml" />
     <None Remove="Dialogs\BlankWindow1.xaml" />
     <None Remove="Dialogs\TransactionDialog.xaml" />
+    <None Remove="LogWindow.xaml" />
     <None Remove="MK_Styles.xaml" />
+    <None Remove="SplashScreen.xaml" />
     <None Remove="Views\SettingsView.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +149,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Polly.Core" Version="8.3.0" />
+    <PackageReference Include="Serilog" Version="4.0.0-dev-02149" />
+    <PackageReference Include="Serilog.Expressions" Version="4.0.1-dev-00154" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.1.0-dev-00943" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00972" />
+    <PackageReference Include="Serilog.Sinks.WinUi3" Version="0.2.1-alpha" />
+    <PackageReference Include="Serilog.Sinks.WinUi3.LogViewModels" Version="0.2.1-alpha" />
     <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
     <PackageReference Include="WinUIEx" Version="2.2.0" />
     <PackageReference Include="WinUIEx.TestTools" Version="1.0.0" />
@@ -204,6 +215,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\bitcoin1_HeaderImage.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\CPT256x256Icon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\CPT256x256Icon.scale-100.png">
@@ -275,6 +289,9 @@
     <Content Update="Assets\ninegrid.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="Assets\Splash_Image_1000x565.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\Wallet_Minus.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -325,6 +342,12 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="SplashScreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="LogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Update="HelpFile.rtf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

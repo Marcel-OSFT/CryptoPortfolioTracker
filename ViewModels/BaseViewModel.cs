@@ -6,11 +6,18 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace CryptoPortfolioTracker.ViewModels
 {
     public abstract partial class BaseViewModel : ObservableObject
     {
+        private protected ILogger Logger
+        {
+            get; set;
+        }
+
+
         [ObservableProperty] double fontLevel1;
         [ObservableProperty] double fontLevel2;
         [ObservableProperty] double fontLevel3;

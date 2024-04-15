@@ -9,7 +9,7 @@ namespace CryptoPortfolioTracker.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return (double)value < 0 ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.LightGreen);
+            return (double)value < 0 ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.ForestGreen);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -18,8 +18,8 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ThemeColorConverter x:Key="ThemeColorConverter"/>
         <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
+        <converters:ThemeToBoolConverter x:Key="ThemeToBoolConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
@@ -42,8 +42,8 @@
             <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="2" Height="250" VerticalAlignment="Top"/>
             <RelativePanel>
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
-                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="{Binding Foreground, ElementName=smallHeaderText, Converter={StaticResource ThemeColorConverter}}" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtSettings, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
             </RelativePanel>
             <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0">
                 <StackPanel Spacing="4">
@@ -67,9 +67,15 @@
                     </ct:SettingsCard>
 
                     <ct:SettingsCard x:Uid="Settings_HideZeroBalances"
-                       HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
-                       IsEnabled="True">
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
+                        IsEnabled="True">
                         <ToggleSwitch x:Uid="Settings_HideZeroBalances_Toggle" IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
+                    </ct:SettingsCard>
+
+                    <ct:SettingsCard x:Uid="Settings_AppTheme"
+                       HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
+                       IsEnabled="True">
+                        <ToggleSwitch x:Uid="Settings_AppTheme_Toggle" OnContent="Dark" OffContent="Light" IsOn="{Binding AppTheme, Mode=TwoWay, Converter={StaticResource ThemeToBoolConverter}}" />
                     </ct:SettingsCard>
                     
                     <ct:SettingsCard x:Uid="Settings_KeepScrollBarsExpanded"

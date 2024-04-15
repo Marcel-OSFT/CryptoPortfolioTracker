@@ -183,53 +183,64 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     public async Task<CoinFullDataById> GetCoinDetails(string coinId)
     {
         IsPrimaryButtonEnabled = false;
-
         CoinFullDataById coinDetails = null;
-        var coinFullDataByIdResult = await _viewModel._libraryService.GetCoinDetails(coinId);
-        coinFullDataByIdResult.IfSucc(async details =>
-        {
-            BitmapImage image = details.Image.Small.AbsoluteUri != null ? new BitmapImage(new Uri(base.BaseUri, details.Image.Small.AbsoluteUri)) : null;
-            CoinImage.Source = image;
 
+        try
+        {
+            var coinFullDataByIdResult = await _viewModel._libraryService.GetCoinDetails(coinId);
+            coinFullDataByIdResult.IfSucc(async details =>
+            {
+                BitmapImage image = details.Image.Small.AbsoluteUri != null ? new BitmapImage(new Uri(base.BaseUri, details.Image.Small.AbsoluteUri)) : null;
+                CoinImage.Source = image;
+
+                Run run = new Run();
+                run.Text = details.Id;
+                parId.Inlines.Clear();
+                parId.Inlines.Add(run);
+
+                run = new Run();
+                run.Text = details.Name;
+                parName.Inlines.Clear();
+                parName.Inlines.Add(run);
+
+                run = new Run();
+                run.Text = details.Symbol.ToUpper();
+                parSymbol.Inlines.Clear();
+                parSymbol.Inlines.Add(run);
+
+                run = new Run();
+                run.Text = details.MarketCapRank.ToString();
+                parRank.Inlines.Clear();
+                parRank.Inlines.Add(run);
+
+                run = new Run();
+                run.Text = details.MarketData.CurrentPrice.Where(x => x.Key == "usd").FirstOrDefault().Value.ToString();
+                parPrice.Inlines.Clear();
+                parPrice.Inlines.Add(run);
+
+                if (await IsCoinAlreadyInLibrary(details.Id))
+                {
+                    PrimaryButtonText = rl.GetString("CoinDialog_PrimaryButton_CoinExists");
+                    IsPrimaryButtonEnabled = false;
+                }
+                else
+                {
+                    PrimaryButtonText = rl.GetString("CoinDialog_PrimaryButton");
+                    IsPrimaryButtonEnabled = true;
+                }
+                coinDetails = details;
+            });
+            
+        }
+        catch (Exception ex)
+        {
+            ResourceLoader rl = new();
             Run run = new Run();
-            run.Text = details.Id;
+            run.Text = rl.GetString("CoinDialog_GetDetails_Failed");
             parId.Inlines.Clear();
             parId.Inlines.Add(run);
-
-            run = new Run();
-            run.Text = details.Name;
-            parName.Inlines.Clear();
-            parName.Inlines.Add(run);
-
-            run = new Run();
-            run.Text = details.Symbol.ToUpper();
-            parSymbol.Inlines.Clear();
-            parSymbol.Inlines.Add(run);
-
-            run = new Run();
-            run.Text = details.MarketCapRank.ToString();
-            parRank.Inlines.Clear();
-            parRank.Inlines.Add(run);
-
-            run = new Run();
-            run.Text = details.MarketData.CurrentPrice.Where(x => x.Key == "usd").FirstOrDefault().Value.ToString();
-            parPrice.Inlines.Clear();
-            parPrice.Inlines.Add(run);
-
-            if (await IsCoinAlreadyInLibrary(details.Id))
-            {
-                PrimaryButtonText = rl.GetString("CoinDialog_PrimaryButton_CoinExists");
-                IsPrimaryButtonEnabled = false;
-            }
-            else
-            {
-                PrimaryButtonText = rl.GetString("CoinDialog_PrimaryButton");
-                IsPrimaryButtonEnabled = true;
-            }
-            coinDetails = details;
-        });
-        return coinDetails;
-
+        }
+            return coinDetails;
     }
     public async Task<bool> IsCoinAlreadyInLibrary(string coinId)
     {

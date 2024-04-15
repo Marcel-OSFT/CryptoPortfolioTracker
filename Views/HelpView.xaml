@@ -16,7 +16,6 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ThemeColorConverter x:Key="ThemeColorConverter"/>
         <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
@@ -39,8 +38,8 @@
                 <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="2" Height="250" VerticalAlignment="Top"/>
             <RelativePanel>
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
-                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="{Binding Foreground, ElementName=smallHeaderText, Converter={StaticResource ThemeColorConverter}}" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Name="txtHelp" Text="Help" Margin="36,10,0,0" Foreground="{Binding Foreground, ElementName=txtHelp, Converter={StaticResource ThemeColorConverter}}" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Name="txtHelp" Text="Help" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
             </RelativePanel>
             <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0">
                 <Grid>

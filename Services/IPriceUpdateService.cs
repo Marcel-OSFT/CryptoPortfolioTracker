@@ -1,6 +1,6 @@
 ﻿namespace CryptoPortfolioTracker.Services
 {
-    public interface IPriceUpdateBackgroundService
+    public interface IPriceUpdateService
     {
         public void Start();
         public void Stop();

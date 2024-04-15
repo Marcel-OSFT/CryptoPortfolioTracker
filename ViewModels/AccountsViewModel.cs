@@ -14,6 +14,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Serilog;
+using Serilog.Core;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -49,6 +51,8 @@ namespace CryptoPortfolioTracker.ViewModels
 
         public AccountsViewModel(IAccountService accountService)
         {
+            //Logger = Log.Logger.ForContext<AccountsViewModel>();
+            Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AccountsViewModel).Name.PadRight(22));
             Current = this;
             _accountService = accountService;
             SetDataSource();
@@ -73,22 +77,28 @@ namespace CryptoPortfolioTracker.ViewModels
             ResourceLoader rl = new();
             try
             {
+                Logger.Information("Showing AccountDialog for Adding");
                 AccountDialog dialog = new AccountDialog(Current, DialogAction.Add);
                 dialog.XamlRoot = AccountsView.Current.XamlRoot;
                 var result = await dialog.ShowAsync();
 
                 if (result == ContentDialogResult.Primary)
                 {
+                    Logger.Information("Adding Account ({0})", dialog.newAccount.Name);
                     await (await _accountService.CreateAccount(dialog.newAccount))
                         .Match(Succ: succ => AddToListAccounts(dialog.newAccount),
-                            Fail: async err => await ShowMessageDialog(
-                                rl.GetString("Messages_AccountAddFailed_Title"), 
+                            Fail: async err => {
+                                await ShowMessageDialog(
+                                rl.GetString("Messages_AccountAddFailed_Title"),
                                 err.Message,
-                                rl.GetString("Common_CloseButton")));
+                                rl.GetString("Common_CloseButton"));
+                                Logger.Error(err, "Adding Account failed");
+                            });
                 }
             }
             catch (Exception ex)
             {
+                Logger.Error(ex, "Showing Account Dialog failed");
                 await ShowMessageDialog(
                     rl.GetString("Messages_AccountDialogFailed_Title"), 
                     ex.Message,
@@ -102,30 +112,35 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         [RelayCommand]
-        public async Task ShowAccountDialogToEdit(int accountId)
+        public async Task ShowAccountDialogToEdit(Account account)
         {
             App.isBusy = true;
-            Account accountToEdit = null;
+            //Account accountToEdit = null;
             ResourceLoader rl = new();
             try
             {
-                accountToEdit = ListAccounts.Where(t => t.Id == accountId).Single();
-                AccountDialog dialog = new AccountDialog(Current, DialogAction.Edit, accountToEdit);
+                Logger.Information("Showing Account Dialog for Editing");
+                //accountToEdit = ListAccounts.Where(t => t.Id == accountId).Single();
+                AccountDialog dialog = new AccountDialog(Current, DialogAction.Edit, account);
                 dialog.XamlRoot = AccountsView.Current.XamlRoot;
                 var result = await dialog.ShowAsync();
 
                 if (result == ContentDialogResult.Primary)
                 {
-                    
-                    (await _accountService.EditAccount(dialog.newAccount, accountToEdit))
-                        .IfFail(async err => await ShowMessageDialog(
-                            rl.GetString("Messages_AccountUpdateFailed_Title"), 
+                    Logger.Information("Editing Account ({0})", account.Name);
+                    (await _accountService.EditAccount(dialog.newAccount, account))
+                        .IfFail(async err => {
+                            await ShowMessageDialog(
+                            rl.GetString("Messages_AccountUpdateFailed_Title"),
                             err.Message,
-                            rl.GetString("Common_CloseButton")));
+                            rl.GetString("Common_CloseButton"));
+                            Logger.Error(err, "Updating Account failed");
+                        });
                 }
             }
             catch (Exception ex)
             {
+                Logger.Error(ex, "Failed to show Account Dialog");
                 await ShowMessageDialog(
                     rl.GetString("Messages_AccountDialogFailed_Title"), 
                     ex.Message,
@@ -135,7 +150,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanDeleteAccount))]
-        public async Task DeleteAccount(int accountId)
+        public async Task DeleteAccount(Account account)
         {
             App.isBusy = true;
             ResourceLoader rl = new();
@@ -143,28 +158,36 @@ namespace CryptoPortfolioTracker.ViewModels
             //*** but nevertheless lets check it...
             try
             {
-                bool IsDeleteAllowed = (await _accountService.AccountHasNoAssets(accountId))
+                Logger.Information("Deletion request for Account ({0})", account.Name);
+                bool IsDeleteAllowed = (await _accountService.AccountHasNoAssets(account.Id))
                 .Match<bool>(Succ: succ => succ, Fail: err => { return false; });
 
                 if (IsDeleteAllowed)
                 {
-                    await (await _accountService.RemoveAccount(accountId))
-                        .Match(Succ: s => RemoveFromListAccounts(accountId),
-                            Fail: async err => await ShowMessageDialog(
-                                rl.GetString("Messages_AccountDeleteFailed_Title"), 
+                    Logger.Information("Deleting Account");
+                    await (await _accountService.RemoveAccount(account.Id))
+                        .Match(Succ: s => RemoveFromListAccounts(account.Id),
+                            Fail: async err => {
+                                await ShowMessageDialog(
+                                rl.GetString("Messages_AccountDeleteFailed_Title"),
                                 err.Message,
-                                rl.GetString("Common_CloseButton")));
+                                rl.GetString("Common_CloseButton"));
+                                Logger.Error(err, "Deleting Account failed");
+                            });
                 }
                 else
                 {
+                    Logger.Information("Deleting Account not allowed");
+
                     await ShowMessageDialog(
-                        rl.GetString("Messages_AccountDeleteFailed_Title"),
-                        rl.GetString("Messages_AccountDeleteFailed_Msg"),
+                        rl.GetString("Messages_AccountDeleteNotAllowd_Title"),
+                        rl.GetString("Messages_AccountDeleteNotAllowed_Msg"),
                         rl.GetString("Common_CloseButton")); 
                 }
             }
             catch (Exception ex)
             {
+                Logger.Error(ex, "Failed to delete Account");
                 await ShowMessageDialog(
                     rl.GetString("Messages_AccountDeleteFailed_Title"),
                                 ex.Message,
@@ -172,12 +195,12 @@ namespace CryptoPortfolioTracker.ViewModels
             }
             finally { App.isBusy = false; }
         }
-        private bool CanDeleteAccount(int accountId)
+        private bool CanDeleteAccount(Account account)
         {
             bool result=false;
             try
             {
-                result = !ListAccounts.Where(x => x.Id == accountId).Single().IsHoldingAsset;
+                result = !ListAccounts.Where(x => x.Id == account.Id).Single().IsHoldingAsset;
             }
             catch (Exception)
             {

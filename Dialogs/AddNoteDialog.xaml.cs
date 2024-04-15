@@ -26,7 +26,6 @@ public sealed partial class AddNoteDialog : ContentDialog
             Title = rl.GetString("NoteDialog_Title") + " " + coin.Name; ;
             PrimaryButtonText = rl.GetString("NoteDialog_PrimaryButton");
             CloseButtonText = rl.GetString("NoteDialog_CloseButton");
-            IsPrimaryButtonEnabled = false;
     }
 
     private void Button_Click_AcceptNote(ContentDialog sender, ContentDialogButtonClickEventArgs e)
