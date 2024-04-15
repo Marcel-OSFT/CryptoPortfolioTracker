@@ -169,6 +169,7 @@ namespace CryptoPortfolioTracker
 
             await Task.Delay(1000);
             splash.Close();
+            MainPage.Current.CheckUpdateNow();
         }
 
         private void ConfigureWindow(Window window)
@@ -201,12 +202,26 @@ namespace CryptoPortfolioTracker
 #if DEBUG
                 Log.Logger = new LoggerConfiguration()
                    .WriteTo.Debug(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
+                   .WriteTo.File(App.appDataPath + "\\log.txt",
+                           rollingInterval: RollingInterval.Day,
+                           retainedFileCountLimit: 3,
+                           outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
                    .CreateLogger();
+#else
+
+                Log.Logger = new LoggerConfiguration()
+                            .WriteTo.File(App.appDataPath + "\\log.txt",
+                               rollingInterval: RollingInterval.Day,
+                               retainedFileCountLimit: 3,
+                               outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
+                      .CreateLogger();
 #endif
+                Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
+                Log.Information("------------------------------------");
+                Log.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
             }
-            Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
-            Log.Information("------------------------------------");
-            Log.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
+            
+            
         }
 
         /// <summary>

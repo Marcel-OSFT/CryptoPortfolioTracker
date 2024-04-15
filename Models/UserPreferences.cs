@@ -140,5 +140,17 @@ public class UserPreferences
         myWriter.Close();
     }
 
+    public void AttachLogger()
+    {
+        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(UserPreferences).Name.PadRight(22));
+
+        Logger.Information("CultureLanguage set to {0}", CultureLanguage.ToString());
+        Logger.Information("Font Size set to {0}", FontSize.ToString());
+        Logger.Information("IsHidingZeroBalances set to {0}", IsHidingZeroBalances.ToString());
+        Logger.Information("Theme set to {0}", AppTheme.ToString());
+        Logger.Information("IsScrollBarsExpanded set to {0}", IsScrollBarsExpanded.ToString());
+        Logger.Information("IsCheckForUpdate set to {0}", IsCheckForUpdate);
+
+    }
 }
 
