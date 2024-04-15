@@ -89,6 +89,7 @@ public sealed partial class LogWindow : Window
 //        Logger = Log.Logger.ForContext<MainWindow>();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainWindow).Name.PadRight(22));
 
+        App.userPreferences.AttachLogger();
 
         _logBroker.IsAutoScrollOn = true;
     }

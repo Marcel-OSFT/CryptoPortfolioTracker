@@ -37,8 +37,7 @@ namespace CryptoPortfolioTracker.Views
             Debug.WriteLine("View Disposed");
         }
 
-
-
+        
     }
 
 }

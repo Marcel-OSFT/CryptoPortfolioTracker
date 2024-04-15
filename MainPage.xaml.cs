@@ -50,7 +50,7 @@ namespace CryptoPortfolioTracker
 
             this.InitializeComponent();
             Current = this;
-            if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
+           // if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
          }
 
         private void ConfigureLogger()
@@ -74,36 +74,9 @@ namespace CryptoPortfolioTracker
 
             // Logger = Log.Logger.ForContext<MainPage>();
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
-
-            
         }
-        //private void GetUserPreferences()
-        //{
 
-        //    if (App.Current. is Application appElement)
-        //    {
-        //        appElement.RequestedTheme = (ApplicationTheme)ElementTheme.Light; 
-        //    }
 
-        //    Log.Information("Initialize App; Loading UserPreferences");
-        //    App.userPreferences = new UserPreferences();
-        //    try
-        //    {
-        //        if (File.Exists(App.appDataPath + "\\prefs.xml"))
-        //        {
-        //            App.isReadingUserPreferences = true;
-        //            XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-        //            FileStream myFileStream = new FileStream(App.appDataPath + "\\prefs.xml", FileMode.Open);
-
-        //            App.userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
-        //        }
-        //    }
-        //    catch { }
-        //    finally
-        //    {
-        //        App.isReadingUserPreferences = false;
-        //    }
-        //}
 
         public async Task CheckUpdateNow()
         {
@@ -117,10 +90,10 @@ namespace CryptoPortfolioTracker
                 Logger.Information("Update Available");
 
                 var dlgResult = await ShowMessageDialog(
-                    rl.GetString("Messages_UpdateChecker_NewVersionTitle"), 
-                    rl.GetString("Messages_UpdateChecker_NewVersionMsg"), 
-                    rl.GetString("Common_DownloadButton"), 
-                    rl.GetString("Common_CancelButton")); 
+                    rl.GetString("Messages_UpdateChecker_NewVersionTitle"),
+                    rl.GetString("Messages_UpdateChecker_NewVersionMsg"),
+                    rl.GetString("Common_DownloadButton"),
+                    rl.GetString("Common_CancelButton"));
 
                 if (dlgResult == ContentDialogResult.Primary)
                 {
