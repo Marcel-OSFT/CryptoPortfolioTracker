@@ -8,6 +8,7 @@ using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
@@ -84,8 +85,10 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
 
     private async Task<Result<bool>> UpdatePricesAllCoins()
     {
-        var coinIds = await coinContext.Coins.Select(c => c.ApiId).ToListAsync();
-        if (!coinIds.Any()) return false;
+        var coinIdsTemp = await coinContext.Coins.Select(c => c.ApiId).ToListAsync();
+        if (!coinIdsTemp.Any()) return false;
+
+        var coinIds = shiftCoinIdsRandom(coinIdsTemp);
 
         //cut nr of coins in pieces here instead of in GetMeket.... 
         // and update prices also in smaller portions.
@@ -108,6 +111,30 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         }
         return result;
     }
+
+    private List<string> shiftCoinIdsRandom(List<string> _coinIds)
+    {
+        //*** shift the order of coinIds in the list to get a different URL each time
+        //*** this will avoid using the cache
+        var startIndex = new Random().Next(0, _coinIds.Count - 1);
+        List<string> shiftedCoinIds = new List<string>();
+
+        int j;
+        for (int i = startIndex; i < _coinIds.Count + startIndex; i++)
+        {
+            if (i >= _coinIds.Count)
+            {
+                j = i - _coinIds.Count;
+            }
+            else
+            {
+                j = i;
+            }
+            shiftedCoinIds.Add(_coinIds.ElementAt(j));
+        }
+        return shiftedCoinIds;
+    }
+
     private string[] SplitCoinIdsPerPageAndJoin(List<string> coinIds, int dataPerPage, int nrOfPages)
     {
         string[] coinIdsPerPage = new string[nrOfPages];
@@ -155,11 +182,12 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
 
         HttpClient httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
+        //httpClient.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };
         JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
 
         CoinGeckoClient coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
         //bool isValidResult;
-
+        
         Exception error = null;
         List<CoinMarkets> coinMarketsPage = null;
 
