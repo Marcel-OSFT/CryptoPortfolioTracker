@@ -53,7 +53,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-
     private int numberFormatIndex;
     public int NumberFormatIndex
     {
@@ -63,12 +62,30 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             if (value != numberFormatIndex)
             {
                 numberFormatIndex = value;
-                App.userPreferences.NumberFormat.CurrencyDecimalSeparator = numberFormatIndex == 0 ? "," : ".";
-                App.userPreferences.NumberFormat.CurrencyGroupSeparator = numberFormatIndex == 0 ? "." : ",";
+                SetNumberSeparators(value);
                 OnPropertyChanged();
             }
         }
     }
+
+    private void SetNumberSeparators(int index)
+    {
+        NumberFormatInfo nf = new();
+        if (index == 0)
+        {
+
+            nf.CurrencyDecimalSeparator = ",";
+            nf.CurrencyGroupSeparator = ".";
+        }
+        else
+        {
+            nf.CurrencyDecimalSeparator = ".";
+            nf.CurrencyGroupSeparator = ",";
+        }
+        App.userPreferences.NumberFormat = nf;
+
+    }
+
     private double fontSize;
     public double FontSize
     {
