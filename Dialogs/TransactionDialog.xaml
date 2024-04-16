@@ -29,7 +29,6 @@
         <converters:BoolToColorConverter x:Key="myBoolToColorConverter"/>
         <converters:InvertBoolConverter x:Key="myInvertBoolConverter"/>
         <converters:ListCountToTextConverter x:Key="myListCountToTextConverter"/>
-        <converters:DoubleToStringConverter x:Key="myDoubleToStringConverter"/>
         <converters:MaxQtyAConverter x:Key="myMaxQtyAConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
 

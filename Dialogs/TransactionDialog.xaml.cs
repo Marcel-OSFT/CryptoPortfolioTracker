@@ -445,18 +445,17 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     }
     public DateTimeOffset TimeStamp
     {
-        get => DateTimeOffset.Parse(timeStamp.ToString(ci));
+        get => DateTimeOffset.Parse(timeStamp.ToString());
         set
         {
             if (value != timeStamp)
             {
-                timeStamp = DateTimeOffset.Parse(value.ToString(ci)); ;
+                timeStamp = DateTimeOffset.Parse(value.ToString()); ;
                 OnPropertyChanged(nameof(TimeStamp));
             }
         }
     }
 
-    private readonly CultureInfo ci = new(App.userPreferences.CultureLanguage);
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly ResourceLoader rl;
@@ -475,7 +474,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         transactionToEdit = transaction;
         InitializeAllFields() ;
         defaultBrush = ASBoxCoinA.Background;
-        TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString(ci));
+        TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
         Validator = new Validator(10, true);
         rl = new ResourceLoader();
         SetDialogButtonsAndTitle(dialogAction);
@@ -872,7 +871,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
             }
             if (dialogAction == DialogAction.Add)
             {
-                TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString(ci));
+                TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
             }
             else if (dialogAction == DialogAction.Edit)
             {
@@ -887,7 +886,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 FeeCoin = transactionToEdit.Details.FeeCoin;
                 FeeQty = transactionToEdit.Details.FeeQty;
                 Note = transactionToEdit.Note;
-                TimeStamp = DateTimeOffset.Parse(transactionToEdit.TimeStamp.ToString(ci));
+                TimeStamp = DateTimeOffset.Parse(transactionToEdit.TimeStamp.ToString());
                 TransactionTypeRadioButtons.IsEnabled = false;
                 ASBoxCoinA.IsEnabled = false;
                 ASBoxCoinB.IsEnabled = false;

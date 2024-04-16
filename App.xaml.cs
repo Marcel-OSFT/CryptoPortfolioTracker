@@ -66,6 +66,7 @@ namespace CryptoPortfolioTracker
         public App()
         {
             this.InitializeComponent();
+
             GetAppEnvironmentals();
             GetUserPreferences();
             Container = RegisterServices();

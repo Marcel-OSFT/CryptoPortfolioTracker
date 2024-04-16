@@ -63,7 +63,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             if (value != numberFormatIndex)
             {
                 numberFormatIndex = value;
-                App.userPreferences.CultureLanguage = numberFormatIndex == 0 ? "nl" : "en";
+                App.userPreferences.NumberFormat.CurrencyDecimalSeparator = numberFormatIndex == 0 ? "," : ".";
+                App.userPreferences.NumberFormat.CurrencyGroupSeparator = numberFormatIndex == 0 ? "." : ",";
                 OnPropertyChanged();
             }
         }
@@ -142,7 +143,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 
     private void GetPreferences()
     {
-        NumberFormatIndex = App.userPreferences.CultureLanguage == "nl" ? 0 : 1;
+        NumberFormatIndex = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "," ? 0 : 1;
         IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
         IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
         FontSize = (double)App.userPreferences.FontSize;
