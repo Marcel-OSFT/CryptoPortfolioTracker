@@ -121,12 +121,10 @@ namespace CryptoPortfolioTracker
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            nvSample.SelectedItem = nvSample.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().First();
-
-            //LoadView(typeof(AssetsView));
+            navigationView.SelectedItem = navigationView.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().First();
         }
 
-        private async void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
+        private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
             NavigationViewItem selectedItem = (Microsoft.UI.Xaml.Controls.NavigationViewItem)args.SelectedItem;
             Type pageType;
@@ -171,7 +169,12 @@ namespace CryptoPortfolioTracker
             return dlgResult;
         }
 
+        private async void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
+            App.Splash.Close();
 
+        }
     }
 
 }

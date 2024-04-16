@@ -47,6 +47,7 @@ namespace CryptoPortfolioTracker
         /// </summary>
 
         public static Window Window;
+        public static Window Splash;
         public const string CoinGeckoApiKey = "";
         public static string ApiPath = "https://api.coingecko.com/api/v3/";
         public static string appPath;
@@ -64,54 +65,80 @@ namespace CryptoPortfolioTracker
 
         public App()
         {
-
-            //TODO reorganise constructor and OnLaunched te get Splash quickly
-            SetAppPaths();
-            InitializeLogger();
-            GetUserPreferences();
             this.InitializeComponent();
-            ProductVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            GetAppEnvironmentals();
+            GetUserPreferences();
             Container = RegisterServices();
-            var context = App.Container.GetService<PortfolioContext>();
-            context.Database.EnsureCreated();
         }
 
+        /// <summary>
+        /// Invoked when the application is launched.
+        /// </summary>
+        /// <param name="args">Details about the launch request and process.</param>
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        {
+            Window = new MainWindow();
+            Splash = new SplashScreen();
+#if !DEBUG
+            Splash.CenterOnScreen();
+#endif           
+            Splash.Activate();
+            await Task.Delay(1000);
+
+            InitializeLogger();
+            CheckDatabase();
+
+            Frame rootFrame = new Frame();
+            Window.Content = rootFrame;
+            ConfigureWindow(Window);
+            Window.Activate();
+            rootFrame.Navigate(typeof(MainPage), args.Arguments);
+        }
+        /// <summary>
+        /// GetUserPreferences need to be called in the App's Constructor, because of setting the RequestedTheme
+        /// which only can be done in the constructor
+        /// </summary>
         private void GetUserPreferences()
         {
-            Log.Information("Initialize App; Loading UserPreferences");
-            App.userPreferences = new UserPreferences();
+            userPreferences = new UserPreferences();
             try
             {
-                if (File.Exists(App.appDataPath + "\\prefs.xml"))
+                if (File.Exists(appDataPath + "\\prefs.xml"))
                 {
-                    App.isReadingUserPreferences = true;
+                    isReadingUserPreferences = true;
                     XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-                    FileStream myFileStream = new FileStream(App.appDataPath + "\\prefs.xml", FileMode.Open);
-
-                    App.userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
+                    FileStream myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
+                    userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
                 }
             }
             catch { }
             finally
             {
-                RequestedTheme = App.userPreferences.AppTheme;
-                App.isReadingUserPreferences = false;
+                RequestedTheme = userPreferences.AppTheme;
+                isReadingUserPreferences = false;
             }
         }
 
-        private void SetAppPaths()
+
+
+        private void CheckDatabase()
+        {
+            var context = App.Container.GetService<PortfolioContext>();
+            context.Database.EnsureCreated();
+        }
+        
+
+        private void GetAppEnvironmentals()
         {
             appPath = (System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory));
-
             appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
             if (!Directory.Exists(appDataPath)) Directory.CreateDirectory(appDataPath);
             AppDomain.CurrentDomain.SetData("DataDirectory", appDataPath);
+            ProductVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
         private IServiceProvider RegisterServices()
         {
             var services = new ServiceCollection();
-
-            //services.AddScoped<TransactionDialog>();
 
             services.AddScoped<AssetsView>();
             services.AddScoped<AccountsView>();
@@ -124,17 +151,11 @@ namespace CryptoPortfolioTracker
             services.AddScoped<CoinLibraryViewModel>();
             services.AddScoped<HelpViewModel>();
             services.AddScoped<SettingsViewModel>();
-
             
             services.AddDbContext<PortfolioContext>(options =>
             {
                 options.UseSqlite("Data Source=|DataDirectory|sqlCPT.db");
                 //options.UseSqlite("Data Source=C:\\Users\\marce\\AppData\\Local\\CryptoPortfolioTracker\\sqlCPT.db");
-            });
-
-            services.AddDbContext<CoinContext>(options =>
-            {
-                options.UseSqlite("Data Source=|DataDirectory|sqlCPT.db");
             });
 
             services.AddScoped<ITransactionService, TransactionService>();
@@ -143,36 +164,13 @@ namespace CryptoPortfolioTracker
             services.AddScoped<ILibraryService, LibraryService>();
             services.AddScoped<IPriceUpdateService, PriceUpdateService>(serviceProvider =>
             {
-                return new(TimeSpan.FromSeconds(300));
+                return new(TimeSpan.FromMinutes(App.userPreferences.RefreshIntervalMinutes));
             });
 
             return services.BuildServiceProvider();
         }
 
-        /// <summary>
-        /// Invoked when the application is launched.
-        /// </summary>
-        /// <param name="args">Details about the launch request and process.</param>
-        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
-        {
-
-            Window = new MainWindow();
-            var splash = new SplashScreen();
-            splash.CenterOnScreen();
-            splash.Activate();
-            await Task.Delay(3000);
-
-            Frame rootFrame = new Frame();
-            Window.Content = rootFrame;
-            ConfigureWindow(Window);
-          
-            Window.Activate();
-            rootFrame.Navigate(typeof(MainPage), args.Arguments);
-
-            await Task.Delay(1000);
-            splash.Close();
-            await MainPage.Current.CheckUpdateNow();
-        }
+        
 
         private void ConfigureWindow(Window window)
         {
@@ -185,7 +183,9 @@ namespace CryptoPortfolioTracker
             {
                 window.SetWindowSize(1024, 768);
             }
+#if !DEBUG
             Window.CenterOnScreen();
+#endif
             Window.Title = "Crypto Portfolio Tracker";
             Window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
             Window.SetTitleBar(null);
@@ -208,6 +208,7 @@ namespace CryptoPortfolioTracker
                            rollingInterval: RollingInterval.Day,
                            retainedFileCountLimit: 3,
                            outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
+                   
                    .CreateLogger();
 #else
 
@@ -218,12 +219,11 @@ namespace CryptoPortfolioTracker
                                outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
                       .CreateLogger();
 #endif
+                App.userPreferences.AttachLogger();
                 Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
                 Log.Information("------------------------------------");
                 Log.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
             }
-            
-            
         }
 
         /// <summary>

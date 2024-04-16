@@ -22,16 +22,29 @@ public class UserPreferences
     private Serilog.ILogger Logger { get; set; }
     public UserPreferences() 
     {
-        //Logger = Log.Logger.ForContext<UserPreferences>();
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(UserPreferences).Name.PadRight(22));
         cultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
         isHidingZeroBalances = false;
         isScrollBarsExpanded = false;
         isCheckForUpdate = true;
         fontSize = AppFontSize.Normal;
         appTheme = ApplicationTheme.Dark;
+        refreshIntervalMinutes = 5;
     }
 
+
+    private int refreshIntervalMinutes;
+    public int RefreshIntervalMinutes
+    {
+        get => refreshIntervalMinutes;
+        set
+        {
+            if (value != refreshIntervalMinutes)
+            {
+                refreshIntervalMinutes = value;
+                SaveUserPreferences("RefreshIntervalMinutes", value.ToString());
+            }
+        }
+    }
 
     private ApplicationTheme appTheme;
     public ApplicationTheme AppTheme
@@ -131,9 +144,9 @@ public class UserPreferences
 
     public void SaveUserPreferences(string propertyName, string value)
     {
-        Logger.Information("{0} set to {1}", propertyName, value);
-        
         if (App.isReadingUserPreferences) return;
+        
+        Logger.Information("{0} set to {1}", propertyName, value);
         XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
         StreamWriter myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
         mySerializer.Serialize(myWriter, this);
