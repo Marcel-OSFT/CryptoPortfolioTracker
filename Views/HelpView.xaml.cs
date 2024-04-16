@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using Windows.Storage.Pickers;
 using WinRT;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace CryptoPortfolioTracker.Views
 {
@@ -49,7 +50,7 @@ namespace CryptoPortfolioTracker.Views
             var helpFilePath = App.appPath + "\\HelpFile.rtf"; 
             try
             {
-                if (App.userPreferences.CultureLanguage == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
+                if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.ToLower() == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
 
                 editor.IsReadOnly = false;
                 StorageFile helpFile = await StorageFile.GetFileFromPathAsync(helpFilePath);

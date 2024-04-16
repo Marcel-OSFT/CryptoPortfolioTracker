@@ -156,12 +156,12 @@ namespace CryptoPortfolioTracker.Controls
             switch (SelectedRegEx)
             {
                 case MyEnum.RegExPositiveDecimal:
-                    regExChoosen = App.userPreferences.CultureLanguage == "en" ?  
+                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?  
                         App.Current.Resources["RegExPositiveDecimalEn"] as string : 
                             App.Current.Resources["RegExPositiveDecimalNl"] as string;
                     break;
                 case MyEnum.RegExPositiveInt:
-                    regExChoosen = App.userPreferences.CultureLanguage == "en" ? 
+                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ? 
                         App.Current.Resources["RegExPositiveIntEn"] as string : 
                             App.Current.Resources["RegExPositiveIntNl"] as string;
                     break;
@@ -172,12 +172,12 @@ namespace CryptoPortfolioTracker.Controls
                     // To-Do -> regExChoosen = @"^([0 - 9]) * (\.[0 - 9]+)?$";
                     break;
                 case MyEnum.RegExDecimal:
-                    regExChoosen = App.userPreferences.CultureLanguage == "en" ? 
+                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ? 
                         App.Current.Resources["RegExDecimalEn"] as string : 
                             App.Current.Resources["RegExDecimalNl"] as string;
                     break;
                 case MyEnum.RegExInt:
-                    regExChoosen = App.userPreferences.CultureLanguage == "en" ? 
+                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ? 
                         App.Current.Resources["RegExIntEn"] as string : 
                             App.Current.Resources["RegExIntNl"] as string;
                     break;

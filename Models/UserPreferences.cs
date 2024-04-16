@@ -22,7 +22,7 @@ public class UserPreferences
     private Serilog.ILogger Logger { get; set; }
     public UserPreferences() 
     {
-        cultureLanguage = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == "," ? "nl" : "en";
+        numberFormat = CultureInfo.CurrentCulture.NumberFormat;
         isHidingZeroBalances = false;
         isScrollBarsExpanded = false;
         isCheckForUpdate = true;
@@ -91,17 +91,16 @@ public class UserPreferences
         }
     }
 
-    internal string cultureLanguage;
-    public string CultureLanguage
+    private NumberFormatInfo numberFormat;
+    public NumberFormatInfo NumberFormat
     {
-        get => cultureLanguage;
+        get => numberFormat;
         set
         {
-            if (value != cultureLanguage)
+            if (value != numberFormat)
             {
-                cultureLanguage = value;
-                SetCulture();
-                SaveUserPreferences("CultureLanguage", value.ToString());
+                numberFormat = value;
+                SaveUserPreferences("NumberFormat", value.ToString());
             }
         }
     }
@@ -135,13 +134,6 @@ public class UserPreferences
         }
     }
 
-    private void SetCulture()
-    {
-        CultureInfo.CurrentCulture = new CultureInfo(CultureLanguage);
-        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(CultureLanguage); //App.cultureInfoNl;
-        CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(CultureLanguage); //App.cultureInfoNl;
-    }
-
     public void SaveUserPreferences(string propertyName, string value)
     {
         if (App.isReadingUserPreferences) return;
@@ -157,7 +149,7 @@ public class UserPreferences
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(UserPreferences).Name.PadRight(22));
 
-        Logger.Information("CultureLanguage set to {0}", CultureLanguage.ToString());
+        Logger.Information("DecimalSeparator set to {0}", NumberFormat.CurrencyDecimalSeparator.ToString());
         Logger.Information("Font Size set to {0}", FontSize.ToString());
         Logger.Information("IsHidingZeroBalances set to {0}", IsHidingZeroBalances.ToString());
         Logger.Information("Theme set to {0}", AppTheme.ToString());
