@@ -22,6 +22,7 @@ public class UserPreferences
     private Serilog.ILogger Logger { get; set; }
     public UserPreferences() 
     {
+        numberFormat = new NumberFormatInfo(); 
         numberFormat = CultureInfo.CurrentCulture.NumberFormat;
         isHidingZeroBalances = false;
         isScrollBarsExpanded = false;
