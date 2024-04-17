@@ -58,7 +58,7 @@
     <value>Houd schuifbalken zichtbaar</value>
   </data>
   <data name="Settings_KeepScrollBarsExpanded.Description" xml:space="preserve">
-    <value>Standaard worden schuifbalken zichtbaar en worden groter wanneer de aanwijzer het gebied binnengaat. Zet dit op AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</value>
+    <value>Standaard worden schuifbalken zichtbaar en groter wanneer de aanwijzer het gebied binnengaat. Zet dit AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</value>
   </data>
   <data name="Settings_CheckUpdate_Toggle.OffContent" xml:space="preserve">
     <value>Uit</value>
@@ -529,5 +529,23 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="Settings_AppCulture.Header" xml:space="preserve">
     <value>Taal</value>
+  </data>
+  <data name="TransactionKind_Buy" xml:space="preserve">
+    <value>Koop</value>
+  </data>
+  <data name="TransactionKind_Convert" xml:space="preserve">
+    <value>Wissel</value>
+  </data>
+  <data name="TransactionKind_Deposit" xml:space="preserve">
+    <value>Storting</value>
+  </data>
+  <data name="TransactionKind_Sell" xml:space="preserve">
+    <value>Verkoop</value>
+  </data>
+  <data name="TransactionKind_Transfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="TransactionKind_Withdraw" xml:space="preserve">
+    <value>Opname</value>
   </data>
 </root>

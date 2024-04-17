@@ -23,16 +23,18 @@ public static class TransactionKindExt
     public static string AsDisplayString(this TransactionKind transactionKind)
     {
         ILocalizer loc = Localizer.Get();
+
+
         switch (transactionKind)
         {
-            case TransactionKind.Deposit: return loc.GetLocalizedString("TransactionType_Deposit/Content"); ;
-            case TransactionKind.Withdraw: return loc.GetLocalizedString("TransactionType_Withdraw/Content"); ;
-            case TransactionKind.Transfer: return loc.GetLocalizedString("TransactionType_Transfer/Content"); ;
-            case TransactionKind.Convert: return loc.GetLocalizedString("TransactionType_Convert/Content"); ;
-            case TransactionKind.Buy: return loc.GetLocalizedString("TransactionType_Buy/Content"); ;
-            case TransactionKind.Sell: return loc.GetLocalizedString("TransactionType_Sell/Content"); ;
+            case TransactionKind.Deposit: return loc.GetLocalizedString("TransactionKind_Deposit"); 
+            case TransactionKind.Withdraw: return loc.GetLocalizedString("TransactionKind_Withdraw"); 
+            case TransactionKind.Transfer: return loc.GetLocalizedString("TransactionKind_Transfer"); 
+            case TransactionKind.Convert: return loc.GetLocalizedString("TransactionKind_Convert"); 
+            case TransactionKind.Buy: return loc.GetLocalizedString("TransactionKind_Buy"); 
+            case TransactionKind.Sell: return loc.GetLocalizedString("TransactionKind_Sell");
 
-            default: throw new ArgumentOutOfRangeException("role");
         }
+        return string.Empty;
     }
 }
