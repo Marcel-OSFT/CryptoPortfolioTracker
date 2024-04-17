@@ -635,4 +635,22 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="Settings_AppCulture.Header" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="TransactionKind_Buy" xml:space="preserve">
+    <value>Buy</value>
+  </data>
+  <data name="TransactionKind_Convert" xml:space="preserve">
+    <value>Convert</value>
+  </data>
+  <data name="TransactionKind_Deposit" xml:space="preserve">
+    <value>Deposit</value>
+  </data>
+  <data name="TransactionKind_Sell" xml:space="preserve">
+    <value>Sell</value>
+  </data>
+  <data name="TransactionKind_Transfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="TransactionKind_Withdraw" xml:space="preserve">
+    <value>Withdraw</value>
+  </data>
 </root>

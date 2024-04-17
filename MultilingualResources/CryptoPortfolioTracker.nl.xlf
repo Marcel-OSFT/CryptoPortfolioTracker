@@ -68,8 +68,7 @@
         </trans-unit>
         <trans-unit id="Settings_KeepScrollBarsExpanded.Description" translate="yes" xml:space="preserve">
           <source>By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items or not.</source>
-          <target state="needs-review-translation">Standaard worden schuifbalken zichtbaar en worden groter wanneer de aanwijzer het gebied binnengaat. Zet dit op AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</target>
-          <note from="MultilingualUpdate" annotates="source" priority="2">Please verify the translation’s accuracy as the source string was updated after it was translated.</note>
+          <target state="final">Standaard worden schuifbalken zichtbaar en groter wanneer de aanwijzer het gebied binnengaat. Zet dit AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate_Toggle.OffContent" translate="yes" xml:space="preserve">
           <source>Off</source>
@@ -698,6 +697,30 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="Settings_AppCulture.Header" translate="yes" xml:space="preserve">
           <source>Language</source>
           <target state="final">Taal</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Buy" translate="yes" xml:space="preserve">
+          <source>Buy</source>
+          <target state="final">Koop</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Convert" translate="yes" xml:space="preserve">
+          <source>Convert</source>
+          <target state="final">Wissel</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Deposit" translate="yes" xml:space="preserve">
+          <source>Deposit</source>
+          <target state="final">Storting</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Sell" translate="yes" xml:space="preserve">
+          <source>Sell</source>
+          <target state="final">Verkoop</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Transfer" translate="yes" xml:space="preserve">
+          <source>Transfer</source>
+          <target state="final">Transfer</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Withdraw" translate="yes" xml:space="preserve">
+          <source>Withdraw</source>
+          <target state="final">Opname</target>
         </trans-unit>
       </group>
     </body>
