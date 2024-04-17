@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Models;
 
@@ -22,16 +23,24 @@ public class UserPreferences
     private Serilog.ILogger Logger { get; set; }
     public UserPreferences() 
     {
-        numberFormat = new NumberFormatInfo(); 
-        numberFormat = CultureInfo.CurrentCulture.NumberFormat;
         isHidingZeroBalances = false;
         isScrollBarsExpanded = false;
         isCheckForUpdate = true;
         fontSize = AppFontSize.Normal;
-        appTheme = ApplicationTheme.Dark;
+        appTheme = ElementTheme.Default;
         refreshIntervalMinutes = 5;
-    }
 
+        if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.ToLower() == "nl")
+        {
+            appCultureLanguage = "nl";
+        }
+        else
+        {
+            appCultureLanguage = "en-US";
+        }
+        numberFormat = new NumberFormatInfo();
+        numberFormat = CultureInfo.CurrentUICulture.NumberFormat;
+    }
 
     private int refreshIntervalMinutes;
     public int RefreshIntervalMinutes
@@ -47,8 +56,8 @@ public class UserPreferences
         }
     }
 
-    private ApplicationTheme appTheme;
-    public ApplicationTheme AppTheme
+    private ElementTheme appTheme;
+    public ElementTheme AppTheme
     {
         get => appTheme;
         set
@@ -56,6 +65,7 @@ public class UserPreferences
             if (value != appTheme)
             {
                 appTheme = value;
+                SetTheme(value);
                 SaveUserPreferences("AppTheme", value.ToString());
             }
         }
@@ -106,6 +116,23 @@ public class UserPreferences
         }
     }
 
+    private string appCultureLanguage;
+    public string AppCultureLanguage
+    {
+        get => appCultureLanguage;
+        set
+        {
+            if (value != appCultureLanguage)
+            {
+                appCultureLanguage = value;
+                SetCulture();
+                SaveUserPreferences("AppCultureLanguage", value.ToString());
+            }
+        }
+    }
+
+    
+
     private bool isCheckForUpdate;
     public bool IsCheckForUpdate
     {
@@ -137,8 +164,8 @@ public class UserPreferences
 
     public void SaveUserPreferences(string propertyName, string value)
     {
-        if (App.isReadingUserPreferences) return;
-        
+        if (App.isAppInitializing) return;
+
         Logger.Information("{0} set to {1}", propertyName, value);
         XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
         StreamWriter myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
@@ -150,6 +177,7 @@ public class UserPreferences
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(UserPreferences).Name.PadRight(22));
 
+        Logger.Information("AppCultureLanguage set to {0}", AppCultureLanguage.ToString());
         Logger.Information("DecimalSeparator set to {0}", NumberFormat.CurrencyDecimalSeparator.ToString());
         Logger.Information("Font Size set to {0}", FontSize.ToString());
         Logger.Information("IsHidingZeroBalances set to {0}", IsHidingZeroBalances.ToString());
@@ -158,5 +186,24 @@ public class UserPreferences
         Logger.Information("IsCheckForUpdate set to {0}", IsCheckForUpdate);
 
     }
+    private void SetCulture()
+    {
+        //if (_localizer.GetType() == typeof(NullLocalizer)) return;
+        //_localizer.SetLanguage(AppCultureLanguage);
+
+        if (App.Localizer == null) return;
+        App.Localizer.SetLanguage(AppCultureLanguage);
+
+    }
+
+    private void SetTheme(ElementTheme theme)
+    {
+        if (App.Window != null && App.Window.Content is FrameworkElement frameworkElement)
+        {
+            frameworkElement.RequestedTheme = theme;
+        }
+    }
+
+
 }
 

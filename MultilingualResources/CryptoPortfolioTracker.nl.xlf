@@ -6,11 +6,11 @@
     </header>
     <body>
       <group id="CRYPTOPORTFOLIOTRACKER/STRINGS/EN-US/RESOURCES.RESW" datatype="resx">
-        <trans-unit id="AppDisplayName" translate="no" xml:space="preserve">
+        <trans-unit id="AppDisplayName" translate="yes" xml:space="preserve">
           <source>Crypto Portfolio Tracker</source>
           <target state="final">Crypto Portfolio Tracker</target>
         </trans-unit>
-        <trans-unit id="AppDescription" translate="no" xml:space="preserve">
+        <trans-unit id="AppDescription" translate="yes" xml:space="preserve">
           <source>Crypto Portfolio Tracker</source>
           <target state="final">Crypto Portfolio Tracker</target>
         </trans-unit>
@@ -67,8 +67,9 @@
           <target state="final">Houd schuifbalken zichtbaar</target>
         </trans-unit>
         <trans-unit id="Settings_KeepScrollBarsExpanded.Description" translate="yes" xml:space="preserve">
-          <source>By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items ore not.</source>
-          <target state="final">Standaard worden schuifbalken zichtbaar en worden groter wanneer de aanwijzer het gebied binnengaat. Zet dit op AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</target>
+          <source>By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items or not.</source>
+          <target state="needs-review-translation">Standaard worden schuifbalken zichtbaar en worden groter wanneer de aanwijzer het gebied binnengaat. Zet dit op AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</target>
+          <note from="MultilingualUpdate" annotates="source" priority="2">Please verify the translation’s accuracy as the source string was updated after it was translated.</note>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate_Toggle.OffContent" translate="yes" xml:space="preserve">
           <source>Off</source>
@@ -102,7 +103,7 @@
           <source>Settings</source>
           <target state="final">Instellingen</target>
         </trans-unit>
-        <trans-unit id="Navigation_Accounts.Content" translate="no" xml:space="preserve">
+        <trans-unit id="Navigation_Accounts.Content" translate="yes" xml:space="preserve">
           <source>Accounts</source>
           <target state="final">Accounts</target>
         </trans-unit>
@@ -114,7 +115,7 @@
           <source>Coin Library</source>
           <target state="final">Bibliotheek</target>
         </trans-unit>
-        <trans-unit id="Navigation_Help.Content" translate="no" xml:space="preserve">
+        <trans-unit id="Navigation_Help.Content" translate="yes" xml:space="preserve">
           <source>Help</source>
           <target state="final">Help</target>
         </trans-unit>
@@ -202,7 +203,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>The Accounts list gives you an overview of locations where you have your crypto assets in custody.</source>
           <target state="final">De Accountslijst geeft u een overzicht van locaties waar u uw crypto-activa in bewaring heeft.</target>
         </trans-unit>
-        <trans-unit id="Accounts_Title.Text" translate="no" xml:space="preserve">
+        <trans-unit id="Accounts_Title.Text" translate="yes" xml:space="preserve">
           <source>Accounts</source>
           <target state="final">Accounts</target>
         </trans-unit>
@@ -394,7 +395,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Sell</source>
           <target state="final">Verkoop</target>
         </trans-unit>
-        <trans-unit id="TransactionType_Transfer.Content" translate="no" xml:space="preserve">
+        <trans-unit id="TransactionType_Transfer.Content" translate="yes" xml:space="preserve">
           <source>Transfer</source>
           <target state="final">Transfer</target>
         </trans-unit>
@@ -478,7 +479,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Cancel</source>
           <target state="final">Annuleren</target>
         </trans-unit>
-        <trans-unit id="CoinDialog_Id.Text" translate="no" xml:space="preserve">
+        <trans-unit id="CoinDialog_Id.Text" translate="yes" xml:space="preserve">
           <source>ID</source>
           <target state="final">ID</target>
         </trans-unit>
@@ -554,7 +555,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Confirm</source>
           <target state="final">Akkoord</target>
         </trans-unit>
-        <trans-unit id="Common_DownloadButton" translate="no" xml:space="preserve">
+        <trans-unit id="Common_DownloadButton" translate="yes" xml:space="preserve">
           <source>Download</source>
           <target state="final">Download</target>
         </trans-unit>
@@ -562,7 +563,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Install</source>
           <target state="final">Installeren</target>
         </trans-unit>
-        <trans-unit id="Common_OkButton" translate="no" xml:space="preserve">
+        <trans-unit id="Common_OkButton" translate="yes" xml:space="preserve">
           <source>OK</source>
           <target state="final">OK</target>
         </trans-unit>
@@ -654,7 +655,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Version is up-to-date</source>
           <target state="final">Versie is up-to-date</target>
         </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_UpToDate_Title" translate="no" xml:space="preserve">
+        <trans-unit id="Messages_UpdateChecker_UpToDate_Title" translate="yes" xml:space="preserve">
           <source>Update Checker</source>
           <target state="final">Update Checker</target>
         </trans-unit>
@@ -664,31 +665,39 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="Messages_AccountDeleteNotAllowd_Title" translate="yes" xml:space="preserve">
           <source>Deleting not allowed!</source>
-          <target state="translated">Verwijderen niet toegestaan!</target>
+          <target state="final">Verwijderen niet toegestaan!</target>
         </trans-unit>
         <trans-unit id="Messages_AccountDeleteNotAllowed_Msg" translate="yes" xml:space="preserve">
           <source>The Account is holding assets.</source>
-          <target state="translated">Deze account maakt nog onderdeel uit van uw portefeuille.</target>
+          <target state="final">Deze account maakt nog onderdeel uit van uw portefeuille.</target>
         </trans-unit>
         <trans-unit id="Settings_AppTheme_Toggle.OffContent" translate="yes" xml:space="preserve">
           <source>Light</source>
-          <target state="translated">Licht</target>
+          <target state="final">Licht</target>
         </trans-unit>
         <trans-unit id="Settings_AppTheme_Toggle.OnContent" translate="yes" xml:space="preserve">
           <source>Dark</source>
-          <target state="translated">Donker</target>
+          <target state="final">Donker</target>
         </trans-unit>
         <trans-unit id="Settings_AppTheme.Description" translate="yes" xml:space="preserve">
-          <source>Select Dark or Light color theme for the application. Change will take affect after restarting the application.</source>
-          <target state="translated">Selecteer een donker of licht kleurenthema voor de toepassing. De wijziging wordt van kracht nadat de app opnieuw is gestart.</target>
+          <source>Select Dark or Light color theme for the application.</source>
+          <target state="final">Selecteer een donker of licht kleurenthema voor de toepassing.</target>
         </trans-unit>
         <trans-unit id="Settings_AppTheme.Header" translate="yes" xml:space="preserve">
           <source>Theme</source>
-          <target state="translated">Thema</target>
+          <target state="final">Thema</target>
         </trans-unit>
         <trans-unit id="Messages_UpdateChecker_DownloadSuccesTitle" translate="yes" xml:space="preserve">
           <source>Download Succesfull</source>
-          <target state="translated">Download gereed</target>
+          <target state="final">Download gereed</target>
+        </trans-unit>
+        <trans-unit id="Settings_AppCulture.Description" translate="yes" xml:space="preserve">
+          <source>Select the language you prefer for this app.</source>
+          <target state="final">Selecteer uw taal voorkeur voor deze app.</target>
+        </trans-unit>
+        <trans-unit id="Settings_AppCulture.Header" translate="yes" xml:space="preserve">
+          <source>Language</source>
+          <target state="final">Taal</target>
         </trans-unit>
       </group>
     </body>

@@ -22,7 +22,7 @@ public sealed class StringFormatConverter : IValueConverter
         }
         else
         {
-            ci = new CultureInfo("en-us");
+            ci = new CultureInfo("en-US");
         }
         return string.Format(ci, (string)parameter, (double)value);
     }
@@ -39,7 +39,7 @@ public sealed class StringFormatConverter : IValueConverter
             }
             else
             {
-                ci = new CultureInfo("en-us");
+                ci = new CultureInfo("en-US");
             }
             result = System.Convert.ToDouble((string)value, ci);
         }

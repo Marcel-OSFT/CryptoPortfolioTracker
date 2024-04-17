@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Windows.Storage;
+using WinUI3Localizer;
 
 
 
@@ -68,7 +69,7 @@ namespace CryptoPortfolioTracker
         public async Task CheckUpdateNow()
         {
             Logger.Information("Checking for updates");
-            ResourceLoader rl = new();
+            ILocalizer loc = Localizer.Get();
             AppUpdater appUpdater = new();
             var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
@@ -77,10 +78,10 @@ namespace CryptoPortfolioTracker
                 Logger.Information("Update Available");
 
                 var dlgResult = await ShowMessageDialog(
-                    rl.GetString("Messages_UpdateChecker_NewVersionTitle"),
-                    rl.GetString("Messages_UpdateChecker_NewVersionMsg"),
-                    rl.GetString("Common_DownloadButton"),
-                    rl.GetString("Common_CancelButton"));
+                    loc.GetLocalizedString("Messages_UpdateChecker_NewVersionTitle"),
+                    loc.GetLocalizedString("Messages_UpdateChecker_NewVersionMsg"),
+                    loc.GetLocalizedString("Common_DownloadButton"),
+                    loc.GetLocalizedString("Common_CancelButton"));
 
                 if (dlgResult == ContentDialogResult.Primary)
                 {
@@ -97,10 +98,10 @@ namespace CryptoPortfolioTracker
                         }
                         Logger.Information("Download Succesfull");
                         var installRequest = await ShowMessageDialog(
-                            rl.GetString("Messages_UpdateChecker_DownloadSuccesTitle"),
-                            rl.GetString("Messages_UpdateChecker_DownloadSuccesMsg"),
-                            rl.GetString("Common_InstallButton"),
-                            rl.GetString("Common_CancelButton"));
+                            loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesTitle"),
+                            loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesMsg"),
+                            loc.GetLocalizedString("Common_InstallButton"),
+                            loc.GetLocalizedString("Common_CancelButton"));
                         if (installRequest == ContentDialogResult.Primary)
                         {
                             Logger.Information("Closing Application and Installing Update");
@@ -111,9 +112,9 @@ namespace CryptoPortfolioTracker
                     {
                         Logger.Warning("Download failed");
                         await ShowMessageDialog(
-                            rl.GetString("Messages_UpdateChecker_DownloadFailedTitle"),
-                            rl.GetString("Messages_UpdateChecker_DownloadFailedMsg"),
-                            rl.GetString("Common_CloseButton"));
+                            loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedTitle"),
+                            loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedMsg"),
+                            loc.GetLocalizedString("Common_CloseButton"));
                     }
                 }
             }
@@ -171,6 +172,8 @@ namespace CryptoPortfolioTracker
 
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+            navigationView.SelectedItem = navigationView.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().First();
+
             if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
             App.Splash.Close();
 

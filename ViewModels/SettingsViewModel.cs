@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Serilog;
 using Serilog.Core;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
@@ -38,8 +39,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     private readonly DispatcherQueue dispatcherQueue;
 
 
-    private ApplicationTheme appTheme;
-    public ApplicationTheme AppTheme
+    private ElementTheme appTheme;
+    public ElementTheme AppTheme
     {
         get => appTheme;
         set
@@ -68,22 +69,19 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-    private void SetNumberSeparators(int index)
+    private int appCultureIndex;
+    public int AppCultureIndex
     {
-        NumberFormatInfo nf = new();
-        if (index == 0)
+        get => appCultureIndex;
+        set
         {
-
-            nf.CurrencyDecimalSeparator = ",";
-            nf.CurrencyGroupSeparator = ".";
+            if (value != appCultureIndex)
+            {
+                appCultureIndex = value;
+                SetCulturePreference(value);
+                OnPropertyChanged();
+            }
         }
-        else
-        {
-            nf.CurrencyDecimalSeparator = ".";
-            nf.CurrencyGroupSeparator = ",";
-        }
-        App.userPreferences.NumberFormat = nf;
-
     }
 
     private double fontSize;
@@ -148,10 +146,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-
     public SettingsViewModel()
     {
-        //Logger = Log.Logger.ForContext<SettingsViewModel>();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
         Current = this;
         this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -161,11 +157,41 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     private void GetPreferences()
     {
         NumberFormatIndex = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "," ? 0 : 1;
+        AppCultureIndex = App.userPreferences.AppCultureLanguage.Substring(0,2).ToLower() == "nl" ? 0 : 1;
         IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
         IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
         FontSize = (double)App.userPreferences.FontSize;
         IsScrollBarsExpanded = App.userPreferences.IsScrollBarsExpanded;
         AppTheme = App.userPreferences.AppTheme;
+    }
+    private void SetNumberSeparators(int index)
+    {
+        NumberFormatInfo nf = new();
+        if (index == 0)
+        {
+
+            nf.CurrencyDecimalSeparator = ",";
+            nf.CurrencyGroupSeparator = ".";
+        }
+        else
+        {
+            nf.CurrencyDecimalSeparator = ".";
+            nf.CurrencyGroupSeparator = ",";
+        }
+        App.userPreferences.NumberFormat = nf;
+
+    }
+    private void SetCulturePreference(int index)
+    {
+        if (index == 0)
+        {
+            App.userPreferences.AppCultureLanguage = "nl";
+        }
+        else
+        {
+            App.userPreferences.AppCultureLanguage = "en-US";
+        }
+
     }
 
     [RelayCommand]
@@ -173,7 +199,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     {
         Logger.Information("Checking for updates"); 
         AppUpdater appUpdater = new();
-        ResourceLoader rl = new();
+        ILocalizer loc = Localizer.Get();
+
         var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
         if (result == AppUpdaterResult.NeedUpdate)
@@ -181,10 +208,10 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             Logger.Information("Update Available");
 
             var dlgResult = await ShowMessageDialog(
-                rl.GetString("Messages_UpdateChecker_NewVersionTitle"), 
-                rl.GetString("Messages_UpdateChecker_NewVersionMsg"), 
-                rl.GetString("Common_DownloadButton"), 
-                rl.GetString("Common_CancelButton"));
+                loc.GetLocalizedString("Messages_UpdateChecker_NewVersionTitle"), 
+                loc.GetLocalizedString("Messages_UpdateChecker_NewVersionMsg"), 
+                loc.GetLocalizedString("Common_DownloadButton"), 
+                loc.GetLocalizedString("Common_CancelButton"));
 
             if (dlgResult == ContentDialogResult.Primary)
             {
@@ -201,10 +228,10 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                     Logger.Information("Download Succesfull");
 
                     var installRequest = await ShowMessageDialog(
-                        rl.GetString("Messages_UpdateChecker_DownloadSuccesTitle"),
-                        rl.GetString("Messages_UpdateChecker_DownloadSuccesMsg"),
-                        rl.GetString("Common_InstallButton"),
-                        rl.GetString("Common_CancelButton"));
+                        loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesTitle"),
+                        loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesMsg"),
+                        loc.GetLocalizedString("Common_InstallButton"),
+                        loc.GetLocalizedString("Common_CancelButton"));
 
                     if (installRequest == ContentDialogResult.Primary)
                     {
@@ -217,9 +244,9 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                     Logger.Warning("Download failed");
 
                     await ShowMessageDialog(
-                        rl.GetString("Messages_UpdateChecker_DownloadFailedTitle"),
-                        rl.GetString("Messages_UpdateChecker_DownloadFailedMsg"),
-                        rl.GetString("Common_CloseButton"));
+                        loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedTitle"),
+                        loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedMsg"),
+                        loc.GetLocalizedString("Common_CloseButton"));
                 }
             }
         }
@@ -228,9 +255,9 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             Logger.Information("Application is up-to-date");
 
             await ShowMessageDialog(
-                rl.GetString("Messages_UpdateChecker_UpToDate_Title"),
-                rl.GetString("Messages_UpdateChecker_UpToDate_Msg"),
-                rl.GetString("Common_OkButton"));
+                loc.GetLocalizedString("Messages_UpdateChecker_UpToDate_Title"),
+                loc.GetLocalizedString("Messages_UpdateChecker_UpToDate_Msg"),
+                loc.GetLocalizedString("Common_OkButton"));
         }
     }
 

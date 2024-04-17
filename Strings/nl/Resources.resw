@@ -12,6 +12,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Crypto Portfolio Tracker</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Crypto Portfolio Tracker</value>
+  </data>
   <data name="Settings_NumberFormat.Description" xml:space="preserve">
     <value>Hoe wilt u dat cijfers worden weergegeven?</value>
   </data>
@@ -78,11 +84,17 @@
   <data name="Settings_Title.Text" xml:space="preserve">
     <value>Instellingen</value>
   </data>
+  <data name="Navigation_Accounts.Content" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
   <data name="Navigation_Assets.Content" xml:space="preserve">
     <value>Portefeuille</value>
   </data>
   <data name="Navigation_CoinLibrary.Content" xml:space="preserve">
     <value>Bibliotheek</value>
+  </data>
+  <data name="Navigation_Help.Content" xml:space="preserve">
+    <value>Help</value>
   </data>
   <data name="Assets_Title.Text" xml:space="preserve">
     <value>Portefeuille</value>
@@ -145,6 +157,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="Accounts_Explainer.Text" xml:space="preserve">
     <value>De Accountslijst geeft u een overzicht van locaties waar u uw crypto-activa in bewaring heeft.</value>
+  </data>
+  <data name="Accounts_Title.Text" xml:space="preserve">
+    <value>Accounts</value>
   </data>
   <data name="AccountsLV_Delete.Label" xml:space="preserve">
     <value>Verwijderen</value>
@@ -287,6 +302,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="TransactionType_Sell.Content" xml:space="preserve">
     <value>Verkoop</value>
   </data>
+  <data name="TransactionType_Transfer.Content" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
   <data name="TransactionType_Withdraw.Content" xml:space="preserve">
     <value>Opname</value>
   </data>
@@ -347,6 +365,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="CoinDialog_CloseButton" xml:space="preserve">
     <value>Annuleren</value>
   </data>
+  <data name="CoinDialog_Id.Text" xml:space="preserve">
+    <value>ID</value>
+  </data>
   <data name="CoinDialog_MarketCapRank.Text" xml:space="preserve">
     <value>Marktkapitalisatie Positie</value>
   </data>
@@ -401,8 +422,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Common_ConfirmButton" xml:space="preserve">
     <value>Akkoord</value>
   </data>
+  <data name="Common_DownloadButton" xml:space="preserve">
+    <value>Download</value>
+  </data>
   <data name="Common_InstallButton" xml:space="preserve">
     <value>Installeren</value>
+  </data>
+  <data name="Common_OkButton" xml:space="preserve">
+    <value>OK</value>
   </data>
   <data name="Messages_AccountAddFailed_Title" xml:space="preserve">
     <value>Fout bij toevoegen van Account</value>
@@ -470,6 +497,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_UpdateChecker_UpToDate_Msg" xml:space="preserve">
     <value>Versie is up-to-date</value>
   </data>
+  <data name="Messages_UpdateChecker_UpToDate_Title" xml:space="preserve">
+    <value>Update Checker</value>
+  </data>
   <data name="CoinDialog_GetDetails_Failed" xml:space="preserve">
     <value>Fout bij het ophalen van de details</value>
   </data>
@@ -486,12 +516,18 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Donker</value>
   </data>
   <data name="Settings_AppTheme.Description" xml:space="preserve">
-    <value>Selecteer een donker of licht kleurenthema voor de toepassing. De wijziging wordt van kracht nadat de app opnieuw is gestart.</value>
+    <value>Selecteer een donker of licht kleurenthema voor de toepassing.</value>
   </data>
   <data name="Settings_AppTheme.Header" xml:space="preserve">
     <value>Thema</value>
   </data>
   <data name="Messages_UpdateChecker_DownloadSuccesTitle" xml:space="preserve">
     <value>Download gereed</value>
+  </data>
+  <data name="Settings_AppCulture.Description" xml:space="preserve">
+    <value>Selecteer uw taal voorkeur voor deze app.</value>
+  </data>
+  <data name="Settings_AppCulture.Header" xml:space="preserve">
+    <value>Taal</value>
   </data>
 </root>

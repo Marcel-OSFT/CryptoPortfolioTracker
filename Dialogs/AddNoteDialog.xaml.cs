@@ -5,14 +5,14 @@ using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
 public sealed partial class AddNoteDialog : ContentDialog
 {
     public string newNote;
-
-    private readonly ResourceLoader rl = new();
+    private ILocalizer loc = Localizer.Get();
 
     public AddNoteDialog(Coin coin)
     {
@@ -23,9 +23,9 @@ public sealed partial class AddNoteDialog : ContentDialog
 
     private void SetDialogTitleAndButtons(Coin coin)
     {
-            Title = rl.GetString("NoteDialog_Title") + " " + coin.Name; ;
-            PrimaryButtonText = rl.GetString("NoteDialog_PrimaryButton");
-            CloseButtonText = rl.GetString("NoteDialog_CloseButton");
+            Title = loc.GetLocalizedString("NoteDialog_Title") + " " + coin.Name; ;
+            PrimaryButtonText = loc.GetLocalizedString("NoteDialog_PrimaryButton");
+            CloseButtonText = loc.GetLocalizedString("NoteDialog_CloseButton");
     }
 
     private void Button_Click_AcceptNote(ContentDialog sender, ContentDialogButtonClickEventArgs e)
@@ -33,6 +33,10 @@ public sealed partial class AddNoteDialog : ContentDialog
         newNote = NoteText.Text;
     }
 
+    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
+        if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
+    }
 }
 
 

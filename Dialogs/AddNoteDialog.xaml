@@ -5,6 +5,8 @@
     xmlns:local="using:CryptoPortfolioTracker" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     DefaultButton="Primary"
+    xmlns:l="using:WinUI3Localizer"
+    Loading="Dialog_Loading"
     PrimaryButtonClick="Button_Click_AcceptNote">
 
     <ContentDialog.Resources>
@@ -28,7 +30,7 @@
             <StackPanel.Background>
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
             </StackPanel.Background>
-            <TextBox x:Uid="NoteDialog_Note" x:Name="NoteText" PlaceholderForeground="Wheat" Margin="10,0,10,0" AutomationProperties.Name="multi-line TextBox" 
+            <TextBox l:Uids.Uid="NoteDialog_Note" x:Name="NoteText" PlaceholderForeground="Wheat" Margin="10,0,10,0" AutomationProperties.Name="multi-line TextBox" 
                      TextWrapping="Wrap" AcceptsReturn="True" MinWidth="400" MinHeight="150">
             </TextBox>
         </StackPanel>

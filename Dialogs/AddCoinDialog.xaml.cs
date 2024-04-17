@@ -22,6 +22,7 @@ using Windows.UI.Popups;
 using CryptoPortfolioTracker.Extensions;
 using CryptoPortfolioTracker.Enums;
 using Microsoft.Windows.ApplicationModel.Resources;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
@@ -32,6 +33,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     public static AddCoinDialog Current;
     CoinFullDataById coinFullDataById;
     public Coin selectedCoin;
+    private ILocalizer loc = Localizer.Get();
 
     private List<string> coinCollection;
     public List<string> CoinCollection
@@ -74,7 +76,6 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         }
     }
 
-    private readonly ResourceLoader rl = new();
 
     public AddCoinDialog(List<CoinList> coinList, CoinLibraryViewModel viewModel)
     {
@@ -90,9 +91,9 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
 
     private void SetDialogTitleAndButtons()
     {
-        Title = rl.GetString("CoinDialog_Title");
-        PrimaryButtonText = rl.GetString("CoinDialog_PrimaryButton");
-        CloseButtonText = rl.GetString("CoinDialog_CloseButton");
+        Title = loc.GetLocalizedString("CoinDialog_Title");
+        PrimaryButtonText = loc.GetLocalizedString("CoinDialog_PrimaryButton");
+        CloseButtonText = loc.GetLocalizedString("CoinDialog_CloseButton");
         IsPrimaryButtonEnabled = false;
     }
 
@@ -220,12 +221,12 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
 
                 if (await IsCoinAlreadyInLibrary(details.Id))
                 {
-                    PrimaryButtonText = rl.GetString("CoinDialog_PrimaryButton_CoinExists");
+                    PrimaryButtonText = loc.GetLocalizedString("CoinDialog_PrimaryButton_CoinExists");
                     IsPrimaryButtonEnabled = false;
                 }
                 else
                 {
-                    PrimaryButtonText = rl.GetString("CoinDialog_PrimaryButton");
+                    PrimaryButtonText = loc.GetLocalizedString("CoinDialog_PrimaryButton");
                     IsPrimaryButtonEnabled = true;
                 }
                 coinDetails = details;
@@ -234,9 +235,8 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            ResourceLoader rl = new();
             Run run = new Run();
-            run.Text = rl.GetString("CoinDialog_GetDetails_Failed");
+            run.Text = loc.GetLocalizedString("CoinDialog_GetDetails_Failed");
             parId.Inlines.Clear();
             parId.Inlines.Add(run);
         }
@@ -287,7 +287,9 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         });
     }
 
-
-
+    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
+        if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
+    }
 }
 

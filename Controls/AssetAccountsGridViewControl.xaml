@@ -11,10 +11,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:l="using:WinUI3Localizer"
     xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
-    
+    SizeChanged="GridView_SizeChanged"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -27,8 +28,8 @@
 
     <GridView x:Name="AssetAccountsGridView" x:FieldModifier="public" ItemsSource="{Binding ListAssetAccounts, Mode=TwoWay}" 
               ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
-        ScrollViewer.HorizontalScrollMode="Enabled" SelectedIndex="0" SelectionChanged="GridView_SelectionChanged"
-        IsItemClickEnabled="True" SelectionMode="Single"  Margin="30,0,10,20" toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}"  >
+        ScrollViewer.HorizontalScrollMode="Enabled" SelectedIndex="0" 
+        IsItemClickEnabled="True" SelectionMode="Single"  Margin="30,0,0,20" toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}"  >
         <GridView.ItemContainerStyle>
             <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
                 <Setter Property="Margin" Value="5,0,5,5" />

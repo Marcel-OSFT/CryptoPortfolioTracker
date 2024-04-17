@@ -2,6 +2,7 @@ using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.Windows.ApplicationModel.Resources;
+using WinUI3Localizer;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -13,10 +14,7 @@ namespace CryptoPortfolioTracker.Dialogs;
 /// </summary>
 public sealed partial class DescriptionDialog : ContentDialog
 {
-
-    private readonly ResourceLoader rl = new();
-
-
+    private ILocalizer loc = Localizer.Get();
     public DescriptionDialog(Coin coin)
     {
         this.InitializeComponent();
@@ -38,8 +36,13 @@ public sealed partial class DescriptionDialog : ContentDialog
 
     private void SetDialogTitleAndButtons(Coin coin)
     {
-        Title = rl.GetString("DescriptionDialog_Title") + " " + coin.Name; ;
-        CloseButtonText = rl.GetString("DescriptionDialog_CloseButton");
+        Title = loc.GetLocalizedString("DescriptionDialog_Title") + " " + coin.Name; ;
+        CloseButtonText = loc.GetLocalizedString("DescriptionDialog_CloseButton");
         IsPrimaryButtonEnabled = false;
+    }
+
+    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
+        if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
     }
 }

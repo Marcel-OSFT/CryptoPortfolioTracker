@@ -71,6 +71,7 @@ using LanguageExt;
 using System.Globalization;
 using CryptoPortfolioTracker.Extensions;
 using Microsoft.Windows.ApplicationModel.Resources;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
@@ -457,9 +458,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     }
 
     private readonly DispatcherQueue dispatcherQueue;
-
-    private readonly ResourceLoader rl;
-
+    private ILocalizer loc = Localizer.Get();
 
     #endregion Public Properties
 
@@ -476,7 +475,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         defaultBrush = ASBoxCoinA.Background;
         TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
         Validator = new Validator(10, true);
-        rl = new ResourceLoader();
+        ILocalizer loc = Localizer.Get();
         SetDialogButtonsAndTitle(dialogAction);
     }
 
@@ -495,15 +494,15 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 }
             }
             TransactionTypeRadioButtons.SelectedIndex = index;
-            Title = rl.GetString("TransactionDialog_Title_Edit");
+            Title = loc.GetLocalizedString("TransactionDialog_Title_Edit");
         }
         else
         {
             TransactionTypeRadioButtons.SelectedIndex = 0;
-            Title = rl.GetString("TransactionDialog_Title_Add");
+            Title = loc.GetLocalizedString("TransactionDialog_Title_Add");
         }
-        PrimaryButtonText = rl.GetString("TransactionDialog_PrimaryButton");
-        CloseButtonText = rl.GetString("TransactionDialog_CloseButton");
+        PrimaryButtonText = loc.GetLocalizedString("TransactionDialog_PrimaryButton");
+        CloseButtonText = loc.GetLocalizedString("TransactionDialog_CloseButton");
     }
     #endregion Constructors
 
@@ -794,12 +793,12 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     {
         //if (dialogAction == DialogAction.Edit) TransactionTypeRadioButtons.SelectedItem = transactionToEdit.TransactionType.ToString();
         InitializeAllFields();
-        var rl = new ResourceLoader();
-        string CoinFromHeader = rl.GetString("TransactionDialog_CoinFromHeader");
-        string CoinToHeader = rl.GetString("TransactionDialog_CoinToHeader");
-        string CoinHeader = rl.GetString("TransactionDialog_CoinHeader");
-        string AccountFromHeader = rl.GetString("TransactionDialog_AccountFromHeader");
-        string AccountToHeader = rl.GetString("TransactionDialog_AccountToHeader");
+        ILocalizer loc = Localizer.Get();
+        string CoinFromHeader = loc.GetLocalizedString("TransactionDialog_CoinFromHeader");
+        string CoinToHeader = loc.GetLocalizedString("TransactionDialog_CoinToHeader");
+        string CoinHeader = loc.GetLocalizedString("TransactionDialog_CoinHeader");
+        string AccountFromHeader = loc.GetLocalizedString("TransactionDialog_AccountFromHeader");
+        string AccountToHeader = loc.GetLocalizedString("TransactionDialog_AccountToHeader");
 
         if (sender is RadioButtons rb)
         {
@@ -809,7 +808,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 case 0: //Deposit                       
                     Validator.NrOfValidEntriesNeeded = 5;
                     transactionType = TransactionKind.Deposit;
-                    ConfigureDialogFields(rl.GetString("TransactionDialog_Deposit_Explainer"), CoinHeader, "", AccountToHeader, "");
+                    ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Deposit_Explainer"), CoinHeader, "", AccountToHeader, "");
                     ListCoinA = (await _transactionService.GetCoinSymbolsFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>()); 
                     ListCoinB = new List<string>();
@@ -819,7 +818,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 case 1: //Withdraw
                     Validator.NrOfValidEntriesNeeded = 5;
                     transactionType = TransactionKind.Withdraw; 
-                    ConfigureDialogFields(rl.GetString("TransactionDialog_Withdraw_Explainer"), CoinHeader, "", AccountFromHeader, "");
+                    ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Withdraw_Explainer"), CoinHeader, "", AccountFromHeader, "");
                     ListCoinA = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListCoinB = new List<string>();
                     ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
@@ -829,7 +828,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 case 2: //Transfer
                     Validator.NrOfValidEntriesNeeded = 8;
                     transactionType = TransactionKind.Transfer;
-                    ConfigureDialogFields(rl.GetString("TransactionDialog_Transfer_Explainer"), CoinHeader, "", AccountFromHeader, AccountToHeader, false);
+                    ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Transfer_Explainer"), CoinHeader, "", AccountFromHeader, AccountToHeader, false);
                     ListCoinA = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListFeeCoin = ListCoinA;
                     ListCoinB = new List<string>();
@@ -840,7 +839,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 case 3: //Convert
                     Validator.NrOfValidEntriesNeeded = 10;
                     transactionType = TransactionKind.Convert;
-                    ConfigureDialogFields(rl.GetString("TransactionDialog_Convert_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
+                    ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Convert_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListCoinB = (await _transactionService.GetCoinSymbolsFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
@@ -850,7 +849,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 case 4: //Buy
                     Validator.NrOfValidEntriesNeeded = 10;
                     transactionType = TransactionKind.Buy;
-                    ConfigureDialogFields(rl.GetString("TransactionDialog_Buy_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
+                    ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Buy_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService.GetUsdtUsdcSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListCoinB = (await _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
@@ -860,7 +859,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 case 5: //Sell
                     Validator.NrOfValidEntriesNeeded = 10;
                     transactionType = TransactionKind.Sell;
-                    ConfigureDialogFields(rl.GetString("TransactionDialog_Sell_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
+                    ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Sell_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListCoinB = (await _transactionService.GetUsdtUsdcSymbolsFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
@@ -1077,8 +1076,12 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     {
         Validator.Stop();
     }
+
     #endregion Dialog Events
 
-    
+    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
+        if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
+    }
 }
 

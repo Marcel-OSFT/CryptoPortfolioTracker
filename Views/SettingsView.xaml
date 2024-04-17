@@ -9,7 +9,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
     xmlns:ct="using:CommunityToolkit.WinUI.Controls"
+    xmlns:l="using:WinUI3Localizer"
     xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d">
     
@@ -32,7 +34,7 @@
     
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-              Margin="0,0,5,10" VerticalAlignment="Stretch" >
+              Margin="0,0,5,0" VerticalAlignment="Stretch" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -43,61 +45,72 @@
             <RelativePanel>
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
                 <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock l:Uids.Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
             </RelativePanel>
-            <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0">
-                <StackPanel Spacing="4">
+            <Border Grid.Row="2"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,0,0">
+                <ScrollViewer HorizontalAlignment="Stretch" Margin="0,0,0,0" Padding="0,0,20,0" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
+                    <StackPanel Spacing="4" >
 
-                    <ct:SettingsCard x:Uid="Settings_NumberFormat"
+                        <ct:SettingsCard l:Uids.Uid="Settings_NumberFormat" Margin="0,0,0,0"
                                HeaderIcon="{ui:FontIcon Glyph=&#xF110;}"
                                IsEnabled="true">
-                        <ComboBox x:Name="comboBoxNF"  SelectedIndex="{Binding NumberFormatIndex, Mode=TwoWay}">
-                            <ComboBoxItem Tag="nl" FontSize="20">1.234,56</ComboBoxItem>
-                            <ComboBoxItem Tag="en" FontSize="20">1,234.56</ComboBoxItem>
-                        </ComboBox>
-                    </ct:SettingsCard>
-                    <ct:SettingsCard x:Uid="Settings_FontSize"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xE8D2;}"
-                           IsEnabled="true">
-                         <ComboBox x:Name="comboBoxFS" SelectedIndex="{Binding FontSize, Mode=TwoWay}">
-                            <ComboBoxItem x:Uid="Settings_FontSize_Item1" FontSize="12"/>
-                            <ComboBoxItem x:Uid="Settings_FontSize_Item2" FontSize="14"/>
-                            <ComboBoxItem x:Uid="Settings_FontSize_Item3" FontSize="16"/>
-                        </ComboBox>
-                    </ct:SettingsCard>
+                            <ComboBox x:Name="comboBoxNF"  SelectedIndex="{Binding NumberFormatIndex, Mode=TwoWay}">
+                                <ComboBoxItem Tag="nl" FontSize="20">1.234,56</ComboBoxItem>
+                                <ComboBoxItem Tag="en" FontSize="20">1,234.56</ComboBoxItem>
+                            </ComboBox>
+                        </ct:SettingsCard>
 
-                    <ct:SettingsCard x:Uid="Settings_HideZeroBalances"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
-                        IsEnabled="True">
-                        <ToggleSwitch x:Uid="Settings_HideZeroBalances_Toggle" IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
-                    </ct:SettingsCard>
+                        <ct:SettingsCard l:Uids.Uid="Settings_AppCulture"
+                                HeaderIcon="{ui:FontIcon Glyph=&#xF110;}"
+                                IsEnabled="true">
+                            <ComboBox x:Name="comboBoxAC"  SelectedIndex="{Binding AppCultureIndex, Mode=TwoWay}">
+                                <ComboBoxItem Tag="nl" Content="Nederlands" />
+                                <ComboBoxItem Tag="en" Content="English"/>
+                            </ComboBox>
+                        </ct:SettingsCard>
+                        <ct:SettingsCard l:Uids.Uid="Settings_FontSize"
+                               HeaderIcon="{ui:FontIcon Glyph=&#xE8D2;}"
+                               IsEnabled="true">
+                             <ComboBox x:Name="comboBoxFS" SelectedIndex="{Binding FontSize, Mode=TwoWay}">
+                                <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item1" FontSize="12"/>
+                                <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item2" FontSize="14"/>
+                                <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item3" FontSize="16"/>
+                            </ComboBox>
+                        </ct:SettingsCard>
 
-                    <ct:SettingsCard x:Uid="Settings_AppTheme"
-                       HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
-                       IsEnabled="True">
-                        <ToggleSwitch x:Uid="Settings_AppTheme_Toggle" OnContent="Dark" OffContent="Light" IsOn="{Binding AppTheme, Mode=TwoWay, Converter={StaticResource ThemeToBoolConverter}}" />
-                    </ct:SettingsCard>
+                        <ct:SettingsCard l:Uids.Uid="Settings_HideZeroBalances"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
+                            IsEnabled="True">
+                            <ToggleSwitch l:Uids.Uid="Settings_HideZeroBalances_Toggle" IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
+                        </ct:SettingsCard>
+
+                        <ct:SettingsCard l:Uids.Uid="Settings_AppTheme"
+                           HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
+                           IsEnabled="True">
+                            <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{Binding AppTheme, Mode=TwoWay, Converter={StaticResource ThemeToBoolConverter}}" />
+                        </ct:SettingsCard>
                     
-                    <ct:SettingsCard x:Uid="Settings_KeepScrollBarsExpanded"
-                       HeaderIcon="{ui:FontIcon Glyph=&#xF4A5;}"
-                       IsEnabled="True">
-                        <ToggleSwitch x:Uid="Settings_KeepScrollBarsExpanded_Toggle" IsOn="{Binding IsScrollBarsExpanded, Mode=TwoWay}" />
-                    </ct:SettingsCard>
+                        <ct:SettingsCard l:Uids.Uid="Settings_KeepScrollBarsExpanded"
+                           HeaderIcon="{ui:FontIcon Glyph=&#xF4A5;}"
+                           IsEnabled="True">
+                            <ToggleSwitch l:Uids.Uid="Settings_KeepScrollBarsExpanded_Toggle" IsOn="{Binding IsScrollBarsExpanded, Mode=TwoWay}" />
+                        </ct:SettingsCard>
 
 
-                    <ct:SettingsCard x:Uid="Settings_CheckUpdate" x:Name="SettingsCU"
-                                     Description="Enables automatic checking for available updates of the app."
-                        Header="Check for Update"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
-                        IsEnabled="True">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Uid="Settings_CheckUpdate_Version" VerticalAlignment="Center" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
-                            <TextBlock x:Name="VersionNumber" VerticalAlignment="Center" Margin="5,0,0,0" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
-                            <Button x:Uid="Settings_CheckUpdate_CheckNow" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" Margin="30,0,0,0" />
-                            <ToggleSwitch x:Uid="Settings_CheckUpdate_Toggle" IsOn="{Binding IsCheckForUpdate, Mode=TwoWay}" Margin="60,0,0,0" />
-                        </StackPanel>
-                    </ct:SettingsCard>
-                </StackPanel>
+                        <ct:SettingsCard l:Uids.Uid="Settings_CheckUpdate" x:Name="SettingsCU"
+                                         Description="Enables automatic checking for available updates of the app."
+                            Header="Check for Update"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                            IsEnabled="True">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock l:Uids.Uid="Settings_CheckUpdate_Version" VerticalAlignment="Center" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
+                                <TextBlock x:Name="VersionNumber" VerticalAlignment="Center" Margin="5,0,0,0" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
+                                <Button l:Uids.Uid="Settings_CheckUpdate_CheckNow" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" Margin="30,0,0,0" />
+                                <ToggleSwitch l:Uids.Uid="Settings_CheckUpdate_Toggle" IsOn="{Binding IsCheckForUpdate, Mode=TwoWay}" Margin="60,0,0,0" />
+                            </StackPanel>
+                        </ct:SettingsCard>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
         </Grid>
     </Grid>

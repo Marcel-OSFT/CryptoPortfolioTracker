@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoPortfolioTracker", "CryptoPortfolioTracker.csproj", "{75512AE8-0E1D-4584-A2F5-230AFAB3ED20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPortfolioTrackerTest", "..\CryptoPortfolioTracker.Test\CryptoPortfolioTrackerTest.csproj", "{7985BC8A-C737-4F49-9248-A08DDD7F375B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoPortfolioTrackerTest", "..\CryptoPortfolioTracker.Test\CryptoPortfolioTrackerTest.csproj", "{7985BC8A-C737-4F49-9248-A08DDD7F375B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

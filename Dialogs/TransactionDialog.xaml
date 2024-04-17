@@ -6,11 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:converters="using:CryptoPortfolioTracker.Converters"
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
+    xmlns:l="using:WinUI3Localizer"
     xmlns:ext="using:CommunityToolkit.WinUI"
     CloseButtonClick="CloseButton_Cancel"
     DefaultButton="Primary"
     PrimaryButtonClick="PrimaryButton_AcceptTransaction"
     x:Name="Root"
+    Loading="Dialog_Loading"
     IsPrimaryButtonEnabled ="{Binding Validator.IsAllEntriesValid, ElementName=Root, Mode=TwoWay}" 
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
@@ -73,13 +75,13 @@
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
             </StackPanel.Background>
             <RelativePanel Name="TypeSelection" HorizontalAlignment="Stretch" Margin="0,0,0,0" >
-                <RadioButtons x:Uid="TransactionDialog_TransactionType" x:Name="TransactionTypeRadioButtons" TabIndex="0" Style="{StaticResource MK_RButtonsStyle}"  MaxColumns="6" FontWeight="SemiBold" SelectionChanged="TransactionType_SelectionChanged" Margin="20,10,0,0">
-                    <RadioButton x:Uid="TransactionType_Deposit"/>
-                    <RadioButton x:Uid="TransactionType_Withdraw"/>
-                    <RadioButton x:Uid="TransactionType_Transfer"/>
-                    <RadioButton x:Uid="TransactionType_Convert"/>
-                    <RadioButton x:Uid="TransactionType_Buy"/>
-                    <RadioButton x:Uid="TransactionType_Sell"/>
+                <RadioButtons l:Uids.Uid="TransactionDialog_TransactionType" x:Name="TransactionTypeRadioButtons" TabIndex="0" Style="{StaticResource MK_RButtonsStyle}"  MaxColumns="6" FontWeight="SemiBold" SelectionChanged="TransactionType_SelectionChanged" Margin="20,10,0,0">
+                    <RadioButton l:Uids.Uid="TransactionType_Deposit"/>
+                    <RadioButton l:Uids.Uid="TransactionType_Withdraw"/>
+                    <RadioButton l:Uids.Uid="TransactionType_Transfer"/>
+                    <RadioButton l:Uids.Uid="TransactionType_Convert"/>
+                    <RadioButton l:Uids.Uid="TransactionType_Buy"/>
+                    <RadioButton l:Uids.Uid="TransactionType_Sell"/>
                 </RadioButtons>
                 <TextBlock x:Name="ExplainTypeText" Text="{Binding TransactionText}"  Width="680" TextWrapping="WrapWholeWords"  RelativePanel.Below="TransactionTypeRadioButtons" Margin="20,10,10,0"/>
             </RelativePanel>
@@ -175,7 +177,7 @@
                                        Style="{StaticResource MK_TextBoxStyle}"
                                        PointerPressed="QtyOrPrice_pressed" 
                                        Width="150" Margin="5,0,5,0"/>
-                <controls:RegExTextBox x:Uid="TransactionDialog_PriceA" x:Name ="TBoxPriceA" 
+                <controls:RegExTextBox l:Uids.Uid="TransactionDialog_PriceA" x:Name ="TBoxPriceA" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
                                        Text="{Binding PriceA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
@@ -189,7 +191,7 @@
                                        ToolTipService.ToolTip="The price of the underlying coin"/>
             </RelativePanel>
             <RelativePanel Name="QtyAndPriceSelectionB"  HorizontalAlignment="Stretch" Margin="0,0,0,0" >
-                <controls:RegExTextBox x:Uid="TransactionDialog_QtyB" x:Name ="TBoxQtyB" 
+                <controls:RegExTextBox l:Uids.Uid="TransactionDialog_QtyB" x:Name ="TBoxQtyB" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
                                        Text="{Binding QtyB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
@@ -198,7 +200,7 @@
                                        PointerPressed="QtyOrPrice_pressed"
                                        Width="150" 
                                        Margin="5,0,5,0"/>
-                <controls:RegExTextBox x:Uid="TransactionDialog_PriceB" x:Name ="TBoxPriceB" 
+                <controls:RegExTextBox l:Uids.Uid="TransactionDialog_PriceB" x:Name ="TBoxPriceB" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
                                        Text="{Binding PriceB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
@@ -215,11 +217,11 @@
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
             </StackPanel.Background>
             <RelativePanel Name="TimeStampSelection"  HorizontalAlignment="Stretch" Margin="0,0,0,0"  >
-                <DatePicker x:Uid="TransactionDialog_DatePicker" x:Name="DatePicker" 
+                <DatePicker l:Uids.Uid="TransactionDialog_DatePicker" x:Name="DatePicker" 
                             Date="{Binding TimeStamp, Mode=TwoWay}"
                             Style="{StaticResource MK_DatePickerStyle}"
                             Margin="5,0,0,0"/>
-                <TimePicker x:Uid="TransactionDialog_TimePicker" x:Name="TimePicker" 
+                <TimePicker l:Uids.Uid="TransactionDialog_TimePicker" x:Name="TimePicker" 
                             Time="{Binding TimeStamp.TimeOfDay, Mode=TwoWay}" 
                             Style="{StaticResource MK_TimePickerStyle}" 
                             ClockIdentifier="24HourClock" 
@@ -228,7 +230,7 @@
                
             </RelativePanel>
             <StackPanel Name="FeeSelection"  HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="125,0,0,0">
-                <controls:RegExTextBox x:Uid="TransactionDialog_FeeQty" x:Name="TBoxQtyFee" 
+                <controls:RegExTextBox l:Uids.Uid="TransactionDialog_FeeQty" x:Name="TBoxQtyFee" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="True" 
                                        Text="{Binding FeeQty, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
@@ -237,7 +239,7 @@
                                        PointerPressed="QtyOrPrice_pressed"
                                        Width="85" 
                                        Margin="5,0,10,0"/>
-                <controls:AutoSuggestBoxWithValidation x:Uid="TransactionDialog_FeeCoin" x:Name ="ASBoxFeeCoin" 
+                <controls:AutoSuggestBoxWithValidation l:Uids.Uid="TransactionDialog_FeeCoin" x:Name ="ASBoxFeeCoin" 
                                 ItemsSource="{Binding ListFeeCoin, ElementName=Root, Mode=TwoWay}" 
                                 MyText="{Binding FeeCoin, ElementName=Root, Mode=TwoWay}" 
                                 IsEntryMatched="{Binding Validator.IsValidEntryCollection[9], ElementName=Root, Mode=TwoWay}"
@@ -253,7 +255,7 @@
             <StackPanel.Background>
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
             </StackPanel.Background>
-            <TextBox  x:Uid="TransactionDialog_Note" x:Name ="TBoxNote" 
+            <TextBox  l:Uids.Uid="TransactionDialog_Note" x:Name ="TBoxNote" 
                       TabIndex="0" 
                       Style="{StaticResource MK_TextBoxStyle}" 
                       Width="675" 

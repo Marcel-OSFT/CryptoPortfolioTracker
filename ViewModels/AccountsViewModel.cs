@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using WinUI3Localizer;
 namespace CryptoPortfolioTracker.ViewModels
 {
     public sealed partial class AccountsViewModel : BaseViewModel
@@ -74,7 +75,7 @@ namespace CryptoPortfolioTracker.ViewModels
         public async Task ShowAccountDialogToAdd()
         {
             App.isBusy = true;
-            ResourceLoader rl = new();
+            ILocalizer loc = Localizer.Get();
             try
             {
                 Logger.Information("Showing AccountDialog for Adding");
@@ -89,9 +90,9 @@ namespace CryptoPortfolioTracker.ViewModels
                         .Match(Succ: succ => AddToListAccounts(dialog.newAccount),
                             Fail: async err => {
                                 await ShowMessageDialog(
-                                rl.GetString("Messages_AccountAddFailed_Title"),
+                                loc.GetLocalizedString("Messages_AccountAddFailed_Title"),
                                 err.Message,
-                                rl.GetString("Common_CloseButton"));
+                                loc.GetLocalizedString("Common_CloseButton"));
                                 Logger.Error(err, "Adding Account failed");
                             });
                 }
@@ -100,9 +101,9 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 Logger.Error(ex, "Showing Account Dialog failed");
                 await ShowMessageDialog(
-                    rl.GetString("Messages_AccountDialogFailed_Title"), 
+                    loc.GetLocalizedString("Messages_AccountDialogFailed_Title"), 
                     ex.Message,
-                    rl.GetString("Common_CloseButton"));
+                    loc.GetLocalizedString("Common_CloseButton"));
             }
             finally { App.isBusy = false; }
         }
@@ -116,7 +117,7 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             App.isBusy = true;
             //Account accountToEdit = null;
-            ResourceLoader rl = new();
+            ILocalizer loc = Localizer.Get();
             try
             {
                 Logger.Information("Showing Account Dialog for Editing");
@@ -131,9 +132,9 @@ namespace CryptoPortfolioTracker.ViewModels
                     (await _accountService.EditAccount(dialog.newAccount, account))
                         .IfFail(async err => {
                             await ShowMessageDialog(
-                            rl.GetString("Messages_AccountUpdateFailed_Title"),
+                            loc.GetLocalizedString("Messages_AccountUpdateFailed_Title"),
                             err.Message,
-                            rl.GetString("Common_CloseButton"));
+                            loc.GetLocalizedString("Common_CloseButton"));
                             Logger.Error(err, "Updating Account failed");
                         });
                 }
@@ -142,9 +143,9 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 Logger.Error(ex, "Failed to show Account Dialog");
                 await ShowMessageDialog(
-                    rl.GetString("Messages_AccountDialogFailed_Title"), 
+                    loc.GetLocalizedString("Messages_AccountDialogFailed_Title"), 
                     ex.Message,
-                    rl.GetString("Common_CloseButton"));
+                    loc.GetLocalizedString("Common_CloseButton"));
             }
             finally { App.isBusy = false; }
         }
@@ -153,7 +154,7 @@ namespace CryptoPortfolioTracker.ViewModels
         public async Task DeleteAccount(Account account)
         {
             App.isBusy = true;
-            ResourceLoader rl = new();
+            ILocalizer loc = Localizer.Get();
             // *** Delete option normally never available when an Account contains assets
             //*** but nevertheless lets check it...
             try
@@ -169,9 +170,9 @@ namespace CryptoPortfolioTracker.ViewModels
                         .Match(Succ: s => RemoveFromListAccounts(account.Id),
                             Fail: async err => {
                                 await ShowMessageDialog(
-                                rl.GetString("Messages_AccountDeleteFailed_Title"),
+                                loc.GetLocalizedString("Messages_AccountDeleteFailed_Title"),
                                 err.Message,
-                                rl.GetString("Common_CloseButton"));
+                                loc.GetLocalizedString("Common_CloseButton"));
                                 Logger.Error(err, "Deleting Account failed");
                             });
                 }
@@ -180,18 +181,18 @@ namespace CryptoPortfolioTracker.ViewModels
                     Logger.Information("Deleting Account not allowed");
 
                     await ShowMessageDialog(
-                        rl.GetString("Messages_AccountDeleteNotAllowd_Title"),
-                        rl.GetString("Messages_AccountDeleteNotAllowed_Msg"),
-                        rl.GetString("Common_CloseButton")); 
+                        loc.GetLocalizedString("Messages_AccountDeleteNotAllowd_Title"),
+                        loc.GetLocalizedString("Messages_AccountDeleteNotAllowed_Msg"),
+                        loc.GetLocalizedString("Common_CloseButton")); 
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "Failed to delete Account");
                 await ShowMessageDialog(
-                    rl.GetString("Messages_AccountDeleteFailed_Title"),
+                    loc.GetLocalizedString("Messages_AccountDeleteFailed_Title"),
                                 ex.Message,
-                                rl.GetString("Common_CloseButton"));
+                                loc.GetLocalizedString("Common_CloseButton"));
             }
             finally { App.isBusy = false; }
         }

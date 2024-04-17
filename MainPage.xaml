@@ -7,6 +7,7 @@
     xmlns:converters="using:CryptoPortfolioTracker.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:l="using:WinUI3Localizer"
     Loaded="MainPage_Loaded"
     mc:Ignorable="d">
 
@@ -16,7 +17,7 @@
             
     </Page.Resources>
 
-    <Grid >
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         
         <NavigationView x:Name="navigationView"
                 IsSettingsVisible="True"
@@ -29,24 +30,24 @@
                 IsTabStop="False">
             
             <NavigationView.MenuItems>
-                <NavigationViewItem x:Uid="Navigation_Assets" Tag="AssetsView" >
+                <NavigationViewItem l:Uids.Uid="Navigation_Assets" Tag="AssetsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE825;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Navigation_Accounts" Tag="AccountsView" >
+                <NavigationViewItem l:Uids.Uid="Navigation_Accounts" Tag="AccountsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE910;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Navigation_CoinLibrary" Tag="CoinLibraryView" >
+                <NavigationViewItem l:Uids.Uid="Navigation_CoinLibrary" Tag="CoinLibraryView" >
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F1;"/>
                         </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Uid="Navigation_Help" Tag="HelpView" >
+                <NavigationViewItem l:Uids.Uid="Navigation_Help" Tag="HelpView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE897;"/>
                     </NavigationViewItem.Icon>

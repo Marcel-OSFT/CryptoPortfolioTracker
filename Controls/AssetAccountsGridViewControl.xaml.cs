@@ -16,12 +16,7 @@ namespace CryptoPortfolioTracker.Controls
         {
             this.InitializeComponent();
         }
-       private void GridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SetGridViewItemWidth();
-        }
-
-        /// <summary>
+      /// <summary>
         /// The width of the gridview itemcontainer is set by the width of the first element. 
         /// To prevent that other (longer) names will be truncated, the elngth of the longest name will be 
         /// determined and the widt of the container set accordingly.
@@ -31,7 +26,7 @@ namespace CryptoPortfolioTracker.Controls
             Debug.WriteLine("triggered");
             if (AssetAccountsGridView.ItemsSource != null && AssetAccountsGridView.Items.Count > 0)
             {
-                int longestNameLength = 0;
+                int longestNameLength = 12; // 12 is the minimum width
                 foreach (var item in AssetAccountsGridView.Items)
                 {
                     if ((item as AssetAccount).Name.Length > longestNameLength)
@@ -40,12 +35,31 @@ namespace CryptoPortfolioTracker.Controls
                     }
                 }
                 //** the Tag is used for binding with the width of the Name Textbox
-
-                AssetAccountsGridView.Tag = longestNameLength * ((int)App.userPreferences.FontSize + 7);
+                switch ((int)App.userPreferences.FontSize)
+                {
+                    case 0: //small
+                        {
+                            AssetAccountsGridView.Tag = longestNameLength * 7;
+                            break;
+                        }
+                    case 1: //normal
+                        {
+                            AssetAccountsGridView.Tag = longestNameLength * 8;
+                            break;
+                        }
+                    case 2: //large
+                        {
+                            AssetAccountsGridView.Tag = longestNameLength * 9;
+                            break;
+                        }
+                }
             };
         }
 
-
+        private void GridView_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
+        {
+            SetGridViewItemWidth();
+        }
     }
 
 }
