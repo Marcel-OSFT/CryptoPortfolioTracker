@@ -61,7 +61,7 @@
                         </ct:SettingsCard>
 
                         <ct:SettingsCard l:Uids.Uid="Settings_AppCulture"
-                                HeaderIcon="{ui:FontIcon Glyph=&#xF110;}"
+                                HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}"
                                 IsEnabled="true">
                             <ComboBox x:Name="comboBoxAC"  SelectedIndex="{Binding AppCultureIndex, Mode=TwoWay}">
                                 <ComboBoxItem Tag="nl" Content="Nederlands" />
@@ -91,7 +91,7 @@
                         </ct:SettingsCard>
                     
                         <ct:SettingsCard l:Uids.Uid="Settings_KeepScrollBarsExpanded"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xF4A5;}"
+                           HeaderIcon="{ui:FontIcon Glyph=&#xECE7;}"
                            IsEnabled="True">
                             <ToggleSwitch l:Uids.Uid="Settings_KeepScrollBarsExpanded_Toggle" IsOn="{Binding IsScrollBarsExpanded, Mode=TwoWay}" />
                         </ct:SettingsCard>
