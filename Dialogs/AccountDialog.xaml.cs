@@ -8,6 +8,7 @@ using CryptoPortfolioTracker.ViewModels;
 using LanguageExt.ClassInstances.Pred;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs
 {
@@ -16,12 +17,13 @@ namespace CryptoPortfolioTracker.Dialogs
         public readonly AccountsViewModel _viewModel;
         public Account newAccount;
         private readonly Account _accountToEdit;
-        private readonly ResourceLoader rl = new();
 
+        private ILocalizer loc = Localizer.Get();
 
         public AccountDialog(AccountsViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Account accountToEdit = null)
         {
             this.InitializeComponent();
+            
             _viewModel = viewModel;
             _accountToEdit = accountToEdit;
             SetDialogTitleAndButtons(dialogAction);
@@ -33,16 +35,16 @@ namespace CryptoPortfolioTracker.Dialogs
             {
                 AccountNameText.Text = _accountToEdit.Name;
                 DescriptionText.Text = _accountToEdit.About;
-                Title = rl.GetString("AccountDialog_Title_Edit");
-                PrimaryButtonText = rl.GetString("AccountDialog_PrimaryButton_Edit");
-                CloseButtonText = rl.GetString("AccountDialog_CloseButton");
+                Title = loc.GetLocalizedString("AccountDialog_Title_Edit");
+                PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Edit");
+                CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
                 IsPrimaryButtonEnabled = false ;
             }
             else
             {
-                Title = rl.GetString("AccountDialog_Title_Add");
-                PrimaryButtonText = rl.GetString("AccountDialog_PrimaryButton_Add");
-                CloseButtonText = rl.GetString("AccountDialog_CloseButton");
+                Title = loc.GetLocalizedString("AccountDialog_Title_Add");
+                PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Add");
+                CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
                 IsPrimaryButtonEnabled = false;
             }
         }
@@ -61,6 +63,11 @@ namespace CryptoPortfolioTracker.Dialogs
         private void AccountName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
         {
             IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0 ? true : false;
+        }
+
+        private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+        {
+            if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
         }
     }
 }

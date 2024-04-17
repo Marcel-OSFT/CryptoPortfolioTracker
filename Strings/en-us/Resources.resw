@@ -160,7 +160,7 @@
     <value>Hide Zero Balances</value>
   </data>
   <data name="Settings_KeepScrollBarsExpanded.Description" xml:space="preserve">
-    <value>By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items ore not.</value>
+    <value>By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items or not.</value>
   </data>
   <data name="Settings_KeepScrollBarsExpanded.Header" xml:space="preserve">
     <value>Keep ScrollBars Expanded</value>
@@ -624,9 +624,15 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
     <value>Dark</value>
   </data>
   <data name="Settings_AppTheme.Description" xml:space="preserve">
-    <value>Select Dark or Light color theme for the application. Change will take affect after restarting the application.</value>
+    <value>Select Dark or Light color theme for the application.</value>
   </data>
   <data name="Settings_AppTheme.Header" xml:space="preserve">
     <value>Theme</value>
+  </data>
+  <data name="Settings_AppCulture.Description" xml:space="preserve">
+    <value>Select the language you prefer for this app.</value>
+  </data>
+  <data name="Settings_AppCulture.Header" xml:space="preserve">
+    <value>Language</value>
   </data>
 </root>

@@ -6,7 +6,9 @@
     xmlns:controls="using:CryptoPortfolioTracker.Controls" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     DefaultButton="Primary"
+    xmlns:l="using:WinUI3Localizer"
     x:Name="Root"
+    Loading="Dialog_Loading"
     PrimaryButtonClick="Button_Click_AddCoin"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
@@ -38,28 +40,28 @@
             </StackPanel>
 
             <ProgressRing x:Name="TheProgressRing" IsActive="False" Grid.Row="1" Margin="0,0,0,0"/>
-            <TextBlock x:Uid="CoinDialog_BePatient" x:Name="bePatientText" Grid.Row="1" Grid.ColumnSpan="2" TextWrapping="WrapWholeWords" x:FieldModifier="public" 
+            <TextBlock l:Uids.Uid="CoinDialog_BePatient" x:Name="bePatientText" Grid.Row="1" Grid.ColumnSpan="2" TextWrapping="WrapWholeWords" x:FieldModifier="public" 
                        Visibility="{Binding BePatientVisibility, ElementName=Root}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,0" />
             <StackPanel Name="DetailsStack2" Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Left">
                 <RichTextBlock SelectionHighlightColor="Green" Width="200" >
                     <Paragraph TextAlignment="Right">
-                        <Run x:Uid="CoinDialog_Id" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
+                        <Run l:Uids.Uid="CoinDialog_Id" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
                     </Paragraph>
                     <Paragraph x:Name="parId" TextAlignment="Right" FontSize="20" Margin="0,0,0,10"></Paragraph>
                     <Paragraph TextAlignment="Right">
-                        <Run x:Uid="CoinDialog_Name" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
+                        <Run l:Uids.Uid="CoinDialog_Name" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
                     </Paragraph>
                     <Paragraph x:Name="parName" TextAlignment="Right" FontSize="20" Margin="0,0,0,10"></Paragraph>
                     <Paragraph TextAlignment="Right">
-                        <Run x:Uid="CoinDialog_Symbol" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
+                        <Run l:Uids.Uid="CoinDialog_Symbol" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
                     </Paragraph>
                     <Paragraph x:Name="parSymbol" TextAlignment="Right" FontSize="20" Margin="0,0,0,10"></Paragraph>
                     <Paragraph TextAlignment="Right" >
-                        <Run x:Uid="CoinDialog_MarketCapRank" FontSize="12" FontStyle="Italic" TextDecorations="Underline" />
+                        <Run l:Uids.Uid="CoinDialog_MarketCapRank" FontSize="12" FontStyle="Italic" TextDecorations="Underline" />
                     </Paragraph>
                     <Paragraph x:Name="parRank" TextAlignment="Right" FontSize="20" Margin="0,0,0,10"></Paragraph>
                     <Paragraph TextAlignment="Right">
-                        <Run x:Uid="CoinDialog_Price" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
+                        <Run l:Uids.Uid="CoinDialog_Price" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
                     </Paragraph>
                     <Paragraph x:Name="parPrice" TextAlignment="Right" FontSize="20" Margin="0,0,0,10"></Paragraph>
                 </RichTextBlock>

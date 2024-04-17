@@ -14,6 +14,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:ui="using:CommunityToolkit.WinUI"
     x:Name="Root"
+    xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     mc:Ignorable="d">
@@ -58,10 +59,10 @@
         <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Orientation="Horizontal" >
             <RichTextBlock x:Name="rtbName"  Margin="0,0,0,5" VerticalAlignment="Bottom">
                 <Paragraph TextAlignment="Left" >
-                    <Run x:Uid="AssetsLV_Name" FontSize="12" FontStyle="Italic" />
+                    <Run l:Uids.Uid="AssetsLV_Name" FontSize="12" FontStyle="Italic" />
                 </Paragraph>
             </RichTextBlock>
-            <CheckBox x:Uid="AssetsLV_HideZeroBalances" x:FieldModifier="public" FontSize="12" FontStyle="Italic" 
+            <CheckBox l:Uids.Uid="AssetsLV_HideZeroBalances" x:FieldModifier="public" FontSize="12" FontStyle="Italic" 
                 Margin="30,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center"
                 IsChecked="{Binding IsHidingZeroBalances, Mode=TwoWay}" 
                 Command="{Binding HideZeroBalancesCommand}" 
@@ -69,40 +70,40 @@
         </StackPanel>
         <RichTextBlock Grid.Row="0" Grid.Column="2" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_Quantity" FontSize="12" FontStyle="Italic"/>
+                <Run l:Uids.Uid="AssetsLV_Quantity" FontSize="12" FontStyle="Italic"/>
             </Paragraph>
         </RichTextBlock>
 
         <RichTextBlock Grid.Row="0" Grid.Column="3" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_24Hour" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="AssetsLV_24Hour" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_Change" FontSize="12" FontStyle="Italic"/>
+                <Run l:Uids.Uid="AssetsLV_Change" FontSize="12" FontStyle="Italic"/>
             </Paragraph>
         </RichTextBlock>
         <RichTextBlock Grid.Row="0" Grid.Column="4" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_MarketValue" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="AssetsLV_MarketValue" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_ActualPrice" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="AssetsLV_ActualPrice" FontSize="12" FontStyle="Italic" />
             </Paragraph>
         </RichTextBlock>
         <RichTextBlock Grid.Row="0" Grid.Column="5" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_CostBase" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="AssetsLV_CostBase" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_AverageCostPrice" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="AssetsLV_AverageCostPrice" FontSize="12" FontStyle="Italic" />
             </Paragraph>
         </RichTextBlock>
         <RichTextBlock Grid.Row="0" Grid.Column="6" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_ProfitLoss" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="AssetsLV_ProfitLoss" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             <Paragraph TextAlignment="Right">
-                <Run x:Uid="AssetsLV_ProfitLossPerc" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="AssetsLV_ProfitLossPerc" FontSize="12" FontStyle="Italic" />
             </Paragraph>
         </RichTextBlock>
 
@@ -113,7 +114,7 @@
                         IsItemClickEnabled="True" SelectionMode="Single" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                   ui:ListViewExtensions.Command="{Binding AssetItemClickedCommand}" SizeChanged="AssetsListView_SizeChanged"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                        CanReorderItems="false" AllowDrop="false" Margin="10,0,10,10" >
+                        CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" >
 
             <ListView.ItemTemplate>
             <DataTemplate x:DataType="models:AssetTotals" >

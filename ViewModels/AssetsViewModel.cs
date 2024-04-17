@@ -34,6 +34,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
 using WinRT;
+using WinUI3Localizer;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 #endregion Using
 
@@ -143,7 +144,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     public async Task ShowTransactionDialogToAdd()
     {   
         App.isBusy = true;
-        ResourceLoader rl = new();
+        ILocalizer loc = Localizer.Get();
         try
         {
             Logger.Information("Showing Transaction Dialog for Adding");
@@ -159,9 +160,9 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                     .Match(Succ: newAsset => UpdateListAssetTotals(dialog.transactionNew),
                         Fail: async err => {
                             await ShowMessageDialog(
-                            rl.GetString("Messages_TransactionAddFailed_Title"),
+                            loc.GetLocalizedString("Messages_TransactionAddFailed_Title"),
                             err.Message,
-                            rl.GetString("Common_CloseButton"));
+                            loc.GetLocalizedString("Common_CloseButton"));
                             Logger.Error(err, "Adding Transaction failed");
                         });
                 CalculateAssetsTotalValues();
@@ -171,9 +172,9 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         {
             Logger.Error(ex, "Failed to show Transaction Dialog");
             await ShowMessageDialog(
-                rl.GetString("Messages_TransactionDialogFailed_Title"), 
+                loc.GetLocalizedString("Messages_TransactionDialogFailed_Title"), 
                 ex.Message,
-                rl.GetString("Common_CloseButton"));
+                loc.GetLocalizedString("Common_CloseButton"));
         }
         finally { App.isBusy = false; }
     }
@@ -189,7 +190,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
 
         Transaction transactionToEdit = null;
         AssetAccount accountAffected = null;
-        ResourceLoader rl = new();
+        ILocalizer loc = Localizer.Get();
         try
         {
             Logger.Information("Showing Transaction Dialog for Editing");
@@ -216,9 +217,9 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                         },
                             Fail: async err => {
                                 await ShowMessageDialog(
-                                rl.GetString("Messages_TransactionUpdateFailed_Title"),
+                                loc.GetLocalizedString("Messages_TransactionUpdateFailed_Title"),
                                 err.Message,
-                                rl.GetString("Common_CloseButton"));
+                                loc.GetLocalizedString("Common_CloseButton"));
                                 Logger.Error(err, "Editing Transaction failed");
 
                             });
@@ -230,9 +231,9 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
             Logger.Error(ex, "Failed to show Transaction Dialog");
 
             await ShowMessageDialog(
-                rl.GetString("Messages_TransactionDialogFailed_Title"),
+                loc.GetLocalizedString("Messages_TransactionDialogFailed_Title"),
                 ex.Message,
-                rl.GetString("Common_CloseButton"));
+                loc.GetLocalizedString("Common_CloseButton"));
         }
         finally { App.isBusy = false; }
     }
@@ -241,16 +242,16 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     public async Task DeleteTransaction(Transaction transaction)
     {
         App.isBusy = true;
-        ResourceLoader rl = new();
+        ILocalizer loc = Localizer.Get();
         try
         {
             Logger.Information("Deletion Request for Transaction ({0}) - {1}", transaction.Id, transaction.Details.TransactionType);
 
             var dlgResult = await ShowMessageDialog(
-                rl.GetString("Messages_TransactionDelete_Title"),
-                rl.GetString("Messages_TransactionDelete_Msg"),
-                rl.GetString("Common_ConfirmButton"),
-                rl.GetString("Common_CancelButton"));
+                loc.GetLocalizedString("Messages_TransactionDelete_Title"),
+                loc.GetLocalizedString("Messages_TransactionDelete_Msg"),
+                loc.GetLocalizedString("Common_ConfirmButton"),
+                loc.GetLocalizedString("Common_CancelButton"));
 
             if (dlgResult == ContentDialogResult.Primary)
             {
@@ -269,9 +270,9 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                          },
                             Fail: async err => {
                                 await ShowMessageDialog(
-                                    rl.GetString("Messages_TransactionDeleteFailed_Title"),
+                                    loc.GetLocalizedString("Messages_TransactionDeleteFailed_Title"),
                                     err.Message,
-                                    rl.GetString("Common_CloseButton"));
+                                    loc.GetLocalizedString("Common_CloseButton"));
                                 Logger.Error(err, "Deleting Transaction failed");
 
                             });
@@ -282,9 +283,9 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
             Logger.Error(ex, "Deleting Transaction failed");
 
             await ShowMessageDialog(
-                rl.GetString("Messages_TransactionDeleteFailed_Title"),  
+                loc.GetLocalizedString("Messages_TransactionDeleteFailed_Title"),  
                 ex.Message,
-                rl.GetString("Common_CloseButton"));
+                loc.GetLocalizedString("Common_CloseButton"));
         }
         finally { App.isBusy = false; }
     }

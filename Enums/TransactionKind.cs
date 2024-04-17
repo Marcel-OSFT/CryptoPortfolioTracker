@@ -3,6 +3,7 @@ using Microsoft.Windows.ApplicationModel.Resources;
 using System;
 using System.Data;
 using System.Text;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Enums;
 
@@ -21,15 +22,15 @@ public static class TransactionKindExt
 {
     public static string AsDisplayString(this TransactionKind transactionKind)
     {
-        ResourceLoader rl = new();
+        ILocalizer loc = Localizer.Get();
         switch (transactionKind)
         {
-            case TransactionKind.Deposit: return rl.GetString("TransactionType_Deposit/Content"); ;
-            case TransactionKind.Withdraw: return rl.GetString("TransactionType_Withdraw/Content"); ;
-            case TransactionKind.Transfer: return rl.GetString("TransactionType_Transfer/Content"); ;
-            case TransactionKind.Convert: return rl.GetString("TransactionType_Convert/Content"); ;
-            case TransactionKind.Buy: return rl.GetString("TransactionType_Buy/Content"); ;
-            case TransactionKind.Sell: return rl.GetString("TransactionType_Sell/Content"); ;
+            case TransactionKind.Deposit: return loc.GetLocalizedString("TransactionType_Deposit/Content"); ;
+            case TransactionKind.Withdraw: return loc.GetLocalizedString("TransactionType_Withdraw/Content"); ;
+            case TransactionKind.Transfer: return loc.GetLocalizedString("TransactionType_Transfer/Content"); ;
+            case TransactionKind.Convert: return loc.GetLocalizedString("TransactionType_Convert/Content"); ;
+            case TransactionKind.Buy: return loc.GetLocalizedString("TransactionType_Buy/Content"); ;
+            case TransactionKind.Sell: return loc.GetLocalizedString("TransactionType_Sell/Content"); ;
 
             default: throw new ArgumentOutOfRangeException("role");
         }

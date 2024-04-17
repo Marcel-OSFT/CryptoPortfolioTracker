@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
@@ -84,7 +85,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     {
         Logger.Information("Showing Coin Dialog");
         App.isBusy = true;
-        ResourceLoader rl = new();
+        ILocalizer loc = Localizer.Get();
         try
         {
             dialog = new AddCoinDialog(coinListGecko, Current);
@@ -99,9 +100,9 @@ public partial class CoinLibraryViewModel : BaseViewModel
                     Fail: async err =>
                     {
                         await ShowMessageDialog(
-                            rl.GetString("Messages_CoinAddFailed_Title"),
+                            loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
                             err.Message,
-                             rl.GetString("Common_CloseButton"));
+                             loc.GetLocalizedString("Common_CloseButton"));
                         Logger.Error(err, "Adding Coin to Library Failed");
                     });
         }
@@ -111,9 +112,9 @@ public partial class CoinLibraryViewModel : BaseViewModel
             Logger.Error(ex, "Failed to show Coin Dialog");
 
             await ShowMessageDialog(
-                rl.GetString("Messages_CoinDialogFailed_Title"), 
+                loc.GetLocalizedString("Messages_CoinDialogFailed_Title"), 
                 ex.Message,
-                 rl.GetString("Common_CloseButton"));
+                 loc.GetLocalizedString("Common_CloseButton"));
         }
         finally {App.isBusy = false;}
         
@@ -128,7 +129,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public async Task ShowAddNoteDialog(Coin coin)
     {
         App.isBusy = true;
-        ResourceLoader rl = new();
+        ILocalizer loc = Localizer.Get();
         Logger.Information("Showing Note Dialog");
         try
         {
@@ -141,9 +142,9 @@ public partial class CoinLibraryViewModel : BaseViewModel
                 (await _libraryService.UpdateNote(coin, dialog.newNote))
                     .IfFail(async err => {
                         await ShowMessageDialog(
-                        rl.GetString("Messages_NoteAddFailed_Title"),
+                        loc.GetLocalizedString("Messages_NoteAddFailed_Title"),
                         err.Message,
-                        rl.GetString("Common_CloseButton"));
+                        loc.GetLocalizedString("Common_CloseButton"));
 
                         Logger.Error(err, "Adding Note failed");
                     });
@@ -155,9 +156,9 @@ public partial class CoinLibraryViewModel : BaseViewModel
             Logger.Error(ex, "Showing Note Dialog failed");
 
             await ShowMessageDialog(
-                rl.GetString("Messages_NoteDialogFailed_Title"), 
+                loc.GetLocalizedString("Messages_NoteDialogFailed_Title"), 
                 ex.Message,
-                rl.GetString("Common_CloseButton"));
+                loc.GetLocalizedString("Common_CloseButton"));
         }
         finally {  App.isBusy = false;}
     }
@@ -166,14 +167,14 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public async Task DeleteCoin(Coin coin)
     {
         Logger.Information("Deleting coin {0}", coin.Name);
-        ResourceLoader rl = new();
+        ILocalizer loc = Localizer.Get();
         await (await _libraryService.RemoveCoin(coin))
            .Match(Succ: s => RemoveFromListCoins(coin),
                    Fail: async err => {
                        await ShowMessageDialog(
-                          rl.GetString("Messages_CoinDeleteFailed_Title"),
+                          loc.GetLocalizedString("Messages_CoinDeleteFailed_Title"),
                           err.Message,
-                          rl.GetString("Common_CloseButton"));
+                          loc.GetLocalizedString("Common_CloseButton"));
                        Logger.Error(err, "Deleting coin failed");
                    });
     }

@@ -12,6 +12,7 @@
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     mc:Ignorable="d">
@@ -53,9 +54,9 @@
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
-        <TextBlock x:Uid="TransactionsLV_Type" Name="txtType" Grid.Column="0" FontWeight="Light" FontSize="16" Margin="20,0,0,0" HorizontalAlignment="Right"/>
-        <TextBlock x:Uid="TransactionsLV_From" Name="txtFrom" Grid.Column="1" FontWeight="Light" FontSize="18" HorizontalAlignment="Center"/>
-        <TextBlock x:Uid="TransactionsLV_To" Name="txtTo" Grid.Column="2" FontWeight="Light" FontSize="18" HorizontalAlignment="Center" />
+        <TextBlock l:Uids.Uid="TransactionsLV_Type" Name="txtType" Grid.Column="0" FontWeight="Light" FontSize="16" Margin="20,0,0,0" HorizontalAlignment="Right"/>
+        <TextBlock l:Uids.Uid="TransactionsLV_From" Name="txtFrom" Grid.Column="1" FontWeight="Light" FontSize="18" HorizontalAlignment="Center"/>
+        <TextBlock l:Uids.Uid="TransactionsLV_To" Name="txtTo" Grid.Column="2" FontWeight="Light" FontSize="18" HorizontalAlignment="Center" />
         
         <!--Rectangle Fill="#eebc3f" Grid.Row="0"  Height="1" Margin="5,0,8,0"/-->
 
@@ -63,7 +64,7 @@
         <ListView x:Name="AssetTransactionListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding ListAssetTransactions}" BorderBrush="Transparent" BorderThickness="1"                             
                         IsItemClickEnabled="True" SelectionMode="None" ItemClick="AssetsListView_ItemClick" 
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                        CanReorderItems="false" AllowDrop="false" Margin="10,0,10,10" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
+                        CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
 
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:Transaction" >
@@ -169,10 +170,10 @@
                                             <CommandBar Name="HoverCommandBar" Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                                 <CommandBar.SecondaryCommands>
                                                     <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                    <AppBarButton x:Uid="TransactionsLV_Edit"  Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowTransactionDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
+                                                    <AppBarButton l:Uids.Uid="TransactionsLV_Edit"  Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowTransactionDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                         <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                     </AppBarButton>
-                                                    <AppBarButton x:Uid="TransactionsLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteTransactionCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
+                                                    <AppBarButton l:Uids.Uid="TransactionsLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteTransactionCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
                                                 </CommandBar.SecondaryCommands>
                                             </CommandBar>
                                         </RelativePanel>

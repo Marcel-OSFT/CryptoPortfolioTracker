@@ -10,6 +10,7 @@
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
     xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
+    xmlns:l="using:WinUI3Localizer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
     x:Name="Root"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
@@ -49,37 +50,37 @@
             </Grid.ColumnDefinitions>
             <RichTextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" >
                 <Paragraph TextAlignment="Left" >
-                <Run x:Uid="LibraryLV_Name" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_Name" FontSize="12" FontStyle="Italic" />
             </Paragraph>
                 <Paragraph TextAlignment="Left">
-                <Run x:Uid="LibraryLV_Symbol" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_Symbol" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             </RichTextBlock>
             <RichTextBlock Grid.Row="0" Grid.Column="2" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" >
                 <Paragraph TextAlignment="Right">
-                <Run x:Uid="LibraryLV_Price" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_Price" FontSize="12" FontStyle="Italic" />
             </Paragraph>
                 <Paragraph TextAlignment="Right">
-                <Run x:Uid="LibraryLV_24HrChange" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_24HrChange" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             </RichTextBlock>
             <RichTextBlock Grid.Row="0" Grid.Column="3" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" >
                 <Paragraph TextAlignment="Right">
-                <Run x:Uid="LibraryLV_52WeekChange" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_52WeekChange" FontSize="12" FontStyle="Italic" />
             </Paragraph>
                 <Paragraph TextAlignment="Right">
-                <Run x:Uid="LibraryLV_30DayChange" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_30DayChange" FontSize="12" FontStyle="Italic" />
             </Paragraph>
                 <Paragraph TextAlignment="Right">
-                <Run x:Uid="LibraryLV_Ath" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_Ath" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             </RichTextBlock>
         <RichTextBlock Grid.Row="0" Grid.Column="4" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" >
                 <Paragraph TextAlignment="Right">
-                <Run x:Uid="LibraryLV_MarketCap" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_MarketCap" FontSize="12" FontStyle="Italic" />
             </Paragraph>
                 <Paragraph TextAlignment="Right">
-                <Run x:Uid="LibraryLV_Rank" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="LibraryLV_Rank" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             </RichTextBlock>
        
@@ -148,13 +149,13 @@
                                         <CommandBar Name="HoverCommandBar"  Visibility="Visible" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
                                             <CommandBar.SecondaryCommands>
                                                 <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                <AppBarButton x:Uid="LibraryLV_About" Visibility="Visible" x:Name="HoverButtonAbout" Command="{Binding DataContext.DataContext.ShowDescriptionCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
+                                                <AppBarButton l:Uids.Uid="LibraryLV_About" Visibility="Visible" x:Name="HoverButtonAbout" Command="{Binding DataContext.DataContext.ShowDescriptionCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                     <FontIcon  Glyph="&#xE946;" FontWeight="Normal"  />
                                                 </AppBarButton>
-                                                <AppBarButton x:Uid="LibraryLV_AddEditNote" Visibility="Visible" x:Name="HoverButtonNote" Command="{Binding DataContext.DataContext.ShowAddNoteDialogCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
+                                                <AppBarButton l:Uids.Uid="LibraryLV_AddEditNote" Visibility="Visible" x:Name="HoverButtonNote" Command="{Binding DataContext.DataContext.ShowAddNoteDialogCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                     <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                 </AppBarButton>
-                                                <AppBarButton x:Uid="LibraryLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
+                                                <AppBarButton l:Uids.Uid="LibraryLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>
