@@ -1,4 +1,10 @@
-﻿using CryptoPortfolioTracker.Dialogs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
@@ -7,12 +13,6 @@ using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Polly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 //using PollyDemos.OutputHelpers;
 //using CoinGecko.Interfaces;
@@ -78,7 +78,7 @@ namespace CryptoPortfolioTracker.Services
         public async Task<Result<bool>> RemoveCoin(Coin coin)
         {
             bool _result;
-            if (coin == null ) { return false; }
+            if (coin == null) { return false; }
             try
             {
                 var coinToRemove = await context.Coins.Where(x => x.ApiId == coin.ApiId).SingleAsync();

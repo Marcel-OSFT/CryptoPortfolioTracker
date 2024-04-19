@@ -7,7 +7,7 @@ namespace CryptoPortfolioTracker.Infrastructure
     public class PortfolioContext : DbContext
     {
 
-        
+
         public PortfolioContext(DbContextOptions<PortfolioContext> connection) : base(connection) { }
 
         //public PortfolioContext() : base()
@@ -20,11 +20,26 @@ namespace CryptoPortfolioTracker.Infrastructure
         //}
 
 
-        public DbSet<Coin> Coins { get; set; }
-        public DbSet<Asset> Assets { get; set; }
-        public DbSet<Account> Accounts { get; set; }
-        public DbSet<Mutation> Mutations { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Coin> Coins
+        {
+            get; set;
+        }
+        public DbSet<Asset> Assets
+        {
+            get; set;
+        }
+        public DbSet<Account> Accounts
+        {
+            get; set;
+        }
+        public DbSet<Mutation> Mutations
+        {
+            get; set;
+        }
+        public DbSet<Transaction> Transactions
+        {
+            get; set;
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

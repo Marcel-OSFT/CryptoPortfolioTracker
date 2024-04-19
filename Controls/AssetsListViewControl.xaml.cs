@@ -1,12 +1,7 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Views;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -16,7 +11,7 @@ namespace CryptoPortfolioTracker.Controls
 {
     public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
     {
-       // public readonly AssetsViewModel _viewModel;
+        // public readonly AssetsViewModel _viewModel;
         public static AssetsListViewControl Current;
 
         //***********************************************//
@@ -28,7 +23,7 @@ namespace CryptoPortfolioTracker.Controls
         {
             this.InitializeComponent();
             Current = this;
-           
+
         }
 
         private void AssetsListView_SizeChanged(object sender, SizeChangedEventArgs e)

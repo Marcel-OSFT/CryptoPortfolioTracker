@@ -1,12 +1,12 @@
 ﻿
-using Serilog.Sinks.WinUi3.LogViewModels;
+using System;
+using System.Collections.ObjectModel;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Serilog.Events;
 using Serilog.Sinks.WinUi3;
-using System.Collections.ObjectModel;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Dispatching;
-using System;
-using Microsoft.UI.Xaml.Data;
+using Serilog.Sinks.WinUi3.LogViewModels;
 
 namespace CryptoPortfolioTracker.Helpers;
 public class ItemsRepeaterLogBroker : IWinUi3LogBroker
@@ -24,7 +24,7 @@ public class ItemsRepeaterLogBroker : IWinUi3LogBroker
 
         DispatcherQueue = itemsRepeater.DispatcherQueue;
         AddLogEvent = logEvent => Logs.Add(_logViewModelBuilder.Build(logEvent));
-        Logs.CollectionChanged += ((sender, e) =>
+        Logs.CollectionChanged += (sender, e) =>
         {
             if (IsAutoScrollOn is true && sender is ObservableCollection<ILogViewModel> collection)
             {
@@ -34,7 +34,7 @@ public class ItemsRepeaterLogBroker : IWinUi3LogBroker
                     zoomFactor: 1,
                     disableAnimation: true);
             }
-        });
+        };
     }
 
     public Action<LogEvent> AddLogEvent

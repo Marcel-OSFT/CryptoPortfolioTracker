@@ -1,4 +1,5 @@
-using CryptoPortfolioTracker;
+using System;
+using System.Threading;
 using CryptoPortfolioTracker.Helpers;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -10,10 +11,6 @@ using Serilog.Events;
 using Serilog.Sinks.WinUi3;
 using Serilog.Sinks.WinUi3.LogViewModels;
 using Serilog.Templates;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker;
 
@@ -27,7 +24,7 @@ public sealed partial class LogWindow : Window
     {
         this.InitializeComponent();
 
-       
+
         _cancellationTokenSource = new CancellationTokenSource();
 
         _levelSwitch = new LoggingLevelSwitch();
@@ -41,12 +38,12 @@ public sealed partial class LogWindow : Window
         }
 
         LevelSwitcher.SelectedIndex = 0;
-        LevelSwitcher.SelectionChanged += ((sender, e) =>
+        LevelSwitcher.SelectionChanged += (sender, e) =>
         {
             if (sender is ComboBox comboBox &&
                 Enum.TryParse<LogEventLevel>(comboBox.SelectedItem.ToString(), out LogEventLevel level) is true)
                 _levelSwitch.MinimumLevel = level;
-        });
+        };
 
         App.Current.Resources.TryGetValue("DefaultTextForegroundThemeBrush", out object defaultTextForegroundBrush);
 
@@ -86,7 +83,7 @@ public sealed partial class LogWindow : Window
                        outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
             .CreateLogger();
 
-//        Logger = Log.Logger.ForContext<MainWindow>();
+        //        Logger = Log.Logger.ForContext<MainWindow>();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainWindow).Name.PadRight(22));
 
         App.userPreferences.AttachLogger();
@@ -105,9 +102,9 @@ public sealed partial class LogWindow : Window
             _logBroker.IsAutoScrollOn = toggleSwitch.IsOn;
     }
 
-    
 
-   
+
+
 
     private void UpdateToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {

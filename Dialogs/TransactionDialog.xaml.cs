@@ -1,76 +1,25 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Microsoft.UI.Xaml;
-
-using Microsoft.UI.Xaml.Controls;
-
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
-
-using Microsoft.UI.Xaml.Navigation;
-using System.Threading.Tasks;
-
+using System.ComponentModel;
 //using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 //using CoinGecko.Interfaces;
 //using CoinGecko.Parameters;
 using System.Diagnostics;
-using Newtonsoft.Json;
-
-
-using System.Net.Http;
-using Microsoft.UI.Dispatching;
-using Windows.Networking.Connectivity;
-using System.Collections.ObjectModel;
-using CommunityToolkit.WinUI.UI;
-using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml.Documents;
-using Windows.Graphics.Imaging;
-using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
-using Windows.Storage.Streams;
-using Windows.Storage;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Infrastructure;
-using Windows.UI.Popups;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI;
+using System.Linq;
+using System.Threading.Tasks;
 using CryptoPortfolioTracker.Controls;
-using CryptoPortfolioTracker.Views;
-using CryptoPortfolioTracker.Services;
-using Windows.Security.Cryptography.Core;
-using SQLitePCL;
 using CryptoPortfolioTracker.Enums;
-using static System.Reflection.Metadata.BlobBuilder;
-using System.Security.Principal;
-using System.Collections;
-using Microsoft.UI.Input;
-using System.ComponentModel;
-using System.Xml.Linq;
-using Microsoft.UI.Xaml.Media.Animation;
-using CommunityToolkit.WinUI.Converters;
-using CommunityToolkit.Common;
-using System.Reflection;
-using System.Linq.Expressions;
-using ABI.Microsoft.UI.Xaml;
-using System.Threading;
-using static System.Net.Mime.MediaTypeNames;
-using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using NuGet.Frameworks;
-using Microsoft.Extensions.DependencyInjection;
-using LanguageExt.Common;
-using LanguageExt;
-using System.Globalization;
 using CryptoPortfolioTracker.Extensions;
-using Microsoft.Windows.ApplicationModel.Resources;
+using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Services;
+using LanguageExt;
+using LanguageExt.Common;
+using Microsoft.UI;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
@@ -117,7 +66,10 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
 
     #region Public Properties
 
-    public Exception Exception { get; private set; }
+    public Exception Exception
+    {
+        get; private set;
+    }
 
     public Validator Validator
     {
@@ -471,7 +423,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         dialogAction = _dialogAction;
         _transactionService = transactionService;
         transactionToEdit = transaction;
-        InitializeAllFields() ;
+        InitializeAllFields();
         defaultBrush = ASBoxCoinA.Background;
         TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
         Validator = new Validator(10, true);
@@ -484,7 +436,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         var index = -1;
         if (dialogAction == DialogAction.Edit)
         {
-           
+
             for (int i = 0; i < TransactionTypeRadioButtons.Items.Count; i++)
             {
                 if ((TransactionTypeRadioButtons.Items[i] as RadioButton).Content.ToString() == transactionToEdit.Details.TransactionType.AsDisplayString())
@@ -523,11 +475,11 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 ActualPriceA = PriceA = result[1];
             });
         }
-        else 
+        else
         {
             MaxQtyA = -1;
-            ActualPriceA = PriceA = (await _transactionService.GetPriceFromLibrary(CoinA)).Match(Succ: price => price , Fail: err => 0);
-        }           
+            ActualPriceA = PriceA = (await _transactionService.GetPriceFromLibrary(CoinA)).Match(Succ: price => price, Fail: err => 0);
+        }
     }
 
     private async Task<Transaction> WrapUpTransactionData()
@@ -665,17 +617,17 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
             PriceB = 0;
             return;
         }
-        PriceB = (QtyA * PriceA) / QtyB;
+        PriceB = QtyA * PriceA / QtyB;
     }
     private void PresetFeeCoinToETH()
     {
         if (listFeeCoin != null && listFeeCoin.Count > 0)
-        {               
+        {
             var result = listFeeCoin.Where(x => x.ToString().ToLower() == "eth").FirstOrDefault();
-            if (result != null) 
+            if (result != null)
             {
-                FeeCoin= (string)result;
-            }  
+                FeeCoin = (string)result;
+            }
             else { FeeCoin = ""; }
         }
     }
@@ -785,7 +737,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         }
         else ListFeeCoin = new List<string>();
 
-        
+
     }
     #endregion Methods
 
@@ -803,7 +755,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
 
         if (sender is RadioButtons rb)
         {
-            
+
             switch (rb.SelectedIndex)
             {
                 case 0: //Deposit                       
@@ -811,14 +763,14 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     transactionType = TransactionKind.Deposit;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Deposit_Explainer"), CoinHeader, "", AccountToHeader, "");
                     ListCoinA = (await _transactionService.GetCoinSymbolsFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
-                    ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>()); 
+                    ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListCoinB = new List<string>();
                     ListAccountTo = new List<string>();
                     ListFeeCoin = new List<string>();
                     break;
                 case 1: //Withdraw
                     Validator.NrOfValidEntriesNeeded = 5;
-                    transactionType = TransactionKind.Withdraw; 
+                    transactionType = TransactionKind.Withdraw;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Withdraw_Explainer"), CoinHeader, "", AccountFromHeader, "");
                     ListCoinA = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListCoinB = new List<string>();
@@ -827,7 +779,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     ListFeeCoin = new List<string>();
                     break;
                 case 2: //Transfer
-                    Validator.NrOfValidEntriesNeeded = 8;
+                    Validator.NrOfValidEntriesNeeded = 7;
                     transactionType = TransactionKind.Transfer;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Transfer_Explainer"), CoinHeader, "", AccountFromHeader, AccountToHeader, false);
                     ListCoinA = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
@@ -866,7 +818,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     ListAccountFrom = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListAccountTo = (await _transactionService.GetAccountNames()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListFeeCoin = ListCoinA;
-                    
+
                     break;
             }
             if (dialogAction == DialogAction.Add)
@@ -966,16 +918,18 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 if (AccountFrom == AccountTo)
                 {
                     AccountTo = "";
-                    ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom)).Match(Succ: list => list, Fail: err => new List<string>());
+                    //ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom)).Match(Succ: list => list, Fail: err => new List<string>());
                 }
                 break;
-            //default:
+                //default:
                 //if (IsAccountsLinked && ASBoxAccountFrom.Items.Contains(_account))
                 //{
                 //    AccountTo = AccountFrom;
                 //}
                 //break;
         }
+        ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom)).Match(Succ: list => list, Fail: err => new List<string>());
+
     }
     private async void ASBoxAccountFrom_SuggestionChosen(object sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
@@ -1055,8 +1009,8 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     {
         //if (MainPage.Current == null) return;
         //MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
-        
-        
+
+
         this.dispatcherQueue.TryEnqueue(() =>
         {
             PropertyChangedEventHandler handler = PropertyChanged;

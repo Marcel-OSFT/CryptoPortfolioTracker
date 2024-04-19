@@ -1,22 +1,18 @@
 
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
+using CryptoPortfolioTracker.ViewModels;
+using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoPortfolioTracker.Views
 {
     public partial class AccountsView : Page, IDisposable
     {
-        
+
         public readonly AccountsViewModel _viewModel;
         public static AccountsView Current;
-        
+
         public AccountsView(AccountsViewModel viewModel)
         {
             Current = this;
@@ -24,7 +20,7 @@ namespace CryptoPortfolioTracker.Views
             this.InitializeComponent();
             DataContext = _viewModel;
             InitAssetsListView();
-           
+
         }
 
         #region MAIN methods or Tasks
@@ -38,13 +34,13 @@ namespace CryptoPortfolioTracker.Views
                 MyAssetsListViewControl.AssetsListView.IsItemClickEnabled = false;
             }
         }
-       
-        
+
+
 
         #endregion MAIN methods or Tasks
 
         #region SUB methods or Tasks
-        
+
         public void Dispose()
         {
 

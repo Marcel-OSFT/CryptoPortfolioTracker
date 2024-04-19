@@ -1,7 +1,6 @@
-﻿using Microsoft.UI.Xaml.Data;
-using Microsoft.Windows.ApplicationModel.Resources;
-using System;
+﻿using System;
 using System.Globalization;
+using Microsoft.UI.Xaml.Data;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Converters
@@ -17,10 +16,14 @@ namespace CryptoPortfolioTracker.Converters
 
             //NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
 
-            string withMaxQty = " (max. " + _double.ToString("G7", CultureInfo.InvariantCulture) + ")";
+            var maxQty = _double.ToString("G7", CultureInfo.InvariantCulture);
+            var length = maxQty.Length;
+            if (length > 8) length = 9;
 
-            return _double >= 0 
-                ? loc.GetLocalizedString("TransactionDialog_QtyHeader") + withMaxQty 
+            string finalString = " (max " + maxQty.Substring(0,length) + ")";
+
+            return _double >= 0
+                ? loc.GetLocalizedString("TransactionDialog_QtyHeader") + finalString
                 : loc.GetLocalizedString("TransactionDialog_QtyHeader");
         }
 

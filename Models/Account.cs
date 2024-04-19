@@ -1,18 +1,14 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml.Input;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 
 namespace CryptoPortfolioTracker.Models
 {
     public partial class Account : BaseModel
     {
-        
+
         public Account(string name = "")
         {
             Name = name;
@@ -20,7 +16,11 @@ namespace CryptoPortfolioTracker.Models
         }
 
         //******* Public Properties
-        [Key] public int Id { get; private set; }
+        [Key]
+        public int Id
+        {
+            get; private set;
+        }
 
         [ObservableProperty] string name;
         [ObservableProperty] string about;

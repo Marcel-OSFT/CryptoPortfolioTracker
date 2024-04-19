@@ -1,28 +1,21 @@
 ﻿
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
 using LanguageExt;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Serilog;
 using Serilog.Core;
-using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using WinUI3Localizer;
 namespace CryptoPortfolioTracker.ViewModels
 {
@@ -42,7 +35,7 @@ namespace CryptoPortfolioTracker.ViewModels
         [ObservableProperty] ObservableCollection<AssetTotals> listAssetTotals;
 
         [ObservableProperty]
-       [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
+        [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
         bool isHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
 
         private Account selectedAccount = null;
@@ -57,9 +50,9 @@ namespace CryptoPortfolioTracker.ViewModels
             Current = this;
             _accountService = accountService;
             SetDataSource();
-           
+
         }
-        
+
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(ShowAccountDialogToAddCommand))]
         private bool isExtendedView = false;
@@ -70,7 +63,7 @@ namespace CryptoPortfolioTracker.ViewModels
             (await _accountService.GetAccounts())
                 .IfSucc(list => ListAccounts = new ObservableCollection<Account>(list));
         }
-        
+
         [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
         public async Task ShowAccountDialogToAdd()
         {
@@ -88,7 +81,8 @@ namespace CryptoPortfolioTracker.ViewModels
                     Logger.Information("Adding Account ({0})", dialog.newAccount.Name);
                     await (await _accountService.CreateAccount(dialog.newAccount))
                         .Match(Succ: succ => AddToListAccounts(dialog.newAccount),
-                            Fail: async err => {
+                            Fail: async err =>
+                            {
                                 await ShowMessageDialog(
                                 loc.GetLocalizedString("Messages_AccountAddFailed_Title"),
                                 err.Message,
@@ -101,7 +95,7 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 Logger.Error(ex, "Showing Account Dialog failed");
                 await ShowMessageDialog(
-                    loc.GetLocalizedString("Messages_AccountDialogFailed_Title"), 
+                    loc.GetLocalizedString("Messages_AccountDialogFailed_Title"),
                     ex.Message,
                     loc.GetLocalizedString("Common_CloseButton"));
             }
@@ -130,7 +124,8 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     Logger.Information("Editing Account ({0})", account.Name);
                     (await _accountService.EditAccount(dialog.newAccount, account))
-                        .IfFail(async err => {
+                        .IfFail(async err =>
+                        {
                             await ShowMessageDialog(
                             loc.GetLocalizedString("Messages_AccountUpdateFailed_Title"),
                             err.Message,
@@ -143,7 +138,7 @@ namespace CryptoPortfolioTracker.ViewModels
             {
                 Logger.Error(ex, "Failed to show Account Dialog");
                 await ShowMessageDialog(
-                    loc.GetLocalizedString("Messages_AccountDialogFailed_Title"), 
+                    loc.GetLocalizedString("Messages_AccountDialogFailed_Title"),
                     ex.Message,
                     loc.GetLocalizedString("Common_CloseButton"));
             }
@@ -168,7 +163,8 @@ namespace CryptoPortfolioTracker.ViewModels
                     Logger.Information("Deleting Account");
                     await (await _accountService.RemoveAccount(account.Id))
                         .Match(Succ: s => RemoveFromListAccounts(account.Id),
-                            Fail: async err => {
+                            Fail: async err =>
+                            {
                                 await ShowMessageDialog(
                                 loc.GetLocalizedString("Messages_AccountDeleteFailed_Title"),
                                 err.Message,
@@ -183,7 +179,7 @@ namespace CryptoPortfolioTracker.ViewModels
                     await ShowMessageDialog(
                         loc.GetLocalizedString("Messages_AccountDeleteNotAllowd_Title"),
                         loc.GetLocalizedString("Messages_AccountDeleteNotAllowed_Msg"),
-                        loc.GetLocalizedString("Common_CloseButton")); 
+                        loc.GetLocalizedString("Common_CloseButton"));
                 }
             }
             catch (Exception ex)
@@ -198,7 +194,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
         private bool CanDeleteAccount(Account account)
         {
-            bool result=false;
+            bool result = false;
             try
             {
                 result = !ListAccounts.Where(x => x.Id == account.Id).Single().IsHoldingAsset;
@@ -209,7 +205,7 @@ namespace CryptoPortfolioTracker.ViewModels
             }
             return result;
         }
-       
+
         [RelayCommand]
         public async Task AccountItemClicked(Account clickedAccount)
         {
@@ -226,7 +222,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 if (!IsExtendedView)
                 {
                     await ShowAssets(clickedAccount);
-                    IsExtendedView= true;
+                    IsExtendedView = true;
                 }
                 else //if Assets are shown -> close Assets List and resize Accounts Listview to full-size
                 {
@@ -263,7 +259,7 @@ namespace CryptoPortfolioTracker.ViewModels
         public async Task AssetItemClicked(AssetTotals clickedAsset)
         {
             //In the AccountsView we ignore this command. The AssetsListViewControl is used in the AssetsView as well.
-            
+
         }
 
 
@@ -277,7 +273,7 @@ namespace CryptoPortfolioTracker.ViewModels
 
         #region SUB methods or Tasks
 
-        
+
         public Task RemoveFromListAccounts(int accountId)
         {
             try
@@ -298,10 +294,10 @@ namespace CryptoPortfolioTracker.ViewModels
                 ListAccounts.Add(newAccount);
             }
             catch (Exception) { Task.FromResult(false); }
-            
+
             return Task.FromResult(true);
         }
-        
+
         #endregion SUB methods or Tasks
 
 

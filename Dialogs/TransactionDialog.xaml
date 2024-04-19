@@ -100,7 +100,7 @@
                                 TextChanged="ASBoxCoinA_TextChanged"
                                 SuggestionChosen="ASBoxCoinA_SuggestionChosen"
                                 AnimateBorder="True"
-                                Width="300"
+                                Width="115"
                                 Margin="5,0,0,0"
                                 />
 
@@ -114,8 +114,8 @@
                                 TextChanged="ASBoxCoinB_TextChanged"
                                 SuggestionChosen="ASBoxCoinB_SuggestionChosen"
                                 AnimateBorder="True"
-                                Width="300"
-                                Margin="5,0,0,0"
+                                Width="115"
+                                Margin="15,0,0,0"
                                 />
 
 
@@ -134,14 +134,14 @@
                                 TextChanged="ASBoxAccountFrom_TextChanged"
                                 SuggestionChosen="ASBoxAccountFrom_SuggestionChosen"
                                 AnimateBorder="True"
-                                Width="300"
+                                Width="315"
                                 Margin="5,0,0,0"
                                 />
 
             </RelativePanel>
-            <Grid Width="30">
+            <Grid Width="45">
                 <AppBarButton Label="" Visibility="Visible" VerticalAlignment="Stretch" Click="LinkAccountsButton_Click" 
-                              Style="{StaticResource MK_AppBarButtonStyle}" Margin="0,15,0,0"
+                              Style="{StaticResource MK_AppBarButtonStyle}" Margin="15,15,0,0"
                               x:Name="LinkAccountsButton" Opacity="{Binding IsAccountsLinked, Converter={StaticResource myOpacityConverter}}">
                     <AppBarButton.Icon>
                         <FontIcon  Glyph="&#xE71B;"/>
@@ -156,8 +156,8 @@
                                 IsEntryMatched="{Binding Validator.IsValidEntryCollection[3], ElementName=Root, Mode=TwoWay}"
                                 IsEnabled="{Binding IsAccountsLinked, Converter={StaticResource myInvertBoolConverter}}"
                                 AnimateBorder="True"
-                                Width="300"
-                                Margin="8,0,0,0"
+                                Width="315"
+                                Margin="5,0,0,0"
                                 />
 
 
@@ -171,19 +171,19 @@
                 <controls:RegExTextBox x:Name ="TBoxQtyA" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
-                                       Text="{Binding QtyA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
+                                       Text="{Binding QtyA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}"
                                        Header="{Binding MaxQtyA, Converter={StaticResource myMaxQtyAConverter}}" 
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[4], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}"
                                        PointerPressed="QtyOrPrice_pressed" 
-                                       Width="150" Margin="5,0,5,0"/>
+                                       Width="160" Margin="5,0,5,0"/>
                 <controls:RegExTextBox l:Uids.Uid="TransactionDialog_PriceA" x:Name ="TBoxPriceA" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
                                        Text="{Binding PriceA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[5], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}" 
-                                       Width="140"
+                                       Width="145"
                                        TextChanged="TBoxPriceA_TextChanged" 
                                        PointerPressed="QtyOrPrice_pressed"
                                        Margin="5,0,5,0" 
@@ -198,15 +198,15 @@
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[6], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}"
                                        PointerPressed="QtyOrPrice_pressed"
-                                       Width="150" 
-                                       Margin="5,0,5,0"/>
+                                       Width="160" 
+                                       Margin="15,0,5,0"/>
                 <controls:RegExTextBox l:Uids.Uid="TransactionDialog_PriceB" x:Name ="TBoxPriceB" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="False" 
                                        Text="{Binding PriceB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" 
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[7], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}" 
-                                       Width="135" 
+                                       Width="145" 
                                        IsEnabled="False" 
                                        Margin="5,0,5,0" 
                                        RelativePanel.RightOf="TBoxQtyB"/>
@@ -225,11 +225,11 @@
                             Time="{Binding TimeStamp.TimeOfDay, Mode=TwoWay}" 
                             Style="{StaticResource MK_TimePickerStyle}" 
                             ClockIdentifier="24HourClock" 
-                            Margin="5,0,0,0" 
+                            Margin="25,0,0,0" 
                             RelativePanel.RightOf="DatePicker" />
                
             </RelativePanel>
-            <StackPanel Name="FeeSelection"  HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="125,0,0,0">
+            <StackPanel Name="FeeSelection"  HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="100,0,0,0">
                 <controls:RegExTextBox l:Uids.Uid="TransactionDialog_FeeQty" x:Name="TBoxQtyFee" 
                                        RegEx="RegExPositiveDecimal" 
                                        IsZeroAllowed="True" 
@@ -237,8 +237,8 @@
                                        IsEntryValid="{Binding Validator.IsValidEntryCollection[8], Mode=TwoWay}"
                                        Style="{StaticResource MK_TextBoxStyle}" 
                                        PointerPressed="QtyOrPrice_pressed"
-                                       Width="85" 
-                                       Margin="5,0,10,0"/>
+                                       Width="160" 
+                                       Margin="5,0,5,0"/>
                 <controls:AutoSuggestBoxWithValidation l:Uids.Uid="TransactionDialog_FeeCoin" x:Name ="ASBoxFeeCoin" 
                                 ItemsSource="{Binding ListFeeCoin, ElementName=Root, Mode=TwoWay}" 
                                 MyText="{Binding FeeCoin, ElementName=Root, Mode=TwoWay}" 
@@ -246,7 +246,7 @@
                                 TextChanged="ASBoxFeeCoin_TextChanged"
                                 SuggestionChosen="ASBoxFeeCoin_SuggestionChosen"
                                 AnimateBorder="True"
-                                Width="130"
+                                Width="95"
                                 Margin="5,0,0,0"
                                 />
             </StackPanel>
@@ -258,7 +258,7 @@
             <TextBox  l:Uids.Uid="TransactionDialog_Note" x:Name ="TBoxNote" 
                       TabIndex="0" 
                       Style="{StaticResource MK_TextBoxStyle}" 
-                      Width="675" 
+                      Width="685" 
                       Text="{Binding Note, Mode=TwoWay}" 
                       Margin="5,0,0,0" 
                       TextWrapping="Wrap" 

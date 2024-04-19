@@ -1,7 +1,6 @@
 ﻿using CryptoPortfolioTracker.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 namespace CryptoPortfolioTracker.Infrastructure.EntityConfigurations;
 
@@ -32,14 +31,14 @@ class AssetEntityTypeConfiguration : IEntityTypeConfiguration<Asset>
 
         configuration
             .Property("CoinId")
-            .HasColumnName("CoinId"); 
-        
+            .HasColumnName("CoinId");
+
         configuration
             .Property("AccountId")
             .HasColumnName("AccountId");
 
-       configuration.HasIndex("AccountId");
-       configuration.HasIndex("CoinId");
+        configuration.HasIndex("AccountId");
+        configuration.HasIndex("CoinId");
 
         configuration.HasOne("CryptoPortfolioTracker.Models.Account", "Account")
             .WithMany("Assets")
@@ -52,7 +51,7 @@ class AssetEntityTypeConfiguration : IEntityTypeConfiguration<Asset>
         configuration.Navigation("Account");
 
         configuration.Navigation("Coin");
-        
+
         configuration.Navigation("Mutations");
 
 

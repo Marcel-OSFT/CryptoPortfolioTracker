@@ -2,6 +2,12 @@
 #region Using
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CryptoPortfolioTracker.Dialogs;
@@ -12,30 +18,10 @@ using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
 using LanguageExt;
 using LanguageExt.Pipes;
-using LanguageExt.TypeClasses;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Serilog;
 using Serilog.Core;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
-using Windows.System;
-using WinRT;
 using WinUI3Localizer;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 #endregion Using
 
 namespace CryptoPortfolioTracker.ViewModels;
@@ -54,12 +40,12 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     #endregion instances related to Services
 
     #region Fields and Proporties for DataBinding with the View
-    
+
     [ObservableProperty] double totalAssetsValue;
     [ObservableProperty] double totalAssetsCostBase;
     [ObservableProperty] double totalAssetsPnLPerc;
 
-    
+
 
     [ObservableProperty] ObservableCollection<AssetTotals> listAssetTotals;
     [ObservableProperty] ObservableCollection<AssetAccount> listAssetAccounts;
@@ -67,7 +53,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
 
     private AssetTotals selectedAsset = null;
     private AssetAccount selectedAccount = null;
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowTransactionDialogToAddCommand))]
     private bool isExtendedView = false;
@@ -91,7 +77,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         _priceUpdateBackgroundService = priceUpdateBackgroundService;
         _transactionService = transactionService;
         _priceUpdateBackgroundService.Start();
-        
+
     }
 
     #region MAIN methods or Tasks
@@ -142,7 +128,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
 
     [RelayCommand(CanExecute = nameof(CanShowTransactionDialogToAdd))]
     public async Task ShowTransactionDialogToAdd()
-    {   
+    {
         App.isBusy = true;
         ILocalizer loc = Localizer.Get();
         try
@@ -158,7 +144,8 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                 Logger.Information("Adding a new Transaction - {0}", dialog.transactionNew.Details.TransactionType);
                 await (await _transactionService.AddTransaction(dialog.transactionNew))
                     .Match(Succ: newAsset => UpdateListAssetTotals(dialog.transactionNew),
-                        Fail: async err => {
+                        Fail: async err =>
+                        {
                             await ShowMessageDialog(
                             loc.GetLocalizedString("Messages_TransactionAddFailed_Title"),
                             err.Message,
@@ -172,7 +159,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         {
             Logger.Error(ex, "Failed to show Transaction Dialog");
             await ShowMessageDialog(
-                loc.GetLocalizedString("Messages_TransactionDialogFailed_Title"), 
+                loc.GetLocalizedString("Messages_TransactionDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
@@ -188,7 +175,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     {
         App.isBusy = true;
 
-       // Transaction transactionToEdit = null;
+        // Transaction transactionToEdit = null;
         AssetAccount accountAffected = null;
         ILocalizer loc = Localizer.Get();
         try
@@ -215,7 +202,8 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                             await UpdateListAssetTransaction(dialog.transactionNew, transaction);
 
                         },
-                            Fail: async err => {
+                            Fail: async err =>
+                            {
                                 await ShowMessageDialog(
                                 loc.GetLocalizedString("Messages_TransactionUpdateFailed_Title"),
                                 err.Message,
@@ -260,7 +248,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                 // var transactionToDelete = ListAssetTransactions.Where(t => t.Id == transactionId).Single();
                 //*** editing a transaction also involves a change for an element in the ListAssetAccounts
                 var accountAffected = ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
-                
+
                 await (await _transactionService.DeleteTransaction(transaction, accountAffected))
                          .Match(Succ: async s =>
                          {
@@ -268,7 +256,8 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                              await UpdateListAssetAccount(accountAffected);
                              await RemoveFromListAssetTransactions(transaction);
                          },
-                            Fail: async err => {
+                            Fail: async err =>
+                            {
                                 await ShowMessageDialog(
                                     loc.GetLocalizedString("Messages_TransactionDeleteFailed_Title"),
                                     err.Message,
@@ -283,7 +272,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
             Logger.Error(ex, "Deleting Transaction failed");
 
             await ShowMessageDialog(
-                loc.GetLocalizedString("Messages_TransactionDeleteFailed_Title"),  
+                loc.GetLocalizedString("Messages_TransactionDeleteFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
@@ -410,7 +399,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                 {
                     assetAffected = s;
                     ListAssetTotals.Add(assetAffected);
-                    Debug.WriteLine("added " + assetAffected.Coin.Name );
+                    Debug.WriteLine("added " + assetAffected.Coin.Name);
                 });
             }
             else if (index >= 0)
@@ -485,9 +474,9 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
             TotalAssetsPnLPerc = 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase;
         }
     }
-    
 
-   
+
+
     #endregion SUB methods or Tasks
 
 }

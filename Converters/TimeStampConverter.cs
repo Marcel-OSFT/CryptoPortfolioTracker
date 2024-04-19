@@ -1,6 +1,5 @@
-﻿using Microsoft.UI.Xaml.Data;
-using System;
-using System.Runtime.Serialization;
+﻿using System;
+using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters
 {

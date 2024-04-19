@@ -1,7 +1,6 @@
 using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
-using Microsoft.Windows.ApplicationModel.Resources;
 using WinUI3Localizer;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -26,9 +25,9 @@ public sealed partial class DescriptionDialog : ContentDialog
         // currently the 'About' is stored in the database and never refreshed
         // we could pull it from the Web Api in a localized way
         run.Text = coin.About;
-        
-        
-        
+
+
+
         par.Inlines.Clear();
         par.Inlines.Add(run);
         SetDialogTitleAndButtons(coin);

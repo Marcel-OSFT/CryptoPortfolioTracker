@@ -1,11 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Controls;
 using Serilog;
 
 namespace CryptoPortfolioTracker.ViewModels
@@ -24,8 +20,8 @@ namespace CryptoPortfolioTracker.ViewModels
 
         [ObservableProperty]
         protected bool isScrollBarsExpanded = App.userPreferences.IsScrollBarsExpanded;
-        
-        
+
+
         public BaseViewModel()
         {
             SetFontLevels();
@@ -72,7 +68,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 Content = message,
                 PrimaryButtonText = primaryButtonText,
                 CloseButtonText = closeButtonText,
-                RequestedTheme=App.userPreferences.AppTheme
+                RequestedTheme = App.userPreferences.AppTheme
             };
             var dlgResult = await dialog.ShowAsync();
             return dlgResult;

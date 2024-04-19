@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:l="using:WinUI3Localizer"
     Loaded="MainPage_Loaded"
+   
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -23,8 +24,11 @@
                 IsSettingsVisible="True"
                 IsBackButtonVisible="Collapsed"
                 SelectionChanged="NavigationView_SelectionChanged"
-                PaneDisplayMode="Left"  
-                ExpandedModeThresholdWidth="500"
+                PaneDisplayMode="Auto"  
+                 
+                ExpandedModeThresholdWidth="900"
+                CompactModeThresholdWidth="1"
+                
                 SelectionFollowsFocus="Disabled"
                 OpenPaneLength="180"
                 IsTabStop="False">

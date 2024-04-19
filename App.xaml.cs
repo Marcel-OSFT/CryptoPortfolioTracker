@@ -1,38 +1,24 @@
-﻿using CryptoPortfolioTracker.Infrastructure;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
-using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Windows.ApplicationModel.Activation;
-using WinUIEx;
-using System.Windows;
-using Windows.Devices.Enumeration;
-using System.Linq;
 using Serilog;
-using Serilog.Sinks.SystemConsole;
-using Polly.Registry;
-using Flurl.Util;
 using Serilog.Core;
-using Windows.Globalization;
 using Windows.Storage;
 using WinUI3Localizer;
-using CommunityToolkit.Common;
+using WinUIEx;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -66,13 +52,17 @@ public partial class App : Application
     private ILogger Logger;
     public static ILocalizer Localizer;
 
-    public static IServiceProvider Container { get; private set; }
+    public static IServiceProvider Container
+    {
+        get; private set;
+    }
+    
 
     public App()
     {
         this.InitializeComponent();
         GetAppEnvironmentals();
-        
+
         Container = RegisterServices();
     }
 
@@ -82,22 +72,16 @@ public partial class App : Application
     /// <param name="args">Details about the launch request and process.</param>
     protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
-        Window = new MainWindow();
         Splash = new SplashScreen();
-#if !DEBUG
-        Splash.CenterOnScreen();
-#endif           
         Splash.Activate();
         await Task.Delay(1000);
+
         GetUserPreferences();
         await InitializeLocalizer();
         InitializeLogger();
         CheckDatabase();
 
-        Page shell = new MainPage();
-        Window.Content = shell;
-        
-        ConfigureWindow(Window);
+        Window = new MainWindow();
         Window.Activate();
     }
     /// <summary>
@@ -128,7 +112,7 @@ public partial class App : Application
     {
         // Initialize a "Strings" folder in the executables folder.
         string StringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
-        StorageFolder stringsFolder =  await StorageFolder.GetFolderFromPathAsync(StringsFolderPath);
+        StorageFolder stringsFolder = await StorageFolder.GetFolderFromPathAsync(StringsFolderPath);
 
         Localizer = await new LocalizerBuilder()
             .AddStringResourcesFolderForLanguageDictionaries(StringsFolderPath)
@@ -146,11 +130,11 @@ public partial class App : Application
         var context = App.Container.GetService<PortfolioContext>();
         context.Database.EnsureCreated();
     }
-    
+
 
     private void GetAppEnvironmentals()
     {
-        appPath = (System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory));
+        appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory);
         appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
         if (!Directory.Exists(appDataPath)) Directory.CreateDirectory(appDataPath);
         AppDomain.CurrentDomain.SetData("DataDirectory", appDataPath);
@@ -171,7 +155,7 @@ public partial class App : Application
         services.AddScoped<CoinLibraryViewModel>();
         services.AddScoped<HelpViewModel>();
         services.AddScoped<SettingsViewModel>();
-        
+
         services.AddDbContext<PortfolioContext>(options =>
         {
             options.UseSqlite("Data Source=|DataDirectory|sqlCPT.db");
@@ -190,28 +174,28 @@ public partial class App : Application
         return services.BuildServiceProvider();
     }
 
-    
 
-    private void ConfigureWindow(Window window)
-    {
-        var monitor = MonitorInfo.GetDisplayMonitors().FirstOrDefault();
-        if (monitor != null && monitor.RectMonitor.Width <= 1024 && monitor.RectMonitor.Height <= 768)
-        {
-            window.SetWindowSize(monitor.RectMonitor.Width, monitor.RectMonitor.Height);
-        }
-        else
-        {
-            window.SetWindowSize(1024, 768);
-        }
-#if !DEBUG
-        Window.CenterOnScreen();
-#endif
-        Window.Title = "Crypto Portfolio Tracker";
-        Window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
-        Window.SetTitleBar(null);
-        if (Window.Content is FrameworkElement frameworkElement) frameworkElement.RequestedTheme = userPreferences.AppTheme;
 
-    }
+//    private void ConfigureWindow(Window window)
+//    {
+//        var monitor = MonitorInfo.GetDisplayMonitors().FirstOrDefault();
+//        if (monitor != null && monitor.RectMonitor.Width <= 1024 && monitor.RectMonitor.Height <= 768)
+//        {
+//            window.SetWindowSize(monitor.RectMonitor.Width, monitor.RectMonitor.Height);
+//        }
+//        else
+//        {
+//            window.SetWindowSize(1024, 768);
+//        }
+//#if !DEBUG
+//        Window.CenterOnScreen();
+//#endif
+//        Window.Title = "Crypto Portfolio Tracker";
+//        Window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
+//        Window.SetTitleBar(null);
+//        if (Window.Content is FrameworkElement frameworkElement) frameworkElement.RequestedTheme = userPreferences.AppTheme;
+
+//    }
 
     private void InitializeLogger()
     {

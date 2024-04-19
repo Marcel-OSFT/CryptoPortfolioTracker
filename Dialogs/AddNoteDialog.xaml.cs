@@ -1,10 +1,8 @@
 //using CoinGecko.Clients;
 //using CoinGecko.Interfaces;
 //using CoinGecko.Parameters;
-using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.ApplicationModel.Resources;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
@@ -23,9 +21,9 @@ public sealed partial class AddNoteDialog : ContentDialog
 
     private void SetDialogTitleAndButtons(Coin coin)
     {
-            Title = loc.GetLocalizedString("NoteDialog_Title") + " " + coin.Name; ;
-            PrimaryButtonText = loc.GetLocalizedString("NoteDialog_PrimaryButton");
-            CloseButtonText = loc.GetLocalizedString("NoteDialog_CloseButton");
+        Title = loc.GetLocalizedString("NoteDialog_Title") + " " + coin.Name; ;
+        PrimaryButtonText = loc.GetLocalizedString("NoteDialog_PrimaryButton");
+        CloseButtonText = loc.GetLocalizedString("NoteDialog_CloseButton");
     }
 
     private void Button_Click_AcceptNote(ContentDialog sender, ContentDialogButtonClickEventArgs e)

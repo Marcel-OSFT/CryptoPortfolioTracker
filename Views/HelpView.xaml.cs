@@ -1,23 +1,12 @@
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.ViewModels;
-using LanguageExt;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
-using Windows.Storage;
-using Windows.Foundation.Metadata;
-using Windows.Foundation;
-using Microsoft.UI.Xaml.Documents;
-using System.IO;
-using System.Windows;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using CryptoPortfolioTracker.ViewModels;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT;
-using System.Diagnostics;
-using System.Globalization;
 
 namespace CryptoPortfolioTracker.Views;
 
@@ -36,7 +25,7 @@ public partial class HelpView : Page
 
     public readonly HelpViewModel _viewModel;
     public static HelpView Current;
-    
+
     public HelpView(HelpViewModel viewModel)
     {
         Current = this;
@@ -47,10 +36,10 @@ public partial class HelpView : Page
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        var helpFilePath = App.appPath + "\\HelpFile.rtf"; 
+        var helpFilePath = App.appPath + "\\HelpFile.rtf";
         try
         {
-            if (App.userPreferences.AppCultureLanguage.Substring(0,2).ToLower() == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
+            if (App.userPreferences.AppCultureLanguage.Substring(0, 2).ToLower() == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
 
             editor.IsReadOnly = false;
             StorageFile helpFile = await StorageFile.GetFileFromPathAsync(helpFilePath);
@@ -78,7 +67,7 @@ public partial class HelpView : Page
             try
             {
                 editor.IsReadOnly = false;
-                Windows.Storage.Streams.IRandomAccessStream randAccStream =  await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                Windows.Storage.Streams.IRandomAccessStream randAccStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
 
                 // Load the file into the Document property of the RichEditBox.
                 editor.Document.LoadFromStream(Microsoft.UI.Text.TextSetOptions.FormatRtf, randAccStream);
@@ -113,7 +102,7 @@ public partial class HelpView : Page
         savePicker.SuggestedFileName = "New Document";
 
         Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();
-        
+
         if (file != null)
         {
             // Prevent updates to the remote version of the file until we 

@@ -1,7 +1,5 @@
-﻿using Microsoft.UI;
+﻿using System;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media;
-using System;
 
 namespace CryptoPortfolioTracker.Converters
 {
@@ -15,9 +13,9 @@ namespace CryptoPortfolioTracker.Converters
             {
                 parameters = (parameter as string).Split('|');
             }
-            
+
             string width = string.Empty;
-            if ( (bool)value && parameters[0].Contains("*"))
+            if ((bool)value && parameters[0].Contains("*"))
             {
                 width = parameters[0];
             }
@@ -28,7 +26,7 @@ namespace CryptoPortfolioTracker.Converters
                 {
                     case "Small":
                         {
-                            width = (System.Convert.ToInt16(parameters[0])).ToString();
+                            width = System.Convert.ToInt16(parameters[0]).ToString();
                             break;
                         }
                     case "Normal":

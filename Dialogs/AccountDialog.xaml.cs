@@ -1,13 +1,10 @@
-using System;
 using CryptoPortfolioTracker.Enums;
 //using CoinGecko.Clients;
 //using CoinGecko.Interfaces;
 //using CoinGecko.Parameters;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
-using LanguageExt.ClassInstances.Pred;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.ApplicationModel.Resources;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs
@@ -23,7 +20,7 @@ namespace CryptoPortfolioTracker.Dialogs
         public AccountDialog(AccountsViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Account accountToEdit = null)
         {
             this.InitializeComponent();
-            
+
             _viewModel = viewModel;
             _accountToEdit = accountToEdit;
             SetDialogTitleAndButtons(dialogAction);
@@ -31,14 +28,14 @@ namespace CryptoPortfolioTracker.Dialogs
 
         private void SetDialogTitleAndButtons(DialogAction dialogAction)
         {
-             if (dialogAction == DialogAction.Edit)
+            if (dialogAction == DialogAction.Edit)
             {
                 AccountNameText.Text = _accountToEdit.Name;
                 DescriptionText.Text = _accountToEdit.About;
                 Title = loc.GetLocalizedString("AccountDialog_Title_Edit");
                 PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Edit");
                 CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
-                IsPrimaryButtonEnabled = false ;
+                IsPrimaryButtonEnabled = false;
             }
             else
             {

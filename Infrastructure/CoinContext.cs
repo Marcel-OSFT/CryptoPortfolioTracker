@@ -16,7 +16,10 @@ namespace CryptoPortfolioTracker.Infrastructure
         //    optionsBuilder.UseSqlite("Data Source=C:\\Users\\marce\\source\\repos\\CryptoPortfolioTracker\\sqlCPT.db");
         //}
 
-        public DbSet<Coin> Coins { get; set; }
+        public DbSet<Coin> Coins
+        {
+            get; set;
+        }
 
     }
 }

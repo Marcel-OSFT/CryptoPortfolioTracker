@@ -1,17 +1,9 @@
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
+using CryptoPortfolioTracker.ViewModels;
+using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoPortfolioTracker.Views
 {
@@ -22,7 +14,7 @@ namespace CryptoPortfolioTracker.Views
         public static AssetsView Current;
         private bool isExtendedView = false;
 
-       
+
         public AssetsView(AssetsViewModel viewModel)// ** DI of viewModel into View
         {
             Current = this;
@@ -37,7 +29,7 @@ namespace CryptoPortfolioTracker.Views
             Debug.WriteLine("View Disposed");
         }
 
-        
+
     }
 
 }

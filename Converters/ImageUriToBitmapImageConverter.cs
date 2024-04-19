@@ -1,6 +1,6 @@
-﻿using Microsoft.UI.Xaml.Data;
+﻿using System;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
-using System;
 
 namespace CryptoPortfolioTracker.Converters
 {

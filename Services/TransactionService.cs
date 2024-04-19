@@ -1,15 +1,13 @@
 ﻿//using CoinGecko.Clients;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -629,7 +627,7 @@ namespace CryptoPortfolioTracker.Services
                 _context.Transactions.Update(transactionNew);
                 result = await _context.SaveChangesAsync();
 
-                return transactionNew.Id; 
+                return transactionNew.Id;
 
             }
             catch (Exception ex)
@@ -637,7 +635,7 @@ namespace CryptoPortfolioTracker.Services
                 RejectChanges();
                 return new Result<int>(ex);
             }
-            
+
             return result; ;
         }
 
@@ -650,7 +648,7 @@ namespace CryptoPortfolioTracker.Services
         public async Task<Result<Transaction>> GetTransactionById(int transactionId)
         {
             Transaction assetTransaction = null;
-            if (transactionId <= 0) return new Result<Transaction>();  
+            if (transactionId <= 0) return new Result<Transaction>();
             try
             {
                 assetTransaction = await _context.Mutations

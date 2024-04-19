@@ -1,9 +1,6 @@
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Views;
-using Microsoft.UI.Xaml.Controls;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using CryptoPortfolioTracker.Models;
+using Microsoft.UI.Xaml.Controls;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,7 +13,7 @@ namespace CryptoPortfolioTracker.Controls
         {
             this.InitializeComponent();
         }
-      /// <summary>
+        /// <summary>
         /// The width of the gridview itemcontainer is set by the width of the first element. 
         /// To prevent that other (longer) names will be truncated, the elngth of the longest name will be 
         /// determined and the widt of the container set accordingly.
@@ -61,7 +58,7 @@ namespace CryptoPortfolioTracker.Controls
         {
             if (e.NewSize.Height > e.PreviousSize.Height)
 
-            SetGridViewItemWidth();
+                SetGridViewItemWidth();
         }
     }
 

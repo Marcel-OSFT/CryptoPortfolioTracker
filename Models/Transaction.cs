@@ -1,23 +1,18 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Enums;
-using LanguageExt.Common;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Enums;
 
 namespace CryptoPortfolioTracker.Models
 {
 
     public partial class Transaction : BaseModel
     {
-        
+
         public Transaction()
         {
             Mutations = new Collection<Mutation>();
@@ -33,8 +28,8 @@ namespace CryptoPortfolioTracker.Models
 
         [ObservableProperty] ICollection<Mutation> mutations;
 
-        [ObservableProperty] [NotMapped] Asset requestedAsset = null;
-        [ObservableProperty] [NotMapped] TransactionDetails details;
+        [ObservableProperty][NotMapped] Asset requestedAsset = null;
+        [ObservableProperty][NotMapped] TransactionDetails details;
 
 
         partial void OnMutationsChanged(ICollection<Mutation> value)
@@ -161,7 +156,7 @@ namespace CryptoPortfolioTracker.Models
             }
         }
 
-        
+
 
 
     }
