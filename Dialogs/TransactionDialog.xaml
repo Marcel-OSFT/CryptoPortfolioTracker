@@ -259,7 +259,7 @@
                       TabIndex="0" 
                       Style="{StaticResource MK_TextBoxStyle}" 
                       Width="675" 
-                      Text="{Binding Notes, Mode=TwoWay}" 
+                      Text="{Binding Note, Mode=TwoWay}" 
                       Margin="5,0,0,0" 
                       TextWrapping="Wrap" 
                       AcceptsReturn="True" 

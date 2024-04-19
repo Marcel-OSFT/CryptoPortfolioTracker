@@ -164,7 +164,8 @@ namespace CryptoPortfolioTracker
                 XamlRoot = Current.XamlRoot,
                 Content = message,
                 PrimaryButtonText = primaryButtonText,
-                CloseButtonText = closeButtonText
+                CloseButtonText = closeButtonText,
+                RequestedTheme = App.userPreferences.AppTheme
             };
             var dlgResult = await dialog.ShowAsync();
             return dlgResult;
@@ -174,7 +175,7 @@ namespace CryptoPortfolioTracker
         {
             navigationView.SelectedItem = navigationView.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().First();
 
-            if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
+            if (App.userPreferences.IsCheckForUpdate) await CheckUpdateNow();
             App.Splash.Close();
 
         }
