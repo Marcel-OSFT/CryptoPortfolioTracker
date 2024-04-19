@@ -53,11 +53,14 @@ namespace CryptoPortfolioTracker.Controls
                             break;
                         }
                 }
+                AssetAccountsGridView.SelectedIndex = 0;
             };
         }
 
         private void GridView_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
         {
+            if (e.NewSize.Height > e.PreviousSize.Height)
+
             SetGridViewItemWidth();
         }
     }

@@ -71,7 +71,8 @@ namespace CryptoPortfolioTracker.ViewModels
                 XamlRoot = MainPage.Current.XamlRoot,
                 Content = message,
                 PrimaryButtonText = primaryButtonText,
-                CloseButtonText = closeButtonText
+                CloseButtonText = closeButtonText,
+                RequestedTheme=App.userPreferences.AppTheme
             };
             var dlgResult = await dialog.ShowAsync();
             return dlgResult;

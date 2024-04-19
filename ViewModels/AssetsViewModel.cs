@@ -188,7 +188,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     {
         App.isBusy = true;
 
-        Transaction transactionToEdit = null;
+       // Transaction transactionToEdit = null;
         AssetAccount accountAffected = null;
         ILocalizer loc = Localizer.Get();
         try

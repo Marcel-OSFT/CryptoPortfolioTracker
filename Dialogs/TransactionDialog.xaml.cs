@@ -514,7 +514,8 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     private async void GetMaxQtyAndPrice()
     {
         //in case of a 'Deposit' the MaxQtyA doesn't need to be set....
-        if (transactionType != TransactionKind.Deposit)
+        //doesn't need to be set as wel for an EDIT transaction
+        if (dialogAction == DialogAction.Add && transactionType != TransactionKind.Deposit)
         {
             (await _transactionService.GetMaxQtyAndPrice(CoinA, AccountFrom)).IfSucc(result =>
             {
