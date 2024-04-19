@@ -1,4 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+//using CoinGecko.Interfaces;
+//using CoinGecko.Parameters;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using CryptoPortfolioTracker.Controls;
+using CryptoPortfolioTracker.Extensions;
 //using CoinGecko.Clients;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
@@ -9,19 +19,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-//using CoinGecko.Interfaces;
-//using CoinGecko.Parameters;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Windows.UI.Popups;
-using CryptoPortfolioTracker.Extensions;
-using CryptoPortfolioTracker.Enums;
-using Microsoft.Windows.ApplicationModel.Resources;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
@@ -231,7 +229,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
                 }
                 coinDetails = details;
             });
-            
+
         }
         catch (Exception ex)
         {
@@ -240,7 +238,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
             parId.Inlines.Clear();
             parId.Inlines.Add(run);
         }
-            return coinDetails;
+        return coinDetails;
     }
     public async Task<bool> IsCoinAlreadyInLibrary(string coinId)
     {

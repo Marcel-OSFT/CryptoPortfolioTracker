@@ -1,14 +1,20 @@
-﻿using Microsoft.UI.Xaml.Markup;
-using System;
+﻿using System;
+using Microsoft.UI.Xaml.Markup;
 
 namespace CryptoPortfolioTracker.Helpers
 {
     [MarkupExtensionReturnType(ReturnType = typeof(object))]
     public class EnumValueExtension : MarkupExtension
     {
-        public Type Type { get; set; }
+        public Type Type
+        {
+            get; set;
+        }
 
-        public string Member { get; set; }
+        public string Member
+        {
+            get; set;
+        }
 
         protected override object ProvideValue()
         {

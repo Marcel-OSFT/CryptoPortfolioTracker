@@ -1,6 +1,6 @@
 ﻿//using ABI.Windows.UI;
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 
 namespace CryptoPortfolioTracker.Models
@@ -22,7 +22,10 @@ namespace CryptoPortfolioTracker.Models
         //******* Navigation Properties
         [ObservableProperty] Coin coin;
         [ObservableProperty] Account account;
-        public ICollection<Mutation> Mutations { get; set; }
+        public ICollection<Mutation> Mutations
+        {
+            get; set;
+        }
 
 
     }

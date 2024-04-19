@@ -1,7 +1,7 @@
-﻿using CryptoPortfolioTracker.Models;
-using LanguageExt.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Models;
+using LanguageExt.Common;
 
 namespace CryptoPortfolioTracker.Services
 {

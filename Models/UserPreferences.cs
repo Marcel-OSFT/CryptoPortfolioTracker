@@ -1,27 +1,22 @@
-﻿using CryptoPortfolioTracker.Enums;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Xml.Serialization;
+using CryptoPortfolioTracker.Enums;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Serilog.Core;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Models;
 
 [Serializable]
 public class UserPreferences
 {
-    private Serilog.ILogger Logger { get; set; }
-    public UserPreferences() 
+    private Serilog.ILogger Logger
+    {
+        get; set;
+    }
+    public UserPreferences()
     {
         isHidingZeroBalances = false;
         isScrollBarsExpanded = false;
@@ -131,7 +126,7 @@ public class UserPreferences
         }
     }
 
-    
+
 
     private bool isCheckForUpdate;
     public bool IsCheckForUpdate

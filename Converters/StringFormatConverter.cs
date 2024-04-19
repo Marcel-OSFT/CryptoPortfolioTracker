@@ -1,7 +1,6 @@
-﻿using Microsoft.UI.Xaml.Data;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.Globalization;
+using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters;
 

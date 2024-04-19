@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Windows.System;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -37,17 +37,32 @@ namespace CryptoPortfolioTracker.Controls
 
         public bool IsEntryMatched
         {
-            get { return (bool)GetValue(IsEntryMatchedProperty); }
-            set { SetValue(IsEntryMatchedProperty, value); }
+            get
+            {
+                return (bool)GetValue(IsEntryMatchedProperty);
+            }
+            set
+            {
+                SetValue(IsEntryMatchedProperty, value);
+            }
         }
         public List<string> ItemsSource
         {
-            get { return (List<string>)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
+            get
+            {
+                return (List<string>)GetValue(ItemsSourceProperty);
+            }
+            set
+            {
+                SetValue(ItemsSourceProperty, value);
+            }
         }
         public string MyText
         {
-            get { return (string)GetValue(MyTextProperty); }
+            get
+            {
+                return (string)GetValue(MyTextProperty);
+            }
             set
             {
                 SetValue(MyTextProperty, value);
@@ -56,8 +71,14 @@ namespace CryptoPortfolioTracker.Controls
 
         public string Header
         {
-            get { return (string)GetValue(HeaderProperty); }
-            set { SetValue(HeaderProperty, value); }
+            get
+            {
+                return (string)GetValue(HeaderProperty);
+            }
+            set
+            {
+                SetValue(HeaderProperty, value);
+            }
         }
 
         public static readonly DependencyProperty IsEntryMatchedProperty = DependencyProperty.Register("IsEntryMatched", typeof(bool), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryMatchedChangedCallBack)));
@@ -97,6 +118,7 @@ namespace CryptoPortfolioTracker.Controls
         private static void ItemsSourceChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             List<string> result = (List<string>)d.GetValue(ItemsSourceProperty);
+            AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d; 
             AutoSuggestBox inner = (d as AutoSuggestBoxWithValidation).innerASBox;
 
             if (inner.ItemsSource == null || !inner.ItemsSource.Equals(d.GetValue(ItemsSourceProperty))) inner.ItemsSource = d.GetValue(ItemsSourceProperty);
@@ -104,6 +126,7 @@ namespace CryptoPortfolioTracker.Controls
             if (result.Count == 1)
             {
                 d.SetValue(MyTextProperty, result.First().ToString());
+                thisInstance.TextChanged?.Invoke(thisInstance, EventArgs.Empty);
             }
 
             if (inner.Items.Count > 0)

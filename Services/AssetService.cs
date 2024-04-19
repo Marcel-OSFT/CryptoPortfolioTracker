@@ -1,12 +1,12 @@
 ﻿//using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure;
-using CryptoPortfolioTracker.Models;
-using LanguageExt.Common;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Infrastructure;
+using CryptoPortfolioTracker.Models;
+using LanguageExt.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -149,7 +149,7 @@ namespace CryptoPortfolioTracker.Services
             {
                 return new Result<AssetAccount>(ex);
             }
-          // if (assetAccount == null) { assetAccount = new AssetAccount(); }
+            // if (assetAccount == null) { assetAccount = new AssetAccount(); }
 
             return assetAccount;
         }

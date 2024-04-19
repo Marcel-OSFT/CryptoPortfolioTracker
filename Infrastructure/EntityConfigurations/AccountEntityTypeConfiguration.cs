@@ -1,7 +1,6 @@
 ﻿using CryptoPortfolioTracker.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 class AccountEntityTypeConfiguration : IEntityTypeConfiguration<Account>
 {
@@ -31,7 +30,7 @@ class AccountEntityTypeConfiguration : IEntityTypeConfiguration<Account>
             .Ignore("TotalValue");
         configuration
             .Ignore("IsHoldingAsset");
-       
+
         configuration.Navigation("Assets");
 
     }

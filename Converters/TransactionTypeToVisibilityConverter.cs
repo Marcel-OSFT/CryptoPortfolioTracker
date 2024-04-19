@@ -1,6 +1,6 @@
-﻿using CryptoPortfolioTracker.Enums;
+﻿using System;
+using CryptoPortfolioTracker.Enums;
 using Microsoft.UI.Xaml.Data;
-using System;
 
 namespace CryptoPortfolioTracker.Converters
 {

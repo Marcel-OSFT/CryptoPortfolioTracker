@@ -1,16 +1,12 @@
 ﻿//using ABI.Windows.UI;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml.Input;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CryptoPortfolioTracker.Models
 {
     public partial class Coin : BaseModel
     {
-       
+
         //***** Constructor     
         public Coin()
         {
@@ -20,8 +16,14 @@ namespace CryptoPortfolioTracker.Models
         }
 
         //*** Navigation Property
-        public ICollection<Asset> Assets { get; set; }
-        public int Id { get; set; }
+        public ICollection<Asset> Assets
+        {
+            get; set;
+        }
+        public int Id
+        {
+            get; set;
+        }
 
 
         //*** Public Properties

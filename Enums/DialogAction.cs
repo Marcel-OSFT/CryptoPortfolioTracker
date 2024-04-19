@@ -1,7 +1,4 @@
-﻿using Microsoft.UI.Xaml.Markup;
-using System;
-
-namespace CryptoPortfolioTracker.Enums;
+﻿namespace CryptoPortfolioTracker.Enums;
 
 
 

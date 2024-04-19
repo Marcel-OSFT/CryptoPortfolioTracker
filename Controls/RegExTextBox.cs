@@ -1,13 +1,13 @@
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using CommunityToolkit.WinUI.UI;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -59,18 +59,33 @@ namespace CryptoPortfolioTracker.Controls
 
         public bool IsEntryValid
         {
-            get { return (bool)GetValue(IsEntryValidProperty); }
-            set { SetValue(IsEntryValidProperty, value); }
+            get
+            {
+                return (bool)GetValue(IsEntryValidProperty);
+            }
+            set
+            {
+                SetValue(IsEntryValidProperty, value);
+            }
         }
         public MyEnum RegEx
         {
-            get { return (MyEnum)GetValue(RegExProperty); }
-            set { SetValue(RegExProperty, value); }
+            get
+            {
+                return (MyEnum)GetValue(RegExProperty);
+            }
+            set
+            {
+                SetValue(RegExProperty, value);
+            }
         }
         private string customRegEx;
         public string CustomRegEx
         {
-            get { return customRegEx; }
+            get
+            {
+                return customRegEx;
+            }
             set
             {
                 if (value == customRegEx) return;
@@ -81,7 +96,10 @@ namespace CryptoPortfolioTracker.Controls
         }
         public string MyText
         {
-            get { return (string)GetValue(MyTextProperty); }
+            get
+            {
+                return (string)GetValue(MyTextProperty);
+            }
             set
             {
                 SetValue(MyTextProperty, value);
@@ -156,13 +174,13 @@ namespace CryptoPortfolioTracker.Controls
             switch (SelectedRegEx)
             {
                 case MyEnum.RegExPositiveDecimal:
-                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?  
-                        App.Current.Resources["RegExPositiveDecimalEn"] as string : 
+                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?
+                        App.Current.Resources["RegExPositiveDecimalEn"] as string :
                             App.Current.Resources["RegExPositiveDecimalNl"] as string;
                     break;
                 case MyEnum.RegExPositiveInt:
-                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ? 
-                        App.Current.Resources["RegExPositiveIntEn"] as string : 
+                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?
+                        App.Current.Resources["RegExPositiveIntEn"] as string :
                             App.Current.Resources["RegExPositiveIntNl"] as string;
                     break;
                 case MyEnum.RegExEmail:
@@ -172,13 +190,13 @@ namespace CryptoPortfolioTracker.Controls
                     // To-Do -> regExChoosen = @"^([0 - 9]) * (\.[0 - 9]+)?$";
                     break;
                 case MyEnum.RegExDecimal:
-                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ? 
-                        App.Current.Resources["RegExDecimalEn"] as string : 
+                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?
+                        App.Current.Resources["RegExDecimalEn"] as string :
                             App.Current.Resources["RegExDecimalNl"] as string;
                     break;
                 case MyEnum.RegExInt:
-                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ? 
-                        App.Current.Resources["RegExIntEn"] as string : 
+                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?
+                        App.Current.Resources["RegExIntEn"] as string :
                             App.Current.Resources["RegExIntNl"] as string;
                     break;
                 default:

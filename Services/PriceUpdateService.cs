@@ -1,24 +1,22 @@
 ﻿//using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Views;
-using LanguageExt;
-using LanguageExt.Common;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Polly;
-using Serilog;
-using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Infrastructure;
+using CryptoPortfolioTracker.Infrastructure.Response.Coins;
+using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.ViewModels;
+using LanguageExt;
+using LanguageExt.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Polly;
+using Serilog;
+using Serilog.Core;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 using HttpClient = System.Net.Http.HttpClient;
 
@@ -32,7 +30,10 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
     readonly IServiceScope currentContextScope;
     readonly PortfolioContext coinContext;
 
-    ILogger Logger  { get; set; }
+    ILogger Logger
+    {
+        get; set;
+    }
 
     public PriceUpdateService(TimeSpan timerInterval)
     {
@@ -61,7 +62,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
                 await UpdatePricesAllCoins();
             }
         }
-        catch (OperationCanceledException ex) 
+        catch (OperationCanceledException ex)
         {
             Logger.Information("PriceUpdateService canceled");
         }
@@ -187,7 +188,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
 
         CoinGeckoClient coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
         //bool isValidResult;
-        
+
         Exception error = null;
         List<CoinMarkets> coinMarketsPage = null;
 
@@ -287,13 +288,13 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         }
         return coin;
     }
-    
+
 
     public void Dispose()
     {
         Stop();
         timer.Dispose();
-        
+
     }
 
 

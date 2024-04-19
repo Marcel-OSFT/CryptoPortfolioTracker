@@ -1,7 +1,6 @@
 ﻿using CryptoPortfolioTracker.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
 {
@@ -15,12 +14,12 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
             .Property("Id")
             .ValueGeneratedOnAdd()
             .HasColumnName("Id");
-   
-        
+
+
         configuration
            .Property("ApiId")
            .HasColumnName("ApiId");
-        
+
         configuration
             .Property("Name")
             .HasColumnName("Name");
@@ -28,15 +27,15 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
         configuration
              .Property("Symbol")
              .HasColumnName("Symbol");
-        
+
         configuration
             .Property("Rank")
             .HasColumnName("Rank");
-        
+
         configuration
             .Property("ImageUri")
             .HasColumnName("ImageUri");
-        
+
         configuration
             .Property("Price")
             .HasColumnName("Price");
@@ -44,11 +43,11 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
         configuration
             .Property("Ath")
             .HasColumnName("Ath");
-        
+
         configuration
             .Property("Change52Week")
             .HasColumnName("Change52Week");
-        
+
         configuration
             .Property("MarketCap")
             .HasColumnName("MarketCap");
@@ -56,19 +55,19 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
         configuration
             .Property("Change1Month")
             .HasColumnName("Change1Month");
-        
+
         configuration
             .Property("About")
             .HasColumnName("About");
-        
+
         configuration
             .Property("Change24Hr")
             .HasColumnName("Change24Hr");
-        
+
         configuration
             .Property("IsAsset")
             .HasColumnName("IsAsset");
-        
+
         configuration
             .Property("Note")
             .HasColumnName("Note");

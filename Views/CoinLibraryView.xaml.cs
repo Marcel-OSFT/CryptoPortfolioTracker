@@ -1,10 +1,9 @@
 
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
+using CryptoPortfolioTracker.ViewModels;
+using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoPortfolioTracker.Views
 {

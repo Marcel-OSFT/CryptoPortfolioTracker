@@ -1,27 +1,16 @@
-using CryptoPortfolioTracker.Dialogs;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Views;
-using LanguageExt.ClassInstances;
-
 //using System.Management.Automation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Serilog;
 using Serilog.Core;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Windows.Storage;
 using WinUI3Localizer;
 
 
@@ -39,20 +28,23 @@ namespace CryptoPortfolioTracker
     {
         public static MainPage Current;
         private IServiceScope _currentServiceScope;
-        public  LogWindow logWindow;
+        public LogWindow logWindow;
 
-        private ILogger Logger { get; set; }
+        private ILogger Logger
+        {
+            get; set;
+        }
 
         public MainPage()
         {
             ConfigureLogger();
-           
+
             //GetUserPreferences();
 
             this.InitializeComponent();
             Current = this;
-           // if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
-         }
+            // if (App.userPreferences.IsCheckForUpdate) CheckUpdateNow();
+        }
 
         private void ConfigureLogger()
         {

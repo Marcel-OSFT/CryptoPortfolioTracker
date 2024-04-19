@@ -1,30 +1,13 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Views;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.UI;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Extensions;
+using Microsoft.UI.Dispatching;
 
 
 namespace CryptoPortfolioTracker.Models
@@ -38,7 +21,7 @@ namespace CryptoPortfolioTracker.Models
         {
             this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             IsValidEntryCollection = new ObservableCollection<bool>();
-;            RegisterValidationItems(numberOfItemsToValidate, directStart); 
+            ; RegisterValidationItems(numberOfItemsToValidate, directStart);
             IsAllEntriesValid = false;
         }
 
@@ -50,7 +33,10 @@ namespace CryptoPortfolioTracker.Models
         private bool isAllEntriesValid;
         public bool IsAllEntriesValid
         {
-            get { return isAllEntriesValid; }
+            get
+            {
+                return isAllEntriesValid;
+            }
             set
             {
                 if (value == isAllEntriesValid) return;
@@ -61,7 +47,7 @@ namespace CryptoPortfolioTracker.Models
 
         public void Start()
         {
-           ValidateEntriesAsync();
+            ValidateEntriesAsync();
         }
         public void Stop()
         {
@@ -94,10 +80,10 @@ namespace CryptoPortfolioTracker.Models
                 while (moreToDo)
                 {
                     int invalidEntries = IsValidEntryCollection.Where(x => x == false).Count();
-                    IsAllEntriesValid = invalidEntries <= (IsValidEntryCollection.Count-NrOfValidEntriesNeeded) ? true : false;
+                    IsAllEntriesValid = invalidEntries <= (IsValidEntryCollection.Count - NrOfValidEntriesNeeded) ? true : false;
 
                     await Task.Delay(500);
-                   // Debug.WriteLine("Validate...");
+                    // Debug.WriteLine("Validate...");
                     // Poll on this property if you have to do
                     // other cleanup before throwing.
                     if (ct.IsCancellationRequested)

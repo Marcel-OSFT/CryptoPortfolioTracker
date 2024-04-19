@@ -4,7 +4,7 @@ namespace CryptoPortfolioTracker.Models
 {
     public partial class AssetTotals : BaseModel
     {
-        
+
         [ObservableProperty] double qty;
         [ObservableProperty] double costBase;
         [ObservableProperty] double averageCostPrice;
@@ -21,7 +21,7 @@ namespace CryptoPortfolioTracker.Models
             if (Coin != null) MarketValue = value * Coin.Price;
             AverageCostPrice = CostBase / value;
         }
-        
+
         partial void OnCostBaseChanged(double value)
         {
             AverageCostPrice = value / Qty;

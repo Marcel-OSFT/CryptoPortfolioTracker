@@ -1,19 +1,10 @@
-﻿using CommunityToolkit.Common;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Views;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Windows.Storage;
+using CryptoPortfolioTracker.Enums;
 
 namespace CryptoPortfolioTracker.Models
 {
@@ -28,7 +19,9 @@ namespace CryptoPortfolioTracker.Models
         [DllImport("shell32.dll", CharSet = CharSet.Auto)]
         private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);
 
-        public AppUpdater() { }
+        public AppUpdater()
+        {
+        }
 
         public async Task<AppUpdaterResult> Check(string updateUrl, string appVersion)
         {
@@ -117,7 +110,7 @@ namespace CryptoPortfolioTracker.Models
             {
                 return string.Empty;
             }
-            return  sections.Length > 0 ? sections[sections.Length-1] : string.Empty;
+            return sections.Length > 0 ? sections[sections.Length - 1] : string.Empty;
         }
 
         public async Task<AppUpdaterResult> DownloadSetupFile()
@@ -161,7 +154,7 @@ namespace CryptoPortfolioTracker.Models
                 process.StartInfo.Arguments = "/SP- /silent /noicons";
                 process.StartInfo.WorkingDirectory = App.appPath;
                 process.Start();
-               // process.WaitForExit();
+                // process.WaitForExit();
             }
             catch (Exception ex)
             {

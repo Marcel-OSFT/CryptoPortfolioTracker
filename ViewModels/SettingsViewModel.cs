@@ -1,32 +1,15 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using CryptoPortfolioTracker.Controls;
-using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
+using CryptoPortfolioTracker.Extensions;
 using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.Views;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Xml.Serialization;
-using Windows.Storage;
-using CryptoPortfolioTracker.Extensions;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Serilog;
 using Serilog.Core;
 using WinUI3Localizer;
@@ -157,7 +140,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     private void GetPreferences()
     {
         NumberFormatIndex = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "," ? 0 : 1;
-        AppCultureIndex = App.userPreferences.AppCultureLanguage.Substring(0,2).ToLower() == "nl" ? 0 : 1;
+        AppCultureIndex = App.userPreferences.AppCultureLanguage.Substring(0, 2).ToLower() == "nl" ? 0 : 1;
         IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
         IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
         FontSize = (double)App.userPreferences.FontSize;
@@ -197,7 +180,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     [RelayCommand]
     public async Task CheckUpdateNow()
     {
-        Logger.Information("Checking for updates"); 
+        Logger.Information("Checking for updates");
         AppUpdater appUpdater = new();
         ILocalizer loc = Localizer.Get();
 
@@ -208,9 +191,9 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             Logger.Information("Update Available");
 
             var dlgResult = await ShowMessageDialog(
-                loc.GetLocalizedString("Messages_UpdateChecker_NewVersionTitle"), 
-                loc.GetLocalizedString("Messages_UpdateChecker_NewVersionMsg"), 
-                loc.GetLocalizedString("Common_DownloadButton"), 
+                loc.GetLocalizedString("Messages_UpdateChecker_NewVersionTitle"),
+                loc.GetLocalizedString("Messages_UpdateChecker_NewVersionMsg"),
+                loc.GetLocalizedString("Common_DownloadButton"),
                 loc.GetLocalizedString("Common_CancelButton"));
 
             if (dlgResult == ContentDialogResult.Primary)

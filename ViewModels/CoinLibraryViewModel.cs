@@ -1,6 +1,11 @@
 ﻿
 //using CoinGecko.ApiEndPoints;
 //using CoinGecko.Clients;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CryptoPortfolioTracker.Dialogs;
@@ -10,18 +15,8 @@ using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
 using LanguageExt;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Serilog;
 using Serilog.Core;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
@@ -41,7 +36,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
     bool isAllCoinDataRetrieved;
-    
+
     [ObservableProperty] ObservableCollection<Coin> listCoins;
 
     public static AddCoinDialog dialog;
@@ -54,14 +49,14 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public CoinLibraryViewModel(ILibraryService libraryService)
     {
         //Logger = Log.Logger.ForContext<CoinLibraryViewModel>();
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(CoinLibraryViewModel).Name.PadRight(22)); 
+        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(CoinLibraryViewModel).Name.PadRight(22));
         Current = this;
         IsAllCoinDataRetrieved = false;
         _libraryService = libraryService;
         SetDataSource().ConfigureAwait(false);
         RetrieveAllCoinData();
     }
-   
+
 
     #region MAIN methods or Tasks
     private async Task SetDataSource()
@@ -105,19 +100,19 @@ public partial class CoinLibraryViewModel : BaseViewModel
                              loc.GetLocalizedString("Common_CloseButton"));
                         Logger.Error(err, "Adding Coin to Library Failed");
                     });
-        }
+            }
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to show Coin Dialog");
 
             await ShowMessageDialog(
-                loc.GetLocalizedString("Messages_CoinDialogFailed_Title"), 
+                loc.GetLocalizedString("Messages_CoinDialogFailed_Title"),
                 ex.Message,
                  loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally {App.isBusy = false;}
-        
+        finally { App.isBusy = false; }
+
         App.isBusy = false;
     }
     private bool CanShowAddCoinDialog()
@@ -140,7 +135,8 @@ public partial class CoinLibraryViewModel : BaseViewModel
             {
                 Logger.Information("Adding Note for {0}", coin.Name);
                 (await _libraryService.UpdateNote(coin, dialog.newNote))
-                    .IfFail(async err => {
+                    .IfFail(async err =>
+                    {
                         await ShowMessageDialog(
                         loc.GetLocalizedString("Messages_NoteAddFailed_Title"),
                         err.Message,
@@ -149,20 +145,20 @@ public partial class CoinLibraryViewModel : BaseViewModel
                         Logger.Error(err, "Adding Note failed");
                     });
             }
-               
+
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Showing Note Dialog failed");
 
             await ShowMessageDialog(
-                loc.GetLocalizedString("Messages_NoteDialogFailed_Title"), 
+                loc.GetLocalizedString("Messages_NoteDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally {  App.isBusy = false;}
+        finally { App.isBusy = false; }
     }
-    
+
     [RelayCommand(CanExecute = nameof(CanDeleteCoin))]
     public async Task DeleteCoin(Coin coin)
     {
@@ -170,7 +166,8 @@ public partial class CoinLibraryViewModel : BaseViewModel
         ILocalizer loc = Localizer.Get();
         await (await _libraryService.RemoveCoin(coin))
            .Match(Succ: s => RemoveFromListCoins(coin),
-                   Fail: async err => {
+                   Fail: async err =>
+                   {
                        await ShowMessageDialog(
                           loc.GetLocalizedString("Messages_CoinDeleteFailed_Title"),
                           err.Message,
@@ -195,7 +192,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
 
     [RelayCommand]
     public async Task ShowDescription(Coin coin)
-    {   
+    {
         App.isBusy = true;
         Logger.Information("Showing Description Dialog for {0}}", coin.Name);
         if (coin != null)
@@ -204,7 +201,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
             dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
             await dialog.ShowAsync();
         }
-        App.isBusy = false;   
+        App.isBusy = false;
     }
     #endregion MAIN methods or Tasks
 
@@ -228,7 +225,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
 
         return Task.FromResult(true);
     }
-    
+
     #endregion SUB methods or Tasks
 
 

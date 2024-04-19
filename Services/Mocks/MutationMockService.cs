@@ -1,6 +1,6 @@
-﻿using CryptoPortfolioTracker.Enums;
+﻿using System;
+using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
-using System;
 
 namespace CryptoPortfolioTracker.Services
 {

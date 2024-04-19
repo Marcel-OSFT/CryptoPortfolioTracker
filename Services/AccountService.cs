@@ -1,12 +1,12 @@
 ﻿//using CoinGecko.Clients;
-using CryptoPortfolioTracker.Infrastructure;
-using CryptoPortfolioTracker.Models;
-using LanguageExt.Common;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Infrastructure;
+using CryptoPortfolioTracker.Models;
+using LanguageExt.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -108,9 +108,9 @@ namespace CryptoPortfolioTracker.Services
                     .ThenInclude(c => c.Coin)
                     .Where(x => x.Name.ToLower() == name.ToLower())
                     .SingleAsync();
-                
-                    account.CalculateTotalValue();
-                    account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0 ? true : false;
+
+                account.CalculateTotalValue();
+                account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0 ? true : false;
             }
             catch (Exception ex)
             {

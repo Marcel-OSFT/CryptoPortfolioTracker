@@ -1,11 +1,11 @@
 ﻿
 
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
-using CryptoPortfolioTracker.Models;
-using LanguageExt.Common;
 //using PollyDemos.OutputHelpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Infrastructure.Response.Coins;
+using CryptoPortfolioTracker.Models;
+using LanguageExt.Common;
 
 namespace CryptoPortfolioTracker.Services
 {

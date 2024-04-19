@@ -1,7 +1,7 @@
-﻿using CryptoPortfolioTracker.Models;
-using LanguageExt.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Models;
+using LanguageExt.Common;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -26,7 +26,7 @@ namespace CryptoPortfolioTracker.Services
         public Task<Result<int>> AddTransaction(Transaction transaction);
         public Task<Result<int>> DeleteTransaction(Transaction transactionToDelete, AssetAccount assetAccountAffected);
         public Task<Result<int>> EditTransaction(Transaction transactionNew, Transaction transactionOld);
-       
+
         public Task<Result<Transaction>> GetTransactionById(int transactionId);
 
 
