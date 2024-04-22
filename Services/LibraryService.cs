@@ -215,7 +215,7 @@ namespace CryptoPortfolioTracker.Services
             {
                 coin.Note = note;
                 context.Coins.Update(coin);
-                result = await context.SaveChangesAsync() < 1;
+                result = await context.SaveChangesAsync() > 0;
             }
             catch (Exception ex)
             {

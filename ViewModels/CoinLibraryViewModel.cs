@@ -145,7 +145,6 @@ public partial class CoinLibraryViewModel : BaseViewModel
                         Logger.Error(err, "Adding Note failed");
                     });
             }
-
         }
         catch (Exception ex)
         {

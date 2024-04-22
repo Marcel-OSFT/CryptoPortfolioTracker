@@ -27,22 +27,22 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
     private readonly PeriodicTimer timer;
     private readonly CancellationTokenSource cts = new();
     private Task timerTask;
-    readonly IServiceScope currentContextScope;
-    readonly PortfolioContext coinContext;
+   // readonly IServiceScope currentContextScope;
+    private readonly PortfolioContext coinContext;
 
     ILogger Logger
     {
         get; set;
     }
 
-    public PriceUpdateService(TimeSpan timerInterval)
+    public PriceUpdateService(PortfolioContext portfolioContext)
     {
         //Logger = Log.Logger.ForContext<PriceUpdateService>();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceUpdateService).Name.PadRight(22));
 
-        currentContextScope = null;
-        coinContext = App.Container.GetService<PortfolioContext>();
-        timer = new(timerInterval);
+        //currentContextScope = null;
+        coinContext = portfolioContext;
+        timer = new (TimeSpan.FromMinutes(App.userPreferences.RefreshIntervalMinutes));
     }
 
     public void Start()

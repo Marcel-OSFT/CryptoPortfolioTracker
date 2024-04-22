@@ -12,5 +12,6 @@
 
     <Grid>
         <Image Source="Assets\Splash_Image_1000x565.jpg" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Name="versionTxt" VerticalAlignment="Bottom" FontWeight="SemiBold" Foreground="DarkGoldenrod" HorizontalAlignment="Right" Margin="0,0,22,5"/>
     </Grid>
 </Window>
