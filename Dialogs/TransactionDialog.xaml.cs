@@ -920,15 +920,18 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     AccountTo = "";
                     //ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom)).Match(Succ: list => list, Fail: err => new List<string>());
                 }
+                ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom)).Match(Succ: list => list, Fail: err => new List<string>());
                 break;
-                //default:
-                //if (IsAccountsLinked && ASBoxAccountFrom.Items.Contains(_account))
-                //{
-                //    AccountTo = AccountFrom;
-                //}
-                //break;
+            case "Convert":
+            case "Buy":
+            case "Sell":
+                if (IsAccountsLinked && ListAccountFrom.Contains(AccountFrom))
+                {
+                    AccountTo = AccountFrom;
+                }
+                break;
         }
-        ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom)).Match(Succ: list => list, Fail: err => new List<string>());
+        //ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom)).Match(Succ: list => list, Fail: err => new List<string>());
 
     }
     private async void ASBoxAccountFrom_SuggestionChosen(object sender, AutoSuggestBoxSuggestionChosenEventArgs args)
@@ -952,6 +955,8 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         IsAccountsLinked = !IsAccountsLinked;
         if (IsAccountsLinked)
         {
+            //TODO what should be the list 
+            
             AccountTo = AccountFrom;
         }
     }

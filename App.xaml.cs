@@ -77,8 +77,8 @@ public partial class App : Application
         await Task.Delay(1000);
 
         GetUserPreferences();
-        await InitializeLocalizer();
         InitializeLogger();
+        await InitializeLocalizer();
         CheckDatabase();
 
         Window = new MainWindow();
@@ -90,7 +90,7 @@ public partial class App : Application
     /// </summary>
     private void GetUserPreferences()
     {
-        //userPreferences = new UserPreferences();
+        
         try
         {
             if (File.Exists(appDataPath + "\\prefs.xml"))
@@ -104,6 +104,7 @@ public partial class App : Application
         catch { }
         finally
         {
+            userPreferences = new UserPreferences();
             isAppInitializing = false;
         }
     }
@@ -122,6 +123,7 @@ public partial class App : Application
             //})
             .Build();
 
+        Log.Information("Setting Language to {0}", userPreferences.AppCultureLanguage);
         await Localizer.SetLanguage(userPreferences.AppCultureLanguage);
     }
 
@@ -166,36 +168,10 @@ public partial class App : Application
         services.AddScoped<IAssetService, AssetService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ILibraryService, LibraryService>();
-        services.AddScoped<IPriceUpdateService, PriceUpdateService>(serviceProvider =>
-        {
-            return new(TimeSpan.FromMinutes(App.userPreferences.RefreshIntervalMinutes));
-        });
-
+        services.AddScoped<IPriceUpdateService, PriceUpdateService>();
         return services.BuildServiceProvider();
     }
 
-
-
-//    private void ConfigureWindow(Window window)
-//    {
-//        var monitor = MonitorInfo.GetDisplayMonitors().FirstOrDefault();
-//        if (monitor != null && monitor.RectMonitor.Width <= 1024 && monitor.RectMonitor.Height <= 768)
-//        {
-//            window.SetWindowSize(monitor.RectMonitor.Width, monitor.RectMonitor.Height);
-//        }
-//        else
-//        {
-//            window.SetWindowSize(1024, 768);
-//        }
-//#if !DEBUG
-//        Window.CenterOnScreen();
-//#endif
-//        Window.Title = "Crypto Portfolio Tracker";
-//        Window.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
-//        Window.SetTitleBar(null);
-//        if (Window.Content is FrameworkElement frameworkElement) frameworkElement.RequestedTheme = userPreferences.AppTheme;
-
-//    }
 
     private void InitializeLogger()
     {

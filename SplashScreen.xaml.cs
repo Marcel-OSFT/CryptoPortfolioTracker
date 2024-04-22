@@ -28,6 +28,7 @@ public sealed partial class SplashScreen : Window
         presenter.IsResizable = false;
         appW.IsShownInSwitchers = false;
         this.Title = "";
+        versionTxt.Text =App.ProductVersion;
         
         appW.Resize(new Windows.Graphics.SizeInt32 { Width = 500, Height = 300 });
         presenter.SetBorderAndTitleBar(false, false);
