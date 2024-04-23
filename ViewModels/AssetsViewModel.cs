@@ -375,23 +375,29 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         //*** First retrieve the coin(s) (max 2) affected by the transaction
         var coinsAffected = transaction.Mutations.Select(x => x.Asset.Coin).Distinct().ToList();
 
-
         // Check if one isn't in the assetsList yet, if so then add it.
         foreach (var coin in coinsAffected)
         {
             var assetAffected = (AssetTotals)ListAssetTotals.Where(x => x.Coin.Id == coin.Id).SingleOrDefault();
-
-            int index = -1;
-            for (var i = 0; i < ListAssetTotals.Count; i++)
+            if (assetAffected != null)
             {
-                if (ListAssetTotals[i].Coin.Id == assetAffected.Coin.Id)
+                int index = -1;
+                for (var i = 0; i < ListAssetTotals.Count; i++)
                 {
-                    index = i;
-                    break;
+                    if (ListAssetTotals[i].Coin.Id == assetAffected.Coin.Id)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index >= 0)
+                {
+                    var editedAT = (await _assetService.GetAssetTotalsByCoin(coin)).Match(Succ: s => s, Fail: err => null);
+                    ListAssetTotals[index] = editedAT;
+                    Debug.WriteLine("updated " + editedAT.Coin.Name);
                 }
             }
-
-            if (assetAffected == null)
+            else //assetAffected == null
             {
                 assetAffected = new AssetTotals();
 
@@ -401,12 +407,6 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                     ListAssetTotals.Add(assetAffected);
                     Debug.WriteLine("added " + assetAffected.Coin.Name);
                 });
-            }
-            else if (index >= 0)
-            {
-                var editedAT = (await _assetService.GetAssetTotalsByCoin(coin)).Match(Succ: s => s, Fail: err => null);
-                ListAssetTotals[index] = editedAT;
-                Debug.WriteLine("updated " + editedAT.Coin.Name);
             }
         }
     }
