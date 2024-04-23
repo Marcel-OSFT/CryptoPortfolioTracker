@@ -28,7 +28,7 @@
     <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
     <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/.</AppInstallerUri>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.0.3.7</Version>
+    <Version>1.0.3.8</Version>
     <StartupObject></StartupObject>
   </PropertyGroup>
   <PropertyGroup Label="MultilingualAppToolkit">

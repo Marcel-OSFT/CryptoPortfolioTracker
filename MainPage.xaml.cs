@@ -166,9 +166,9 @@ namespace CryptoPortfolioTracker
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             navigationView.SelectedItem = navigationView.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().First();
-
-            if (App.userPreferences.IsCheckForUpdate) await CheckUpdateNow();
             App.Splash.Close();
+            if (App.userPreferences.IsCheckForUpdate) await CheckUpdateNow();
+            
 
         }
     }

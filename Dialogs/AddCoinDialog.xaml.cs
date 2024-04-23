@@ -75,12 +75,12 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     }
 
 
-    public AddCoinDialog(List<CoinList> coinList, CoinLibraryViewModel viewModel)
+    public AddCoinDialog(List<string> coinList, CoinLibraryViewModel viewModel)
     {
         this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         CoinName = "";
         Current = this;
-        CoinCollection = coinList != null ? coinList.Select(x => x.Id).ToList() : new List<string>();
+        CoinCollection = coinList != null ? coinList : new List<string>();
         this.InitializeComponent();
         _viewModel = viewModel;
         BePatientVisibility = Visibility.Collapsed;
@@ -104,7 +104,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         if ((sender as AutoSuggestBoxWithValidation).IsEntryMatched)
         {
             VisualStateRequestBusy(true);
-            coinFullDataById = await GetCoinDetails(args.SelectedItem.ToString());
+            coinFullDataById = await GetCoinDetails(args.SelectedItem.ToString().Split(",")[2].Trim());
             VisualStateRequestBusy(false);
         }
     }

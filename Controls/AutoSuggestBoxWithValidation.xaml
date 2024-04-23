@@ -17,6 +17,7 @@
                         TextBoxStyle="{StaticResource MK_TextBoxStyle}" 
                         Header="{Binding Header, ElementName=Root, Mode=OneWay}"
                         Text="{Binding MyText, ElementName=Root, Mode=TwoWay}"
+                        PlaceholderText="{Binding MyPlaceholderText, ElementName=Root, Mode=TwoWay}"
                         AutomationProperties.Name="Basic AutoSuggestBox"
                         SuggestionChosen="innerASBox_SuggestionChosen"
                         KeyDown="innerASBox_KeyDown"
