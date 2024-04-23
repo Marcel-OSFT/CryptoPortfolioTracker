@@ -100,11 +100,15 @@ public partial class App : Application
                 FileStream myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
                 userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
             }
+            else
+            {
+                userPreferences = new UserPreferences();
+            }
         }
         catch { }
         finally
         {
-            userPreferences = new UserPreferences();
+           
             isAppInitializing = false;
         }
     }
