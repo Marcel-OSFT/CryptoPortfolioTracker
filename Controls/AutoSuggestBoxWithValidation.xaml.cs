@@ -20,7 +20,7 @@ namespace CryptoPortfolioTracker.Controls
         public AutoSuggestBoxWithValidation()
         {
             this.InitializeComponent();
-            innerASBox.TextChanged += TextEntryChanged;
+            //innerASBox.TextChanged += TextEntryChanged;
             //** PointerPressedEvent needs to be added is this 'special' way.
             //This because its handled earlier in the system and not passed through.
             innerASBox.AddHandler(TextBox.PointerPressedEvent, new PointerEventHandler(innerASBox_PointerPressed), true);
@@ -28,8 +28,12 @@ namespace CryptoPortfolioTracker.Controls
             innerASBox.Visibility = Visibility.Collapsed;
         }
 
+        
+
         //private static AutoSuggestBox asb;
         public bool AnimateBorder { get; set; } = true;
+        public bool IsPlaceholderSet { get; set; } = false;
+
 
         public event EventHandler TextChanged;
         public event EventHandler<AutoSuggestBoxSuggestionChosenEventArgs> SuggestionChosen;
@@ -80,26 +84,42 @@ namespace CryptoPortfolioTracker.Controls
                 SetValue(HeaderProperty, value);
             }
         }
+        public string MyPlaceholderText
+        {
+            get
+            {
+                return (string)GetValue(MyPlaceholderTextProperty);
+            }
+            set
+            {
+                SetValue(MyPlaceholderTextProperty, value);
+            }
+        }
 
         public static readonly DependencyProperty IsEntryMatchedProperty = DependencyProperty.Register("IsEntryMatched", typeof(bool), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryMatchedChangedCallBack)));
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(List<string>), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(ItemsSourceChangedCallBack)));
         public static readonly DependencyProperty MyTextProperty = DependencyProperty.Register("MyText", typeof(string), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(TextEntryChangedCallBack)));
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(string), typeof(AutoSuggestBoxWithValidation), null);
+        public static readonly DependencyProperty MyPlaceholderTextProperty = DependencyProperty.Register("MyPlaceholderText", typeof(string), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(PlaceholderTextChangedCallBack)));
 
         private void innerASBox_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             innerASBox.IsEnabled = true;
             innerASBox.IsSuggestionListOpen = true;
         }
-        private void TextEntryChanged(object sender, AutoSuggestBoxTextChangedEventArgs args)
-        {
-        }
+        
         private void innerASBox_SuggestionChosen(object sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             IsEntryMatched = true;
 
             SuggestionChosen?.Invoke(this, args);
 
+        }
+        private static void PlaceholderTextChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d;
+
+            if (thisInstance.MyPlaceholderText != null && thisInstance.MyPlaceholderText != "Select item..." & thisInstance.MyPlaceholderText != "No items available!") thisInstance.IsPlaceholderSet = true;
         }
         private static void TextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -129,17 +149,15 @@ namespace CryptoPortfolioTracker.Controls
                 thisInstance.TextChanged?.Invoke(thisInstance, EventArgs.Empty);
             }
 
-            if (inner.Items.Count > 0)
+
+            if (!thisInstance.IsPlaceholderSet)
             {
-                //inner.IsSuggestionListOpen = true;
-                inner.PlaceholderText = "Select item...";
+                inner.PlaceholderText = inner.Items.Count > 0 ? "Select item..." : "No items available!";
             }
-            else
-            {
-                inner.PlaceholderText = "No items available!";
-            }
+            else inner.PlaceholderText = thisInstance.MyPlaceholderText;
 
         }
+
         private static void IsEntryMatchedChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if ((d as AutoSuggestBoxWithValidation).AnimateBorder)

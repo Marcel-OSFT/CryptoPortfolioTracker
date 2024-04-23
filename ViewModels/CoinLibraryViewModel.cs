@@ -44,6 +44,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     #endregion variables and proporties for DataBinding with the View
 
     public static List<CoinList> coinListGecko;
+    public static List<string> searchListGecko;
 
 
     public CoinLibraryViewModel(ILibraryService libraryService)
@@ -72,8 +73,19 @@ public partial class CoinLibraryViewModel : BaseViewModel
             {
                 coinListGecko = list;
                 IsAllCoinDataRetrieved = coinListGecko.Count > 0 ? true : false;
+                searchListGecko = BuildSearchList(list);
             });
     }
+    private List<string> BuildSearchList(List<CoinList> list)
+    {
+        var searchList = new List<string>();
+        foreach (CoinList coin in list)
+        {
+            searchList.Add(coin.Name + ", " + coin.Symbol.ToUpper() + ", " + coin.Id); 
+        }
+        return searchList;
+    }
+
 
     [RelayCommand(CanExecute = nameof(CanShowAddCoinDialog))]
     public async Task ShowAddCoinDialog()
@@ -83,7 +95,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         ILocalizer loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(coinListGecko, Current);
+            dialog = new AddCoinDialog(searchListGecko, Current);
             dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
             var result = await dialog.ShowAsync();
 
