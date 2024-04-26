@@ -79,6 +79,24 @@ namespace CryptoPortfolioTracker.Services
             }
             return _result != null ? _result : new List<string>();
         }
+        public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string coinSymbol)
+        {
+            List<string> _result;
+            if (coinSymbol == null || coinSymbol == "") { return new List<string>(); }
+
+            try
+            {
+                _result = await _context.Coins
+                    .Where(x => x.Symbol.ToLower() != coinSymbol.ToLower() && x.Symbol.ToLower() != "usdt" && x.Symbol.ToLower() != "usdc")
+                    .Select(x => x.Symbol.ToUpper())
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<string>>(ex);
+            }
+            return _result != null ? _result : new List<string>();
+        }
 
         public async Task<Result<int>> GetAssetIdByCoinAndAccount(Coin coin, Account account)
         {
@@ -106,6 +124,24 @@ namespace CryptoPortfolioTracker.Services
             {
                 _result = await _context.Assets
                     .Include(x => x.Coin)
+                    .GroupBy(asset => asset.Coin)
+                    .Select(assetGroup => assetGroup.Key.Symbol.ToUpper())
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<string>>(ex);
+            }
+            return _result != null ? _result : new List<string>();
+        }
+        public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromAssets()
+        {
+            List<string> _result;
+            try
+            {
+                _result = await _context.Assets
+                    .Include(x => x.Coin)
+                    .Where(s => s.Coin.Symbol.ToLower() != "usdt" && s.Coin.Symbol.ToLower() != "usdc")
                     .GroupBy(asset => asset.Coin)
                     .Select(assetGroup => assetGroup.Key.Symbol.ToUpper())
                     .ToListAsync();

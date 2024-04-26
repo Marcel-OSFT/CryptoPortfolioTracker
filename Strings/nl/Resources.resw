@@ -551,4 +551,10 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="AssetsLV_1Month.Text" xml:space="preserve">
     <value>30 dagen</value>
   </data>
+  <data name="CoinDialog_SearchBox.MyPlaceholderText" xml:space="preserve">
+    <value>zoek op naam, symbool, id</value>
+  </data>
+  <data name="CoinDialog_SearchBox.ToolTipService.ToolTip" xml:space="preserve">
+    <value>zoek op naam, symbool, id</value>
+  </data>
 </root>

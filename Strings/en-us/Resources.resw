@@ -656,4 +656,10 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="AssetsLV_1Month.Text" xml:space="preserve">
     <value>30 days</value>
   </data>
+  <data name="CoinDialog_SearchBox.MyPlaceholderText" xml:space="preserve">
+    <value>search using name, symbol, id</value>
+  </data>
+  <data name="CoinDialog_SearchBox.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Search coin using name, symbol, id</value>
+  </data>
 </root>

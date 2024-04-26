@@ -15,12 +15,10 @@
 
     <StackPanel VerticalAlignment="Stretch">
         <RelativePanel>
-            <controls:AutoSuggestBoxWithValidation x:Name ="ASBox" 
+            <controls:AutoSuggestBoxWithValidation x:Name ="ASBox" l:Uids.Uid="CoinDialog_SearchBox"
                                 ItemsSource="{Binding CoinCollection, ElementName=Root, Mode=TwoWay}" 
                                 MyText="{Binding CoinName, ElementName=Root, Mode=TwoWay}" 
                                 SuggestionChosen="AutoSuggestBox_SuggestionChosen"
-                                MyPlaceholderText="search using name, symbol, id"
-                                ToolTipService.ToolTip="Search a coin using 'Name, Symbol, Id'"
                                 KeyDown="AutoSuggestBox_KeyDown"
                                 AnimateBorder="True"
                                 Width="300"

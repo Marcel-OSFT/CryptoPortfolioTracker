@@ -101,7 +101,8 @@
                                 SuggestionChosen="ASBoxCoinA_SuggestionChosen"
                                 AnimateBorder="True"
                                 Width="115"
-                                Margin="5,0,0,0"
+                                
+                                                       Margin="5,0,0,0"
                                 />
 
             </RelativePanel>

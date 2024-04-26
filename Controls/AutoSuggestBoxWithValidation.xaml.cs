@@ -26,6 +26,7 @@ namespace CryptoPortfolioTracker.Controls
             innerASBox.AddHandler(TextBox.PointerPressedEvent, new PointerEventHandler(innerASBox_PointerPressed), true);
             innerASBox.AddHandler(TextBox.KeyDownEvent, new KeyEventHandler(innerASBox_KeyDown), true);
             innerASBox.Visibility = Visibility.Collapsed;
+            
         }
 
         
@@ -95,6 +96,7 @@ namespace CryptoPortfolioTracker.Controls
                 SetValue(MyPlaceholderTextProperty, value);
             }
         }
+        
 
         public static readonly DependencyProperty IsEntryMatchedProperty = DependencyProperty.Register("IsEntryMatched", typeof(bool), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryMatchedChangedCallBack)));
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(List<string>), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(ItemsSourceChangedCallBack)));
@@ -121,19 +123,19 @@ namespace CryptoPortfolioTracker.Controls
 
             if (thisInstance.MyPlaceholderText != null && thisInstance.MyPlaceholderText != "Select item..." & thisInstance.MyPlaceholderText != "No items available!") thisInstance.IsPlaceholderSet = true;
         }
+
         private static void TextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AutoSuggestBox inner = ((AutoSuggestBoxWithValidation)d).innerASBox;
+           
             AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d;
 
             if (inner.Visibility == Visibility.Collapsed && (string)e.NewValue == "") inner.Visibility = Visibility.Visible;
 
-            inner.IsSuggestionListOpen = false;
             thisInstance.PopulateSuitableItems();
             thisInstance.IsEntryMatched = thisInstance.DoesEntryMatch();
 
             thisInstance.TextChanged?.Invoke(thisInstance, EventArgs.Empty);
-
         }
         private static void ItemsSourceChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -145,17 +147,17 @@ namespace CryptoPortfolioTracker.Controls
 
             if (result.Count == 1)
             {
-                d.SetValue(MyTextProperty, result.First().ToString());
+               d.SetValue(MyTextProperty, result.First().ToString());
                 thisInstance.TextChanged?.Invoke(thisInstance, EventArgs.Empty);
             }
-
+            else if (result.Count > 1 && thisInstance.MyText != string.Empty) thisInstance.IsEntryMatched = thisInstance.DoesEntryMatch();
 
             if (!thisInstance.IsPlaceholderSet)
             {
                 inner.PlaceholderText = inner.Items.Count > 0 ? "Select item..." : "No items available!";
             }
             else inner.PlaceholderText = thisInstance.MyPlaceholderText;
-
+            inner.IsSuggestionListOpen = false;
         }
 
         private static void IsEntryMatchedChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -176,7 +178,8 @@ namespace CryptoPortfolioTracker.Controls
         {
 
             var suitableItems = new List<string>();
-            var splitText = innerASBox.Text.ToLower().Split(" ");
+            //var splitText = innerASBox.Text.ToLower().Split(" ");
+            var splitText = MyText.ToLower().Split(" ");
             foreach (var item in ItemsSource.ToList())
             {
                 var found = splitText.All((key) =>
@@ -211,7 +214,7 @@ namespace CryptoPortfolioTracker.Controls
             {
                 IsEntryMatched = false;
             }
-
+            
         }
         private void SetBorderColor()
         {
