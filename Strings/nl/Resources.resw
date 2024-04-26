@@ -548,4 +548,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="TransactionKind_Withdraw" xml:space="preserve">
     <value>Opname</value>
   </data>
+  <data name="AssetsLV_1Month.Text" xml:space="preserve">
+    <value>30 dagen</value>
+  </data>
 </root>

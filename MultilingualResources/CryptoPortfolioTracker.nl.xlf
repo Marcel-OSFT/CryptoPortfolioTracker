@@ -722,6 +722,10 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Withdraw</source>
           <target state="final">Opname</target>
         </trans-unit>
+        <trans-unit id="AssetsLV_1Month.Text" translate="yes" xml:space="preserve">
+          <source>30 days</source>
+          <target state="final">30 dagen</target>
+        </trans-unit>
       </group>
     </body>
   </file>

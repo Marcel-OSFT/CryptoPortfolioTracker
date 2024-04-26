@@ -653,4 +653,7 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="TransactionKind_Withdraw" xml:space="preserve">
     <value>Withdraw</value>
   </data>
+  <data name="AssetsLV_1Month.Text" xml:space="preserve">
+    <value>30 days</value>
+  </data>
 </root>

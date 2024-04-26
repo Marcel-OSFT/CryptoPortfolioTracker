@@ -45,8 +45,6 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     [ObservableProperty] double totalAssetsCostBase;
     [ObservableProperty] double totalAssetsPnLPerc;
 
-
-
     [ObservableProperty] ObservableCollection<AssetTotals> listAssetTotals;
     [ObservableProperty] ObservableCollection<AssetAccount> listAssetAccounts;
     [ObservableProperty] ObservableCollection<Transaction> listAssetTransactions;
@@ -473,6 +471,8 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
             TotalAssetsCostBase = ListAssetTotals.Sum(x => x.CostBase);
             TotalAssetsPnLPerc = 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase;
         }
+        Logger.Information("CalculatingTotals {0}", TotalAssetsValue);
+
     }
 
 

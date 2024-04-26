@@ -278,7 +278,9 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
                         break;
                     }
                 }
+                var assetTotals = AssetsViewModel.Current.ListAssetTotals[index];
                 AssetsViewModel.Current.ListAssetTotals[index].Coin = coin;
+                AssetsViewModel.Current.ListAssetTotals[index].MarketValue = assetTotals.Qty * coin.Price;
             }
         }
         catch (Exception ex)

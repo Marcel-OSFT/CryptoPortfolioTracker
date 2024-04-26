@@ -79,6 +79,9 @@
                 <Run l:Uids.Uid="AssetsLV_24Hour" FontSize="12" FontStyle="Italic" />
             </Paragraph>
             <Paragraph TextAlignment="Right">
+                <Run l:Uids.Uid="AssetsLV_1Month" FontSize="12" FontStyle="Italic" />
+            </Paragraph>
+            <Paragraph TextAlignment="Right">
                 <Run l:Uids.Uid="AssetsLV_Change" FontSize="12" FontStyle="Italic"/>
             </Paragraph>
         </RichTextBlock>
@@ -162,8 +165,10 @@
                                     <Border Grid.Column="3"  Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                         <RelativePanel HorizontalAlignment="Right">
                                                 <TextBlock Name="txtChange24Hr" Text="{Binding Coin.Change24Hr, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" RelativePanel.AlignRightWithPanel="True" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"
-                                                       Foreground="{Binding Coin.Change24Hr, Converter={StaticResource myColourConverter}}"/>
-                                        </RelativePanel>
+                                                        Foreground="{Binding Coin.Change24Hr, Converter={StaticResource myColourConverter}}"/>
+                                                <TextBlock Name="txtChange30D" Text="{Binding Coin.Change1Month, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange24Hr" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"
+                                                        Foreground="{Binding Coin.Change1Month, Converter={StaticResource myColourConverter}}"/>
+                                            </RelativePanel>
                                     </Border>
                                     <Border Grid.Column="4"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                         <RelativePanel HorizontalAlignment="Right">
