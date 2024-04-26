@@ -726,6 +726,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>30 days</source>
           <target state="final">30 dagen</target>
         </trans-unit>
+        <trans-unit id="CoinDialog_SearchBox.MyPlaceholderText" translate="yes" xml:space="preserve">
+          <source>search using name, symbol, id</source>
+          <target state="final">zoek op naam, symbool, id</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_SearchBox.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>Search coin using name, symbol, id</source>
+          <target state="final">zoek op naam, symbool, id</target>
+        </trans-unit>
       </group>
     </body>
   </file>

@@ -10,9 +10,13 @@ namespace CryptoPortfolioTracker.Services
         public Task<Result<List<string>>> GetCoinSymbolsFromLibrary();
         public Task<Result<Coin>> GetCoinBySymbol(string symbol);
         public Task<Result<List<string>>> GetCoinSymbolsFromLibraryExcluding(string coinSymbol);
+        public Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string coinSymbol);
+
+
         public Task<Result<List<string>>> GetCoinSymbolsFromAssets();
         public Task<Result<List<string>>> GetFeeCoinSymbols(string accountName);
         public Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibrary();
+        public Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromAssets();
         public Task<Result<List<string>>> GetAccountNames();
         public Task<Result<Account>> GetAccountByName(string name);
         public Task<Result<int>> GetAssetIdByCoinAndAccount(Coin coin, Account account);
