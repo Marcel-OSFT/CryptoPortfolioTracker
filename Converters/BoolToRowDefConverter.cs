@@ -1,4 +1,5 @@
 ﻿using System;
+using CryptoPortfolioTracker.Views;
 using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters
@@ -21,22 +22,23 @@ namespace CryptoPortfolioTracker.Converters
             }
             else if ((bool)value)
             {
+                var scale = MainPage.Current.XamlRoot.RasterizationScale;
                 //** adjust return value for selected app font
                 switch (App.userPreferences.FontSize.ToString())
                 {
                     case "Small":
                         {
-                            width = System.Convert.ToInt16(parameters[0]).ToString();
+                            width = (scale * (System.Convert.ToInt16(parameters[0]) - 4)).ToString();
                             break;
                         }
                     case "Normal":
                         {
-                            width = (System.Convert.ToInt16(parameters[0]) + 5).ToString();
+                            width = (scale * System.Convert.ToInt16(parameters[0])).ToString();
                             break;
                         }
                     case "Large":
                         {
-                            width = (System.Convert.ToInt16(parameters[0]) + 10).ToString();
+                            width = (scale * (System.Convert.ToInt16(parameters[0]) + 8)).ToString();
                             break;
                         }
                 }

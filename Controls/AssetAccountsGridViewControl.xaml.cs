@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Views;
 using Microsoft.UI.Xaml.Controls;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -20,7 +21,6 @@ namespace CryptoPortfolioTracker.Controls
         /// </summary>
         private void SetGridViewItemWidth()
         {
-            Debug.WriteLine("triggered");
             if (AssetAccountsGridView.ItemsSource != null && AssetAccountsGridView.Items.Count > 0)
             {
                 int longestNameLength = 12; // 12 is the minimum width
@@ -31,22 +31,23 @@ namespace CryptoPortfolioTracker.Controls
                         longestNameLength = (item as AssetAccount).Name.Length;
                     }
                 }
+                var scale = AssetsView.Current.XamlRoot.RasterizationScale;
                 //** the Tag is used for binding with the width of the Name Textbox
                 switch ((int)App.userPreferences.FontSize)
                 {
                     case 0: //small
                         {
-                            AssetAccountsGridView.Tag = longestNameLength * 7;
+                            AssetAccountsGridView.Tag = Scale * longestNameLength * 7;
                             break;
                         }
                     case 1: //normal
                         {
-                            AssetAccountsGridView.Tag = longestNameLength * 8;
+                            AssetAccountsGridView.Tag = scale * longestNameLength * 8;
                             break;
                         }
                     case 2: //large
                         {
-                            AssetAccountsGridView.Tag = longestNameLength * 9;
+                            AssetAccountsGridView.Tag = scale * longestNameLength * 9;
                             break;
                         }
                 }

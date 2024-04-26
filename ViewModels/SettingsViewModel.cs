@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Extensions;
@@ -21,113 +22,34 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     public static SettingsViewModel Current;
     private readonly DispatcherQueue dispatcherQueue;
 
-
+    [ObservableProperty]
     private ElementTheme appTheme;
-    public ElementTheme AppTheme
-    {
-        get => appTheme;
-        set
-        {
-            if (value != appTheme)
-            {
-                appTheme = value;
-                App.userPreferences.AppTheme = appTheme;
-                OnPropertyChanged();
-            }
-        }
-    }
+    partial void OnAppThemeChanged(ElementTheme value) => App.userPreferences.AppTheme = value;
 
+    [ObservableProperty]
     private int numberFormatIndex;
-    public int NumberFormatIndex
-    {
-        get => numberFormatIndex;
-        set
-        {
-            if (value != numberFormatIndex)
-            {
-                numberFormatIndex = value;
-                SetNumberSeparators(value);
-                OnPropertyChanged();
-            }
-        }
-    }
-
+    partial void OnNumberFormatIndexChanged(int value) => SetNumberSeparators(value);
+    
+    [ObservableProperty]
     private int appCultureIndex;
-    public int AppCultureIndex
-    {
-        get => appCultureIndex;
-        set
-        {
-            if (value != appCultureIndex)
-            {
-                appCultureIndex = value;
-                SetCulturePreference(value);
-                OnPropertyChanged();
-            }
-        }
-    }
+    partial void OnAppCultureIndexChanged(int value) => SetCulturePreference(value);
 
+    [ObservableProperty]
     private double fontSize;
-    public double FontSize
-    {
-        get => fontSize;
-        set
-        {
-            if (value != fontSize)
-            {
-                fontSize = value;
-                App.userPreferences.FontSize = (AppFontSize)fontSize;
-                OnPropertyChanged();
-            }
-        }
-    }
+    partial void OnFontSizeChanged(double value) => App.userPreferences.FontSize = (AppFontSize)value;
 
-
+    [ObservableProperty]
     private bool isHidingZeroBalances;
-    public bool IsHidingZeroBalances
-    {
-        get => isHidingZeroBalances;
-        set
-        {
-            if (value != isHidingZeroBalances)
-            {
-                isHidingZeroBalances = value;
-                App.userPreferences.IsHidingZeroBalances = isHidingZeroBalances;
-                OnPropertyChanged();
-            }
-        }
-    }
+    partial void OnIsHidingZeroBalancesChanged(bool value) => App.userPreferences.IsHidingZeroBalances = value;
 
-
+    [ObservableProperty]
     private bool isCheckForUpdate;
-    public bool IsCheckForUpdate
-    {
-        get => isCheckForUpdate;
-        set
-        {
-            if (value != isCheckForUpdate)
-            {
-                isCheckForUpdate = value;
-                App.userPreferences.IsCheckForUpdate = isCheckForUpdate;
-                OnPropertyChanged();
-            }
-        }
-    }
+    partial void OnIsCheckForUpdateChanged(bool value) => App.userPreferences.IsCheckForUpdate = value;
 
+    [ObservableProperty]
     private bool isScrollBarsExpanded;
-    public bool IsScrollBarsExpanded
-    {
-        get => isScrollBarsExpanded;
-        set
-        {
-            if (value != isScrollBarsExpanded)
-            {
-                isScrollBarsExpanded = value;
-                App.userPreferences.IsScrollBarsExpanded = isScrollBarsExpanded;
-                OnPropertyChanged();
-            }
-        }
-    }
+    partial void OnIsScrollBarsExpandedChanged(bool value) => App.userPreferences.IsScrollBarsExpanded = value;
+
 
     public SettingsViewModel()
     {
@@ -152,7 +74,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         NumberFormatInfo nf = new();
         if (index == 0)
         {
-
             nf.CurrencyDecimalSeparator = ",";
             nf.CurrencyGroupSeparator = ".";
         }
@@ -174,7 +95,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         {
             App.userPreferences.AppCultureLanguage = "en-US";
         }
-
     }
 
     [RelayCommand]
@@ -245,22 +165,22 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     }
 
 
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string name = null)
-    {
-        this.dispatcherQueue.TryEnqueue(() =>
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
-        },
-        exception =>
-        {
-            throw new Exception(exception.Message);
-        });
-    }
+    //public event PropertyChangedEventHandler PropertyChanged;
+    //protected void OnPropertyChanged([CallerMemberName] string name = null)
+    //{
+    //    this.dispatcherQueue.TryEnqueue(() =>
+    //    {
+    //        PropertyChangedEventHandler handler = PropertyChanged;
+    //        if (handler != null)
+    //        {
+    //            handler(this, new PropertyChangedEventArgs(name));
+    //        }
+    //    },
+    //    exception =>
+    //    {
+    //        throw new Exception(exception.Message);
+    //    });
+    //}
 
 }
 

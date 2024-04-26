@@ -28,7 +28,7 @@
     <AppxPackageSigningTimestampServerUrl>https://ntp.time.nl/</AppxPackageSigningTimestampServerUrl>
     <AppInstallerUri>https://marcel-osft.github.io/CryptoPortfolioTracker/.</AppInstallerUri>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.0.3.9</Version>
+    <Version>1.0.4.0</Version>
     <StartupObject></StartupObject>
   </PropertyGroup>
   <PropertyGroup Label="MultilingualAppToolkit">
@@ -215,6 +215,9 @@
     <XliffResource Include="MultilingualResources\CryptoPortfolioTracker.nl.xlf" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\AppIcons\CryptoPortfolioTracker.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\bitcoin1_HeaderImage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

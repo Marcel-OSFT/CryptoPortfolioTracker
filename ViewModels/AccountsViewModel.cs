@@ -1,6 +1,4 @@
 ﻿
-//using CoinGecko.ApiEndPoints;
-//using CoinGecko.Clients;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -17,6 +15,7 @@ using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
 using WinUI3Localizer;
+
 namespace CryptoPortfolioTracker.ViewModels
 {
     public sealed partial class AccountsViewModel : BaseViewModel
