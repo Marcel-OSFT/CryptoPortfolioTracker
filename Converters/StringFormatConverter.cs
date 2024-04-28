@@ -9,7 +9,7 @@ public sealed class StringFormatConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         if (value == null)
-            return null;
+            return string.Empty;
 
         if (parameter == null)
             return value;

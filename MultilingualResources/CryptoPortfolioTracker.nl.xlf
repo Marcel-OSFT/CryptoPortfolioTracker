@@ -734,6 +734,22 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Search coin using name, symbol, id</source>
           <target state="final">zoek op naam, symbool, id</target>
         </trans-unit>
+        <trans-unit id="Messages_AddingCoinFailed" translate="yes" xml:space="preserve">
+          <source>Adding coin to the Library failed</source>
+          <target state="final">Fout bij toevoegen van de munt</target>
+        </trans-unit>
+        <trans-unit id="Messages_CoinDataMissing" translate="yes" xml:space="preserve">
+          <source>Mandatory Coin data missing (Id/Name/Symbol). Coin will NOT be added to the Coin Library</source>
+          <target state="final">Noodzakelijke muntgegevens ontbreken. De munt wordt niet toegevoegd aan de bibliotheek</target>
+        </trans-unit>
+        <trans-unit id="ASBox_NoItems_Msg" translate="yes" xml:space="preserve">
+          <source>no items available yet</source>
+          <target state="final">nog geen items beschikbaar</target>
+        </trans-unit>
+        <trans-unit id="ASBox_SelectItem_Msg" translate="yes" xml:space="preserve">
+          <source>select item</source>
+          <target state="final">selecteer item</target>
+        </trans-unit>
       </group>
     </body>
   </file>

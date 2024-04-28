@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Windows.System;
+using WinUI3Localizer;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,22 +17,17 @@ namespace CryptoPortfolioTracker.Controls
 {
     public sealed partial class AutoSuggestBoxWithValidation : UserControl    //, INotifyPropertyChanged
     {
-
+        private static ILocalizer loc = Localizer.Get();
         public AutoSuggestBoxWithValidation()
         {
             this.InitializeComponent();
-            //innerASBox.TextChanged += TextEntryChanged;
             //** PointerPressedEvent needs to be added is this 'special' way.
             //This because its handled earlier in the system and not passed through.
             innerASBox.AddHandler(TextBox.PointerPressedEvent, new PointerEventHandler(innerASBox_PointerPressed), true);
             innerASBox.AddHandler(TextBox.KeyDownEvent, new KeyEventHandler(innerASBox_KeyDown), true);
             innerASBox.Visibility = Visibility.Collapsed;
-            
         }
 
-        
-
-        //private static AutoSuggestBox asb;
         public bool AnimateBorder { get; set; } = true;
         public bool IsPlaceholderSet { get; set; } = false;
 
@@ -44,6 +40,10 @@ namespace CryptoPortfolioTracker.Controls
         {
             get
             {
+                if (GetValue(IsEntryMatchedProperty).GetType().Name == "Int32")
+                {
+                    return false;
+                }
                 return (bool)GetValue(IsEntryMatchedProperty);
             }
             set
@@ -55,6 +55,10 @@ namespace CryptoPortfolioTracker.Controls
         {
             get
             {
+                if (GetValue(ItemsSourceProperty).GetType().Name == "Int32")
+                {
+                    return new List<string>();
+                }
                 return (List<string>)GetValue(ItemsSourceProperty);
             }
             set
@@ -66,6 +70,10 @@ namespace CryptoPortfolioTracker.Controls
         {
             get
             {
+                if (GetValue(MyTextProperty).GetType().Name == "Int32")
+                {
+                    return string.Empty;
+                }
                 return (string)GetValue(MyTextProperty);
             }
             set
@@ -78,6 +86,10 @@ namespace CryptoPortfolioTracker.Controls
         {
             get
             {
+                if (GetValue(HeaderProperty).GetType().Name == "Int32")
+                {
+                    return string.Empty;
+                }
                 return (string)GetValue(HeaderProperty);
             }
             set
@@ -89,6 +101,10 @@ namespace CryptoPortfolioTracker.Controls
         {
             get
             {
+                if (GetValue(MyPlaceholderTextProperty).GetType().Name == "Int32")
+                {
+                    return string.Empty;
+                }
                 return (string)GetValue(MyPlaceholderTextProperty);
             }
             set
@@ -96,7 +112,6 @@ namespace CryptoPortfolioTracker.Controls
                 SetValue(MyPlaceholderTextProperty, value);
             }
         }
-        
 
         public static readonly DependencyProperty IsEntryMatchedProperty = DependencyProperty.Register("IsEntryMatched", typeof(bool), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryMatchedChangedCallBack)));
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(List<string>), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(ItemsSourceChangedCallBack)));
@@ -121,7 +136,9 @@ namespace CryptoPortfolioTracker.Controls
         {
             AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d;
 
-            if (thisInstance.MyPlaceholderText != null && thisInstance.MyPlaceholderText != "Select item..." & thisInstance.MyPlaceholderText != "No items available!") thisInstance.IsPlaceholderSet = true;
+            if (thisInstance.MyPlaceholderText != null 
+                && thisInstance.MyPlaceholderText != loc.GetLocalizedString("ASBox_SelectItem_Msg") 
+                && thisInstance.MyPlaceholderText != loc.GetLocalizedString("ASBox_NoItems_Msg")) thisInstance.IsPlaceholderSet = true;
         }
 
         private static void TextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -139,22 +156,25 @@ namespace CryptoPortfolioTracker.Controls
         }
         private static void ItemsSourceChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            List<string> result = (List<string>)d.GetValue(ItemsSourceProperty);
+            if (d.GetValue(ItemsSourceProperty).GetType().FullName == "System.Int32") return;
+
+            var list = (List<string>)d.GetValue(ItemsSourceProperty);
+
             AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d; 
             AutoSuggestBox inner = (d as AutoSuggestBoxWithValidation).innerASBox;
 
-            if (inner.ItemsSource == null || !inner.ItemsSource.Equals(d.GetValue(ItemsSourceProperty))) inner.ItemsSource = d.GetValue(ItemsSourceProperty);
+            if (inner.ItemsSource == null ||  !inner.ItemsSource.Equals(list)) inner.ItemsSource = list;
 
-            if (result.Count == 1)
+            if (list.Count == 1)
             {
-               d.SetValue(MyTextProperty, result.First().ToString());
-                thisInstance.TextChanged?.Invoke(thisInstance, EventArgs.Empty);
+                //d.SetValue(MyTextProperty, list.First().ToString());
+                //thisInstance.TextChanged?.Invoke(thisInstance, EventArgs.Empty);
             }
-            else if (result.Count > 1 && thisInstance.MyText != string.Empty) thisInstance.IsEntryMatched = thisInstance.DoesEntryMatch();
+            else if (list.Count > 1 && thisInstance.MyText != string.Empty) thisInstance.IsEntryMatched = thisInstance.DoesEntryMatch();
 
             if (!thisInstance.IsPlaceholderSet)
             {
-                inner.PlaceholderText = inner.Items.Count > 0 ? "Select item..." : "No items available!";
+                inner.PlaceholderText = inner.Items.Count > 0 ? loc.GetLocalizedString("ASBox_SelectItem_Msg") : loc.GetLocalizedString("ASBox_NoItems_Msg");
             }
             else inner.PlaceholderText = thisInstance.MyPlaceholderText;
             inner.IsSuggestionListOpen = false;
@@ -176,7 +196,6 @@ namespace CryptoPortfolioTracker.Controls
 
         private void PopulateSuitableItems()
         {
-
             var suitableItems = new List<string>();
             //var splitText = innerASBox.Text.ToLower().Split(" ");
             var splitText = MyText.ToLower().Split(" ");
@@ -234,5 +253,6 @@ namespace CryptoPortfolioTracker.Controls
                 KeyDown?.Invoke(this, e);
             }
         }
+
     }
 }

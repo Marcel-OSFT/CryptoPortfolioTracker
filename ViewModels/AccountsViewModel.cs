@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels
 {
+
     public sealed partial class AccountsViewModel : BaseViewModel
     {
         #region Fields related to the MVVM design pattern
@@ -48,7 +50,7 @@ namespace CryptoPortfolioTracker.ViewModels
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AccountsViewModel).Name.PadRight(22));
             Current = this;
             _accountService = accountService;
-            SetDataSource();
+            //SetDataSource();
 
         }
 
@@ -57,7 +59,13 @@ namespace CryptoPortfolioTracker.ViewModels
         private bool isExtendedView = false;
 
         #region MAIN methods or Tasks
-        private async Task SetDataSource()
+
+        /// <summary>
+        /// SetDataSource async task is called from the View_Loading event of the associated View
+        /// this to prevent to have it called from the ViewModels constructor
+        /// </summary>
+        /// <returns></returns>
+        public async Task SetDataSource()
         {
             (await _accountService.GetAccounts())
                 .IfSucc(list => ListAccounts = new ObservableCollection<Account>(list));
@@ -154,8 +162,8 @@ namespace CryptoPortfolioTracker.ViewModels
             try
             {
                 Logger.Information("Deletion request for Account ({0})", account.Name);
-                bool IsDeleteAllowed = (await _accountService.AccountHasNoAssets(account.Id))
-                .Match<bool>(Succ: succ => succ, Fail: err => { return false; });
+                var IsDeleteAllowed = (await _accountService.AccountHasNoAssets(account.Id))
+                .Match(Succ: succ => succ, Fail: err => { return false; });
 
                 if (IsDeleteAllowed)
                 {
@@ -193,7 +201,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
         private bool CanDeleteAccount(Account account)
         {
-            bool result = false;
+            var result = false;
             try
             {
                 result = !ListAccounts.Where(x => x.Id == account.Id).Single().IsHoldingAsset;
@@ -255,7 +263,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         [RelayCommand]
-        public async Task AssetItemClicked(AssetTotals clickedAsset)
+        public void AssetItemClicked(AssetTotals clickedAsset)
         {
             //In the AccountsView we ignore this command. The AssetsListViewControl is used in the AssetsView as well.
 

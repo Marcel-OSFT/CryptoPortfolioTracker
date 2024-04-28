@@ -1,18 +1,17 @@
 ﻿using System;
 using Microsoft.UI.Xaml.Data;
 
-namespace CryptoPortfolioTracker.Converters
-{
-    public class BoolToStringConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return value.ToString();
-        }
+namespace CryptoPortfolioTracker.Converters;
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+public class BoolToStringConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return (bool)value ? "true" : "false";
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
     }
 }

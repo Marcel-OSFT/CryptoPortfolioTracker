@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-//using CoinGecko.Interfaces;
-//using CoinGecko.Parameters;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Extensions;
-//using CoinGecko.Clients;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
@@ -29,9 +26,9 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     private readonly DispatcherQueue dispatcherQueue;
     public readonly CoinLibraryViewModel _viewModel;
     public static AddCoinDialog Current;
-    CoinFullDataById coinFullDataById;
+    private CoinFullDataById? coinFullDataById;
     public Coin selectedCoin;
-    private ILocalizer loc = Localizer.Get();
+    private readonly ILocalizer loc = Localizer.Get();
 
     private List<string> coinCollection;
     public List<string> CoinCollection
@@ -80,7 +77,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         CoinName = "";
         Current = this;
-        CoinCollection = coinList != null ? coinList : new List<string>();
+        CoinCollection = coinList ?? new List<string>();
         this.InitializeComponent();
         _viewModel = viewModel;
         BePatientVisibility = Visibility.Collapsed;
@@ -101,20 +98,23 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     /// <param name="sender"></param>
     private async void AutoSuggestBox_SuggestionChosen(object sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
-        if ((sender as AutoSuggestBoxWithValidation).IsEntryMatched)
+        if (sender is AutoSuggestBoxWithValidation asBox && asBox.IsEntryMatched)
         {
             VisualStateRequestBusy(true);
-            coinFullDataById = await GetCoinDetails(args.SelectedItem.ToString().Split(",")[2].Trim());
+            var selectedText = args.SelectedItem.ToString();
+            coinFullDataById = selectedText is not null 
+                ? await GetCoinDetails(selectedText.Split(",")[2].Trim())
+                : null;
             VisualStateRequestBusy(false);
         }
     }
 
     private async void AutoSuggestBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key == Windows.System.VirtualKey.Enter && (sender as AutoSuggestBoxWithValidation).IsEntryMatched)
+        if (e.Key == Windows.System.VirtualKey.Enter && (sender is AutoSuggestBoxWithValidation asBox) && asBox.IsEntryMatched)
         {
             VisualStateRequestBusy(true);
-            coinFullDataById = await GetCoinDetails((sender as AutoSuggestBoxWithValidation).MyText);
+            coinFullDataById = await GetCoinDetails(asBox.MyText);
             VisualStateRequestBusy(false);
         }
     }
@@ -145,38 +145,45 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     {
         try
         {
-            selectedCoin = null;
-            var coin = new Coin
+            var loc = Localizer.Get();
+            if (coinFullDataById is not null) 
             {
-                ApiId = coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : null,
-                Name = coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : null,
-                Symbol = coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : null,
-                ImageUri = coinFullDataById.Image.Small.AbsoluteUri.Length > 0 ? coinFullDataById.Image.Small.AbsoluteUri : null,
-                Price = (double)coinFullDataById.MarketData.CurrentPrice.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                Ath = (double)coinFullDataById.MarketData.Ath.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                Change52Week = (double)coinFullDataById.MarketData.PriceChangePercentage1YInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                Change1Month = (double)coinFullDataById.MarketData.PriceChangePercentage30DInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                MarketCap = (double)coinFullDataById.MarketData.MarketCap.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                Change24Hr = (double)coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                About = (string)coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value,
-                IsAsset = false,
-                Rank = coinFullDataById.MarketCapRank != null ? (long)coinFullDataById.MarketCapRank : 99999
-            };
+                selectedCoin = null;
+                var coin = new Coin
+                {
+                    ApiId = coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : null,
+                    Name = coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : null,
+                    Symbol = coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : null,
+                    ImageUri = coinFullDataById.Image.Small.AbsoluteUri.Length > 0 ? coinFullDataById.Image.Small.AbsoluteUri : null,
+                    Price = (double)coinFullDataById.MarketData.CurrentPrice.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    Ath = (double)coinFullDataById.MarketData.Ath.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    Change52Week = (double)coinFullDataById.MarketData.PriceChangePercentage1YInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    Change1Month = (double)coinFullDataById.MarketData.PriceChangePercentage30DInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    MarketCap = (double)coinFullDataById.MarketData.MarketCap.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    Change24Hr = (double)coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    About = (string)coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value,
+                    IsAsset = false,
+                    Rank = coinFullDataById.MarketCapRank != null ? (long)coinFullDataById.MarketCapRank : 99999
+                };
 
-            if (coin.ApiId != null && coin.Name != null && coin.Symbol != null)
-            {
-                selectedCoin = coin;
-            }
+                if (coin.ApiId != null && coin.Name != null && coin.Symbol != null)
+                {
+                    selectedCoin = coin;
+                }
+                else
+                {
+                    var msgbox = new MessageDialog(loc.GetLocalizedString("Messages_CoinDataMissing"));
+                }
+            } 
             else
             {
-                MessageDialog msgbox = new MessageDialog("Mandatory Coin data missing (Id/Name/Symbol). Coin will NOT be added to the Coin Library ");
+                var msgbox = new MessageDialog(loc.GetLocalizedString("Messages_AddingCoinFailed"));            
             }
         }
         catch (Exception ex)
         {
-            MessageDialog msgbox = new MessageDialog("Adding coin to the Library failed - " + ex.Message);
+            var msgbox = new MessageDialog(loc.GetLocalizedString("Messages_AddingCoinFailed" + ex.Message));
         }
-
     }
 
     public async Task<CoinFullDataById> GetCoinDetails(string coinId)
@@ -189,10 +196,10 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
             var coinFullDataByIdResult = await _viewModel._libraryService.GetCoinDetails(coinId);
             coinFullDataByIdResult.IfSucc(async details =>
             {
-                BitmapImage image = details.Image.Small.AbsoluteUri != null ? new BitmapImage(new Uri(base.BaseUri, details.Image.Small.AbsoluteUri)) : null;
+                var image = details.Image.Small.AbsoluteUri != null ? new BitmapImage(new Uri(base.BaseUri, details.Image.Small.AbsoluteUri)) : null;
                 CoinImage.Source = image;
 
-                Run run = new Run();
+                var run = new Run();
                 run.Text = details.Id;
                 parId.Inlines.Clear();
                 parId.Inlines.Add(run);
@@ -231,9 +238,9 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
             });
 
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Run run = new Run();
+            var run = new Run();
             run.Text = loc.GetLocalizedString("CoinDialog_GetDetails_Failed");
             parId.Inlines.Clear();
             parId.Inlines.Add(run);
@@ -268,8 +275,8 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     //    });
     //}
 
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string? name = null)
     {
         this.dispatcherQueue.TryEnqueue(() =>
         {

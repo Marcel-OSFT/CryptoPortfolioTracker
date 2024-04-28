@@ -662,4 +662,16 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="CoinDialog_SearchBox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Search coin using name, symbol, id</value>
   </data>
+  <data name="Messages_AddingCoinFailed" xml:space="preserve">
+    <value>Adding coin to the Library failed</value>
+  </data>
+  <data name="Messages_CoinDataMissing" xml:space="preserve">
+    <value>Mandatory Coin data missing (Id/Name/Symbol). Coin will NOT be added to the Coin Library</value>
+  </data>
+  <data name="ASBox_NoItems_Msg" xml:space="preserve">
+    <value>no items available yet</value>
+  </data>
+  <data name="ASBox_SelectItem_Msg" xml:space="preserve">
+    <value>select item</value>
+  </data>
 </root>

@@ -20,11 +20,17 @@ public sealed partial class LogWindow : Window
     private LoggingLevelSwitch _levelSwitch;
     private ItemsRepeaterLogBroker _logBroker;
 
+    private ILogger Logger  { get; set; }
+
+
     public LogWindow()
     {
         this.InitializeComponent();
+        ConfigureLogger();
+    }
 
-
+    private void ConfigureLogger()
+    {
         _cancellationTokenSource = new CancellationTokenSource();
 
         _levelSwitch = new LoggingLevelSwitch();
@@ -32,7 +38,7 @@ public sealed partial class LogWindow : Window
 
         string[] levels = Enum.GetNames(typeof(LogEventLevel));
 
-        foreach (string level in levels)
+        foreach (var level in levels)
         {
             LevelSwitcher.Items.Add(level.ToString());
         }
@@ -45,7 +51,7 @@ public sealed partial class LogWindow : Window
                 _levelSwitch.MinimumLevel = level;
         };
 
-        App.Current.Resources.TryGetValue("DefaultTextForegroundThemeBrush", out object defaultTextForegroundBrush);
+        App.Current.Resources.TryGetValue("DefaultTextForegroundThemeBrush", out var defaultTextForegroundBrush);
 
         _logBroker = new ItemsRepeaterLogBroker(
             LogViewer,
@@ -83,7 +89,6 @@ public sealed partial class LogWindow : Window
                        outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
             .CreateLogger();
 
-        //        Logger = Log.Logger.ForContext<MainWindow>();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainWindow).Name.PadRight(22));
 
         App.userPreferences.AttachLogger();
@@ -91,11 +96,7 @@ public sealed partial class LogWindow : Window
         _logBroker.IsAutoScrollOn = true;
     }
 
-    private ILogger Logger
-    {
-        get; set;
-    }
-
+    
     private void AutoScrollToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
         if (sender is ToggleSwitch toggleSwitch && _logBroker is not null)

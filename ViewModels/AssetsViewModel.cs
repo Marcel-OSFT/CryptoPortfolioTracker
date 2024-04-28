@@ -1,7 +1,4 @@
 ﻿
-#region Using
-//using CoinGecko.ApiEndPoints;
-//using CoinGecko.Clients;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,7 +19,6 @@ using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
 using WinUI3Localizer;
-#endregion Using
 
 namespace CryptoPortfolioTracker.ViewModels;
 
@@ -45,12 +41,12 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     [ObservableProperty] double totalAssetsCostBase;
     [ObservableProperty] double totalAssetsPnLPerc;
 
-    [ObservableProperty] ObservableCollection<AssetTotals> listAssetTotals;
-    [ObservableProperty] ObservableCollection<AssetAccount> listAssetAccounts;
-    [ObservableProperty] ObservableCollection<Transaction> listAssetTransactions;
+    [ObservableProperty] ObservableCollection<AssetTotals>? listAssetTotals;
+    [ObservableProperty] ObservableCollection<AssetAccount>? listAssetAccounts;
+    [ObservableProperty] ObservableCollection<Transaction>? listAssetTransactions;
 
-    private AssetTotals selectedAsset = null;
-    private AssetAccount selectedAccount = null;
+    private AssetTotals? selectedAsset = null;
+    private AssetAccount? selectedAccount = null;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowTransactionDialogToAddCommand))]
@@ -60,7 +56,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
     bool isHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
 
-    public static List<CoinList> coinListGecko;
+    public static List<CoinList>? coinListGecko;
 
     #endregion variables and proporties for DataBinding with the View
 
@@ -71,16 +67,19 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
         _assetService = assetService;
-        SetDataSource();
+        //SetDataSource();
         _priceUpdateBackgroundService = priceUpdateBackgroundService;
         _transactionService = transactionService;
         _priceUpdateBackgroundService.Start();
-
     }
 
     #region MAIN methods or Tasks
-
-    private async Task SetDataSource()
+    /// <summary>
+    /// SetDataSource async task is called from the View_Loading event of the associated View
+    /// this to prevent to have it called from the ViewModels constructor
+    /// </summary>
+    /// <returns></returns>
+    public async Task SetDataSource()
     {
         (await _assetService.GetAssetTotals())
              .Match(Succ: s => CreateListAssetTotals(s), Fail: e => CreateListWithDummyAssetTotals());
@@ -174,7 +173,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         App.isBusy = true;
 
         // Transaction transactionToEdit = null;
-        AssetAccount accountAffected = null;
+        AssetAccount? accountAffected = null;
         ILocalizer loc = Localizer.Get();
         try
         {
@@ -282,7 +281,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
             .IfSucc(s => CreateListAssetTransactions(s));
     }
 
-    public async Task ShowAccountsAndTransactions(AssetTotals clickedAsset = null)
+    public async Task ShowAccountsAndTransactions(AssetTotals? clickedAsset = null)
     {
         if (clickedAsset != null)
         {
@@ -344,7 +343,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         (await _assetService.GetAccountByAsset(accountAffected.AssetId))
             .IfSucc(s =>
             {
-                int index = -1;
+                var index = -1;
                 for (var i = 0; i < ListAssetAccounts.Count; i++)
                 {
                     if (ListAssetAccounts[i].Name == accountAffected.Name)
@@ -367,7 +366,7 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
 
     public async Task UpdateListAssetTotals(Transaction transaction)
     {
-        Debug.WriteLine("");
+        if (ListAssetTotals is null) return;
 
         //for updating purpose of the View, the affected elements of the data source List has to be updated
         //*** First retrieve the coin(s) (max 2) affected by the transaction
@@ -376,10 +375,10 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
         // Check if one isn't in the assetsList yet, if so then add it.
         foreach (var coin in coinsAffected)
         {
-            var assetAffected = (AssetTotals)ListAssetTotals.Where(x => x.Coin.Id == coin.Id).SingleOrDefault();
+            var assetAffected = ListAssetTotals.Where(x => x.Coin.Id == coin.Id).SingleOrDefault();
             if (assetAffected != null)
             {
-                int index = -1;
+                var index = -1;
                 for (var i = 0; i < ListAssetTotals.Count; i++)
                 {
                     if (ListAssetTotals[i].Coin.Id == assetAffected.Coin.Id)
@@ -390,9 +389,8 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
                 }
                 if (index >= 0)
                 {
-                    var editedAT = (await _assetService.GetAssetTotalsByCoin(coin)).Match(Succ: s => s, Fail: err => null);
-                    ListAssetTotals[index] = editedAT;
-                    Debug.WriteLine("updated " + editedAT.Coin.Name);
+                    var editedAT = (await _assetService.GetAssetTotalsByCoin(coin)).Match(Succ: s => s, Fail: err => new AssetTotals());
+                    if (editedAT.Coin is not null) ListAssetTotals[index] = editedAT;
                 }
             }
             else //assetAffected == null
@@ -410,7 +408,8 @@ public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
     }
     public Task UpdateListAssetTransaction(Transaction transactionNew, Transaction transactionToEdit)
     {
-        int index = -1;
+        if (ListAssetTransactions is null) return Task.CompletedTask;
+        var index = -1;
         for (var i = 0; i < ListAssetTransactions.Count; i++)
         {
             if (ListAssetTransactions[i].Id == transactionToEdit.Id)

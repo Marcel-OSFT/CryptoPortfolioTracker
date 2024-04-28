@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -12,55 +11,38 @@ using CryptoPortfolioTracker.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Serilog.Core;
-using Windows.Storage;
 using WinUI3Localizer;
-using WinUIEx;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace CryptoPortfolioTracker;
 
-
-/// <summary>
-/// Provides application-specific behavior to supplement the default Application class.
-/// </summary>
 public partial class App : Application
 {
-    /// <summary>
-    /// Initializes the singleton application object.  This is the first line of authored code
-    /// executed, and as such is the logical equivalent of main() or WinMain().
-    /// </summary>
-
-    public static Window Window;
-    public static Window Splash;
+    public static Window? Window;
+    public static Window? Splash;
     public const string CoinGeckoApiKey = "";
     public static string ApiPath = "https://api.coingecko.com/api/v3/";
-    public static string appPath;
-    public static string appDataPath;
-    public static string ProductVersion;
+    public static string appPath = string.Empty;
+    public static string appDataPath = string.Empty;
+    public static string ProductVersion = string.Empty;
     public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
     public static bool isBusy;
     public static UserPreferences userPreferences;
     public static bool isAppInitializing;
 
     public static bool isLogWindowEnabled;
-    private ILogger Logger;
-    public static ILocalizer Localizer;
+    private ILogger? Logger;
+    public static ILocalizer? Localizer;
 
-    public static IServiceProvider Container
-    {
-        get; private set;
-    }
+    public static IServiceProvider Container  { get; private set;  }
     
 
     public App()
     {
         this.InitializeComponent();
+        userPreferences = new UserPreferences();
         GetAppEnvironmentals();
 
         Container = RegisterServices();
@@ -70,7 +52,7 @@ public partial class App : Application
     /// Invoked when the application is launched.
     /// </summary>
     /// <param name="args">Details about the launch request and process.</param>
-    protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         Splash = new SplashScreen();
         Splash.Activate();
@@ -90,7 +72,6 @@ public partial class App : Application
     /// </summary>
     private void GetUserPreferences()
     {
-        
         try
         {
             if (File.Exists(appDataPath + "\\prefs.xml"))
@@ -98,17 +79,13 @@ public partial class App : Application
                 isAppInitializing = true;
                 XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
                 FileStream myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
-                userPreferences = (UserPreferences)mySerializer.Deserialize(myFileStream);
-            }
-            else
-            {
-                userPreferences = new UserPreferences();
+
+                userPreferences = (mySerializer.Deserialize(myFileStream) as UserPreferences) ?? new UserPreferences();
             }
         }
         catch { }
         finally
         {
-           
             isAppInitializing = false;
         }
     }
@@ -116,15 +93,10 @@ public partial class App : Application
     private async Task InitializeLocalizer()
     {
         // Initialize a "Strings" folder in the executables folder.
-        string StringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
-        StorageFolder stringsFolder = await StorageFolder.GetFolderFromPathAsync(StringsFolderPath);
+        var StringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
 
         Localizer = await new LocalizerBuilder()
             .AddStringResourcesFolderForLanguageDictionaries(StringsFolderPath)
-            //.SetOptions(options =>
-            //{
-            //    options.DefaultLanguage = "nl";
-            //})
             .Build();
 
         Log.Information("Setting Language to {0}", userPreferences.AppCultureLanguage);
@@ -134,17 +106,18 @@ public partial class App : Application
     private void CheckDatabase()
     {
         var context = App.Container.GetService<PortfolioContext>();
-        context.Database.EnsureCreated();
+        if (context is not null) { context.Database.EnsureCreated(); }
     }
 
 
     private void GetAppEnvironmentals()
     {
-        appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory);
+        appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
         appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
         if (!Directory.Exists(appDataPath)) Directory.CreateDirectory(appDataPath);
         AppDomain.CurrentDomain.SetData("DataDirectory", appDataPath);
-        ProductVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        var version = Assembly.GetExecutingAssembly().GetName().Version;
+        ProductVersion = version is not null ? version.ToString() : string.Empty ;
     }
     private IServiceProvider RegisterServices()
     {

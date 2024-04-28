@@ -1,32 +1,30 @@
-﻿//using ABI.Windows.UI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 
-namespace CryptoPortfolioTracker.Models
+namespace CryptoPortfolioTracker.Models;
+
+public partial class Asset : BaseModel
 {
-    public partial class Asset : BaseModel
+    //***** Constructor
+    public Asset()
     {
-        //***** Constructor
-        public Asset()
-        {
-            Coin = new Coin();
-            Account = new Account();
-        }
-
-        [ObservableProperty] int id;
-        [ObservableProperty] double qty;
-        [ObservableProperty] double averageCostPrice;
-        [ObservableProperty] double realizedPnL;
-
-        //******* Navigation Properties
-        [ObservableProperty] Coin coin;
-        [ObservableProperty] Account account;
-        public ICollection<Mutation> Mutations
-        {
-            get; set;
-        }
-
-
+        Coin = new Coin();
+        Account = new Account();
     }
+
+    [ObservableProperty] int id;
+    [ObservableProperty] double qty;
+    [ObservableProperty] double averageCostPrice;
+    [ObservableProperty] double realizedPnL;
+
+    //******* Navigation Properties
+    [ObservableProperty] Coin coin;
+    [ObservableProperty] Account account;
+    public ICollection<Mutation> Mutations
+    {
+        get; set;
+    }
+
+
 }

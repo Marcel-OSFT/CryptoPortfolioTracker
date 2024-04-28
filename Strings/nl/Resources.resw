@@ -557,4 +557,16 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="CoinDialog_SearchBox.ToolTipService.ToolTip" xml:space="preserve">
     <value>zoek op naam, symbool, id</value>
   </data>
+  <data name="Messages_AddingCoinFailed" xml:space="preserve">
+    <value>Fout bij toevoegen van de munt</value>
+  </data>
+  <data name="Messages_CoinDataMissing" xml:space="preserve">
+    <value>Noodzakelijke muntgegevens ontbreken. De munt wordt niet toegevoegd aan de bibliotheek</value>
+  </data>
+  <data name="ASBox_NoItems_Msg" xml:space="preserve">
+    <value>nog geen items beschikbaar</value>
+  </data>
+  <data name="ASBox_SelectItem_Msg" xml:space="preserve">
+    <value>selecteer item</value>
+  </data>
 </root>

@@ -1,6 +1,6 @@
-﻿//using CoinGecko.Clients;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -12,7 +12,6 @@ using CryptoPortfolioTracker.ViewModels;
 using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
@@ -62,7 +61,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
                 await UpdatePricesAllCoins();
             }
         }
-        catch (OperationCanceledException ex)
+        catch (OperationCanceledException)
         {
             Logger.Information("PriceUpdateService canceled");
         }
@@ -94,18 +93,17 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         //cut nr of coins in pieces here instead of in GetMeket.... 
         // and update prices also in smaller portions.
         // this prevents having a huge request-url
-        int dataPerPage = 100;
-        int nrOfPages = Convert.ToInt16(Math.Ceiling((double)coinIds.Count / dataPerPage));
-        Result<bool> result = new Result<bool>();
+        var dataPerPage = 100;
+        var nrOfPages = Convert.ToInt16(Math.Ceiling((double)coinIds.Count / dataPerPage));
+        Result<bool> result = new Result<bool>() ;
 
         string[] coinIdsPerPage = SplitCoinIdsPerPageAndJoin(coinIds, dataPerPage, nrOfPages);
 
-        for (int pageNr = 1; pageNr <= nrOfPages; pageNr++)
+        for (var pageNr = 1; pageNr <= nrOfPages; pageNr++)
         {
             var coinMarketsResult = await GetMarketDataFromGecko(coinIdsPerPage[pageNr - 1], dataPerPage);
-            result = coinMarketsResult.Match<Result<bool>>(
-               Succ: m => UpdatePricesWithMarketData(m).Result,
-               Fail: err => new Result<bool>(err));
+            coinMarketsResult.IfSucc(async list => result = await UpdatePricesWithMarketData(list));
+            coinMarketsResult.IfFail(err => result = new Result<bool>(err));
 
             if (nrOfPages > 1) await Task.Delay(TimeSpan.FromSeconds(30));
             await coinContext.SaveChangesAsync();
@@ -121,7 +119,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         List<string> shiftedCoinIds = new List<string>();
 
         int j;
-        for (int i = startIndex; i < _coinIds.Count + startIndex; i++)
+        for (var i = startIndex; i < _coinIds.Count + startIndex; i++)
         {
             if (i >= _coinIds.Count)
             {
@@ -139,12 +137,12 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
     private string[] SplitCoinIdsPerPageAndJoin(List<string> coinIds, int dataPerPage, int nrOfPages)
     {
         string[] coinIdsPerPage = new string[nrOfPages];
-        int dataToGo = coinIds.Count;
+        var dataToGo = coinIds.Count;
         try
         {
-            for (int pageNr = 1; pageNr <= nrOfPages; pageNr++)
+            for (var pageNr = 1; pageNr <= nrOfPages; pageNr++)
             {
-                int dataToTake = dataToGo <= dataPerPage ? dataToGo : dataPerPage;
+                var dataToTake = dataToGo <= dataPerPage ? dataToGo : dataPerPage;
                 coinIdsPerPage[pageNr - 1] = string.Join(",", coinIds.ToArray(), (pageNr - 1) * dataPerPage, dataToTake);
                 dataToGo -= dataToTake;
             }
@@ -158,10 +156,8 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
 
     private async Task<Result<List<CoinMarkets>>> GetMarketDataFromGecko(string coinIds, int dataPerPage)
     {
-        //int EventualSuccesses = 0;
-        int Retries = 0;
-        //int EventualFailures = 0;
-        int TotalRequests = 0;
+        var Retries = 0;
+        var TotalRequests = 0;
 
         CancellationTokenSource tokenSource2 = new CancellationTokenSource();
         CancellationToken cancellationToken = tokenSource2.Token;
@@ -241,7 +237,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             coinResult.IfFail(err => error = err);
         }
         AssetsViewModel.Current.CalculateAssetsTotalValues();
-        return error != null ? true : new Result<bool>(error);
+        return error == null ? true : new Result<bool>(error);
     }
 
     private async Task<Result<Coin>> UpdatePriceCoin(CoinMarkets coinData)
@@ -265,11 +261,11 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             coinContext.Coins.Update(coin);
 
             var list = AssetsViewModel.Current.ListAssetTotals;
-            var asset = list.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
-            if (asset != null && oldPrice != newPrice)
+            var asset = list is not null ? list.Where(a => a.Coin.Id == coin.Id).SingleOrDefault() : null;
+            if (asset != null && list != null && oldPrice != newPrice)
             {
                 Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
-                int index = -1;
+                var index = -1;
                 for (var i = 0; i < list.Count; i++)
                 {
                     if (list[i].Coin.Id == asset.Coin.Id)
@@ -278,9 +274,8 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
                         break;
                     }
                 }
-                var assetTotals = AssetsViewModel.Current.ListAssetTotals[index];
-                AssetsViewModel.Current.ListAssetTotals[index].Coin = coin;
-                AssetsViewModel.Current.ListAssetTotals[index].MarketValue = assetTotals.Qty * coin.Price;
+                list[index].Coin = coin;
+                list[index].MarketValue = list[index].Qty * coin.Price;
             }
         }
         catch (Exception ex)
