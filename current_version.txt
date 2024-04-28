@@ -1,1 +1,1 @@
-1.0.4.0=https://marcel-osft.github.io/CryptoPortfolioTracker/CryptoPortfolioTracker_setup_v1-0-4-0.exe
+1.0.4.1=https://marcel-osft.github.io/CryptoPortfolioTracker/CryptoPortfolioTracker_setup_v1-0-4-1.exe
