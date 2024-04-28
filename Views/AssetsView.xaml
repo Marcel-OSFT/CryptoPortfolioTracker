@@ -12,6 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:CryptoPortfolioTracker.Controls" 
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
+    Loading="View_Loading"
     mc:Ignorable="d">
 
     <Page.Resources>

@@ -1,6 +1,3 @@
-//using CoinGecko.Clients;
-//using CoinGecko.Interfaces;
-//using CoinGecko.Parameters;
 using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Xaml.Controls;
 using WinUI3Localizer;

@@ -1,7 +1,4 @@
-﻿
-//using CoinGecko.ApiEndPoints;
-//using CoinGecko.Clients;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,15 +20,8 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class CoinLibraryViewModel : BaseViewModel
 {
-    #region Fields related to the MVVM design pattern
     public static CoinLibraryViewModel Current;
-    #endregion Fields related to the MVVM design pattern
-
-    #region instances related to Services
     public readonly ILibraryService _libraryService;
-    #endregion instances related to Services
-
-    #region Fields and Proporties for DataBinding with the View
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
@@ -41,33 +31,39 @@ public partial class CoinLibraryViewModel : BaseViewModel
 
     public static AddCoinDialog dialog;
 
-    #endregion variables and proporties for DataBinding with the View
-
     public static List<CoinList> coinListGecko;
     public static List<string> searchListGecko;
 
 
     public CoinLibraryViewModel(ILibraryService libraryService)
     {
-        //Logger = Log.Logger.ForContext<CoinLibraryViewModel>();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(CoinLibraryViewModel).Name.PadRight(22));
         Current = this;
         IsAllCoinDataRetrieved = false;
         _libraryService = libraryService;
-        SetDataSource().ConfigureAwait(false);
-        RetrieveAllCoinData();
     }
 
 
     #region MAIN methods or Tasks
-    private async Task SetDataSource()
+    /// <summary>
+    /// SetDataSource async task is called from the View_Loading event of the associated View
+    /// this to prevent to have it called from the ViewModels constructor
+    /// </summary>
+    /// <returns></returns>
+    public async Task SetDataSource()
     {
         (await _libraryService.GetCoinsOrderedByRank())
             .IfSucc(list => ListCoins = new ObservableCollection<Coin>(list));
     }
-    public async void RetrieveAllCoinData()
+    /// <summary>
+    /// RetrieveAllCoinData async task is called from the View_Loading event of the associated View
+    /// this to prevent to have it called from the ViewModels constructor
+    /// </summary>
+    /// <returns></returns>
+    public async Task RetrieveAllCoinData()
     {
         Logger.Information("Retrieved Coin List from CoinGecko");
+
         (await _libraryService.GetCoinListFromGecko())
             .IfSucc(list =>
             {
@@ -188,7 +184,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     }
     private bool CanDeleteCoin(Coin coin)
     {
-        bool result = false;
+        var result = false;
         try
         {
             result = !ListCoins.Where(x => x.ApiId.ToLower() == coin.ApiId.ToLower()).Single().IsAsset;

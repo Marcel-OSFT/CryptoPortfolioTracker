@@ -8,7 +8,7 @@ namespace CryptoPortfolioTracker.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if ((string)value == string.Empty) return null;
+            if ((string)value == string.Empty) return new BitmapImage();
             return new BitmapImage(new Uri((string)value));
         }
 

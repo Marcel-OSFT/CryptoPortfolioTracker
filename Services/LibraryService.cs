@@ -14,236 +14,231 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Polly;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
-//using PollyDemos.OutputHelpers;
-//using CoinGecko.Interfaces;
 using Exception = System.Exception;
 
-namespace CryptoPortfolioTracker.Services
+namespace CryptoPortfolioTracker.Services;
+
+public class LibraryService : ILibraryService
 {
-    public class LibraryService : ILibraryService
+    private readonly PortfolioContext context;
+
+    public LibraryService(PortfolioContext portfolioContext)
     {
-        private readonly PortfolioContext context;
+        context = portfolioContext;
+    }
 
-        public LibraryService(PortfolioContext portfolioContext)
+    public async Task<Result<bool>> CreateCoin(Coin newCoin)
+    {
+        var _result = false;
+
+        if (newCoin == null) { return _result; }
+        try
         {
-            context = portfolioContext;
+            context.Coins.Add(newCoin);
+            _result = await context.SaveChangesAsync() > 0;
         }
-
-        public async Task<Result<bool>> CreateCoin(Coin newCoin)
+        catch (Exception ex)
         {
-            bool _result = false;
+            return new Result<bool>(ex);
+        }
+        return _result;
+    }
 
-            if (newCoin == null) { return _result; }
+    public async Task<Result<Coin>> GetCoin(string coinId)
+    {
+        Coin coin = null;
+        if (coinId == null || coinId == "") { return new Coin(); }
+        try
+        {
+            coin = await context.Coins.Where(x => x.ApiId.ToLower() == coinId.ToLower()).SingleAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<Coin>(ex);
+        }
+        return coin;
+    }
+
+    public async Task<Result<List<Coin>>> GetCoinsOrderedByRank()
+    {
+        List<Coin> coinList = null;
+        try
+        {
+            coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<Coin>>(ex);
+        }
+        return coinList != null ? coinList : new List<Coin>();
+    }
+
+    public async Task<Result<bool>> RemoveCoin(Coin coin)
+    {
+        bool _result;
+        if (coin == null) { return false; }
+        try
+        {
+            var coinToRemove = await context.Coins.Where(x => x.ApiId == coin.ApiId).SingleAsync();
+            context.Coins.Remove(coinToRemove);
+            _result = await context.SaveChangesAsync() > 0;
+        }
+        catch (Exception ex)
+        {
+            return new Result<bool>(ex);
+        }
+        return _result;
+    }
+
+    public async Task<Result<List<CoinList>>> GetCoinListFromGecko()
+    {
+        var Retries = 0;
+
+        CancellationTokenSource tokenSource2 = new CancellationTokenSource();
+        CancellationToken cancellationToken = tokenSource2.Token;
+
+        var strategy = new ResiliencePipelineBuilder().AddRetry(new()
+        {
+            ShouldHandle = new PredicateBuilder().Handle<Exception>(),
+            MaxRetryAttempts = 5,
+            Delay = System.TimeSpan.FromSeconds(30), // Wait between each try
+            OnRetry = args =>
+            {
+                var exception = args.Outcome.Exception!;
+                Retries++;
+                return default;
+            }
+        }).Build();
+
+        List<CoinList> coinList = null;
+
+        HttpClient httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
+        JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+
+        CoinGeckoClient coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
+        //bool isValidResult;
+
+        Exception error = null;
+        while (!cancellationToken.IsCancellationRequested)
+        {
             try
             {
-                context.Coins.Add(newCoin);
-                _result = await context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                return new Result<bool>(ex);
-            }
-            return _result;
-        }
+                await strategy.ExecuteAsync(async token =>
+                {
+                    coinList = await coinsClient.Coins.List.GetAsync<List<CoinList>>();
 
-        public async Task<Result<Coin>> GetCoin(string coinId)
+                }, cancellationToken);
+            }
+            catch (System.Exception ex)
+            {
+                error = ex;
+            }
+            finally
+            {
+                tokenSource2.Cancel();
+                tokenSource2.Dispose();
+            }
+        }
+        if (error != null) return new Result<List<CoinList>>(error);
+        return coinList;
+    }
+
+    public async Task<Result<CoinFullDataById>> GetCoinDetails(string coinId)
+    {
+        var Retries = 0;
+        if (coinId == null || coinId == "") { return new Result<CoinFullDataById>(); }
+
+        CancellationTokenSource tokenSource2 = new CancellationTokenSource();
+        CancellationToken cancellationToken = tokenSource2.Token;
+
+        var strategy = new ResiliencePipelineBuilder().AddRetry(new()
         {
-            Coin coin = null;
-            if (coinId == null || coinId == "") { return new Coin(); }
+            ShouldHandle = new PredicateBuilder().Handle<Exception>(),
+            MaxRetryAttempts = 5,
+            Delay = System.TimeSpan.FromSeconds(30), // Wait between each try
+            OnRetry = args =>
+            {
+                var exception = args.Outcome.Exception!;
+                Retries++;
+                if (Retries > 0)
+                {
+                    if (AddCoinDialog.Current != null) AddCoinDialog.Current.ShowBePatienceNotice();
+                }
+                return default;
+            }
+        }).Build();
+
+        CoinFullDataById coinFullDataById = null;
+
+        HttpClient httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
+        JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+
+        CoinGeckoClient coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
+        //bool isValidResult;
+
+        Exception error = null;
+        while (!cancellationToken.IsCancellationRequested)
+        {
             try
             {
-                coin = await context.Coins.Where(x => x.ApiId.ToLower() == coinId.ToLower()).SingleAsync();
-            }
-            catch (Exception ex)
-            {
-                return new Result<Coin>(ex);
-            }
-            return coin;
-        }
 
-        public async Task<Result<List<Coin>>> GetCoinsOrderedByRank()
+                await strategy.ExecuteAsync(async token =>
+                {
+                    coinFullDataById = await coinsClient.Coins[coinId].GetAsync<CoinFullDataById>();
+                }, cancellationToken);
+            }
+            catch (System.Exception ex)
+            {
+                error = ex;
+            }
+            finally
+            {
+                tokenSource2.Cancel();
+                tokenSource2.Dispose();
+            }
+        }
+        //CoinLibraryViewModel.Current.dialog.bePatientText.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+
+        if (error != null) return new Result<CoinFullDataById>(error);
+        return coinFullDataById;
+    }
+
+    public async Task<Result<bool>> UpdateNote(Coin coin, string note)
+    {
+        bool result;
+        if (coin.Note == note) { return false; }
+        try
         {
-            List<Coin> coinList = null;
-            try
-            {
-                coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                return new Result<List<Coin>>(ex);
-            }
-            return coinList != null ? coinList : new List<Coin>();
+            coin.Note = note;
+            context.Coins.Update(coin);
+            result = await context.SaveChangesAsync() > 0;
         }
-
-        public async Task<Result<bool>> RemoveCoin(Coin coin)
+        catch (Exception ex)
         {
-            bool _result;
-            if (coin == null) { return false; }
-            try
-            {
-                var coinToRemove = await context.Coins.Where(x => x.ApiId == coin.ApiId).SingleAsync();
-                context.Coins.Remove(coinToRemove);
-                _result = await context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                return new Result<bool>(ex);
-            }
-            return _result;
+            RejectChanges();
+            return new Result<bool>(ex);
         }
+        return result;
+    }
 
-        public async Task<Result<List<CoinList>>> GetCoinListFromGecko()
+    public void RejectChanges()
+    {
+        foreach (var entry in context.ChangeTracker.Entries())
         {
-            int Retries = 0;
-
-            CancellationTokenSource tokenSource2 = new CancellationTokenSource();
-            CancellationToken cancellationToken = tokenSource2.Token;
-
-            var strategy = new ResiliencePipelineBuilder().AddRetry(new()
+            switch (entry.State)
             {
-                ShouldHandle = new PredicateBuilder().Handle<Exception>(),
-                MaxRetryAttempts = 5,
-                Delay = System.TimeSpan.FromSeconds(30), // Wait between each try
-                OnRetry = args =>
-                {
-                    var exception = args.Outcome.Exception!;
-                    Retries++;
-                    return default;
-                }
-            }).Build();
-
-            List<CoinList> coinList = null;
-
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
-            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
-
-            CoinGeckoClient coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
-            //bool isValidResult;
-
-            Exception error = null;
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                try
-                {
-                    await strategy.ExecuteAsync(async token =>
-                    {
-                        coinList = await coinsClient.Coins.List.GetAsync<List<CoinList>>();
-
-                    }, cancellationToken);
-                }
-                catch (System.Exception ex)
-                {
-                    error = ex;
-                }
-                finally
-                {
-                    tokenSource2.Cancel();
-                    tokenSource2.Dispose();
-                }
-            }
-            if (error != null) return new Result<List<CoinList>>(error);
-            return coinList;
-        }
-
-        public async Task<Result<CoinFullDataById>> GetCoinDetails(string coinId)
-        {
-            int Retries = 0;
-            if (coinId == null || coinId == "") { return new Result<CoinFullDataById>(); }
-
-            CancellationTokenSource tokenSource2 = new CancellationTokenSource();
-            CancellationToken cancellationToken = tokenSource2.Token;
-
-            var strategy = new ResiliencePipelineBuilder().AddRetry(new()
-            {
-                ShouldHandle = new PredicateBuilder().Handle<Exception>(),
-                MaxRetryAttempts = 5,
-                Delay = System.TimeSpan.FromSeconds(30), // Wait between each try
-                OnRetry = args =>
-                {
-                    var exception = args.Outcome.Exception!;
-                    Retries++;
-                    if (Retries > 0)
-                    {
-                        if (AddCoinDialog.Current != null) AddCoinDialog.Current.ShowBePatienceNotice();
-                    }
-                    return default;
-                }
-            }).Build();
-
-            CoinFullDataById coinFullDataById = null;
-
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
-            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
-
-            CoinGeckoClient coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
-            //bool isValidResult;
-
-            Exception error = null;
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                try
-                {
-
-                    await strategy.ExecuteAsync(async token =>
-                    {
-                        coinFullDataById = await coinsClient.Coins[coinId].GetAsync<CoinFullDataById>();
-                    }, cancellationToken);
-                }
-                catch (System.Exception ex)
-                {
-                    error = ex;
-                }
-                finally
-                {
-                    tokenSource2.Cancel();
-                    tokenSource2.Dispose();
-                }
-            }
-            //CoinLibraryViewModel.Current.dialog.bePatientText.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-
-            if (error != null) return new Result<CoinFullDataById>(error);
-            return coinFullDataById;
-        }
-
-        public async Task<Result<bool>> UpdateNote(Coin coin, string note)
-        {
-            bool result;
-            if (coin.Note == note) { return false; }
-            try
-            {
-                coin.Note = note;
-                context.Coins.Update(coin);
-                result = await context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                RejectChanges();
-                return new Result<bool>(ex);
-            }
-            return result;
-        }
-
-        public void RejectChanges()
-        {
-            foreach (var entry in context.ChangeTracker.Entries())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Modified:
-                    case EntityState.Deleted:
-                        entry.State = EntityState.Modified; //Revert changes made to deleted entity.
-                        entry.State = EntityState.Unchanged;
-                        break;
-                    case EntityState.Added:
-                        entry.State = EntityState.Detached;
-                        break;
-                }
+                case EntityState.Modified:
+                case EntityState.Deleted:
+                    entry.State = EntityState.Modified; //Revert changes made to deleted entity.
+                    entry.State = EntityState.Unchanged;
+                    break;
+                case EntityState.Added:
+                    entry.State = EntityState.Detached;
+                    break;
             }
         }
-
-
     }
 
 

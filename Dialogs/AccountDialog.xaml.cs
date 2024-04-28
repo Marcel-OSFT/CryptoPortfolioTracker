@@ -1,71 +1,67 @@
 using CryptoPortfolioTracker.Enums;
-//using CoinGecko.Clients;
-//using CoinGecko.Interfaces;
-//using CoinGecko.Parameters;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using WinUI3Localizer;
 
-namespace CryptoPortfolioTracker.Dialogs
+namespace CryptoPortfolioTracker.Dialogs;
+
+public sealed partial class AccountDialog : ContentDialog
 {
-    public sealed partial class AccountDialog : ContentDialog
+    public readonly AccountsViewModel _viewModel;
+    public Account? newAccount;
+    private readonly Account _accountToEdit;
+
+    private readonly ILocalizer loc = Localizer.Get();
+
+    public AccountDialog(AccountsViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Account? accountToEdit = null)
     {
-        public readonly AccountsViewModel _viewModel;
-        public Account newAccount;
-        private readonly Account _accountToEdit;
+        this.InitializeComponent();
 
-        private ILocalizer loc = Localizer.Get();
+        _viewModel = viewModel;
+        _accountToEdit = accountToEdit;
+        SetDialogTitleAndButtons(dialogAction);
+    }
 
-        public AccountDialog(AccountsViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Account accountToEdit = null)
+    private void SetDialogTitleAndButtons(DialogAction dialogAction)
+    {
+        if (dialogAction == DialogAction.Edit)
         {
-            this.InitializeComponent();
-
-            _viewModel = viewModel;
-            _accountToEdit = accountToEdit;
-            SetDialogTitleAndButtons(dialogAction);
+            AccountNameText.Text = _accountToEdit.Name;
+            DescriptionText.Text = _accountToEdit.About;
+            Title = loc.GetLocalizedString("AccountDialog_Title_Edit");
+            PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Edit");
+            CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
+            IsPrimaryButtonEnabled = false;
         }
-
-        private void SetDialogTitleAndButtons(DialogAction dialogAction)
+        else
         {
-            if (dialogAction == DialogAction.Edit)
-            {
-                AccountNameText.Text = _accountToEdit.Name;
-                DescriptionText.Text = _accountToEdit.About;
-                Title = loc.GetLocalizedString("AccountDialog_Title_Edit");
-                PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Edit");
-                CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
-                IsPrimaryButtonEnabled = false;
-            }
-            else
-            {
-                Title = loc.GetLocalizedString("AccountDialog_Title_Add");
-                PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Add");
-                CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
-                IsPrimaryButtonEnabled = false;
-            }
+            Title = loc.GetLocalizedString("AccountDialog_Title_Add");
+            PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Add");
+            CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
+            IsPrimaryButtonEnabled = false;
         }
+    }
 
-        private void Button_Click_AcceptAccount(ContentDialog sender, ContentDialogButtonClickEventArgs e)
+    private void Button_Click_AcceptAccount(ContentDialog sender, ContentDialogButtonClickEventArgs e)
+    {
+        var account = new Account
         {
-            Account account = new Account
-            {
-                Name = AccountNameText.Text,
-                About = DescriptionText.Text,
-            };
+            Name = AccountNameText.Text,
+            About = DescriptionText.Text,
+        };
 
-            newAccount = account;
-        }
+        newAccount = account;
+    }
 
-        private void AccountName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
-        {
-            IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0 ? true : false;
-        }
+    private void AccountName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+    {
+        IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0 ? true : false;
+    }
 
-        private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-        {
-            if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
-        }
+    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
+        if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
     }
 }
 

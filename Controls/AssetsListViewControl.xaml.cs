@@ -7,36 +7,37 @@ using Microsoft.UI.Xaml.Controls;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace CryptoPortfolioTracker.Controls
+namespace CryptoPortfolioTracker.Controls;
+
+public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
 {
-    public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
+    // public readonly AssetsViewModel _viewModel;
+    public static AssetsListViewControl Current;
+
+    //***********************************************//
+    //** All databound fields are in the viewModel**//
+    //*********************************************//
+
+
+    public AssetsListViewControl()
     {
-        // public readonly AssetsViewModel _viewModel;
-        public static AssetsListViewControl Current;
+        this.InitializeComponent();
+        Current = this;
 
-        //***********************************************//
-        //** All databound fields are in the viewModel**//
-        //*********************************************//
+    }
 
-
-        public AssetsListViewControl()
+    private void AssetsListView_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (sender is ListView listView)
         {
-            this.InitializeComponent();
-            Current = this;
-
+            listView.ScrollIntoView(listView.SelectedItem);
         }
+    }
 
-        private void AssetsListView_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (sender == null) return;
-            (sender as ListView).ScrollIntoView((sender as ListView).SelectedItem);
-        }
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

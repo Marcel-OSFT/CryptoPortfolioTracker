@@ -9,7 +9,7 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
-   
+   Loading="View_Loading"
     mc:Ignorable="d">
     <Page.Resources>
         <converters:ColourConverter x:Key="myColourConverter"/>

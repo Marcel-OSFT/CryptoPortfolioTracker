@@ -9,213 +9,184 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+namespace CryptoPortfolioTracker.Controls;
 
-namespace CryptoPortfolioTracker.Controls
+
+public enum MyEnum
+{
+    RegExDecimal,
+    RegExPositiveDecimal,
+    RegExInt,
+    RegExPositiveInt,
+    RegExEmail,
+    RegExPhone
+}
+
+public class RegExTextBox : TextBox, INotifyPropertyChanged
 {
 
-    public enum MyEnum
+    public event EventHandler? TextChanged;
+    public event EventHandler<PointerRoutedEventArgs> PointerPressed;
+
+    public RegExTextBox()
     {
-        RegExDecimal,
-        RegExPositiveDecimal,
-        RegExInt,
-        RegExPositiveInt,
-        RegExEmail,
-        RegExPhone
+        this.DefaultStyleKey = typeof(TextBox);
+        this.AddHandler(TextBox.PointerPressedEvent, new PointerEventHandler(This_PointerPressed), true);
+        
     }
 
-    public class RegExTextBox : TextBox, INotifyPropertyChanged
+    protected override void OnApplyTemplate()
+    {
+        if (CustomRegEx != null && CustomRegEx != "") regExChoosen = CustomRegEx;
+        TextBoxExtensions.SetValidationMode(this, TextBoxExtensions.ValidationMode.Forced);
+
+        (this as TextBox).TextChanged += TextEntryChanged;
+        if (AnimateBorder) InitBorderBrush();
+
+        base.OnApplyTemplate();
+    }
+
+
+    public bool AnimateBorder { get; set; } = true;
+    public bool IsZeroAllowed { get; set; } = true;
+    private static string? regExChoosen;
+
+    public bool IsEntryValid
+    {
+        get => (bool)GetValue(IsEntryValidProperty);
+        set => SetValue(IsEntryValidProperty, value);
+    }
+    public MyEnum RegEx
+    {
+        get => (MyEnum)GetValue(RegExProperty);
+        set => SetValue(RegExProperty, value);
+    }
+    private string customRegEx;
+    public string CustomRegEx
+    {
+        get => customRegEx;
+        set
+        {
+            if (value == customRegEx) return;
+            customRegEx = value;
+            TextBoxExtensions.SetRegex(this, customRegEx);
+            OnPropertyChanged();
+        }
+    }
+    public string MyText
+    {
+        get => (string)GetValue(MyTextProperty);
+        set => SetValue(MyTextProperty, value);
+    }
+
+    // Using a DependencyProperty as the backing store for Ownenum.  This enables animation, styling, binding, etc...  
+    public static readonly DependencyProperty RegExProperty = DependencyProperty.Register("RegEx", typeof(MyEnum), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(RegExChangedCallBack)));
+    public static readonly DependencyProperty IsEntryValidProperty = DependencyProperty.Register("IsEntryValid", typeof(bool), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryValidChangedCallBack)));
+    public static readonly DependencyProperty MyTextProperty = DependencyProperty.Register("MyText", typeof(string), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(MyTextEntryChangedCallBack)));
+
+
+    private static MyEnum SelectedRegEx;
+
+    private static void MyTextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
 
-        public event EventHandler TextChanged;
-        public event EventHandler<PointerRoutedEventArgs> PointerPressed;
+    }
 
-        public RegExTextBox()
+    private static void IsEntryValidChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if ((d is RegExTextBox tbox) && tbox.AnimateBorder)
         {
-            this.DefaultStyleKey = typeof(TextBox);
-            this.AddHandler(TextBox.PointerPressedEvent, new PointerEventHandler(This_PointerPressed), true);
-
+            tbox.SetBorderColor();
         }
+    }
 
-        protected override void OnApplyTemplate()
+
+
+    private void TextEntryChanged(object sender, RoutedEventArgs e)
+    {
+        // Raise an event on the custom control when 'like' is clicked
+
+        if ((this.Text == "" || (this.Text == "0" && !IsZeroAllowed)) && SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone)
         {
-            if (CustomRegEx != null && CustomRegEx != "") regExChoosen = CustomRegEx;
-            //Text = "0";
-            //TextBoxExtensions.SetRegex(this, regExChoosen);
-            TextBoxExtensions.SetValidationMode(this, TextBoxExtensions.ValidationMode.Forced);
-
-            (this as TextBox).TextChanged += TextEntryChanged;
-            if (AnimateBorder) InitBorderBrush();
-
-            base.OnApplyTemplate();
+            IsEntryValid = false;
+            Debug.WriteLine("GetIsValid(1) - " + TextBoxExtensions.GetIsValid(this).ToString());
         }
-
-
-        //private bool isEntryValid;
-        public bool AnimateBorder { get; set; } = true;
-        public bool IsZeroAllowed { get; set; } = true;
-        private static string regExChoosen;
-
-        public bool IsEntryValid
+        else
         {
-            get
-            {
-                return (bool)GetValue(IsEntryValidProperty);
-            }
-            set
-            {
-                SetValue(IsEntryValidProperty, value);
-            }
+            IsEntryValid = TextBoxExtensions.GetIsValid(this);
+            Debug.WriteLine("GetIsValid(2) - " + TextBoxExtensions.GetIsValid(this).ToString());
+
         }
-        public MyEnum RegEx
+        Debug.WriteLine("GetRegEx - " + TextBoxExtensions.GetRegex(this).ToString());
+        Debug.WriteLine("Text is now - " + this.Text);
+        OnPropertyChanged(nameof(this.Text));
+        TextChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void SetBorderColor()
+    {
+        if (IsEntryValid)
         {
-            get
-            {
-                return (MyEnum)GetValue(RegExProperty);
-            }
-            set
-            {
-                SetValue(RegExProperty, value);
-            }
+            this.BorderBrush = new SolidColorBrush(Colors.Green);
         }
-        private string customRegEx;
-        public string CustomRegEx
+        else this.BorderBrush = new SolidColorBrush(Colors.Red);
+    }
+    private void InitBorderBrush()
+    {
+        if (this.Text == "0" && !IsZeroAllowed && SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone)
         {
-            get
-            {
-                return customRegEx;
-            }
-            set
-            {
-                if (value == customRegEx) return;
-                customRegEx = value;
-                TextBoxExtensions.SetRegex(this, customRegEx);
-                OnPropertyChanged();
-            }
+            this.BorderBrush = new SolidColorBrush(Colors.Green);
         }
-        public string MyText
+    }
+
+    private static void RegExChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {   // process logic  
+        var control = d as RegExTextBox;
+
+        SelectedRegEx = (MyEnum)e.NewValue;
+        switch (SelectedRegEx)
         {
-            get
-            {
-                return (string)GetValue(MyTextProperty);
-            }
-            set
-            {
-                SetValue(MyTextProperty, value);
-            }
+            case MyEnum.RegExPositiveDecimal:
+                regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." 
+                    ? App.Current.Resources["RegExPositiveDecimalEn"] as string 
+                    : App.Current.Resources["RegExPositiveDecimalNl"] as string;
+                break;
+            case MyEnum.RegExPositiveInt:
+                regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." 
+                    ? App.Current.Resources["RegExPositiveIntEn"] as string 
+                    : App.Current.Resources["RegExPositiveIntNl"] as string;
+                break;
+            case MyEnum.RegExEmail:
+                regExChoosen = App.Current.Resources["RegExEmail"] as string;
+                break;
+            case MyEnum.RegExPhone:
+                // To-Do -> regExChoosen = @"^([0 - 9]) * (\.[0 - 9]+)?$";
+                break;
+            case MyEnum.RegExDecimal:
+                regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." 
+                    ? App.Current.Resources["RegExDecimalEn"] as string 
+                    : App.Current.Resources["RegExDecimalNl"] as string;
+                break;
+            case MyEnum.RegExInt:
+                regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." 
+                    ? App.Current.Resources["RegExIntEn"] as string 
+                    : App.Current.Resources["RegExIntNl"] as string;
+                break;
+            default:
+                break;
         }
-
-        // Using a DependencyProperty as the backing store for Ownenum.  This enables animation, styling, binding, etc...  
-        public static readonly DependencyProperty RegExProperty = DependencyProperty.Register("RegEx", typeof(MyEnum), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(RegExChangedCallBack)));
-        public static readonly DependencyProperty IsEntryValidProperty = DependencyProperty.Register("IsEntryValid", typeof(bool), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryValidChangedCallBack)));
-        public static readonly DependencyProperty MyTextProperty = DependencyProperty.Register("MyText", typeof(string), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(MyTextEntryChangedCallBack)));
-
-
-        private static MyEnum SelectedRegEx;
-
-        private static void MyTextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-
-        }
-
-        private static void IsEntryValidChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if ((d as RegExTextBox).AnimateBorder)
-            {
-                (d as RegExTextBox).SetBorderColor();
-            }
-        }
-
-
-
-        private void TextEntryChanged(object sender, RoutedEventArgs e)
-        {
-            // Raise an event on the custom control when 'like' is clicked
-
-            if ((this.Text == "" || (this.Text == "0" && !IsZeroAllowed)) && SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone)
-            {
-                IsEntryValid = false;
-                Debug.WriteLine("GetIsValid(1) - " + TextBoxExtensions.GetIsValid(this).ToString());
-            }
-            else
-            {
-                IsEntryValid = TextBoxExtensions.GetIsValid(this);
-                Debug.WriteLine("GetIsValid(2) - " + TextBoxExtensions.GetIsValid(this).ToString());
-
-            }
-            Debug.WriteLine("GetRegEx - " + TextBoxExtensions.GetRegex(this).ToString());
-            Debug.WriteLine("Text is now - " + this.Text);
-            OnPropertyChanged(nameof(this.Text));
-            TextChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void SetBorderColor()
-        {
-            if (IsEntryValid)
-            {
-                this.BorderBrush = new SolidColorBrush(Colors.Green);
-            }
-            else this.BorderBrush = new SolidColorBrush(Colors.Red);
-        }
-        private void InitBorderBrush()
-        {
-            if (this.Text == "0" && !IsZeroAllowed && SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone)
-            {
-                this.BorderBrush = new SolidColorBrush(Colors.Green);
-            }
-        }
-
-        private static void RegExChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   // process logic  
-            var control = d as RegExTextBox;
-
-            SelectedRegEx = (MyEnum)e.NewValue;
-            switch (SelectedRegEx)
-            {
-                case MyEnum.RegExPositiveDecimal:
-                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?
-                        App.Current.Resources["RegExPositiveDecimalEn"] as string :
-                            App.Current.Resources["RegExPositiveDecimalNl"] as string;
-                    break;
-                case MyEnum.RegExPositiveInt:
-                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?
-                        App.Current.Resources["RegExPositiveIntEn"] as string :
-                            App.Current.Resources["RegExPositiveIntNl"] as string;
-                    break;
-                case MyEnum.RegExEmail:
-                    regExChoosen = App.Current.Resources["RegExEmail"] as string;
-                    break;
-                case MyEnum.RegExPhone:
-                    // To-Do -> regExChoosen = @"^([0 - 9]) * (\.[0 - 9]+)?$";
-                    break;
-                case MyEnum.RegExDecimal:
-                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?
-                        App.Current.Resources["RegExDecimalEn"] as string :
-                            App.Current.Resources["RegExDecimalNl"] as string;
-                    break;
-                case MyEnum.RegExInt:
-                    regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." ?
-                        App.Current.Resources["RegExIntEn"] as string :
-                            App.Current.Resources["RegExIntNl"] as string;
-                    break;
-                default:
-                    break;
-            }
-            TextBoxExtensions.SetRegex(control, regExChoosen);
-
-        }
-
-        private void This_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            PointerPressed?.Invoke(this, e);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
+        TextBoxExtensions.SetRegex(control, regExChoosen);
 
     }
+
+    private void This_PointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        PointerPressed?.Invoke(this, e);
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
 
 }
