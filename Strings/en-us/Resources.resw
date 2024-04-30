@@ -674,4 +674,7 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="ASBox_SelectItem_Msg" xml:space="preserve">
     <value>select item</value>
   </data>
+  <data name="ASBox_NoSuitableItems_Msg" xml:space="preserve">
+    <value>No results found</value>
+  </data>
 </root>

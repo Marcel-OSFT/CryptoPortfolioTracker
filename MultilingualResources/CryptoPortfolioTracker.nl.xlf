@@ -750,6 +750,10 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>select item</source>
           <target state="final">selecteer item</target>
         </trans-unit>
+        <trans-unit id="ASBox_NoSuitableItems_Msg" translate="yes" xml:space="preserve">
+          <source>No results found</source>
+          <target state="final">niets gevonden</target>
+        </trans-unit>
       </group>
     </body>
   </file>

@@ -13,21 +13,19 @@ namespace CryptoPortfolioTracker.Dialogs;
 /// </summary>
 public sealed partial class DescriptionDialog : ContentDialog
 {
-    private ILocalizer loc = Localizer.Get();
+    private readonly ILocalizer loc = Localizer.Get();
     public DescriptionDialog(Coin coin)
     {
-        this.InitializeComponent();
+        InitializeComponent();
 
-        Run run = new Run();
+        var run = new Run
+        {
+            //TODO Pull Coin Description from the Web API in a localized way 
 
-        //TODO Pull Coin Description from the Web API in a localized way 
-
-        // currently the 'About' is stored in the database and never refreshed
-        // we could pull it from the Web Api in a localized way
-        run.Text = coin.About;
-
-
-
+            // currently the 'About' is stored in the database and never refreshed
+            // we could pull it from the Web Api in a localized way
+            Text = coin.About
+        };
         par.Inlines.Clear();
         par.Inlines.Add(run);
         SetDialogTitleAndButtons(coin);
@@ -42,6 +40,9 @@ public sealed partial class DescriptionDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
+        if (sender.ActualTheme != App.userPreferences.AppTheme)
+        {
+            sender.RequestedTheme = App.userPreferences.AppTheme;
+        }
     }
 }

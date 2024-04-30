@@ -19,8 +19,8 @@
                         Text="{Binding MyText, ElementName=Root, Mode=TwoWay}"
                         PlaceholderText="{Binding MyPlaceholderText, ElementName=Root, Mode=TwoWay}"
                         AutomationProperties.Name="Basic AutoSuggestBox"
-                        SuggestionChosen="innerASBox_SuggestionChosen"
-                        KeyDown="innerASBox_KeyDown"
+                        SuggestionChosen="InnerASBox_SuggestionChosen"
+                        KeyDown="InnerASBox_KeyDown"
                         />
 
 

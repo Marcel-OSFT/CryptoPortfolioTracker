@@ -17,38 +17,40 @@ namespace CryptoPortfolioTracker;
 
 public partial class MainPage : Page
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static MainPage Current;
-    private IServiceScope _currentServiceScope;
-    public LogWindow logWindow;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    private IServiceScope? _currentServiceScope;
+    public LogWindow? logWindow;
 
-    private ILogger Logger
-    {
-        get; set;
-    }
+    private ILogger Logger { get; set; }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public MainPage()
     {
         ConfigureLogger();
-        this.InitializeComponent();
+        InitializeComponent();
         Current = this;
     }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     private void ConfigureLogger()
     {
         if (App.isLogWindowEnabled)
         {
-            logWindow = new LogWindow();
-            logWindow.Title = Assembly.GetExecutingAssembly().GetName().Name.ToString() + " Event Log";
+            logWindow = new LogWindow
+            {
+                Title = Assembly.GetExecutingAssembly().GetName().Name + " Event Log"
+            };
             logWindow.Activate();
         }
-        // Logger = Log.Logger.ForContext<MainPage>();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
     }
 
     public async Task CheckUpdateNow()
     {
         Logger.Information("Checking for updates");
-        ILocalizer loc = Localizer.Get();
+        var loc = Localizer.Get();
         AppUpdater appUpdater = new();
         var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
@@ -101,17 +103,21 @@ public partial class MainPage : Page
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-        navigationView.SelectedItem = navigationView.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().First();
+        navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
     }
 
-    private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
+    private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
-        NavigationViewItem selectedItem = (Microsoft.UI.Xaml.Controls.NavigationViewItem)args.SelectedItem;
-        Type pageType;
+        var selectedItem = (NavigationViewItem)args.SelectedItem;
+        Type? pageType;
         if (args.IsSettingsSelected)
         {
             pageType = Type.GetType("CryptoPortfolioTracker.Views.SettingsView");
-            if (pageType != null) LoadView(pageType);
+            if (pageType != null)
+            {
+                LoadView(pageType);
+            }
+
             Logger.Information("Navigated to {0}", "SettingsView");
         }
         else
@@ -119,24 +125,25 @@ public partial class MainPage : Page
             if (selectedItem != null)
             {
                 pageType = Type.GetType("CryptoPortfolioTracker.Views." + (string)selectedItem.Tag);
-                if (pageType != null) LoadView(pageType);
+                if (pageType != null)
+                {
+                    LoadView(pageType);
+                }
+
                 Logger.Information("Navigated to {0}", (string)selectedItem.Tag); ;
             }
         }
     }
     private void LoadView(Type viewType)
     {
-        if (_currentServiceScope != null)
-        {
-            _currentServiceScope.Dispose();
-        }
+        _currentServiceScope?.Dispose();
         _currentServiceScope = App.Container.CreateAsyncScope();
 
         contentFrame.Content = _currentServiceScope.ServiceProvider.GetService(viewType);
     }
-    public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
+    public static async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
     {
-        ContentDialog dialog = new ContentDialog()
+        var dialog = new ContentDialog()
         {
             Title = title,
             XamlRoot = Current.XamlRoot,
@@ -151,9 +158,12 @@ public partial class MainPage : Page
 
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
     {
-        navigationView.SelectedItem = navigationView.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().First();
-        App.Splash.Close();
-        if (App.userPreferences.IsCheckForUpdate) await CheckUpdateNow();
+        navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
+        App.Splash?.Close();
+        if (App.userPreferences.IsCheckForUpdate) 
+        { 
+            await CheckUpdateNow(); 
+        }
     }
 }
 

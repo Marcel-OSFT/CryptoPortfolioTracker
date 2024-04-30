@@ -25,9 +25,11 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
 {
     private readonly DispatcherQueue dispatcherQueue;
     public readonly CoinLibraryViewModel _viewModel;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AddCoinDialog Current;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private CoinFullDataById? coinFullDataById;
-    public Coin selectedCoin;
+    public Coin? selectedCoin;
     private readonly ILocalizer loc = Localizer.Get();
 
     private List<string> coinCollection;
@@ -71,14 +73,15 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         }
     }
 
-
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AddCoinDialog(List<string> coinList, CoinLibraryViewModel viewModel)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
-        this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+        dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         CoinName = "";
         Current = this;
         CoinCollection = coinList ?? new List<string>();
-        this.InitializeComponent();
+        InitializeComponent();
         _viewModel = viewModel;
         BePatientVisibility = Visibility.Collapsed;
         SetDialogTitleAndButtons();
@@ -138,7 +141,6 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     public void ShowBePatienceNotice()
     {
         BePatientVisibility = Visibility.Visible;
-        Debug.WriteLine("set to visible");
     }
 
     private void Button_Click_AddCoin(ContentDialog sender, ContentDialogButtonClickEventArgs e)
@@ -151,22 +153,22 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
                 selectedCoin = null;
                 var coin = new Coin
                 {
-                    ApiId = coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : null,
-                    Name = coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : null,
-                    Symbol = coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : null,
-                    ImageUri = coinFullDataById.Image.Small.AbsoluteUri.Length > 0 ? coinFullDataById.Image.Small.AbsoluteUri : null,
-                    Price = (double)coinFullDataById.MarketData.CurrentPrice.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    Ath = (double)coinFullDataById.MarketData.Ath.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    Change52Week = (double)coinFullDataById.MarketData.PriceChangePercentage1YInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    Change1Month = (double)coinFullDataById.MarketData.PriceChangePercentage30DInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    MarketCap = (double)coinFullDataById.MarketData.MarketCap.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    Change24Hr = (double)coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    About = (string)coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value,
+                    ApiId = coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : string.Empty,
+                    Name = coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : string.Empty,
+                    Symbol = coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : string.Empty,
+                    ImageUri = coinFullDataById.Image.Small.AbsoluteUri.Length > 0 ? coinFullDataById.Image.Small.AbsoluteUri : string.Empty,
+                    Price = coinFullDataById.MarketData.CurrentPrice.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
+                    Ath = coinFullDataById.MarketData.Ath.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
+                    Change52Week = coinFullDataById.MarketData.PriceChangePercentage1YInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    Change1Month = coinFullDataById.MarketData.PriceChangePercentage30DInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    MarketCap = coinFullDataById.MarketData.MarketCap.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
+                    Change24Hr = coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                    About = coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value,
                     IsAsset = false,
-                    Rank = coinFullDataById.MarketCapRank != null ? (long)coinFullDataById.MarketCapRank : 99999
+                    Rank = coinFullDataById.MarketCapRank ?? 99999
                 };
 
-                if (coin.ApiId != null && coin.Name != null && coin.Symbol != null)
+                if (coin.ApiId != string.Empty && coin.Name != string.Empty && coin.Symbol != string.Empty)
                 {
                     selectedCoin = coin;
                 }
@@ -189,7 +191,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     public async Task<CoinFullDataById> GetCoinDetails(string coinId)
     {
         IsPrimaryButtonEnabled = false;
-        CoinFullDataById coinDetails = null;
+        CoinFullDataById coinDetails = new();
 
         try
         {
@@ -199,28 +201,38 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
                 var image = details.Image.Small.AbsoluteUri != null ? new BitmapImage(new Uri(base.BaseUri, details.Image.Small.AbsoluteUri)) : null;
                 CoinImage.Source = image;
 
-                var run = new Run();
-                run.Text = details.Id;
+                var run = new Run
+                {
+                    Text = details.Id
+                };
                 parId.Inlines.Clear();
                 parId.Inlines.Add(run);
 
-                run = new Run();
-                run.Text = details.Name;
+                run = new Run
+                {
+                    Text = details.Name
+                };
                 parName.Inlines.Clear();
                 parName.Inlines.Add(run);
 
-                run = new Run();
-                run.Text = details.Symbol.ToUpper();
+                run = new Run
+                {
+                    Text = details.Symbol.ToUpper()
+                };
                 parSymbol.Inlines.Clear();
                 parSymbol.Inlines.Add(run);
 
-                run = new Run();
-                run.Text = details.MarketCapRank.ToString();
+                run = new Run
+                {
+                    Text = details.MarketCapRank.ToString()
+                };
                 parRank.Inlines.Clear();
                 parRank.Inlines.Add(run);
 
-                run = new Run();
-                run.Text = details.MarketData.CurrentPrice.Where(x => x.Key == "usd").FirstOrDefault().Value.ToString();
+                run = new Run
+                {
+                    Text = details.MarketData.CurrentPrice.Where(x => x.Key == "usd").FirstOrDefault().Value.ToString()
+                };
                 parPrice.Inlines.Clear();
                 parPrice.Inlines.Add(run);
 
@@ -240,8 +252,10 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         }
         catch (Exception)
         {
-            var run = new Run();
-            run.Text = loc.GetLocalizedString("CoinDialog_GetDetails_Failed");
+            var run = new Run
+            {
+                Text = loc.GetLocalizedString("CoinDialog_GetDetails_Failed")
+            };
             parId.Inlines.Clear();
             parId.Inlines.Add(run);
         }
@@ -253,38 +267,13 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         return getCoinResult.Match(Succ: s => true, Fail: f => false);
     }
 
-    //public event PropertyChangedEventHandler PropertyChanged;
-    //protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
-    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-
-    //******* EventHandlers
-    //public event PropertyChangedEventHandler PropertyChanged;
-    //protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    //{
-    //    if (MainPage.Current == null) return;
-    //    MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
-    //    {
-    //        //Debug.WriteLine("OnPropertyChanged (BaseModel) => " + name);
-
-    //        PropertyChangedEventHandler handler = PropertyChanged;
-    //        if (handler != null)
-    //        {
-    //            handler(this, new PropertyChangedEventArgs(propertyName));
-    //        }
-    //    });
-    //}
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? name = null)
     {
-        this.dispatcherQueue.TryEnqueue(() =>
+        dispatcherQueue.TryEnqueue(() =>
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         },
         exception =>
         {
@@ -294,7 +283,10 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
+        if (sender.ActualTheme != App.userPreferences.AppTheme)
+        {
+            sender.RequestedTheme = App.userPreferences.AppTheme;
+        }
     }
 }
 

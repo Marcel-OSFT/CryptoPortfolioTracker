@@ -7,13 +7,15 @@ namespace CryptoPortfolioTracker.Views;
 public partial class AssetsView : Page, IDisposable
 {
     public readonly AssetsViewModel _viewModel;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AssetsView Current;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public AssetsView(AssetsViewModel viewModel)// ** DI of viewModel into View
     {
         Current = this;
         _viewModel = viewModel;
-        this.InitializeComponent();
+        InitializeComponent();
         DataContext = _viewModel;
         MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
     }
@@ -22,10 +24,9 @@ public partial class AssetsView : Page, IDisposable
     {
         await _viewModel.SetDataSource();
     }
-
-
-    public void Dispose()
+    public void Dispose() // Implement IDisposable
     {
+        GC.SuppressFinalize(this);
     }
 }
 

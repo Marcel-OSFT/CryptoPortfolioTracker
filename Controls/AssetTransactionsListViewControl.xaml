@@ -19,10 +19,7 @@
 
     <UserControl.Resources>
 
-        <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:DoubleToVisibilityConverter x:Key="DoubleToVisibilityConverter"/>
-        <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
         <converters:TransactionDirectionToImageConverter x:Key="TransactionDirectionConverter"/>
         <converters:TransactionTypeToStringConverter x:Key="TransactionTypeConverter"/>
@@ -62,7 +59,7 @@
 
 
         <ListView x:Name="AssetTransactionListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding ListAssetTransactions}" BorderBrush="Transparent" BorderThickness="1"                             
-                        IsItemClickEnabled="True" SelectionMode="None" ItemClick="AssetsListView_ItemClick" 
+                        IsItemClickEnabled="True" SelectionMode="None"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                         CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
 

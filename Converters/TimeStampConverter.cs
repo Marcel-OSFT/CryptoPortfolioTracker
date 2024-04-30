@@ -1,18 +1,17 @@
 ﻿using System;
 using Microsoft.UI.Xaml.Data;
 
-namespace CryptoPortfolioTracker.Converters
-{
-    public class TimeStampConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return ((DateTime)value).ToString("dd-MM-yyyy");
-        }
+namespace CryptoPortfolioTracker.Converters;
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+public class TimeStampConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        return ((DateTime)value).ToString("dd-MM-yyyy");
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -17,7 +17,7 @@ public static class TransactionKindExt
 {
     public static string AsDisplayString(this TransactionKind transactionKind)
     {
-        ILocalizer loc = Localizer.Get();
+        var loc = Localizer.Get();
 
 
         switch (transactionKind)

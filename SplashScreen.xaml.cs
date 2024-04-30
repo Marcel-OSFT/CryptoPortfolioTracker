@@ -7,29 +7,31 @@ namespace CryptoPortfolioTracker;
 
 public sealed partial class SplashScreen : Window
 {
-
     public SplashScreen()
     {
-        this.InitializeComponent();
+        InitializeComponent();
+        Title = string.Empty;
+        versionTxt.Text = App.ProductVersion;
+
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-        WindowId WndID = Win32Interop.GetWindowIdFromWindow(hwnd);
-        AppWindow appW = AppWindow.GetFromWindowId(WndID);
-        OverlappedPresenter presenter = appW.Presenter as OverlappedPresenter;
-        presenter.IsAlwaysOnTop = true;
-        presenter.IsMaximizable = false;
-        presenter.IsMinimizable = false;
-        presenter.IsResizable = false;
+        var WndID = Win32Interop.GetWindowIdFromWindow(hwnd);
+        var appW = AppWindow.GetFromWindowId(WndID);
+        var presenter = appW.Presenter as OverlappedPresenter;
+        if (presenter != null)
+        {
+            presenter.IsAlwaysOnTop = true;
+            presenter.IsMaximizable = false;
+            presenter.IsMinimizable = false;
+            presenter.IsResizable = false;
+            presenter.SetBorderAndTitleBar(false, false);
+        }
         appW.IsShownInSwitchers = false;
-        this.Title = "";
-        versionTxt.Text =App.ProductVersion;
-        
         appW.Resize(new Windows.Graphics.SizeInt32 { Width = 500, Height = 300 });
-        presenter.SetBorderAndTitleBar(false, false);
+
 #if !DEBUG
         this.CenterOnScreen();
 #endif
         
     }
-
     
 }

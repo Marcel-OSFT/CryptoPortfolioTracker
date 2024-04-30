@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SQLitePCL;
 
 namespace CryptoPortfolioTracker.Models;
 
@@ -9,6 +11,7 @@ public partial class Coin : BaseModel
     {
         isAsset = false;
         note = string.Empty;
+        Assets = new List<Asset>();
     }
 
     //*** Navigation Property
@@ -22,20 +25,20 @@ public partial class Coin : BaseModel
     }
 
     //*** Public Properties
-    [ObservableProperty] string apiId;
-    [ObservableProperty] string name;
-    [ObservableProperty] string symbol;
-    [ObservableProperty] long rank;
-    [ObservableProperty] string imageUri = string.Empty;
-    [ObservableProperty] double price;
-    [ObservableProperty] double ath;
-    [ObservableProperty] double change52Week;
-    [ObservableProperty] double change1Month;
-    [ObservableProperty] double marketCap;
-    [ObservableProperty] string about = string.Empty;
-    [ObservableProperty] double change24Hr;
-    [ObservableProperty] string note = string.Empty;
-    [ObservableProperty] bool isAsset;
+    [ObservableProperty] private string apiId = string.Empty;
+    [ObservableProperty] private string name = string.Empty;
+    [ObservableProperty] private string symbol = string.Empty;
+    [ObservableProperty] private long rank;
+    [ObservableProperty] private string imageUri = string.Empty;
+    [ObservableProperty] private double price;
+    [ObservableProperty] private double ath;
+    [ObservableProperty] private double change52Week;
+    [ObservableProperty] private double change1Month;
+    [ObservableProperty] private double marketCap;
+    [ObservableProperty] private string about = string.Empty;
+    [ObservableProperty] private double change24Hr;
+    [ObservableProperty] private string note = string.Empty;
+    [ObservableProperty] private bool isAsset;
 
 
 }

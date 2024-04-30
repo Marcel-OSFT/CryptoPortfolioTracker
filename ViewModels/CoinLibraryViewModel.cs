@@ -20,20 +20,20 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class CoinLibraryViewModel : BaseViewModel
 {
-    public static CoinLibraryViewModel Current;
     public readonly ILibraryService _libraryService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
-    bool isAllCoinDataRetrieved;
+    private bool isAllCoinDataRetrieved;
 
-    [ObservableProperty] ObservableCollection<Coin> listCoins;
+    [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AddCoinDialog dialog;
-
-    public static List<CoinList> coinListGecko;
+    public static CoinLibraryViewModel Current;
     public static List<string> searchListGecko;
-
+    public static List<CoinList> coinListGecko;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public CoinLibraryViewModel(ILibraryService libraryService)
     {
@@ -43,8 +43,6 @@ public partial class CoinLibraryViewModel : BaseViewModel
         _libraryService = libraryService;
     }
 
-
-    #region MAIN methods or Tasks
     /// <summary>
     /// SetDataSource async task is called from the View_Loading event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
@@ -68,14 +66,14 @@ public partial class CoinLibraryViewModel : BaseViewModel
             .IfSucc(list =>
             {
                 coinListGecko = list;
-                IsAllCoinDataRetrieved = coinListGecko.Count > 0 ? true : false;
+                IsAllCoinDataRetrieved = coinListGecko.Count > 0;
                 searchListGecko = BuildSearchList(list);
             });
     }
-    private List<string> BuildSearchList(List<CoinList> list)
+    private static List<string> BuildSearchList(List<CoinList> list)
     {
         var searchList = new List<string>();
-        foreach (CoinList coin in list)
+        foreach (var coin in list)
         {
             searchList.Add(coin.Name + ", " + coin.Symbol.ToUpper() + ", " + coin.Id); 
         }
@@ -88,16 +86,19 @@ public partial class CoinLibraryViewModel : BaseViewModel
     {
         Logger.Information("Showing Coin Dialog");
         App.isBusy = true;
-        ILocalizer loc = Localizer.Get();
+        var loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(searchListGecko, Current);
-            dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
+            dialog = new AddCoinDialog(searchListGecko, Current)
+            {
+                XamlRoot = CoinLibraryView.Current.XamlRoot
+            };
             var result = await dialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
             {
-                Logger.Information("Adding Coin to Library  - {0}", dialog.selectedCoin.Name);
+                var coinName = dialog.selectedCoin is not null ? dialog.selectedCoin.Name : string.Empty;
+                Logger.Information("Adding Coin to Library  - {0}", coinName);
                 await (await _libraryService.CreateCoin(dialog.selectedCoin))
                     .Match(Succ: succ => AddToListCoins(dialog.selectedCoin),
                     Fail: async err =>
@@ -132,12 +133,14 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public async Task ShowAddNoteDialog(Coin coin)
     {
         App.isBusy = true;
-        ILocalizer loc = Localizer.Get();
+        var loc = Localizer.Get();
         Logger.Information("Showing Note Dialog");
         try
         {
-            AddNoteDialog dialog = new AddNoteDialog(coin);
-            dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
+            var dialog = new AddNoteDialog(coin)
+            {
+                XamlRoot = CoinLibraryView.Current.XamlRoot
+            };
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
@@ -170,7 +173,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public async Task DeleteCoin(Coin coin)
     {
         Logger.Information("Deleting coin {0}", coin.Name);
-        ILocalizer loc = Localizer.Get();
+        var loc = Localizer.Get();
         await (await _libraryService.RemoveCoin(coin))
            .Match(Succ: s => RemoveFromListCoins(coin),
                    Fail: async err =>
@@ -204,20 +207,19 @@ public partial class CoinLibraryViewModel : BaseViewModel
         Logger.Information("Showing Description Dialog for {0}}", coin.Name);
         if (coin != null)
         {
-            DescriptionDialog dialog = new DescriptionDialog(coin);
-            dialog.XamlRoot = CoinLibraryView.Current.XamlRoot;
+            var dialog = new DescriptionDialog(coin)
+            {
+                XamlRoot = CoinLibraryView.Current.XamlRoot
+            };
             await dialog.ShowAsync();
         }
         App.isBusy = false;
     }
-    #endregion MAIN methods or Tasks
 
-    #region SUB methods or Tasks
     private Task RemoveFromListCoins(Coin coin)
     {
         try
         {
-            //var coin = ListCoins.Where(x => x.ApiId.ToLower() == coinId.ToLower()).Single();
             ListCoins.Remove(coin);
         }
         catch
@@ -226,18 +228,13 @@ public partial class CoinLibraryViewModel : BaseViewModel
         }
         return Task.FromResult(true);
     }
-    private Task AddToListCoins(Coin coin)
+    private Task AddToListCoins(Coin? coin)
     {
+        if (coin == null) { return Task.FromResult(false); }
         ListCoins.Add(coin);
 
         return Task.FromResult(true);
     }
-
-    #endregion SUB methods or Tasks
-
-
-
-
 
 }
 

@@ -18,7 +18,7 @@ public class AccountService : IAccountService
         context = portfolioContext;
     }
 
-    public async Task<Result<bool>> CreateAccount(Account newAccount)
+    public async Task<Result<bool>> CreateAccount(Account? newAccount)
     {
         bool _result;
 
@@ -89,7 +89,7 @@ public class AccountService : IAccountService
             foreach (var account in accounts)
             {
                 account.CalculateTotalValue();
-                account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0 ? true : false;
+                account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0;
             }
         }
         catch (Exception ex)
@@ -110,7 +110,7 @@ public class AccountService : IAccountService
                 .SingleAsync();
 
             account.CalculateTotalValue();
-            account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0 ? true : false;
+            account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0;
         }
         catch (Exception ex)
         {
@@ -118,20 +118,6 @@ public class AccountService : IAccountService
         }
         return account;
     }
-
-    //public async Task<Result<List<Account>>> GetAccountsOrderByName()
-    //{
-    //    List<Account> accountList;
-    //    try
-    //    {
-    //        accountList = await context.Accounts.OrderBy(x => x.Name).ToListAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<List<Account>>(ex);
-    //    }
-    //    return accountList != null ? accountList : new List<Account>();
-    //}
 
     public async Task<Result<List<AssetTotals>>> GetAssetsByAccount(int accountId)
     {
@@ -173,7 +159,7 @@ public class AccountService : IAccountService
         {
             return new Result<bool>(ex);
         }
-        return account.Assets == null || account.Assets.Count == 0 ? true : false;
+        return account.Assets == null || account.Assets.Count == 0;
     }
 
 }

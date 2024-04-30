@@ -13,246 +13,240 @@ using WinUI3Localizer;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace CryptoPortfolioTracker.Controls
+namespace CryptoPortfolioTracker.Controls;
+
+public sealed partial class AutoSuggestBoxWithValidation : UserControl    //, INotifyPropertyChanged
 {
-    public sealed partial class AutoSuggestBoxWithValidation : UserControl    //, INotifyPropertyChanged
+    private static readonly ILocalizer loc = Localizer.Get();
+    public bool AnimateBorder { get; set; } = true;
+    public bool IsPlaceholderSet { get; set; } = false;
+
+    public event EventHandler? TextChanged;
+    public event EventHandler<AutoSuggestBoxSuggestionChosenEventArgs>? SuggestionChosen;
+    public event EventHandler<KeyRoutedEventArgs>? KeyDown;
+    
+    public bool IsEntryMatched
     {
-        private static ILocalizer loc = Localizer.Get();
-        public AutoSuggestBoxWithValidation()
+        get
         {
-            this.InitializeComponent();
-            //** PointerPressedEvent needs to be added is this 'special' way.
-            //This because its handled earlier in the system and not passed through.
-            innerASBox.AddHandler(TextBox.PointerPressedEvent, new PointerEventHandler(innerASBox_PointerPressed), true);
-            innerASBox.AddHandler(TextBox.KeyDownEvent, new KeyEventHandler(innerASBox_KeyDown), true);
-            innerASBox.Visibility = Visibility.Collapsed;
+            if (GetValue(IsEntryMatchedProperty).GetType().Name == "Int32")
+            {
+                return false;
+            }
+            return (bool)GetValue(IsEntryMatchedProperty);
+        }
+        set => SetValue(IsEntryMatchedProperty, value);
+    }
+    public List<string> ItemsSource
+    {
+        get
+        {
+            if (GetValue(ItemsSourceProperty).GetType().Name == "Int32")
+            {
+                return new List<string>();
+            }
+            return (List<string>)GetValue(ItemsSourceProperty);
+        }
+        set => SetValue(ItemsSourceProperty, value);
+    }
+    public string MyText
+    {
+        get
+        {
+            if (GetValue(MyTextProperty).GetType().Name == "Int32")
+            {
+                return string.Empty;
+            }
+            return (string)GetValue(MyTextProperty);
+        }
+        set => SetValue(MyTextProperty, value);
+    }
+
+    public string Header
+    {
+        get
+        {
+            if (GetValue(HeaderProperty).GetType().Name == "Int32")
+            {
+                return string.Empty;
+            }
+            return (string)GetValue(HeaderProperty);
+        }
+        set => SetValue(HeaderProperty, value);
+    }
+    public string MyPlaceholderText
+    {
+        get
+        {
+            if (GetValue(MyPlaceholderTextProperty).GetType().Name == "Int32")
+            {
+                return string.Empty;
+            }
+            return (string)GetValue(MyPlaceholderTextProperty);
+        }
+        set => SetValue(MyPlaceholderTextProperty, value);
+    }
+
+    public static readonly DependencyProperty IsEntryMatchedProperty = DependencyProperty.Register("IsEntryMatched", typeof(bool), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryMatchedChangedCallBack)));
+    public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(List<string>), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(ItemsSourceChangedCallBack)));
+    public static readonly DependencyProperty MyTextProperty = DependencyProperty.Register("MyText", typeof(string), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(TextEntryChangedCallBack)));
+    public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(string), typeof(AutoSuggestBoxWithValidation), null);
+    public static readonly DependencyProperty MyPlaceholderTextProperty = DependencyProperty.Register("MyPlaceholderText", typeof(string), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(PlaceholderTextChangedCallBack)));
+
+    public AutoSuggestBoxWithValidation()
+    {
+        InitializeComponent();
+        //** PointerPressedEvent needs to be added is this 'special' way.
+        //This because its handled earlier in the system and not passed through.
+        innerASBox.AddHandler(TextBox.PointerPressedEvent, new PointerEventHandler(InnerASBox_PointerPressed), true);
+        innerASBox.AddHandler(TextBox.KeyDownEvent, new KeyEventHandler(InnerASBox_KeyDown), true);
+        innerASBox.Visibility = Visibility.Collapsed;
+    }
+    
+    private static void PlaceholderTextChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var thisBox = (AutoSuggestBoxWithValidation)d;
+
+        if (thisBox.MyPlaceholderText != null 
+            && thisBox.MyPlaceholderText != loc.GetLocalizedString("ASBox_SelectItem_Msg") 
+            && thisBox.MyPlaceholderText != loc.GetLocalizedString("ASBox_NoItems_Msg"))
+        {
+            thisBox.IsPlaceholderSet = true;
+        }
+    }
+
+    private static void TextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var thisBox = (AutoSuggestBoxWithValidation)d;
+
+        if (thisBox.innerASBox.Visibility == Visibility.Collapsed && (string)e.NewValue == "")
+        {
+            thisBox.innerASBox.Visibility = Visibility.Visible;
         }
 
-        public bool AnimateBorder { get; set; } = true;
-        public bool IsPlaceholderSet { get; set; } = false;
-
-
-        public event EventHandler TextChanged;
-        public event EventHandler<AutoSuggestBoxSuggestionChosenEventArgs> SuggestionChosen;
-        public event EventHandler<KeyRoutedEventArgs> KeyDown;
-
-        public bool IsEntryMatched
+        thisBox.PopulateSuitableItems();
+        thisBox.IsEntryMatched = thisBox.DoesEntryMatch();
+        thisBox.TextChanged?.Invoke(thisBox, EventArgs.Empty);
+    }
+    private static void ItemsSourceChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d.GetValue(ItemsSourceProperty).GetType().FullName == "System.Int32")
         {
-            get
+            return;
+        }
+
+        var list = (List<string>)d.GetValue(ItemsSourceProperty);
+        var thisBox = (AutoSuggestBoxWithValidation)d; 
+        if (thisBox.innerASBox.ItemsSource == null ||  !thisBox.innerASBox.ItemsSource.Equals(list))
+        {
+            thisBox.innerASBox.ItemsSource = list;
+        }
+
+        if (list.Count > 0 && thisBox.MyText != string.Empty)
+        {
+            thisBox.IsEntryMatched = thisBox.DoesEntryMatch();
+        }
+
+        if (!thisBox.IsPlaceholderSet)
+        {
+            thisBox.innerASBox.PlaceholderText = thisBox.innerASBox.Items.Count > 0 
+                ? loc.GetLocalizedString("ASBox_SelectItem_Msg") 
+                : loc.GetLocalizedString("ASBox_NoItems_Msg");
+        }
+        else
+        {
+            thisBox.innerASBox.PlaceholderText = thisBox.MyPlaceholderText;
+        }
+
+        thisBox.innerASBox.IsSuggestionListOpen = false;
+    }
+
+    private static void IsEntryMatchedChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is AutoSuggestBoxWithValidation thisBox && thisBox.AnimateBorder)
+        {
+            thisBox.SetBorderColor();
+        }
+    }
+    private void InnerASBox_PointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        innerASBox.IsEnabled = true;
+        innerASBox.IsSuggestionListOpen = true;
+    }
+
+    private void InnerASBox_SuggestionChosen(object _, AutoSuggestBoxSuggestionChosenEventArgs args)
+    {
+        IsEntryMatched = true;
+        SuggestionChosen?.Invoke(this, args);
+    }
+    private void InnerASBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == VirtualKey.Enter)
+        {
+            IsEntryMatched = DoesEntryMatch();
+            KeyDown?.Invoke(this, e);
+        }
+    }
+    private bool DoesEntryMatch()
+    {
+        return ItemsSource.Contains(MyText);
+    }
+
+    private void PopulateSuitableItems()
+    {
+        var suitableItems = new List<string>();
+        //var splitText = innerASBox.Text.ToLower().Split(" ");
+        var splitText = MyText.ToLower().Split(" ");
+        foreach (var item in ItemsSource.ToList())
+        {
+            var found = splitText.All((key) =>
             {
-                if (GetValue(IsEntryMatchedProperty).GetType().Name == "Int32")
+                if (item.ToLower().Contains(key))
+                {
+                    return true;
+                }
+                else
                 {
                     return false;
                 }
-                return (bool)GetValue(IsEntryMatchedProperty);
-            }
-            set
+            });
+            if (found)
             {
-                SetValue(IsEntryMatchedProperty, value);
-            }
-        }
-        public List<string> ItemsSource
-        {
-            get
-            {
-                if (GetValue(ItemsSourceProperty).GetType().Name == "Int32")
+                suitableItems.Add(item);
+                if (MyText.ToLower() == item.ToLower() && MyText != item)
                 {
-                    return new List<string>();
+                    MyText = item;
                 }
-                return (List<string>)GetValue(ItemsSourceProperty);
-            }
-            set
-            {
-                SetValue(ItemsSourceProperty, value);
             }
         }
-        public string MyText
+        if (suitableItems.Count == 0)
         {
-            get
-            {
-                if (GetValue(MyTextProperty).GetType().Name == "Int32")
-                {
-                    return string.Empty;
-                }
-                return (string)GetValue(MyTextProperty);
-            }
-            set
-            {
-                SetValue(MyTextProperty, value);
-            }
+            suitableItems.Add(loc.GetLocalizedString("ASBox_NoSuitableItems_Msg"));
         }
+        innerASBox.ItemsSource = suitableItems;
 
-        public string Header
-        {
-            get
-            {
-                if (GetValue(HeaderProperty).GetType().Name == "Int32")
-                {
-                    return string.Empty;
-                }
-                return (string)GetValue(HeaderProperty);
-            }
-            set
-            {
-                SetValue(HeaderProperty, value);
-            }
-        }
-        public string MyPlaceholderText
-        {
-            get
-            {
-                if (GetValue(MyPlaceholderTextProperty).GetType().Name == "Int32")
-                {
-                    return string.Empty;
-                }
-                return (string)GetValue(MyPlaceholderTextProperty);
-            }
-            set
-            {
-                SetValue(MyPlaceholderTextProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty IsEntryMatchedProperty = DependencyProperty.Register("IsEntryMatched", typeof(bool), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryMatchedChangedCallBack)));
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(List<string>), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(ItemsSourceChangedCallBack)));
-        public static readonly DependencyProperty MyTextProperty = DependencyProperty.Register("MyText", typeof(string), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(TextEntryChangedCallBack)));
-        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(string), typeof(AutoSuggestBoxWithValidation), null);
-        public static readonly DependencyProperty MyPlaceholderTextProperty = DependencyProperty.Register("MyPlaceholderText", typeof(string), typeof(AutoSuggestBoxWithValidation), new PropertyMetadata(0, new PropertyChangedCallback(PlaceholderTextChangedCallBack)));
-
-        private void innerASBox_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            innerASBox.IsEnabled = true;
-            innerASBox.IsSuggestionListOpen = true;
-        }
-        
-        private void innerASBox_SuggestionChosen(object sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        if (ItemsSource.Contains(MyText))
         {
             IsEntryMatched = true;
-
-            SuggestionChosen?.Invoke(this, args);
-
         }
-        private static void PlaceholderTextChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        else
         {
-            AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d;
-
-            if (thisInstance.MyPlaceholderText != null 
-                && thisInstance.MyPlaceholderText != loc.GetLocalizedString("ASBox_SelectItem_Msg") 
-                && thisInstance.MyPlaceholderText != loc.GetLocalizedString("ASBox_NoItems_Msg")) thisInstance.IsPlaceholderSet = true;
+            IsEntryMatched = false;
         }
-
-        private static void TextEntryChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            AutoSuggestBox inner = ((AutoSuggestBoxWithValidation)d).innerASBox;
-           
-            AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d;
-
-            if (inner.Visibility == Visibility.Collapsed && (string)e.NewValue == "") inner.Visibility = Visibility.Visible;
-
-            thisInstance.PopulateSuitableItems();
-            thisInstance.IsEntryMatched = thisInstance.DoesEntryMatch();
-
-            thisInstance.TextChanged?.Invoke(thisInstance, EventArgs.Empty);
-        }
-        private static void ItemsSourceChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d.GetValue(ItemsSourceProperty).GetType().FullName == "System.Int32") return;
-
-            var list = (List<string>)d.GetValue(ItemsSourceProperty);
-
-            AutoSuggestBoxWithValidation thisInstance = (AutoSuggestBoxWithValidation)d; 
-            AutoSuggestBox inner = (d as AutoSuggestBoxWithValidation).innerASBox;
-
-            if (inner.ItemsSource == null ||  !inner.ItemsSource.Equals(list)) inner.ItemsSource = list;
-
-            if (list.Count == 1)
-            {
-                //d.SetValue(MyTextProperty, list.First().ToString());
-                //thisInstance.TextChanged?.Invoke(thisInstance, EventArgs.Empty);
-            }
-            else if (list.Count > 1 && thisInstance.MyText != string.Empty) thisInstance.IsEntryMatched = thisInstance.DoesEntryMatch();
-
-            if (!thisInstance.IsPlaceholderSet)
-            {
-                inner.PlaceholderText = inner.Items.Count > 0 ? loc.GetLocalizedString("ASBox_SelectItem_Msg") : loc.GetLocalizedString("ASBox_NoItems_Msg");
-            }
-            else inner.PlaceholderText = thisInstance.MyPlaceholderText;
-            inner.IsSuggestionListOpen = false;
-        }
-
-        private static void IsEntryMatchedChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if ((d as AutoSuggestBoxWithValidation).AnimateBorder)
-            {
-                (d as AutoSuggestBoxWithValidation).SetBorderColor();
-            }
-        }
-
-
-        private bool DoesEntryMatch()
-        {
-            return ItemsSource.Contains(MyText);
-        }
-
-        private void PopulateSuitableItems()
-        {
-            var suitableItems = new List<string>();
-            //var splitText = innerASBox.Text.ToLower().Split(" ");
-            var splitText = MyText.ToLower().Split(" ");
-            foreach (var item in ItemsSource.ToList())
-            {
-                var found = splitText.All((key) =>
-                {
-                    if (item.ToLower().Contains(key))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                });
-                if (found)
-                {
-                    suitableItems.Add(item);
-                    if (MyText.ToLower() == item.ToLower() && MyText != item) MyText = item;
-                }
-            }
-            if (suitableItems.Count == 0)
-            {
-                suitableItems.Add("No results found");
-            }
-            innerASBox.ItemsSource = suitableItems;
-
-            if (ItemsSource.Contains(MyText))
-            {
-
-                IsEntryMatched = true;
-            }
-            else
-            {
-                IsEntryMatched = false;
-            }
-            
-        }
-        private void SetBorderColor()
-        {
-            if (IsEntryMatched)
-            {
-                innerASBox.BorderBrush = new SolidColorBrush(Colors.Green);
-            }
-            else innerASBox.BorderBrush = new SolidColorBrush(Colors.Red);
-        }
-
-        private void innerASBox_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key == VirtualKey.Enter)
-            {
-                Debug.WriteLine("enter-key");
-                IsEntryMatched = DoesEntryMatch();
-                KeyDown?.Invoke(this, e);
-            }
-        }
-
+        
     }
+    private void SetBorderColor()
+    {
+        if (IsEntryMatched)
+        {
+            innerASBox.BorderBrush = new SolidColorBrush(Colors.Green);
+        }
+        else
+        {
+            innerASBox.BorderBrush = new SolidColorBrush(Colors.Red);
+        }
+    }
+
+    
+
 }

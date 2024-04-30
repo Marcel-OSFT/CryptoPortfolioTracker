@@ -16,27 +16,28 @@ namespace CryptoPortfolioTracker;
 
 public sealed partial class LogWindow : Window
 {
-    private CancellationTokenSource? _cancellationTokenSource;
     private LoggingLevelSwitch _levelSwitch;
     private ItemsRepeaterLogBroker _logBroker;
 
     private ILogger Logger  { get; set; }
 
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public LogWindow()
     {
-        this.InitializeComponent();
+        InitializeComponent();
         ConfigureLogger();
     }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     private void ConfigureLogger()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
+        _levelSwitch = new LoggingLevelSwitch
+        {
+            MinimumLevel = LogEventLevel.Verbose
+        };
 
-        _levelSwitch = new LoggingLevelSwitch();
-        _levelSwitch.MinimumLevel = LogEventLevel.Verbose;
-
-        string[] levels = Enum.GetNames(typeof(LogEventLevel));
+        var levels = Enum.GetNames(typeof(LogEventLevel));
 
         foreach (var level in levels)
         {
@@ -47,8 +48,10 @@ public sealed partial class LogWindow : Window
         LevelSwitcher.SelectionChanged += (sender, e) =>
         {
             if (sender is ComboBox comboBox &&
-                Enum.TryParse<LogEventLevel>(comboBox.SelectedItem.ToString(), out LogEventLevel level) is true)
+                Enum.TryParse<LogEventLevel>(comboBox.SelectedItem.ToString(), out var level) is true)
+            {
                 _levelSwitch.MinimumLevel = level;
+            }
         };
 
         App.Current.Resources.TryGetValue("DefaultTextForegroundThemeBrush", out var defaultTextForegroundBrush);
@@ -100,17 +103,17 @@ public sealed partial class LogWindow : Window
     private void AutoScrollToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
         if (sender is ToggleSwitch toggleSwitch && _logBroker is not null)
+        {
             _logBroker.IsAutoScrollOn = toggleSwitch.IsOn;
+        }
     }
-
-
-
-
 
     private void UpdateToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
         if (sender is ToggleSwitch toggleSwitch && _logBroker is not null)
+        {
             LogViewer.Visibility = toggleSwitch.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
     private void Window_Closed(object sender, WindowEventArgs args)
     {

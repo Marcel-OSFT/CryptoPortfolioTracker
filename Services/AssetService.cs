@@ -12,12 +12,9 @@ namespace CryptoPortfolioTracker.Services;
 public class AssetService : IAssetService
 {
     private readonly PortfolioContext context;
-    public static AssetService Instance;
-
 
     public AssetService(PortfolioContext portfolioContext)
     {
-        Instance = this;
         context = portfolioContext;
     }
 
@@ -128,7 +125,7 @@ public class AssetService : IAssetService
     public async Task<Result<AssetAccount>> GetAccountByAsset(int assetId)
     {
         if (assetId <= 0) { return new AssetAccount(); }
-        AssetAccount assetAccount;
+        AssetAccount? assetAccount;
         try
         {
             assetAccount = await context.Assets
@@ -148,16 +145,12 @@ public class AssetService : IAssetService
         {
             return new Result<AssetAccount>(ex);
         }
-        // if (assetAccount == null) { assetAccount = new AssetAccount(); }
 
-        return assetAccount;
+        return assetAccount ?? new AssetAccount();
     }
-
-
 
     public async Task<Result<List<Transaction>>> GetTransactionsByAsset(int assetId)
     {
-
         if (assetId <= 0) { return new List<Transaction>(); }
         List<Transaction> assetTransactions = new();
         try

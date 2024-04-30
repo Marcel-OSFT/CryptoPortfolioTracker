@@ -16,11 +16,6 @@
     mc:Ignorable="d">
     
     <Page.Resources>
-        <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
         <converters:ThemeToBoolConverter x:Key="ThemeToBoolConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">

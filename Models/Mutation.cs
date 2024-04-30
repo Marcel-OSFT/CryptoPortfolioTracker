@@ -2,29 +2,28 @@
 using CryptoPortfolioTracker.Enums;
 
 
-namespace CryptoPortfolioTracker.Models
+namespace CryptoPortfolioTracker.Models;
+
+public partial class Mutation : BaseModel
 {
-    public partial class Mutation : BaseModel
+    public Mutation()
     {
-        public Mutation()
-        {
-            Asset = new Asset();
-            Transaction = new Transaction();
-        }
-
-        //******* Public Properties
-
-        [ObservableProperty] int id;
-        [ObservableProperty] TransactionKind type;
-        [ObservableProperty] double qty;
-        [ObservableProperty] double price;
-        [ObservableProperty] MutationDirection direction;
-
-        //******* Navigation Properties
-
-        [ObservableProperty] Asset asset;
-        [ObservableProperty] Transaction transaction;
-
-
+        Asset = new Asset();
+        Transaction = new Transaction();
     }
+
+    //******* Public Properties
+
+    [ObservableProperty] private int id;
+    [ObservableProperty] private TransactionKind type;
+    [ObservableProperty] private double qty;
+    [ObservableProperty] private double price;
+    [ObservableProperty] private MutationDirection direction;
+
+    //******* Navigation Properties
+
+    [ObservableProperty] private Asset asset;
+    [ObservableProperty] private Transaction transaction;
+
+
 }

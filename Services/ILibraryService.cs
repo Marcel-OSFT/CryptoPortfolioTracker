@@ -8,7 +8,7 @@ namespace CryptoPortfolioTracker.Services;
 
 public interface ILibraryService
 {
-    public Task<Result<bool>> CreateCoin(Models.Coin newCoin);
+    public Task<Result<bool>> CreateCoin(Coin? newCoin);
     public Task<Result<Coin>> GetCoin(string coinId);
     public Task<Result<List<Coin>>> GetCoinsOrderedByRank();
     public Task<Result<CoinFullDataById>> GetCoinDetails(string coinId);

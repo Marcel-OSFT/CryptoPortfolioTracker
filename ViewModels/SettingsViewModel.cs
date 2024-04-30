@@ -1,14 +1,10 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Extensions;
 using CryptoPortfolioTracker.Models;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
@@ -19,8 +15,9 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static SettingsViewModel Current;
-    private readonly DispatcherQueue dispatcherQueue;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     [ObservableProperty]
     private ElementTheme appTheme;
@@ -50,26 +47,24 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     private bool isScrollBarsExpanded;
     partial void OnIsScrollBarsExpandedChanged(bool value) => App.userPreferences.IsScrollBarsExpanded = value;
 
-
     public SettingsViewModel()
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
         Current = this;
-        this.dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         GetPreferences();
     }
 
     private void GetPreferences()
     {
         NumberFormatIndex = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "," ? 0 : 1;
-        AppCultureIndex = App.userPreferences.AppCultureLanguage.Substring(0, 2).ToLower() == "nl" ? 0 : 1;
+        AppCultureIndex = App.userPreferences.AppCultureLanguage[..2].ToLower() == "nl" ? 0 : 1;
         IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
         IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
         FontSize = (double)App.userPreferences.FontSize;
         IsScrollBarsExpanded = App.userPreferences.IsScrollBarsExpanded;
         AppTheme = App.userPreferences.AppTheme;
     }
-    private void SetNumberSeparators(int index)
+    private static void SetNumberSeparators(int index)
     {
         NumberFormatInfo nf = new();
         if (index == 0)
@@ -85,7 +80,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         App.userPreferences.NumberFormat = nf;
 
     }
-    private void SetCulturePreference(int index)
+    private static void SetCulturePreference(int index)
     {
         if (index == 0)
         {
@@ -102,7 +97,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     {
         Logger.Information("Checking for updates");
         AppUpdater appUpdater = new();
-        ILocalizer loc = Localizer.Get();
+        var loc = Localizer.Get();
 
         var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
@@ -163,24 +158,5 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 loc.GetLocalizedString("Common_OkButton"));
         }
     }
-
-
-    //public event PropertyChangedEventHandler PropertyChanged;
-    //protected void OnPropertyChanged([CallerMemberName] string name = null)
-    //{
-    //    this.dispatcherQueue.TryEnqueue(() =>
-    //    {
-    //        PropertyChangedEventHandler handler = PropertyChanged;
-    //        if (handler != null)
-    //        {
-    //            handler(this, new PropertyChangedEventArgs(name));
-    //        }
-    //    },
-    //    exception =>
-    //    {
-    //        throw new Exception(exception.Message);
-    //    });
-    //}
-
 }
 

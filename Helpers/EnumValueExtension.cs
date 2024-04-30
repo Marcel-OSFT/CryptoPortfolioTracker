@@ -1,24 +1,25 @@
 ﻿using System;
 using Microsoft.UI.Xaml.Markup;
 
-namespace CryptoPortfolioTracker.Helpers
+namespace CryptoPortfolioTracker.Helpers;
+
+[MarkupExtensionReturnType(ReturnType = typeof(object))]
+public class EnumValueExtension : MarkupExtension
 {
-    [MarkupExtensionReturnType(ReturnType = typeof(object))]
-    public class EnumValueExtension : MarkupExtension
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public Type Type
     {
-        public Type Type
-        {
-            get; set;
-        }
+        get; set;
+    }
 
-        public string Member
-        {
-            get; set;
-        }
+    public string Member
+    {
+        get; set;
+    }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        protected override object ProvideValue()
-        {
-            return Enum.Parse(Type, Member);
-        }
+    protected override object ProvideValue()
+    {
+        return Enum.Parse(Type, Member);
     }
 }

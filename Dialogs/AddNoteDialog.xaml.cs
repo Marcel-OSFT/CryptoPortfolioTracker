@@ -6,12 +6,12 @@ namespace CryptoPortfolioTracker.Dialogs;
 
 public sealed partial class AddNoteDialog : ContentDialog
 {
-    public string newNote;
-    private ILocalizer loc = Localizer.Get();
+    public string newNote = string.Empty;
+    private readonly ILocalizer loc = Localizer.Get();
 
     public AddNoteDialog(Coin coin)
     {
-        this.InitializeComponent();
+        InitializeComponent();
         NoteText.Text = coin.Note;
         SetDialogTitleAndButtons(coin);
     }
@@ -30,7 +30,10 @@ public sealed partial class AddNoteDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != App.userPreferences.AppTheme) sender.RequestedTheme = App.userPreferences.AppTheme;
+        if (sender.ActualTheme != App.userPreferences.AppTheme)
+        {
+            sender.RequestedTheme = App.userPreferences.AppTheme;
+        }
     }
 }
 
