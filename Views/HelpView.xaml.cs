@@ -20,17 +20,19 @@ public partial class HelpView : Page
     }
 
     [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto, PreserveSig = true, SetLastError = false)]
-    public static extern IntPtr GetActiveWindow();
+    private static extern IntPtr GetActiveWindow();
 
 
     public readonly HelpViewModel _viewModel;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static HelpView Current;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public HelpView(HelpViewModel viewModel)
     {
         Current = this;
         _viewModel = viewModel;
-        this.InitializeComponent();
+        InitializeComponent();
         DataContext = _viewModel;
     }
 
@@ -39,11 +41,11 @@ public partial class HelpView : Page
         var helpFilePath = App.appPath + "\\HelpFile.rtf";
         try
         {
-            if (App.userPreferences.AppCultureLanguage.Substring(0, 2).ToLower() == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
+            if (App.userPreferences.AppCultureLanguage[..2].ToLower() == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
 
             editor.IsReadOnly = false;
-            StorageFile helpFile = await StorageFile.GetFileFromPathAsync(helpFilePath);
-            Windows.Storage.Streams.IRandomAccessStream randAccStream = await helpFile.OpenAsync(Windows.Storage.FileAccessMode.Read);
+            var helpFile = await StorageFile.GetFileFromPathAsync(helpFilePath);
+            var randAccStream = await helpFile.OpenAsync(Windows.Storage.FileAccessMode.Read);
 
             // Load the file into the Document property of the RichEditBox.
             editor.Document.LoadFromStream(Microsoft.UI.Text.TextSetOptions.FormatRtf, randAccStream);
@@ -67,17 +69,17 @@ public partial class HelpView : Page
             try
             {
                 editor.IsReadOnly = false;
-                Windows.Storage.Streams.IRandomAccessStream randAccStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                var randAccStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
 
                 // Load the file into the Document property of the RichEditBox.
                 editor.Document.LoadFromStream(Microsoft.UI.Text.TextSetOptions.FormatRtf, randAccStream);
             }
             catch (Exception)
             {
-                ContentDialog errorDialog = new ContentDialog()
+                var errorDialog = new ContentDialog()
                 {
                     Title = "File open error",
-                    XamlRoot = this.XamlRoot,
+                    XamlRoot = XamlRoot,
                     Content = "Sorry, I couldn't open the file.",
                     PrimaryButtonText = "Ok"
                 };
@@ -101,7 +103,7 @@ public partial class HelpView : Page
         // Default file name if the user does not type one in or select a file to replace
         savePicker.SuggestedFileName = "New Document";
 
-        Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();
+        var file = await savePicker.PickSaveFileAsync();
 
         if (file != null)
         {
@@ -109,17 +111,17 @@ public partial class HelpView : Page
             // finish making changes and call CompleteUpdatesAsync.
             Windows.Storage.CachedFileManager.DeferUpdates(file);
             // write to file
-            Windows.Storage.Streams.IRandomAccessStream randAccStream =
+            var randAccStream =
                 await file.OpenAsync(Windows.Storage.FileAccessMode.ReadWrite);
 
             editor.Document.SaveToStream(Microsoft.UI.Text.TextGetOptions.FormatRtf, randAccStream);
 
             // Let Windows know that we're finished changing the file so the 
             // other app can update the remote version of the file.
-            Windows.Storage.Provider.FileUpdateStatus status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+            var status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
             if (status != Windows.Storage.Provider.FileUpdateStatus.Complete)
             {
-                Windows.UI.Popups.MessageDialog errorBox =
+                var errorBox =
                     new Windows.UI.Popups.MessageDialog("File " + file.Name + " couldn't be saved.");
                 await errorBox.ShowAsync();
             }
@@ -132,7 +134,7 @@ public partial class HelpView : Page
     /// <param name="e"></param>
     private void RTB_SelectionChanged(object sender, RoutedEventArgs e)
     {
-        if ((sender as RichTextBlock).SelectedText == "OSFT")
+        if ((sender is RichTextBlock rtBlock) && rtBlock.SelectedText == "OSFT")
         {
             editor.IsReadOnly = false;
             EditorButtons.Visibility = Visibility.Visible;

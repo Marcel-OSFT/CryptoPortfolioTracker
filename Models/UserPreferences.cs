@@ -16,7 +16,9 @@ public class UserPreferences
     {
         get; set;
     }
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public UserPreferences()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         isHidingZeroBalances = false;
         isScrollBarsExpanded = false;
@@ -46,7 +48,7 @@ public class UserPreferences
             if (value != refreshIntervalMinutes)
             {
                 refreshIntervalMinutes = value;
-                SaveUserPreferences("RefreshIntervalMinutes", value.ToString());
+                SaveUserPreferences(nameof(RefreshIntervalMinutes), value);
             }
         }
     }
@@ -61,7 +63,7 @@ public class UserPreferences
             {
                 appTheme = value;
                 SetTheme(value);
-                SaveUserPreferences("AppTheme", value.ToString());
+                SaveUserPreferences(nameof(AppTheme), value);
             }
         }
     }
@@ -76,8 +78,7 @@ public class UserPreferences
             if (value != isScrollBarsExpanded)
             {
                 isScrollBarsExpanded = value;
-
-                SaveUserPreferences("IsScrollBarsExtended", value.ToString());
+                SaveUserPreferences(nameof(IsScrollBarsExpanded), value);
             }
         }
     }
@@ -92,7 +93,7 @@ public class UserPreferences
             if (value != isHidingZeroBalances)
             {
                 isHidingZeroBalances = value;
-                SaveUserPreferences("IsHidingZeroBalances", value.ToString());
+                SaveUserPreferences(nameof(IsHidingZeroBalances), value);
             }
         }
     }
@@ -106,7 +107,7 @@ public class UserPreferences
             if (value != numberFormat)
             {
                 numberFormat = value;
-                SaveUserPreferences("NumberFormat", value.ToString());
+                SaveUserPreferences(nameof(NumberFormat), value);
             }
         }
     }
@@ -121,7 +122,7 @@ public class UserPreferences
             {
                 appCultureLanguage = value;
                 SetCulture();
-                SaveUserPreferences("AppCultureLanguage", value.ToString());
+                SaveUserPreferences(nameof(AppCultureLanguage), value);
             }
         }
     }
@@ -137,7 +138,7 @@ public class UserPreferences
             if (value != isCheckForUpdate)
             {
                 isCheckForUpdate = value;
-                SaveUserPreferences("IsCheckForUpdate", value.ToString());
+                SaveUserPreferences(nameof(IsCheckForUpdate), value);
             }
         }
     }
@@ -152,18 +153,21 @@ public class UserPreferences
             if (value != fontSize)
             {
                 fontSize = value;
-                SaveUserPreferences("FontSize", value.ToString());
+                SaveUserPreferences(nameof(FontSize), value);
             }
         }
     }
 
-    public void SaveUserPreferences(string propertyName, string value)
+    public void SaveUserPreferences(string propertyName, object value)
     {
-        if (App.isAppInitializing) return;
+        if (App.isAppInitializing)
+        {
+            return;
+        }
 
-        Logger.Information("{0} set to {1}", propertyName, value);
-        XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-        StreamWriter myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
+        Logger?.Information("{0} set to {1}", propertyName, value.ToString());
+        var mySerializer = new XmlSerializer(typeof(UserPreferences));
+        var myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
         mySerializer.Serialize(myWriter, this);
         myWriter.Close();
     }
@@ -183,15 +187,15 @@ public class UserPreferences
     }
     private void SetCulture()
     {
-        //if (_localizer.GetType() == typeof(NullLocalizer)) return;
-        //_localizer.SetLanguage(AppCultureLanguage);
+        if (App.Localizer == null)
+        {
+            return;
+        }
 
-        if (App.Localizer == null) return;
         App.Localizer.SetLanguage(AppCultureLanguage);
-
     }
 
-    private void SetTheme(ElementTheme theme)
+    private static void SetTheme(ElementTheme theme)
     {
         if (App.Window != null && App.Window.Content is FrameworkElement frameworkElement)
         {

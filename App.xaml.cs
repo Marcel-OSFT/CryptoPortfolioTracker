@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CryptoPortfolioTracker.Infrastructure;
@@ -20,6 +21,8 @@ namespace CryptoPortfolioTracker;
 
 public partial class App : Application
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
     public static Window? Window;
     public static Window? Splash;
     public const string CoinGeckoApiKey = "";
@@ -33,15 +36,16 @@ public partial class App : Application
     public static bool isAppInitializing;
 
     public static bool isLogWindowEnabled;
-    private ILogger? Logger;
+    private static ILogger? Logger;
     public static ILocalizer? Localizer;
 
     public static IServiceProvider Container  { get; private set;  }
-    
+
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public App()
     {
-        this.InitializeComponent();
+        InitializeComponent();
         userPreferences = new UserPreferences();
         GetAppEnvironmentals();
 
@@ -70,15 +74,15 @@ public partial class App : Application
     /// GetUserPreferences need to be called in the App's Constructor, because of setting the RequestedTheme
     /// which only can be done in the constructor
     /// </summary>
-    private void GetUserPreferences()
+    private static void GetUserPreferences()
     {
         try
         {
             if (File.Exists(appDataPath + "\\prefs.xml"))
             {
                 isAppInitializing = true;
-                XmlSerializer mySerializer = new XmlSerializer(typeof(UserPreferences));
-                FileStream myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
+                var mySerializer = new XmlSerializer(typeof(UserPreferences));
+                var myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
 
                 userPreferences = (mySerializer.Deserialize(myFileStream) as UserPreferences) ?? new UserPreferences();
             }
@@ -90,7 +94,7 @@ public partial class App : Application
         }
     }
 
-    private async Task InitializeLocalizer()
+    private static async Task InitializeLocalizer()
     {
         // Initialize a "Strings" folder in the executables folder.
         var StringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
@@ -99,27 +103,30 @@ public partial class App : Application
             .AddStringResourcesFolderForLanguageDictionaries(StringsFolderPath)
             .Build();
 
-        Log.Information("Setting Language to {0}", userPreferences.AppCultureLanguage);
+         Logger.Information("Setting Language to {0}", userPreferences.AppCultureLanguage);
         await Localizer.SetLanguage(userPreferences.AppCultureLanguage);
     }
 
-    private void CheckDatabase()
+    private static void CheckDatabase()
     {
         var context = App.Container.GetService<PortfolioContext>();
-        if (context is not null) { context.Database.EnsureCreated(); }
+        context?.Database.EnsureCreated();
     }
 
-
-    private void GetAppEnvironmentals()
+    private static void GetAppEnvironmentals()
     {
         appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
         appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
-        if (!Directory.Exists(appDataPath)) Directory.CreateDirectory(appDataPath);
+        if (!Directory.Exists(appDataPath))
+        {
+            Directory.CreateDirectory(appDataPath);
+        }
+
         AppDomain.CurrentDomain.SetData("DataDirectory", appDataPath);
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         ProductVersion = version is not null ? version.ToString() : string.Empty ;
     }
-    private IServiceProvider RegisterServices()
+    private static IServiceProvider RegisterServices()
     {
         var services = new ServiceCollection();
 
@@ -138,7 +145,6 @@ public partial class App : Application
         services.AddDbContext<PortfolioContext>(options =>
         {
             options.UseSqlite("Data Source=|DataDirectory|sqlCPT.db");
-            //options.UseSqlite("Data Source=C:\\Users\\marce\\AppData\\Local\\CryptoPortfolioTracker\\sqlCPT.db");
         });
 
         services.AddScoped<ITransactionService, TransactionService>();
@@ -149,12 +155,11 @@ public partial class App : Application
         return services.BuildServiceProvider();
     }
 
-
     private void InitializeLogger()
     {
-        string[] commandLineArgs = Environment.GetCommandLineArgs();
+        var commandLineArgs = Environment.GetCommandLineArgs();
 
-        if (commandLineArgs.Length > 1 && commandLineArgs[1].Substring(1).ToLower() == "log")
+        if (commandLineArgs.Length > 1 && commandLineArgs[1][1..].ToLower() == "log")
         {
             isLogWindowEnabled = true; // the Logger window is created in MainPage...
         }
@@ -180,24 +185,10 @@ public partial class App : Application
 #endif
             App.userPreferences.AttachLogger();
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
-            Log.Information("------------------------------------");
-            Log.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
+            Logger.Information("------------------------------------");
+            Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
         }
     }
 
-    /// <summary>
-    /// Invoked when Navigation to a certain page fails
-    /// </summary>
-    /// <param name="sender">The Frame which failed navigation</param>
-    /// <param name="e">Details about the navigation failure</param>
-    void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
-    {
-        throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
-    }
-
-    private void RootFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
 
 }

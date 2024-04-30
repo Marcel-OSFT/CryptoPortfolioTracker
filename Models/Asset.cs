@@ -11,16 +11,17 @@ public partial class Asset : BaseModel
     {
         Coin = new Coin();
         Account = new Account();
+        Mutations = new List<Mutation>();
     }
 
-    [ObservableProperty] int id;
-    [ObservableProperty] double qty;
-    [ObservableProperty] double averageCostPrice;
-    [ObservableProperty] double realizedPnL;
+    [ObservableProperty] private int id;
+    [ObservableProperty] private double qty;
+    [ObservableProperty] private double averageCostPrice;
+    [ObservableProperty] private double realizedPnL;
 
     //******* Navigation Properties
-    [ObservableProperty] Coin coin;
-    [ObservableProperty] Account account;
+    [ObservableProperty] private Coin coin;
+    [ObservableProperty] private Account account;
     public ICollection<Mutation> Mutations
     {
         get; set;

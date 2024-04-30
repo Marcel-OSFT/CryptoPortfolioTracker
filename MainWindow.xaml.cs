@@ -7,11 +7,14 @@ namespace CryptoPortfolioTracker;
 public sealed partial class MainWindow : Window
 {
     private WindowManager _manager;
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public MainWindow()
     {
-        this.InitializeComponent();
+        InitializeComponent();
         ConfigureWindow();
     }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     private void ConfigureWindow()
     {
@@ -36,11 +39,13 @@ public sealed partial class MainWindow : Window
 #endif
         _manager.AppWindow.Title = "Crypto Portfolio Tracker";
         _manager.AppWindow.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
-        this.SetTitleBar(null);
-        this.Content = new MainPage(); ;
+        SetTitleBar(null);
+        Content = new MainPage(); ;
 
-        if (this.Content is FrameworkElement frameworkElement) frameworkElement.RequestedTheme = App.userPreferences.AppTheme;
-
+        if (Content is FrameworkElement frameworkElement)
+        {
+            frameworkElement.RequestedTheme = App.userPreferences.AppTheme;
+        }
     }
 
 

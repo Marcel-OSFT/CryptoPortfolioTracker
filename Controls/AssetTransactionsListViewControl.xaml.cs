@@ -7,51 +7,40 @@ using Microsoft.UI.Xaml.Input;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace CryptoPortfolioTracker.Controls
+namespace CryptoPortfolioTracker.Controls;
+
+public partial class AssetTransactionsListViewControl : UserControl
 {
-    public partial class AssetTransactionsListViewControl : UserControl
+    public readonly AssetsViewModel _viewModel;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public static AssetTransactionsListViewControl Current;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+    //***********************************************//
+    //** All databound fields are in the viewModel**//
+    //*********************************************//
+    public AssetTransactionsListViewControl()
     {
-        public readonly AssetsViewModel _viewModel;
-        public static AssetTransactionsListViewControl Current;
+        InitializeComponent();
+        Current = this;
+        _viewModel = AssetsViewModel.Current;
+        DataContext = _viewModel;
+    }
 
-        //***********************************************//
-        //** All databound fields are in the viewModel**//
-        //*********************************************//
-
-        public AssetTransactionsListViewControl()
+    private void ListViewItem_PointerEntered(object sender, PointerRoutedEventArgs e)
+    {
+        if (e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Mouse || e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Pen)
         {
-            this.InitializeComponent();
-            Current = this;
-            _viewModel = AssetsViewModel.Current;
-            DataContext = _viewModel;
-
+            VisualStateManager.GoToState(sender as Control, "ShowNote", true);
         }
 
-
-        private void AssetsListView_ItemClick(object sender, ItemClickEventArgs args)
+    }
+    private void ListViewItem_PointerExited(object sender, PointerRoutedEventArgs e)
+    {
+        if (e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Mouse || e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Pen)
         {
-            //if (args.ClickedItem == null || ((ListView)sender).SelectedIndex < 0) { return; }
-
-            //// Forward this event to the View
-            //AssetsView.Current.AssetsListView_ItemClicked(sender, args);
-
+            VisualStateManager.GoToState(sender as Control, "HideNote", true);
         }
 
-        private void ListViewItem_PointerEntered(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Mouse || e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Pen)
-            {
-                VisualStateManager.GoToState(sender as Control, "ShowNote", true);
-            }
-
-        }
-        private void ListViewItem_PointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Mouse || e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Pen)
-            {
-                VisualStateManager.GoToState(sender as Control, "HideNote", true);
-            }
-
-        }
     }
 }

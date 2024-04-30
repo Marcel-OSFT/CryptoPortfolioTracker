@@ -569,4 +569,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="ASBox_SelectItem_Msg" xml:space="preserve">
     <value>selecteer item</value>
   </data>
+  <data name="ASBox_NoSuitableItems_Msg" xml:space="preserve">
+    <value>niets gevonden</value>
+  </data>
 </root>

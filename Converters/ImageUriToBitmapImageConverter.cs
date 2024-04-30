@@ -2,20 +2,23 @@
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace CryptoPortfolioTracker.Converters
+namespace CryptoPortfolioTracker.Converters;
+
+public class ImageUriToBitmapImageConverter : IValueConverter
 {
-    public class ImageUriToBitmapImageConverter : IValueConverter
+    public object Convert(object value, Type targetType, object parameter, string language)
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        if ((string)value == string.Empty)
         {
-            if ((string)value == string.Empty) return new BitmapImage();
-            return new BitmapImage(new Uri((string)value));
+            return new BitmapImage();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+        return new BitmapImage(new Uri((string)value));
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
     }
 }
 

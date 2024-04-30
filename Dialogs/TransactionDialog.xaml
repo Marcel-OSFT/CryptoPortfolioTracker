@@ -25,17 +25,10 @@
         <x:Double x:Key="RadioButtonCheckGlyphPointerOverSize">14</x:Double>
         <x:Double x:Key="RadioButtonCheckGlyphPressedOverSize">10</x:Double>
         
-       
-        
-        <converters:BoolToOpacityConverter x:Key="myOpacityConverter"/>
-        <converters:BoolToColorConverter x:Key="myBoolToColorConverter"/>
         <converters:InvertBoolConverter x:Key="myInvertBoolConverter"/>
-        <converters:ListCountToTextConverter x:Key="myListCountToTextConverter"/>
         <converters:MaxQtyAConverter x:Key="myMaxQtyAConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-
-
-        <converters:BoolToStringConverter x:Key="myBoolToStringConverter" />
+        <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter"/>
 
         <Style x:Key="TextBoxRegexStyle"
                TargetType="TextBox">
@@ -101,10 +94,8 @@
                                 SuggestionChosen="ASBoxCoinA_SuggestionChosen"
                                 AnimateBorder="True"
                                 Width="115"
-                                
-                                                       Margin="5,0,0,0"
+                                Margin="5,0,0,0"
                                 />
-
             </RelativePanel>
             <RelativePanel Name="CoinSelectionB" HorizontalAlignment="Stretch" Margin="0,0,0,0" >
                  <controls:AutoSuggestBoxWithValidation x:Name ="ASBoxCoinB" 
@@ -112,14 +103,10 @@
                                 MyText="{Binding CoinB, ElementName=Root, Mode=TwoWay}" 
                                 Header="{Binding HeaderCoinB, ElementName=Root}" 
                                 IsEntryMatched="{Binding Validator.IsValidEntryCollection[1], ElementName=Root, Mode=TwoWay}"
-                                TextChanged="ASBoxCoinB_TextChanged"
-                                SuggestionChosen="ASBoxCoinB_SuggestionChosen"
                                 AnimateBorder="True"
                                 Width="115"
                                 Margin="15,0,0,0"
                                 />
-
-
             </RelativePanel>
         </StackPanel>
         <StackPanel Name="AccountStackPanel" Grid.Row="3" Grid.Column="0" Orientation= "Horizontal">
@@ -143,7 +130,7 @@
             <Grid Width="45">
                 <AppBarButton Label="" Visibility="Visible" VerticalAlignment="Stretch" Click="LinkAccountsButton_Click" 
                               Style="{StaticResource MK_AppBarButtonStyle}" Margin="15,15,0,0"
-                              x:Name="LinkAccountsButton" Opacity="{Binding IsAccountsLinked, Converter={StaticResource myOpacityConverter}}">
+                              x:Name="LinkAccountsButton" Opacity="{Binding IsAccountsLinked, Converter={StaticResource BoolToOpacityConverter}}">
                     <AppBarButton.Icon>
                         <FontIcon  Glyph="&#xE71B;"/>
                     </AppBarButton.Icon>
@@ -244,8 +231,6 @@
                                 ItemsSource="{Binding ListFeeCoin, ElementName=Root, Mode=TwoWay}" 
                                 MyText="{Binding FeeCoin, ElementName=Root, Mode=TwoWay}" 
                                 IsEntryMatched="{Binding Validator.IsValidEntryCollection[9], ElementName=Root, Mode=TwoWay}"
-                                TextChanged="ASBoxFeeCoin_TextChanged"
-                                SuggestionChosen="ASBoxFeeCoin_SuggestionChosen"
                                 AnimateBorder="True"
                                 Width="95"
                                 Margin="5,0,0,0"

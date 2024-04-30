@@ -9,16 +9,17 @@ public partial class AccountsView : Page, IDisposable
 {
 
     public readonly AccountsViewModel _viewModel;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AccountsView Current;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public AccountsView(AccountsViewModel viewModel)
     {
         Current = this;
         _viewModel = viewModel;
-        this.InitializeComponent();
+        InitializeComponent();
         DataContext = _viewModel;
     }
-
    
     private void InitAssetsListView()
     {
@@ -37,7 +38,8 @@ public partial class AccountsView : Page, IDisposable
         InitAssetsListView();
     }
 
-    public void Dispose()
+    public void Dispose() // Implement IDisposable
     {
+        GC.SuppressFinalize(this);
     }
 }

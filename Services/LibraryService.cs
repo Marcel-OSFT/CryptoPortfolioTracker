@@ -27,7 +27,7 @@ public class LibraryService : ILibraryService
         context = portfolioContext;
     }
 
-    public async Task<Result<bool>> CreateCoin(Coin newCoin)
+    public async Task<Result<bool>> CreateCoin(Coin? newCoin)
     {
         var _result = false;
 
@@ -46,7 +46,7 @@ public class LibraryService : ILibraryService
 
     public async Task<Result<Coin>> GetCoin(string coinId)
     {
-        Coin coin = null;
+        Coin coin;
         if (coinId == null || coinId == "") { return new Coin(); }
         try
         {
@@ -61,7 +61,7 @@ public class LibraryService : ILibraryService
 
     public async Task<Result<List<Coin>>> GetCoinsOrderedByRank()
     {
-        List<Coin> coinList = null;
+        List<Coin>? coinList = null;
         try
         {
             coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
@@ -70,7 +70,7 @@ public class LibraryService : ILibraryService
         {
             return new Result<List<Coin>>(ex);
         }
-        return coinList != null ? coinList : new List<Coin>();
+        return coinList is not null ? coinList : new List<Coin>();
     }
 
     public async Task<Result<bool>> RemoveCoin(Coin coin)
@@ -94,8 +94,8 @@ public class LibraryService : ILibraryService
     {
         var Retries = 0;
 
-        CancellationTokenSource tokenSource2 = new CancellationTokenSource();
-        CancellationToken cancellationToken = tokenSource2.Token;
+        var tokenSource2 = new CancellationTokenSource();
+        var cancellationToken = tokenSource2.Token;
 
         var strategy = new ResiliencePipelineBuilder().AddRetry(new()
         {
@@ -110,23 +110,22 @@ public class LibraryService : ILibraryService
             }
         }).Build();
 
-        List<CoinList> coinList = null;
+        List<CoinList>? coinList = null;
 
-        HttpClient httpClient = new HttpClient();
+        var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
-        JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+        var serializerSettings = new JsonSerializerSettings();
 
-        CoinGeckoClient coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
-        //bool isValidResult;
+        var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
 
-        Exception error = null;
+        Exception? error = null;
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
                 await strategy.ExecuteAsync(async token =>
                 {
-                    coinList = await coinsClient.Coins.List.GetAsync<List<CoinList>>();
+                    coinList = await coinsClient.Coins.List.GetAsync<List<CoinList>>(token);
 
                 }, cancellationToken);
             }
@@ -140,8 +139,12 @@ public class LibraryService : ILibraryService
                 tokenSource2.Dispose();
             }
         }
-        if (error != null) return new Result<List<CoinList>>(error);
-        return coinList;
+        if (error != null)
+        {
+            return new Result<List<CoinList>>(error);
+        }
+
+        return coinList ?? new List<CoinList>();
     }
 
     public async Task<Result<CoinFullDataById>> GetCoinDetails(string coinId)
@@ -149,8 +152,8 @@ public class LibraryService : ILibraryService
         var Retries = 0;
         if (coinId == null || coinId == "") { return new Result<CoinFullDataById>(); }
 
-        CancellationTokenSource tokenSource2 = new CancellationTokenSource();
-        CancellationToken cancellationToken = tokenSource2.Token;
+        var tokenSource2 = new CancellationTokenSource();
+        var cancellationToken = tokenSource2.Token;
 
         var strategy = new ResiliencePipelineBuilder().AddRetry(new()
         {
@@ -163,22 +166,21 @@ public class LibraryService : ILibraryService
                 Retries++;
                 if (Retries > 0)
                 {
-                    if (AddCoinDialog.Current != null) AddCoinDialog.Current.ShowBePatienceNotice();
+                    AddCoinDialog.Current?.ShowBePatienceNotice();
                 }
                 return default;
             }
         }).Build();
 
-        CoinFullDataById coinFullDataById = null;
+        CoinFullDataById? coinFullDataById = null;
 
-        HttpClient httpClient = new HttpClient();
+        var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
-        JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+        var serializerSettings = new JsonSerializerSettings();
 
-        CoinGeckoClient coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
-        //bool isValidResult;
+        var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
 
-        Exception error = null;
+        Exception? error = null;
         while (!cancellationToken.IsCancellationRequested)
         {
             try
@@ -186,7 +188,7 @@ public class LibraryService : ILibraryService
 
                 await strategy.ExecuteAsync(async token =>
                 {
-                    coinFullDataById = await coinsClient.Coins[coinId].GetAsync<CoinFullDataById>();
+                    coinFullDataById = await coinsClient.Coins[coinId].GetAsync<CoinFullDataById>(token);
                 }, cancellationToken);
             }
             catch (System.Exception ex)
@@ -199,10 +201,13 @@ public class LibraryService : ILibraryService
                 tokenSource2.Dispose();
             }
         }
-        //CoinLibraryViewModel.Current.dialog.bePatientText.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
 
-        if (error != null) return new Result<CoinFullDataById>(error);
-        return coinFullDataById;
+        if (error != null)
+        {
+            return new Result<CoinFullDataById>(error);
+        }
+
+        return coinFullDataById ?? new CoinFullDataById();
     }
 
     public async Task<Result<bool>> UpdateNote(Coin coin, string note)
@@ -240,6 +245,4 @@ public class LibraryService : ILibraryService
             }
         }
     }
-
-
 }

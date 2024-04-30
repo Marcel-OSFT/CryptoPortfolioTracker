@@ -1,23 +1,22 @@
 ﻿using System;
 using Microsoft.UI.Dispatching;
 
-namespace CryptoPortfolioTracker.Extensions
+namespace CryptoPortfolioTracker.Extensions;
+
+public static class DispatcherQueueExtensions
 {
-    public static class DispatcherQueueExtensions
+    public static bool TryEnqueue(this DispatcherQueue dispatcherQueue, Action enqueueingAction, Action<Exception> exceptionAction)
     {
-        public static bool TryEnqueue(this DispatcherQueue dispatcherQueue, Action enqueueingAction, Action<Exception> exceptionAction)
+        return dispatcherQueue.TryEnqueue(() =>
         {
-            return dispatcherQueue.TryEnqueue(() =>
+            try
             {
-                try
-                {
-                    enqueueingAction();
-                }
-                catch (Exception exception)
-                {
-                    exceptionAction(exception);
-                }
-            });
-        }
+                enqueueingAction();
+            }
+            catch (Exception exception)
+            {
+                exceptionAction(exception);
+            }
+        });
     }
 }

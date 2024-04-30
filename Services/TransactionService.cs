@@ -14,11 +14,9 @@ namespace CryptoPortfolioTracker.Services;
 public class TransactionService : ITransactionService
 {
     private readonly PortfolioContext _context;
-    public static TransactionService Instance;
 
     public TransactionService(PortfolioContext context)
     {
-        Instance = this;
         _context = context;
     }
 
@@ -33,7 +31,7 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
     public async Task<Result<Coin>> GetCoinBySymbol(string symbol)
     {
@@ -61,24 +59,7 @@ public class TransactionService : ITransactionService
         }
         return account;
     }
-    public async Task<Result<List<string>>> GetCoinSymbolsFromLibraryExcluding(string coinSymbol)
-    {
-        List<string> _result;
-        if (coinSymbol == null || coinSymbol == "") { return new List<string>(); }
-
-        try
-        {
-            _result = await _context.Coins
-                .Where(x => x.Symbol.ToLower() != coinSymbol.ToLower())
-                .Select(x => x.Symbol.ToUpper())
-                .ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            return new Result<List<string>>(ex);
-        }
-        return _result != null ? _result : new List<string>();
-    }
+    
     public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string coinSymbol)
     {
         List<string> _result;
@@ -95,12 +76,12 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
 
     public async Task<Result<int>> GetAssetIdByCoinAndAccount(Coin coin, Account account)
     {
-        Asset asset;
+        Asset? asset;
         try
         {
             asset = await _context.Assets
@@ -108,7 +89,6 @@ public class TransactionService : ITransactionService
                 .Include(y => y.Account)
                 .Where(x => x.Coin == coin && x.Account == account)
                 .SingleOrDefaultAsync();
-
         }
         catch (Exception ex)
         {
@@ -132,7 +112,7 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
     public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromAssets()
     {
@@ -150,27 +130,9 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
-    public async Task<Result<List<string>>> GetFeeCoinSymbols(string accountName)
-    {
-        List<string> _result;
-        try
-        {
-            _result = await _context.Assets
-                .Include(x => x.Coin)
-                .Include(y => y.Account)
-                .Where(x => x.Account.Name == accountName)
-                .GroupBy(asset => asset.Coin)
-                .Select(assetGroup => assetGroup.Key.Symbol.ToUpper())
-                .ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            return new Result<List<string>>(ex);
-        }
-        return _result != null ? _result : new List<string>();
-    }
+    
     public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibrary()
     {
         List<string> _result;
@@ -185,25 +147,9 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
-    //public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromAssets()
-    //{
-    //    List<string> _result;
-    //    try
-    //    {
-    //        _result = await _context.Assets
-    //            .Where(x => x.Coin.Symbol.ToLower() != "usdt" && x.Coin.Symbol.ToLower() != "usdc")
-    //            .GroupBy(asset => asset.Coin)
-    //            .Select(assetGroup => assetGroup.Key.Symbol.ToUpper())
-    //            .ToListAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<List<string>>(ex);
-    //    }
-    //    return _result != null ? _result : new List<string>();
-    //}
+    
     public async Task<Result<List<string>>> GetUsdtUsdcSymbolsFromAssets()
     {
         List<string> _result;
@@ -219,7 +165,7 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
     public async Task<Result<List<string>>> GetUsdtUsdcSymbolsFromLibrary()
     {
@@ -235,7 +181,7 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
     public async Task<Result<double[]>> GetMaxQtyAndPrice(string coinSymbol, string accountName)
     {
@@ -254,7 +200,7 @@ public class TransactionService : ITransactionService
         {
             return new Result<double[]>(ex);
         }
-        return _result != null ? _result : new double[] { 0, 0 };
+        return _result ?? (new double[] { 0, 0 });
     }
     public async Task<Result<double>> GetPriceFromLibrary(string coinSymbol)
     {
@@ -284,12 +230,16 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
     public async Task<Result<List<string>>> GetAccountNames(string coinSymbol)
     {
         List<string> _result;
-        if (coinSymbol == null || coinSymbol == "") return new List<string>();
+        if (coinSymbol == null || coinSymbol == "")
+        {
+            return new List<string>();
+        }
+
         try
         {
             _result = await _context.Assets
@@ -301,12 +251,16 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
     public async Task<Result<List<string>>> GetAccountNamesExcluding(string excludedAccountName)
     {
         List<string> _result;
-        if (excludedAccountName == null || excludedAccountName == "") return new List<string>();
+        if (excludedAccountName == null || excludedAccountName == "")
+        {
+            return new List<string>();
+        }
+
         try
         {
             _result = await _context.Accounts
@@ -318,96 +272,10 @@ public class TransactionService : ITransactionService
         {
             return new Result<List<string>>(ex);
         }
-        return _result != null ? _result : new List<string>();
+        return _result ?? new List<string>();
     }
-    //public async Task<Result<bool>> CoinAndAccountExists(Mutation mutation)
-    //{
-    //    if (mutation == null) return false;
-    //    Coin coin;
-    //    Account account;
-    //    try
-    //    {
-    //        coin = await _context.Coins.Where(x => x.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower()).SingleOrDefaultAsync();
-    //        account = await _context.Accounts.Where(x => x.Name.ToLower() == mutation.Asset.Account.Name.ToLower()).SingleOrDefaultAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<bool>(ex);
-    //    }
-    //    return (coin != null && account != null);
-    //}
-    //public async Task<Result<bool>> AccountExists(Mutation mutation)
-    //{
-    //    if (mutation == null) return false;
-    //    Account account;
-    //    try
-    //    {
-    //        account = await _context.Accounts.Where(x => x.Name.ToLower() == mutation.Asset.Account.Name.ToLower()).SingleOrDefaultAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<bool>(ex);
-    //    }
-    //    return (account != null);
-    //}
-    //public async Task<Result<bool>> AssetExists(Mutation mutation)
-    //{
-    //    if (mutation == null) return false;
-    //    Asset asset;
-    //    try
-    //    {
-    //        asset = await _context.Assets
-    //            .Where(x => x.Coin.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower())
-    //            .Where(x => x.Account.Name.ToLower() == mutation.Asset.Account.Name.ToLower())
-    //            .Where(x => x.Qty >= mutation.Qty)
-    //            .SingleOrDefaultAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<bool>(ex);
-    //    }
-    //    return (asset != null);
-    //}
-    //public async Task<Result<bool>> UsdtUsdcAssetExists(Mutation mutation)
-    //{
-    //    if (mutation == null) return false;
-    //    Asset asset;
-    //    try
-    //    {
-    //        asset = await _context.Assets
-    //            .Where(a => (a.Coin.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower()) && (a.Coin.Symbol.ToLower() == "usdt" || a.Coin.Symbol.ToLower() == "usdc"))
-    //            .Where(a => a.Account.Name.ToLower() == mutation.Asset.Account.Name)
-    //            .Where(a => a.Qty >= mutation.Qty)
-    //            .FirstOrDefaultAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<bool>(ex);
-    //    }
-    //    return (asset != null);
-    //}
-    //public async Task<Result<bool>> UsdtUsdcCoinAndAccountExists(Mutation mutation)
-    //{
-    //    if (mutation == null) return false;
-    //    Coin coin;
-    //    Account account;
-    //    try
-    //    {
-    //        coin = await _context.Coins
-    //            .Where(x => (x.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower()) && (x.Symbol.ToLower() == "usdt" || x.Symbol.ToLower() == "usdc"))
-    //            .FirstOrDefaultAsync();
-    //        account = await _context.Accounts
-    //            .Where(x => x.Name.ToLower() == mutation.Asset.Account.Name.ToLower())
-    //            .FirstOrDefaultAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<bool>(ex);
-    //    }
-    //    return (coin != null && account != null);
-    //}
 
-    private Result<Asset> RecalculateAsset(Mutation mutation, Asset asset)
+    private static Result<Asset> RecalculateAsset(Mutation mutation, Asset asset)
     {
         try
         {
@@ -439,7 +307,7 @@ public class TransactionService : ITransactionService
     }
     private async Task<Result<Asset>> ReverseAndRecalculateAsset(Mutation mutationNew, Mutation mutationToEdit)
     {
-        Asset asset = null;
+        Asset asset;
         try
         {
             asset = await _context.Assets
@@ -493,27 +361,29 @@ public class TransactionService : ITransactionService
     }
     private async Task<Result<Asset>> ReverseAndRecalculateFee(Mutation mutationNew, Mutation mutationToEdit)
     {
-        Asset assetOld = null;
-        Asset assetNew = null;
+        Asset assetNew;
         try
         {
-
             if (mutationToEdit.Asset.Id != mutationNew.Asset.Id || mutationToEdit.Qty != mutationNew.Qty)
             {
                 //*** FEE is always "OUT":
                 //*** revert old
-                assetOld = await _context.Assets
-                .Where(x => x.Id == mutationToEdit.Asset.Id)
-                .SingleAsync();
+                var assetOld = await _context.Assets
+                    .Where(x => x.Id == mutationToEdit.Asset.Id)
+                    .SingleAsync();
 
                 assetOld.Qty += mutationToEdit.Qty;
-
                 //*** apply new
                 assetNew = await _context.Assets
-                .Where(x => x.Coin.Symbol.ToLower() == mutationNew.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutationNew.Asset.Account.Name.ToLower())
-                .SingleAsync();
-
+                    .Where(x => x.Coin.Symbol.ToLower() == mutationNew.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutationNew.Asset.Account.Name.ToLower())
+                    .SingleAsync();
                 assetNew.Qty -= mutationNew.Qty;
+            }
+            else //if nothing has changed then assure that 'assetNew' is set to its actual value instead of returning null
+            {
+                assetNew = await _context.Assets
+                    .Where(x => x.Id == mutationToEdit.Asset.Id)
+                    .SingleAsync();
             }
         }
         catch (Exception ex)
@@ -522,12 +392,13 @@ public class TransactionService : ITransactionService
         }
         return assetNew;
     }
-    private Result<Asset> CreateNewAsset(Mutation mutation)
+
+    private static Result<Asset> CreateNewAsset(Mutation mutation)
     {
-        Asset asset = null;
-        if (mutation.Direction == MutationDirection.In) // && currentAsset == NULL
+        Asset asset;
+        try
         {
-            try
+            if (mutation.Direction == MutationDirection.In) // && currentAsset == NULL
             {
                 mutation.Asset.AverageCostPrice = mutation.Price;
                 mutation.Asset.Qty = mutation.Qty;
@@ -536,12 +407,16 @@ public class TransactionService : ITransactionService
                 asset = new Asset();
                 asset = mutation.Asset;
             }
-            catch (Exception ex)
+            else //in case something went wrong... MutationDirection.OUT WHICH CAN'T BE
             {
-                return new Result<Asset>(ex);
+                return new Result<Asset>(new InvalidOperationException());
             }
+            return asset;
         }
-        return asset;
+        catch (Exception ex)
+        {
+            return new Result<Asset>(ex);
+        }
     }
     private async Task<Result<Asset>> ReverseAndRecalculateAsset(Mutation mutation)
     {
@@ -575,16 +450,7 @@ public class TransactionService : ITransactionService
         }
         return asset;
     }
-    //public async Task<bool> EditTransactionNew(Transaction transactionNew, Transaction transactionToEdit)
-    //{
-    //    bool isDeleted = false;
-    //    bool isAdded = false; 
-
-    //    isDeleted =  await DeleteTransaction(transactionToEdit.Id);
-    //    if (isDeleted) isAdded = await AddTransaction(transactionNew);
-
-    //    return isAdded;
-    //}
+    
     public async Task<Result<AssetTotals>> GetAssetTotalsByCoin(Coin coin)
     {
         if (coin == null) { return new AssetTotals(); }
@@ -610,12 +476,14 @@ public class TransactionService : ITransactionService
         return assetTotals;
     }
 
-
     public async Task<Result<int>> AddTransaction(Transaction transaction)
     {
         var result = 0;
         Asset? addedAsset = null;
-        if (transaction == null || transaction.Mutations == null) return 0;
+        if (transaction == null || transaction.Mutations == null || transaction.Mutations.Count == 0)
+        {
+            return 0;
+        }
 
         var mutations = transaction.Mutations.OrderByDescending(x => x.Direction).OrderBy(y => y.Type);
 
@@ -624,9 +492,13 @@ public class TransactionService : ITransactionService
             foreach (var mutation in mutations)
             {
                 //Check if ASSET (=combination CoinId and AccountId) already exists.
-                Asset? currentAsset = await _context.Assets
-                    .Where(x => x.Coin.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutation.Asset.Account.Name.ToLower())
-                    .SingleOrDefaultAsync();
+                Asset? currentAsset;
+                
+                currentAsset = mutation.Asset is not null 
+                    ? await _context.Assets
+                        .Where(x => x.Coin.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutation.Asset.Account.Name.ToLower())
+                        .SingleOrDefaultAsync()
+                        : null;
 
                 if (currentAsset == null && addedAsset != null)
                 {
@@ -645,15 +517,17 @@ public class TransactionService : ITransactionService
                        .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
                     // New Asset, so add this to the context
                     addedAsset = mutation.Asset;
-                    _context.Assets.Add(mutation.Asset);
+                    if (mutation.Asset is not null) { _context.Assets.Add(mutation.Asset); }
                 }
             } //End of All mutations
 
             //******** Transaction transactionNew = new Transaction();
-            Transaction transactionNew = new Transaction();
-            transactionNew.Mutations = transaction.Mutations;
-            transactionNew.TimeStamp = transaction.TimeStamp;
-            transactionNew.Note = transaction.Note;
+            var transactionNew = new Transaction
+            {
+                Mutations = transaction.Mutations,
+                TimeStamp = transaction.TimeStamp,
+                Note = transaction.Note
+            };
 
             _context.Transactions.Update(transactionNew);
             result = await _context.SaveChangesAsync();
@@ -675,8 +549,11 @@ public class TransactionService : ITransactionService
     /// <returns></returns>
     public async Task<Result<Transaction>> GetTransactionById(int transactionId)
     {
-        Transaction assetTransaction = null;
-        if (transactionId <= 0) return new Result<Transaction>();
+        Transaction assetTransaction;
+        if (transactionId <= 0)
+        {
+            return new Result<Transaction>();
+        }
         try
         {
             assetTransaction = await _context.Mutations
@@ -690,8 +567,8 @@ public class TransactionService : ITransactionService
                 {
                     Id = grouped.Key,
                     TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
-                    Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault(),
-                    Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault(),
+                    Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault() ?? string.Empty,
+                    Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault() ?? new List<Mutation>(),
                 })
                 .SingleAsync();
         }
@@ -706,7 +583,10 @@ public class TransactionService : ITransactionService
     public async Task<Result<int>> EditTransaction(Transaction transactionNew, Transaction _transactionToEdit)
     {
         var result = 0;
-        if (_transactionToEdit == null || transactionNew == null) return 0;
+        if (_transactionToEdit == null || transactionNew == null)
+        {
+            return 0;
+        }
         try
         {
             var transactionToEdit = await _context.Transactions
@@ -722,19 +602,17 @@ public class TransactionService : ITransactionService
             //*** the count of both mutations will NOT be equal which will give an issue when going through
             //*** the mutations side-by-side.
             //*** Adding a dummy FEE mutation with qty 0 will equalize this
-
             if (mutationsNew.Count != mutationsToEdit.Count)
             {
                 EqualizeMutationsForFee(mutationsNew, mutationsToEdit);
             }
 
             var numberOfMutations = mutationsNew.Count;
-
             //Go through mutations side by side
             for (var i = 0; i < numberOfMutations; i++)
             {
-                Mutation mutationNew = mutationsNew[i];
-                Mutation mutationToEdit = mutationsToEdit[i];
+                var mutationNew = mutationsNew[i];
+                var mutationToEdit = mutationsToEdit[i];
 
                 if (mutationToEdit.Type != TransactionKind.Fee)
                 {
@@ -742,14 +620,12 @@ public class TransactionService : ITransactionService
                         .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
                     mutationToEdit.Qty = mutationNew.Qty;
                     mutationToEdit.Price = mutationNew.Price;
-                    //_context.Mutations.Update(mutationToEdit);
                 }
                 else // if 'Fee'
                 {
                     mutationToEdit.Asset = (await ReverseAndRecalculateFee(mutationNew, mutationToEdit))
                         .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
                     mutationToEdit.Qty = mutationNew.Qty;
-                    //_context.Mutations.Update(mutationToEdit);
                 }
             } // *** end of all mutations
 
@@ -774,10 +650,9 @@ public class TransactionService : ITransactionService
     public async Task<Result<int>> DeleteTransaction(Transaction _transactionToDelete, AssetAccount _accountAffected)
     {
         var result = 0;
-
         try
         {
-            Transaction transaction = await _context.Transactions
+            var transaction = await _context.Transactions
                 .Where(x => x.Id == _transactionToDelete.Id)
                 .Include(m => m.Mutations)
                 .ThenInclude(m => m.Asset)
@@ -824,16 +699,14 @@ public class TransactionService : ITransactionService
         }
         return result > 0;
     }
-    private void EqualizeMutationsForFee(List<Mutation> mutsNew, List<Mutation> mutsToEdit)
+    private static void EqualizeMutationsForFee(List<Mutation> mutsNew, List<Mutation> mutsToEdit)
     {
         Mutation dummyMutation;
-
         if (mutsNew.Count > mutsToEdit.Count)
         {
             dummyMutation = (Mutation)CloneMutation(mutsNew.Last());
             dummyMutation.Qty = 0;
             mutsToEdit.Add(dummyMutation);
-
         }
         else
         {
@@ -842,10 +715,9 @@ public class TransactionService : ITransactionService
             mutsNew.Add(dummyMutation);
         }
     }
-    private object CloneMutation(Mutation mut)
+    private static object CloneMutation(Mutation mut)
     {
         var cloneMut = new Mutation();
-
         var properties = mut.GetType().GetProperties();
         foreach (var property in properties)
         {

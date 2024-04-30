@@ -1,23 +1,23 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace CryptoPortfolioTracker.Models
+namespace CryptoPortfolioTracker.Models;
+
+
+public partial class AssetAccount : BaseModel
 {
-
-    public partial class AssetAccount : BaseModel
+    public AssetAccount()
     {
-        public AssetAccount()
-        {
-        }
-
-
-        [ObservableProperty] string name;
-
-        [ObservableProperty] double qty;
-
-        [ObservableProperty] string symbol;
-
-        [ObservableProperty] int assetId;
-
+        name = string.Empty;
+        symbol = string.Empty;
     }
+
+
+    [ObservableProperty] private string name;
+
+    [ObservableProperty] private double qty;
+
+    [ObservableProperty] private string symbol;
+
+    [ObservableProperty] private int assetId;
 
 }
