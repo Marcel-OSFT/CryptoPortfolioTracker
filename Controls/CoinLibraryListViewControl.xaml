@@ -124,22 +124,46 @@
                                         </Border>
                                         <Border Grid.Column="2" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
-                                                <TextBlock Name="txtPrice" Text="{Binding Price, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:G7}'}" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" />
-                                                <TextBlock Name="txtChange24Hr" Text="{Binding Change24Hr, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change24Hr, Converter={StaticResource myColourConverter}}" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtPrice">
+                                                <TextBlock Name="txtPrice" 
+                                                    Text="{Binding Price, 
+                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        ConverterParameter='{}$ {0:0.########}'}" 
+                                                    FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" />
+                                                <TextBlock Name="txtChange24Hr" 
+                                                    Text="{Binding Change24Hr, 
+                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        ConverterParameter='{}{0:0.00} %'}" 
+                                                    Foreground="{Binding Change24Hr, Converter={StaticResource myColourConverter}}" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtPrice">
 
                                                 </TextBlock>
                                             </RelativePanel>
                                         </Border>
                                         <Border Grid.Column="3" Margin="0,2,0,2"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
-                                                <TextBlock Name="txtChange52Week" Text="{Binding Change52Week, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change52Week, Converter={StaticResource myColourConverter}}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
-                                                <TextBlock Name="txtChange1Month" Text="{Binding Change1Month, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" Foreground="{Binding Change1Month, Converter={StaticResource myColourConverter}}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange52Week" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
-                                                <TextBlock Name="txtATH" Text="{Binding Ath, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:G7}'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange1Month" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
+                                                <TextBlock Name="txtChange52Week" 
+                                                   Text="{Binding Change52Week, 
+                                                        Converter={StaticResource StringFormatConverter},
+                                                        ConverterParameter='{}{0:0.00} %'}" 
+                                                           Foreground="{Binding Change52Week, Converter={StaticResource myColourConverter}}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
+                                                <TextBlock Name="txtChange1Month" 
+                                                    Text="{Binding Change1Month, 
+                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        ConverterParameter='{}{0:0.00} %'}" 
+                                                           Foreground="{Binding Change1Month, Converter={StaticResource myColourConverter}}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange52Week" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
+                                                <TextBlock Name="txtATH" 
+                                                    Text="{Binding Ath, 
+                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        ConverterParameter='{}$ {0:0.########}'}"   
+                                                    TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange1Month" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>
                                         <Border Grid.Column="4" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel  >
-                                                <TextBlock Name="txtMarketCap" Text="{Binding MarketCap, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" TextWrapping="Wrap" />
+                                                <TextBlock Name="txtMarketCap" 
+                                                    Text="{Binding MarketCap, 
+                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        ConverterParameter='{}$ {0:N0}'}" 
+                                                    TextWrapping="Wrap" />
                                                 <TextBlock Name="txtRank" Text="{Binding Rank}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketCap" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>

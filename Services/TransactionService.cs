@@ -296,6 +296,15 @@ public class TransactionService : ITransactionService
                 case "Out":
                     //OUT flow does not affect the averageCostPrice of the remaining qty. So no calculation needed for this.
                     asset.Qty -= mutation.Qty;
+                    //if very small amount remains then set it to zero. Might be a precision failure
+                    if (Math.Abs(asset.Qty) < 0.0001 
+                        && asset.Coin is not null 
+                        && asset.Coin.Price > 0 
+                        && (asset.Coin.Price * Math.Abs(asset.Qty)) < 0.01)
+                    {
+                        asset.Qty = 0;
+                        asset.AverageCostPrice = 0;
+                    }
                     break;
             }
         }
@@ -325,6 +334,15 @@ public class TransactionService : ITransactionService
                     {
                         asset.AverageCostPrice = ((asset.Qty * asset.AverageCostPrice) - (mutationToEdit.Qty * mutationToEdit.Price)) / (asset.Qty - mutationToEdit.Qty);
                         asset.Qty -= mutationToEdit.Qty;
+                        //if very small amount remains then set it to zero. Might be a precision failure
+                        if (Math.Abs(asset.Qty) < 0.0001
+                            && asset.Coin is not null
+                            && asset.Coin.Price > 0
+                            && (asset.Coin.Price * Math.Abs(asset.Qty)) < 0.01)
+                        {
+                            asset.Qty = 0;
+                            asset.AverageCostPrice = 0;
+                        }
                     }
                     else
                     {
@@ -349,6 +367,15 @@ public class TransactionService : ITransactionService
                     asset.Qty += mutationToEdit.Qty;
                     //*** apply new
                     asset.Qty -= mutationNew.Qty;
+                    //if very small amount remains then set it to zero. Might be a precision failure
+                    if (Math.Abs(asset.Qty) < 0.0001
+                        && asset.Coin is not null
+                        && asset.Coin.Price > 0
+                        && (asset.Coin.Price * Math.Abs(asset.Qty)) < 0.01)
+                    {
+                        asset.Qty = 0;
+                        asset.AverageCostPrice = 0;
+                    }
                     break;
             }
 
@@ -378,6 +405,15 @@ public class TransactionService : ITransactionService
                     .Where(x => x.Coin.Symbol.ToLower() == mutationNew.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutationNew.Asset.Account.Name.ToLower())
                     .SingleAsync();
                 assetNew.Qty -= mutationNew.Qty;
+                //if very small amount remains then set it to zero. Might be a precision failure
+                if (Math.Abs(assetNew.Qty) < 0.0001
+                    && assetNew.Coin is not null
+                    && assetNew.Coin.Price > 0
+                    && (assetNew.Coin.Price * Math.Abs(assetNew.Qty)) < 0.01)
+                {
+                    assetNew.Qty = 0;
+                    assetNew.AverageCostPrice = 0;
+                }
             }
             else //if nothing has changed then assure that 'assetNew' is set to its actual value instead of returning null
             {
@@ -431,6 +467,15 @@ public class TransactionService : ITransactionService
                     {
                         asset.AverageCostPrice = ((asset.Qty * asset.AverageCostPrice) - (mutation.Qty * mutation.Price)) / (asset.Qty - mutation.Qty);
                         asset.Qty -= mutation.Qty;
+                        //if very small amount remains then set it to zero. Might be a precision failure
+                        if (Math.Abs(asset.Qty) < 0.0001
+                            && asset.Coin is not null
+                            && asset.Coin.Price > 0
+                            && (asset.Coin.Price * Math.Abs(asset.Qty)) < 0.01)
+                        {
+                            asset.Qty = 0;
+                            asset.AverageCostPrice = 0;
+                        }
                     }
                     else
                     {

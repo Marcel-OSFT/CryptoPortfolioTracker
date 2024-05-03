@@ -229,9 +229,10 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
                 parRank.Inlines.Clear();
                 parRank.Inlines.Add(run);
 
+                double? price = details.MarketData.CurrentPrice.Where(x => x.Key == "usd").FirstOrDefault().Value;
                 run = new Run
                 {
-                    Text = details.MarketData.CurrentPrice.Where(x => x.Key == "usd").FirstOrDefault().Value.ToString()
+                    Text = price?.ToString("0.########")
                 };
                 parPrice.Inlines.Clear();
                 parPrice.Inlines.Add(run);

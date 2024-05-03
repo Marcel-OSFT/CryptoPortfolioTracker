@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using Microsoft.UI.Xaml.Data;
 
@@ -27,7 +28,9 @@ public sealed class StringFormatConverter : IValueConverter
         {
             ci = new CultureInfo("en-US");
         }
-        return string.Format(ci, (string)parameter, (double)value);
+
+        var result = string.Format(ci, (string)parameter, (double)value);
+        return result;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -45,6 +48,7 @@ public sealed class StringFormatConverter : IValueConverter
                 ci = new CultureInfo("en-US");
             }
             result = System.Convert.ToDouble((string)value, ci);
+
         }
         catch
         {

@@ -77,7 +77,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
     [RelayCommand]
     public async Task AssetItemClicked(AssetTotals clickedAsset)
     {
-        //new item clicked and selected?
+        //new item clicked and selected ?
         if (selectedAsset == null || selectedAsset != clickedAsset)
         {
             await ShowAccountsAndTransactions(clickedAsset);
@@ -93,7 +93,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
             }
             else
             {
-                await ShowAccountsAndTransactions(null);
+                await ShowAccountsAndTransactions();
                 IsExtendedView = false;
             }
         }
@@ -452,7 +452,11 @@ public sealed partial class AssetsViewModel : BaseViewModel
     }
     public bool CreateListAssetTransactions(List<Transaction> list)
     {
+        //TODO error caused below => look into XAML
+       // return true;
+
         ListAssetTransactions = new ObservableCollection<Transaction>(list);
+        var test = true;
         return ListAssetTransactions.Any();
     }
     private bool CreateListWithDummyAssetTotals()

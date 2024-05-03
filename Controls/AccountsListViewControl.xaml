@@ -88,7 +88,11 @@
 
                                         <Border Grid.Column="1"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right" >
                                             <RelativePanel>
-                                                <TextBlock Name="txtValue" Text="{Binding TotalValue, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" TextAlignment="Right" />
+                                                <TextBlock Name="txtValue" 
+                                                    Text="{Binding TotalValue, 
+                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        ConverterParameter='{}$ {0:N0}'}" 
+                                                    FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" TextAlignment="Right" />
                                             </RelativePanel>
                                         </Border>
                                     </Grid>

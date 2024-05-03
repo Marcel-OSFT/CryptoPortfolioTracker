@@ -31,14 +31,14 @@ public sealed partial class AccountDialog : ContentDialog
             Title = loc.GetLocalizedString("AccountDialog_Title_Edit");
             PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Edit");
             CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
-            IsPrimaryButtonEnabled = false;
+            IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0;
         }
         else
         {
             Title = loc.GetLocalizedString("AccountDialog_Title_Add");
             PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Add");
             CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
-            IsPrimaryButtonEnabled = false;
+            IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0;
         }
     }
 
@@ -57,6 +57,7 @@ public sealed partial class AccountDialog : ContentDialog
     {
         IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0;
     }
+    
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
@@ -65,5 +66,7 @@ public sealed partial class AccountDialog : ContentDialog
             sender.RequestedTheme = App.userPreferences.AppTheme;
         }
     }
+
+    
 }
 
