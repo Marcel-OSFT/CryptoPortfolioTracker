@@ -27,7 +27,8 @@
             <StackPanel.Background>
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
             </StackPanel.Background>
-            <TextBox l:Uids.Uid="AccountDialog_Name" x:Name="AccountNameText" PlaceholderForeground="Wheat" TextChanging="AccountName_TextChanging" Margin="10,0,10,0"></TextBox>
+            <TextBox l:Uids.Uid="AccountDialog_Name" x:Name="AccountNameText" PlaceholderForeground="Wheat" 
+                     TextChanging="AccountName_TextChanging" Margin="10,0,10,0"></TextBox>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
             <StackPanel.Background>

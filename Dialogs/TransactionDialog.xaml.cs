@@ -760,11 +760,10 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
 
         if (sender is RadioButtons rb)
         {
-
             switch (rb.SelectedIndex)
             {
                 case 0: //Deposit                       
-                    Validator.NrOfValidEntriesNeeded = 5;
+                    Validator.RegisterEntriesToValidate(new int[4] { 0, 2, 4, 5 });
                     transactionType = TransactionKind.Deposit;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Deposit_Explainer"), CoinHeader, "", AccountToHeader, "");
                     ListCoinA = (await _transactionService
@@ -775,7 +774,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     ListFeeCoin = new List<string>();
                     break;
                 case 1: //Withdraw
-                    Validator.NrOfValidEntriesNeeded = 5;
+                    Validator.RegisterEntriesToValidate(new int[4] { 0, 2, 4, 5 });
                     transactionType = TransactionKind.Withdraw;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Withdraw_Explainer"), CoinHeader, "", AccountFromHeader, "");
                     ListCoinA = (await _transactionService
@@ -786,7 +785,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     ListFeeCoin = new List<string>();
                     break;
                 case 2: //Transfer
-                    Validator.NrOfValidEntriesNeeded = 7;
+                    Validator.RegisterEntriesToValidate(new int[7] { 0, 2, 3, 4, 5, 8, 9 });
                     transactionType = TransactionKind.Transfer;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Transfer_Explainer"), CoinHeader, "", AccountFromHeader, AccountToHeader, false);
                     ListCoinA = (await _transactionService
@@ -796,7 +795,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     ListCoinB = new List<string>();
                     break;
                 case 3: //Convert
-                    Validator.NrOfValidEntriesNeeded = 10;
+                    Validator.RegisterEntriesToValidate(new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
                     transactionType = TransactionKind.Convert;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Convert_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService
@@ -809,7 +808,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     ListFeeCoin = ListCoinA;
                     break;
                 case 4: //Buy
-                    Validator.NrOfValidEntriesNeeded = 10;
+                    Validator.RegisterEntriesToValidate(new int[10] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
                     transactionType = TransactionKind.Buy;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Buy_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService
@@ -824,7 +823,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                         .Match(Succ: list => list, Fail: err => new List<string>());
                     break;
                 case 5: //Sell
-                    Validator.NrOfValidEntriesNeeded = 10;
+                    Validator.RegisterEntriesToValidate(new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
                     transactionType = TransactionKind.Sell;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Sell_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService
@@ -848,6 +847,10 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 CoinB = transactionToEdit.Details.CoinB;
                 AccountFrom = transactionToEdit.Details.AccountFrom;
                 AccountTo = transactionToEdit.Details.AccountTo;
+                // above items are set and can not change while editing
+                // so they don't need to be validated and need to be unregistered
+                Validator.UnRegisterEntriesToValidate(new int[4] { 0, 1, 2, 3});
+
                 QtyA = transactionToEdit.Details.QtyA;
                 QtyB = transactionToEdit.Details.QtyB;
                 PriceA = transactionToEdit.Details.PriceA;

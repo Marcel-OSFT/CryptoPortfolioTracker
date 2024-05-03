@@ -1,9 +1,17 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.Generic;
+using System.Xml.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CryptoPortfolioTracker.Models;
 
 public partial class AssetTotals : BaseModel
 {
+
+    public AssetTotals()
+    {
+        
+    }
 
     [ObservableProperty] private double qty;
     [ObservableProperty] private double costBase;

@@ -49,9 +49,13 @@
                     <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" Margin="0,5,5,0"
                                Width="{Binding Tag, ElementName=AssetAccountsGridView}"
                                 FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="NoWrap" />
-                    <TextBlock Name="txtQty" Text="{Binding Qty, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:G7}'}" TextWrapping="NoWrap" RelativePanel.Below="txtName"  
-                               HorizontalAlignment="Stretch" 
-                               FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                    <TextBlock Name="txtQty" 
+                        Text="{Binding Qty, 
+                            Converter={StaticResource StringFormatConverter}, 
+                            ConverterParameter='{}{0:0.########}'}" 
+                        TextWrapping="NoWrap" RelativePanel.Below="txtName"  
+                       HorizontalAlignment="Stretch" 
+                       FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
                     <TextBlock Name="txtSymbol" Text="{Binding Symbol}" TextWrapping="NoWrap" RelativePanel.Below="txtName" RelativePanel.RightOf="txtQty" Margin="5,0,0,5" 
                                 FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
                     </RelativePanel>
