@@ -14,15 +14,18 @@ public partial class TransactionDetails : BaseModel
     /// Below properties are the values taken from the TranactionDialog and can be used when editing a transaction
     /// </summary>
     public TransactionKind TransactionType  { get; set; }
-    public string CoinA { get; set; } = string.Empty;
-    public string CoinB { get; set; } = string.Empty;
+    public string CoinASymbol { get; set; } = string.Empty;
+    public string CoinAName { get; set; } = string.Empty;
+    public string CoinBSymbol { get; set; } = string.Empty;
+    public string CoinBName { get; set; } = string.Empty;
     public string AccountFrom { get; set; } = string.Empty;
     public string AccountTo { get; set; } = string.Empty;
     public double QtyA { get; set; }
     public double QtyB { get; set; }
     public double PriceA { get; set; }
     public double PriceB { get; set; }
-    public string FeeCoin { get; set; } = string.Empty;
+    public string FeeCoinSymbol { get; set; } = string.Empty;
+    public string FeeCoinName { get; set; } = string.Empty;
     public double FeeQty { get; set; }
 
     /// <summary>

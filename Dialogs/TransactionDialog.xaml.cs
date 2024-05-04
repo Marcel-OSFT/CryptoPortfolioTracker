@@ -559,16 +559,23 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 }
                 break;
         }
+        var _coinA = CoinA != string.Empty ? CoinA.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
+        var _coinB = CoinB != string.Empty ? CoinB.Split(" ", 2) : new string[2] {string.Empty, string.Empty };
+        var _coinFee = FeeCoin != string.Empty ? FeeCoin.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
+
         var transactionDetails = new TransactionDetails
         {
+            CoinASymbol = _coinA[0],
+            CoinAName = _coinA[1],
+            CoinBSymbol = _coinB[0],
+            CoinBName = _coinB[1],
+            FeeCoinSymbol = _coinFee[0],
+            FeeCoinName = _coinFee[1],
             AccountFrom = AccountFrom,
             AccountTo = AccountTo,
             FeeQty = FeeQty,
-            CoinA = CoinA,
-            CoinB = CoinB,
             PriceA = PriceA,
             PriceB = PriceB,
-            FeeCoin = FeeCoin,
             QtyA = QtyA,
             QtyB = QtyB,
             TransactionType = transactionType,
@@ -586,13 +593,13 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         }
         return transactionToAdd;
     }
-    private async Task<Result<Mutation>> GetMutation(TransactionKind type, MutationDirection direction, string symbol, double qty, double price, string account)
+    private async Task<Result<Mutation>> GetMutation(TransactionKind type, MutationDirection direction, string symbolName, double qty, double price, string account)
     {
         var mutation = new Mutation();
         try
         {
             // mutation.Asset.Coin.Symbol = symbol;
-            mutation.Asset.Coin = (await _transactionService.GetCoinBySymbol(symbol))
+            mutation.Asset.Coin = (await _transactionService.GetCoinBySymbol(symbolName))
                 .Match(Succ: coin => coin, Fail: err => throw new Exception(err.Message, err));
             //mutation.Asset.Account.Name = account;
             mutation.Asset.Account = (await _transactionService.GetAccountByName(account))
@@ -624,7 +631,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     {
         if (listFeeCoin != null && listFeeCoin.Count > 0)
         {
-            var result = listFeeCoin.Where(x => x.ToString().ToLower() == "eth").FirstOrDefault();
+            var result = listFeeCoin.Where(x => x.ToString().ToLower() == "eth ethereum").FirstOrDefault();
             if (result != null)
             {
                 FeeCoin = (string)result;
@@ -843,8 +850,8 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
             }
             else if (dialogAction == DialogAction.Edit && transactionToEdit != null)
             {
-                CoinA = transactionToEdit.Details.CoinA;
-                CoinB = transactionToEdit.Details.CoinB;
+                CoinA = transactionToEdit.Details.CoinASymbol + " " + transactionToEdit.Details.CoinAName;
+                CoinB = transactionToEdit.Details.CoinBSymbol + " " + transactionToEdit.Details.CoinBName;
                 AccountFrom = transactionToEdit.Details.AccountFrom;
                 AccountTo = transactionToEdit.Details.AccountTo;
                 // above items are set and can not change while editing
@@ -855,7 +862,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 QtyB = transactionToEdit.Details.QtyB;
                 PriceA = transactionToEdit.Details.PriceA;
                 PriceB = transactionToEdit.Details.PriceB;
-                FeeCoin = transactionToEdit.Details.FeeCoin;
+                FeeCoin = transactionToEdit.Details.FeeCoinSymbol + " " + transactionToEdit.Details.FeeCoinName;
                 FeeQty = transactionToEdit.Details.FeeQty;
                 Note = transactionToEdit.Note;
                 TimeStamp = DateTimeOffset.Parse(transactionToEdit.TimeStamp.ToString());
@@ -875,9 +882,9 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         var asBox = (sender as AutoSuggestBoxWithValidation);
         var entry = (asBox is not null) ? asBox.MyText : string.Empty; 
         
-        if (ListCoinA.Contains(entry.ToUpper()))
+        if (ListCoinA.Contains(entry))
         {
-           await SetEntriesBasedOnCoinA(entry.ToUpper());
+           await SetEntriesBasedOnCoinA(entry);
         }
         else
         {
@@ -935,7 +942,6 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     .GetAccountNames(coin))
                     .Match(Succ: list => list, Fail: err => new List<string>());
                 AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-                CoinB = string.Empty;
                 ListAccountTo = (await _transactionService
                     .GetAccountNames())
                     .Match(Succ: list => list, Fail: err => new List<string>());
@@ -944,6 +950,8 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     .GetCoinSymbolsExcludingUsdtUsdcFromLibrary())
                     .Match(Succ: list => list, Fail: err => new List<string>());
                 ListCoinB.AddRange(list);
+                CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB); //string.empty
+
                 break;
             case "Sell": //->ASBoxCoinA
                 ListAccountFrom = (await _transactionService

@@ -25,7 +25,7 @@ public class TransactionService : ITransactionService
         List<string> _result;
         try
         {
-            _result = await _context.Coins.Select(x => x.Symbol.ToUpper()).ToListAsync();
+           _result = await _context.Coins.Select(x => x.Symbol.ToUpper() + " " + x.Name).ToListAsync();
         }
         catch (Exception ex)
         {
@@ -33,12 +33,16 @@ public class TransactionService : ITransactionService
         }
         return _result ?? new List<string>();
     }
-    public async Task<Result<Coin>> GetCoinBySymbol(string symbol)
+    public async Task<Result<Coin>> GetCoinBySymbol(string symbolName)
     {
         Coin coin;
+        var _symbol = symbolName.Split(' ',2);
         try
         {
-            coin = await _context.Coins.Where(x => x.Symbol.ToLower() == symbol.ToLower()).SingleAsync();
+            coin = await _context.Coins
+                .Where(x => x.Symbol.ToLower() == _symbol[0].ToLower() 
+                    && x.Name.ToLower() == _symbol[1].ToLower() )
+                .SingleAsync();
         }
         catch (Exception ex)
         {
@@ -60,16 +64,21 @@ public class TransactionService : ITransactionService
         return account;
     }
     
-    public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string coinSymbol)
+    public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string symbolName)
     {
         List<string> _result;
-        if (coinSymbol == null || coinSymbol == "") { return new List<string>(); }
+        var _symbol = symbolName.Split(' ',2);
+        if (symbolName == null || symbolName == "") { return new List<string>(); }
 
         try
         {
             _result = await _context.Coins
-                .Where(x => x.Symbol.ToLower() != coinSymbol.ToLower() && x.Symbol.ToLower() != "usdt" && x.Symbol.ToLower() != "usdc")
-                .Select(x => x.Symbol.ToUpper())
+                .Where(x => 
+                     !(x.Symbol.ToLower() == _symbol[0].ToLower() 
+                     && x.Name.ToLower() == _symbol[1].ToLower())
+                    && x.Symbol.ToLower() != "usdt" 
+                    && x.Symbol.ToLower() != "usdc")
+                .Select(x => x.Symbol.ToUpper() + " " + x.Name)
                 .ToListAsync();
         }
         catch (Exception ex)
@@ -105,7 +114,7 @@ public class TransactionService : ITransactionService
             _result = await _context.Assets
                 .Include(x => x.Coin)
                 .GroupBy(asset => asset.Coin)
-                .Select(assetGroup => assetGroup.Key.Symbol.ToUpper())
+                .Select(assetGroup => assetGroup.Key.Symbol.ToUpper() + " " + assetGroup.Key.Name)
                 .ToListAsync();
         }
         catch (Exception ex)
@@ -123,7 +132,7 @@ public class TransactionService : ITransactionService
                 .Include(x => x.Coin)
                 .Where(s => s.Coin.Symbol.ToLower() != "usdt" && s.Coin.Symbol.ToLower() != "usdc")
                 .GroupBy(asset => asset.Coin)
-                .Select(assetGroup => assetGroup.Key.Symbol.ToUpper())
+                .Select(assetGroup => assetGroup.Key.Symbol.ToUpper() + " " + assetGroup.Key.Name)
                 .ToListAsync();
         }
         catch (Exception ex)
@@ -139,8 +148,10 @@ public class TransactionService : ITransactionService
         try
         {
             _result = await _context.Coins
-                .Where(x => x.Symbol.ToLower() != "usdt" && x.Symbol.ToLower() != "usdc")
-                .Select(x => x.Symbol.ToUpper())
+                .Where(x => 
+                    x.Symbol.ToLower() != "usdt" 
+                    && x.Symbol.ToLower() != "usdc")
+                .Select(x => x.Symbol.ToUpper() + " " + x.Name)
                 .ToListAsync();
         }
         catch (Exception ex)
@@ -156,10 +167,13 @@ public class TransactionService : ITransactionService
         try
         {
             _result = await _context.Assets
-                .GroupBy(asset => asset.Coin)
-                .Select(assetSymbol => assetSymbol.Key.Symbol.ToUpper())
-                .Where(assetSymbol => assetSymbol.ToLower() == "usdt" || assetSymbol.ToLower() == "usdc")
-                .ToListAsync();
+               .Include(x => x.Coin)
+               .Where(s => 
+                    s.Coin.Symbol.ToLower() == "usdt" 
+                    || s.Coin.Symbol.ToLower() == "usdc")
+               .GroupBy(asset => asset.Coin)
+               .Select(assetGroup => assetGroup.Key.Symbol.ToUpper() + " " + assetGroup.Key.Name)
+               .ToListAsync();
         }
         catch (Exception ex)
         {
@@ -173,8 +187,10 @@ public class TransactionService : ITransactionService
         try
         {
             _result = await _context.Coins
-                .Where(x => x.Symbol.ToLower() == "usdt" || x.Symbol.ToLower() == "usdc")
-                .Select(x => x.Symbol.ToUpper())
+                .Where(x => 
+                    x.Symbol.ToLower() == "usdt" 
+                    || x.Symbol.ToLower() == "usdc")
+                .Select(x => x.Symbol.ToUpper() + " " + x.Name)
                 .ToListAsync();
         }
         catch (Exception ex)
@@ -183,16 +199,21 @@ public class TransactionService : ITransactionService
         }
         return _result ?? new List<string>();
     }
-    public async Task<Result<double[]>> GetMaxQtyAndPrice(string coinSymbol, string accountName)
+    public async Task<Result<double[]>> GetMaxQtyAndPrice(string symbolName, string accountName)
     {
         double[] _result;
-        if (coinSymbol == null || coinSymbol == "" || accountName == null || accountName == "") { return new double[] { 0, 0 }; }
+        var _symbol = symbolName.Split(' ', 2);
+
+        if (symbolName == null || symbolName == "" || accountName == null || accountName == "") { return new double[] { 0, 0 }; }
 
         try
         {
             _result = await _context.Assets
                 .Include(x => x.Coin)
-                .Where(x => x.Coin.Symbol.ToLower() == coinSymbol.ToLower() && x.Account.Name.ToLower() == accountName.ToLower())
+                .Where(x => 
+                    x.Coin.Symbol.ToLower() == _symbol[0].ToLower() 
+                    && x.Coin.Name.ToLower() == _symbol[1].ToLower()    
+                    && x.Account.Name.ToLower() == accountName.ToLower())
                 .Select(i => new double[] { i.Qty, i.Coin.Price })
                 .SingleAsync();
         }
@@ -202,14 +223,19 @@ public class TransactionService : ITransactionService
         }
         return _result ?? (new double[] { 0, 0 });
     }
-    public async Task<Result<double>> GetPriceFromLibrary(string coinSymbol)
+    public async Task<Result<double>> GetPriceFromLibrary(string symbolName)
     {
         double _result;
-        if (coinSymbol == null || coinSymbol == "") { return 0; }
+        var _symbol = symbolName.Split(' ', 2);
+
+        if (symbolName == null || symbolName == "") { return 0; }
         try
         {
             _result = await _context.Coins
-                .Where(x => x.Symbol.ToLower() == coinSymbol.ToLower())
+                .Where(x => 
+                    x.Symbol.ToLower() == _symbol[0].ToLower()
+                    && x.Name.ToLower() == _symbol[1].ToLower())
+                
                 .Select(i => i.Price)
                 .SingleAsync();
         }
@@ -232,10 +258,12 @@ public class TransactionService : ITransactionService
         }
         return _result ?? new List<string>();
     }
-    public async Task<Result<List<string>>> GetAccountNames(string coinSymbol)
+    public async Task<Result<List<string>>> GetAccountNames(string symbolName)
     {
         List<string> _result;
-        if (coinSymbol == null || coinSymbol == "")
+        var _symbol = symbolName.Split(' ', 2);
+
+        if (symbolName == null || symbolName == "")
         {
             return new List<string>();
         }
@@ -243,7 +271,9 @@ public class TransactionService : ITransactionService
         try
         {
             _result = await _context.Assets
-                .Where(x => x.Coin.Symbol.ToLower() == coinSymbol.ToLower())
+                .Where(x => 
+                    x.Coin.Symbol.ToLower() == _symbol[0].ToLower()  
+                    && x.Coin.Name.ToLower() == _symbol[1].ToLower())
                 .Select(x => x.Account.Name)
                 .ToListAsync();
         }
