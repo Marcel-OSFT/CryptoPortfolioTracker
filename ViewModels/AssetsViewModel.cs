@@ -456,7 +456,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
        // return true;
 
         ListAssetTransactions = new ObservableCollection<Transaction>(list);
-        var test = true;
+       
         return ListAssetTransactions.Any();
     }
     private bool CreateListWithDummyAssetTotals()

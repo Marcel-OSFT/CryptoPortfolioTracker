@@ -17,7 +17,8 @@ public partial class Transaction : BaseModel
         Mutations = new Collection<Mutation>();
         Details = new TransactionDetails
         {
-            FeeCoin = "ETH"
+            FeeCoinSymbol = "ETH",
+            FeeCoinName = "Ethereum"
         };
     }
 
@@ -58,7 +59,8 @@ public partial class Transaction : BaseModel
                 {
                     case TransactionKind.Deposit:
                         {
-                            Details.CoinA = mutation.Asset.Coin.Symbol;
+                            Details.CoinASymbol = mutation.Asset.Coin.Symbol;
+                            Details.CoinAName = mutation.Asset.Coin.Name;
                             Details.ImageUriA = mutation.Asset.Coin.ImageUri;
                             Details.QtyA = mutation.Qty;
                             Details.PriceA = mutation.Price;
@@ -69,7 +71,8 @@ public partial class Transaction : BaseModel
                         }
                     case TransactionKind.Withdraw:
                         {
-                            Details.CoinA = mutation.Asset.Coin.Symbol;
+                            Details.CoinASymbol = mutation.Asset.Coin.Symbol;
+                            Details.CoinAName = mutation.Asset.Coin.Name;
                             Details.ImageUriA = mutation.Asset.Coin.ImageUri;
                             Details.QtyA = mutation.Qty;
                             Details.PriceA = mutation.Price;
@@ -84,7 +87,8 @@ public partial class Transaction : BaseModel
                             {
                                 if (mutation.Direction == MutationDirection.Out)
                                 {
-                                    Details.CoinA = mutation.Asset.Coin.Symbol;
+                                    Details.CoinASymbol = mutation.Asset.Coin.Symbol;
+                                    Details.CoinAName = mutation.Asset.Coin.Name;
                                     Details.ImageUriA = mutation.Asset.Coin.ImageUri;
                                     Details.QtyA = mutation.Qty;
                                     Details.PriceA = mutation.Price;
@@ -108,11 +112,12 @@ public partial class Transaction : BaseModel
                             }
                             else // transaction combined with transfer 
                             {
-                                Details.CoinB = mutation.Asset.Coin.Symbol;
+                                Details.CoinBSymbol = mutation.Asset.Coin.Symbol;
+                                Details.CoinBName = mutation.Asset.Coin.Name;
                                 Details.ImageUriB = mutation.Asset.Coin.ImageUri;
                                 Details.QtyB = mutation.Qty;
                                 Details.PriceB = mutation.Price;
-                                Details.ValueB = Details.QtyA * Details.PriceA;
+                                Details.ValueB = Details.QtyB * Details.PriceB;
                                 Details.AccountTo = mutation.Asset.Account.Name;
                             }
                             break;
@@ -123,14 +128,15 @@ public partial class Transaction : BaseModel
                         {
                             if (mutation.Direction == MutationDirection.In)
                             {
-                                Details.CoinB = mutation.Asset.Coin.Symbol;
+                                Details.CoinBSymbol = mutation.Asset.Coin.Symbol;
+                                Details.CoinBName = mutation.Asset.Coin.Name;
                                 Details.ImageUriB = mutation.Asset.Coin.ImageUri;
                                 Details.QtyB = mutation.Qty;
                                 Details.PriceB = mutation.Price;
                                 Details.ValueB = Details.QtyB * Details.PriceB;
                                 Details.AccountTo = mutation.Asset.Account.Name;
 
-                                if (RequestedAsset != null && RequestedAsset.Coin.Symbol == Details.CoinB)
+                                if (RequestedAsset != null && (RequestedAsset.Coin.Symbol == Details.CoinBSymbol && RequestedAsset.Coin.Name == Details.CoinBName))
                                 {
                                     Details.TransactionDirection = MutationDirection.In;
                                 }
@@ -141,7 +147,8 @@ public partial class Transaction : BaseModel
                             }
                             else
                             {
-                                Details.CoinA = mutation.Asset.Coin.Symbol;
+                                Details.CoinASymbol = mutation.Asset.Coin.Symbol;
+                                Details.CoinAName = mutation.Asset.Coin.Name;
                                 Details.ImageUriA = mutation.Asset.Coin.ImageUri;
                                 Details.QtyA = mutation.Qty;
                                 Details.PriceA = mutation.Price;
@@ -152,7 +159,8 @@ public partial class Transaction : BaseModel
                         }
                     case TransactionKind.Fee:
                         {
-                            Details.FeeCoin = mutation.Asset.Coin.Symbol;
+                            Details.FeeCoinSymbol = mutation.Asset.Coin.Symbol;
+                            Details.FeeCoinName = mutation.Asset.Coin.Name;
                             Details.ImageUriFee = mutation.Asset.Coin.ImageUri;
                             Details.FeeQty = mutation.Qty;
                             break;

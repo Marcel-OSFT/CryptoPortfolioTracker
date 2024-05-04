@@ -98,7 +98,7 @@
                 TextChanged="ASBoxCoinA_TextChanged"
                 SuggestionChosen="ASBoxCoinA_SuggestionChosen"
                 AnimateBorder="True"
-                Width="115"
+                Width="315"
                 Margin="5,0,0,0"
                 />
         </RelativePanel>
@@ -111,7 +111,7 @@
                     ElementName=Root, 
                     Mode=TwoWay}"
                     AnimateBorder="True"
-                Width="115"
+                Width="315"
                 />
         </RelativePanel>
         <RelativePanel Name="AccountSelectionA" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
@@ -234,7 +234,7 @@
                     Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}" 
                 PointerPressed="QtyOrPrice_pressed"
-                Width="160" 
+                Width="120" 
                 Margin="5,0,5,0"/>
             <controls:AutoSuggestBoxWithValidation l:Uids.Uid="TransactionDialog_FeeCoin" x:Name ="ASBoxFeeCoin" 
                 ItemsSource="{Binding ListFeeCoin, ElementName=Root, Mode=TwoWay}" 
@@ -244,7 +244,7 @@
                     Mode=TwoWay}"
                 AnimateBorder="True"
                 Margin="5,0,0,0"
-                Width="115"
+                Width="185"
                 RelativePanel.RightOf="TBoxQtyFee"/>
         </RelativePanel>
         <RelativePanel Name="TimeStampSelection" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Margin="5,0,5,0">

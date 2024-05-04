@@ -37,7 +37,7 @@ public sealed partial class AssetAccountsGridViewControl : UserControl
             {
                 case 0: //small
                     {
-                        AssetAccountsGridView.Tag = Scale * longestNameLength * 7;
+                        AssetAccountsGridView.Tag = scale * longestNameLength * 7;
                         break;
                     }
                 case 1: //normal
