@@ -13,14 +13,23 @@ public class MaxQtyAConverter : IValueConverter
         var loc = Localizer.Get();
         var _double = (double)value;
 
-
-        //NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
-
-        var maxQty = _double.ToString("G7", CultureInfo.InvariantCulture);
-        var length = maxQty.Length;
-        if (length > 8)
+        CultureInfo ci;
+        if (App.userPreferences.NumberFormat.NumberDecimalSeparator == ",")
         {
-            length = 9;
+            ci = new CultureInfo("nl-NL");
+            ci.NumberFormat = App.userPreferences.NumberFormat;
+        }
+        else
+        {
+            ci = new CultureInfo("en-US");
+            ci.NumberFormat = App.userPreferences.NumberFormat;
+        }
+
+        var maxQty = _double.ToString("0.########", ci);
+        var length = maxQty.Length;
+        if (length > 9)
+        {
+            length = 10;
         }
 
         var finalString = " (max " + maxQty.Substring(0,length) + ")";

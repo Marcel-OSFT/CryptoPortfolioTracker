@@ -20,13 +20,15 @@ public sealed class StringFormatConverter : IValueConverter
         }
 
         CultureInfo ci;
-        if (App.userPreferences.NumberFormat.CurrencyDecimalSeparator == ",")
+        if (App.userPreferences.NumberFormat.NumberDecimalSeparator == ",")
         {
             ci = new CultureInfo("nl-NL");
+            ci.NumberFormat = App.userPreferences.NumberFormat;
         }
         else
         {
             ci = new CultureInfo("en-US");
+            ci.NumberFormat = App.userPreferences.NumberFormat;
         }
 
         var result = string.Format(ci, (string)parameter, (double)value);
@@ -39,13 +41,15 @@ public sealed class StringFormatConverter : IValueConverter
         try
         {
             CultureInfo ci;
-            if (App.userPreferences.NumberFormat.CurrencyDecimalSeparator == ",")
+            if (App.userPreferences.NumberFormat.NumberDecimalSeparator == ",")
             {
                 ci = new CultureInfo("nl-NL");
+                ci.NumberFormat = App.userPreferences.NumberFormat;
             }
             else
             {
                 ci = new CultureInfo("en-US");
+                ci.NumberFormat = App.userPreferences.NumberFormat;
             }
             result = System.Convert.ToDouble((string)value, ci);
 

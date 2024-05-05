@@ -56,7 +56,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 
     private void GetPreferences()
     {
-        NumberFormatIndex = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "," ? 0 : 1;
+        NumberFormatIndex = App.userPreferences.NumberFormat.NumberDecimalSeparator == "," ? 0 : 1;
         AppCultureIndex = App.userPreferences.AppCultureLanguage[..2].ToLower() == "nl" ? 0 : 1;
         IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
         IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
@@ -69,13 +69,13 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         NumberFormatInfo nf = new();
         if (index == 0)
         {
-            nf.CurrencyDecimalSeparator = ",";
-            nf.CurrencyGroupSeparator = ".";
+            nf.NumberDecimalSeparator = ",";
+            nf.NumberGroupSeparator = ".";
         }
         else
         {
-            nf.CurrencyDecimalSeparator = ".";
-            nf.CurrencyGroupSeparator = ",";
+            nf.NumberDecimalSeparator = ".";
+            nf.NumberGroupSeparator = ",";
         }
         App.userPreferences.NumberFormat = nf;
 
