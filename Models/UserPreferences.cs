@@ -177,7 +177,7 @@ public class UserPreferences
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(UserPreferences).Name.PadRight(22));
 
         Logger.Information("AppCultureLanguage set to {0}", AppCultureLanguage.ToString());
-        Logger.Information("DecimalSeparator set to {0}", NumberFormat.CurrencyDecimalSeparator.ToString());
+        Logger.Information("DecimalSeparator set to {0}", NumberFormat.NumberDecimalSeparator.ToString());
         Logger.Information("Font Size set to {0}", FontSize.ToString());
         Logger.Information("IsHidingZeroBalances set to {0}", IsHidingZeroBalances.ToString());
         Logger.Information("Theme set to {0}", AppTheme.ToString());

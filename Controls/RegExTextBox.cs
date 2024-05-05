@@ -161,14 +161,14 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         switch (SelectedRegEx)
         {
             case MyEnum.RegExPositiveDecimal:
-                thisInstance.regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." 
+                thisInstance.regExChoosen = App.userPreferences.NumberFormat.NumberDecimalSeparator == "." 
                     ? App.Current.Resources["RegExPositiveDecimalEn"] as string 
                     : App.Current.Resources["RegExPositiveDecimalNl"] as string;
                 thisInstance.KeyDown += (sender, e) => KeyDownNumeric(sender, e, true, true);
                 
                 break;
             case MyEnum.RegExPositiveInt:
-                thisInstance.regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." 
+                thisInstance.regExChoosen = App.userPreferences.NumberFormat.NumberDecimalSeparator == "." 
                     ? App.Current.Resources["RegExPositiveIntEn"] as string 
                     : App.Current.Resources["RegExPositiveIntNl"] as string;
                 thisInstance.KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, true);
@@ -180,13 +180,13 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
                 // To-Do -> regExChoosen = @"^([0 - 9]) * (\.[0 - 9]+)?$";
                 break;
             case MyEnum.RegExDecimal:
-                thisInstance.regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." 
+                thisInstance.regExChoosen = App.userPreferences.NumberFormat.NumberDecimalSeparator == "." 
                     ? App.Current.Resources["RegExDecimalEn"] as string 
                     : App.Current.Resources["RegExDecimalNl"] as string;
                 thisInstance.KeyDown += (sender, e) => KeyDownNumeric(sender, e, true, false);
                 break;
             case MyEnum.RegExInt:
-                thisInstance.regExChoosen = App.userPreferences.NumberFormat.CurrencyDecimalSeparator == "." 
+                thisInstance.regExChoosen = App.userPreferences.NumberFormat.NumberDecimalSeparator == "." 
                     ? App.Current.Resources["RegExIntEn"] as string 
                     : App.Current.Resources["RegExIntNl"] as string;
                 thisInstance.KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, false);
@@ -212,7 +212,7 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         }
         // Initialize the flag to false.
         invalidKeyEntered = false;
-        var decimalChar = App.userPreferences.NumberFormat.CurrencyDecimalSeparator;
+        var decimalChar = App.userPreferences.NumberFormat.NumberDecimalSeparator;
         var decimalKey = decimalChar == "." ? 190 : 188;
 
         // Determine whether the keystroke is a number from the top of the keyboard.
