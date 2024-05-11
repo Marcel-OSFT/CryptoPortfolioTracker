@@ -13,7 +13,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.0.5.2</Version>
+    <Version>1.0.5.3</Version>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
   </PropertyGroup>
