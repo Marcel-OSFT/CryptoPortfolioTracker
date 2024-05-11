@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.WinUI.UI;
 using Microsoft.UI;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -203,7 +204,7 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         PointerPressed?.Invoke(this, e);
     }
 
-   
+
     private static void KeyDownNumeric(object sender, KeyRoutedEventArgs e, bool _isDecimal, bool _isOnlyPositive)
     {
         if (sender is not RegExTextBox thisInstance)
@@ -223,19 +224,19 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
             {
                 // Determine whether the keystroke is a backspace.
                 if (e.Key != VirtualKey.Back)
-                {   
+                {
                     //Determine wether the keystroke is the decimal key
                     var tbox = sender as TextBox ?? new();
                     if (!_isDecimal
-                            || (tbox.Text.Contains(decimalChar)) 
+                            || (tbox.Text.Contains(decimalChar))
                             || Convert.ToInt32(e.Key) != decimalKey)
                     {
                         //Determine wether the keystroke is the '-' key
-                        //check if '-' already exists, allow the '-' key if all tekst is selected and will be overwritten
+                        //check if '-' already exists, allow the '-' key if all text is selected and will be overwritten
                         //'-' sign can only occur at the beginning at position 0
-                        if (thisInstance.SelectionStart != 0 || _isOnlyPositive 
-                            || (tbox.Text.Contains('-') && thisInstance.SelectedText.Length != thisInstance.Text.Length) 
-                            || (e.Key != VirtualKey.Subtract 
+                        if (thisInstance.SelectionStart != 0 || _isOnlyPositive
+                            || (tbox.Text.Contains('-') && thisInstance.SelectedText.Length != thisInstance.Text.Length)
+                            || (e.Key != VirtualKey.Subtract
                             && Convert.ToInt32(e.Key) != 189))
                         {
                             // Finally the reuslt is that A non-numerical keystroke was pressed.
@@ -246,8 +247,16 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
                 }
             }
         }
+        //If shift key was pressed, it's not a number.
+        var modKey = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
+        
+        if ( modKey.HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down))
+        {
+            invalidKeyEntered = true;
+        }
     }
-    
+
+
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

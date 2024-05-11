@@ -475,7 +475,14 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
             (await _transactionService.GetMaxQtyAndPrice(CoinA, AccountFrom)).IfSucc(result =>
             {
                 MaxQtyA = result[0];
-                ActualPriceA = PriceA = result[1];
+                if (transactionType != TransactionKind.Transfer)
+                {
+                    ActualPriceA = PriceA = result[1];
+                }
+                else
+                {
+                    ActualPriceA = PriceA = result[2];
+                }
             });
         }
         else
@@ -648,6 +655,14 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         HeaderCoinB = assetTextB;
 
         IsAccountsLinked = isAccountLinkEnabled;
+        if (isAccountLinkEnabled)
+        {
+            TBoxPriceA.Visibility = Visibility.Visible;
+        }
+        else //transfer
+        {
+            TBoxPriceA.Visibility = Visibility.Collapsed;
+        }
 
         if (HeaderCoinB == "")
         {
@@ -792,7 +807,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     ListFeeCoin = new List<string>();
                     break;
                 case 2: //Transfer
-                    Validator.RegisterEntriesToValidate(new int[7] { 0, 2, 3, 4, 5, 8, 9 });
+                    Validator.RegisterEntriesToValidate(new int[6] { 0, 2, 3, 4, 8, 9 });
                     transactionType = TransactionKind.Transfer;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Transfer_Explainer"), CoinHeader, "", AccountFromHeader, AccountToHeader, false);
                     ListCoinA = (await _transactionService

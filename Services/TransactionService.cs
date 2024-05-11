@@ -204,25 +204,26 @@ public class TransactionService : ITransactionService
         double[] _result;
         var _symbol = symbolName.Split(' ', 2);
 
-        if (symbolName == null || symbolName == "" || accountName == null || accountName == "") { return new double[] { 0, 0 }; }
+        if (symbolName == null || symbolName == "" || accountName == null || accountName == "") { return new double[] { 0, 0, 0 }; }
 
         try
         {
             _result = await _context.Assets
                 .Include(x => x.Coin)
-                .Where(x => 
-                    x.Coin.Symbol.ToLower() == _symbol[0].ToLower() 
-                    && x.Coin.Name.ToLower() == _symbol[1].ToLower()    
+                .Where(x =>
+                    x.Coin.Symbol.ToLower() == _symbol[0].ToLower()
+                    && x.Coin.Name.ToLower() == _symbol[1].ToLower()
                     && x.Account.Name.ToLower() == accountName.ToLower())
-                .Select(i => new double[] { i.Qty, i.Coin.Price })
+                .Select(i => new double[] { i.Qty, i.Coin.Price, i.AverageCostPrice })
                 .SingleAsync();
         }
         catch (Exception ex)
         {
             return new Result<double[]>(ex);
         }
-        return _result ?? (new double[] { 0, 0 });
+        return _result ?? (new double[] { 0, 0, 0 });
     }
+    
     public async Task<Result<double>> GetPriceFromLibrary(string symbolName)
     {
         double _result;
