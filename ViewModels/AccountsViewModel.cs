@@ -211,8 +211,8 @@ public sealed partial class AccountsViewModel : BaseViewModel
         //Clicked a new Account.... -> Resize Account ListView to small and Show Assets for this Account
         if (selectedAccount == null || selectedAccount != clickedAccount)
         {
-            await ShowAssets(clickedAccount);
             IsExtendedView = true;
+            await ShowAssets(clickedAccount);
         }
         //clicked the already selected Account.... ->
         if (selectedAccount != null && selectedAccount == clickedAccount)
@@ -220,8 +220,8 @@ public sealed partial class AccountsViewModel : BaseViewModel
             // if Assets are not shown -> Decrease Account Listview to small and show assets for this account
             if (!IsExtendedView)
             {
-                await ShowAssets(clickedAccount);
                 IsExtendedView = true;
+                await ShowAssets(clickedAccount);
             }
             else //if Assets are shown -> close Assets List and resize Accounts Listview to full-size
             {

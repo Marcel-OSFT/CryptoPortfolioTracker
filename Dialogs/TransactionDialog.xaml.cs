@@ -566,9 +566,9 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 }
                 break;
         }
-        var _coinA = CoinA != string.Empty ? CoinA.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
-        var _coinB = CoinB != string.Empty ? CoinB.Split(" ", 2) : new string[2] {string.Empty, string.Empty };
-        var _coinFee = FeeCoin != string.Empty ? FeeCoin.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
+        var _coinA = CoinA != string.Empty && CoinA.Contains(' ') ? CoinA.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
+        var _coinB = CoinB != string.Empty && CoinB.Contains(' ') ? CoinB.Split(" ", 2) : new string[2] {string.Empty, string.Empty };
+        var _coinFee = FeeCoin != string.Empty && FeeCoin.Contains(' ') ? FeeCoin.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
 
         var transactionDetails = new TransactionDetails
         {
