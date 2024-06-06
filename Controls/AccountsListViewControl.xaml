@@ -13,6 +13,7 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
+    Unloaded="Control_Unload"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -40,6 +41,9 @@
             <ColumnDefinition Width="0.3*"/>
             <ColumnDefinition Width="120"/>
             </Grid.ColumnDefinitions>
+        
+        
+        
         <RichTextBlock   Grid.Row="0" Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" >
             <Paragraph TextAlignment="Left" >
                 <Run l:Uids.Uid="AccountsLV_Name" FontSize="12" FontStyle="Italic" />

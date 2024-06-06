@@ -38,13 +38,23 @@
             
             <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="2" Height="250" VerticalAlignment="Top"/>
             <RelativePanel>
-                <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
+                <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock"/>
                 <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
                 <TextBlock l:Uids.Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
             </RelativePanel>
             <Border Grid.Row="2"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,0,0">
                 <ScrollViewer HorizontalAlignment="Stretch" Margin="0,0,0,0" Padding="0,0,20,0" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
                     <StackPanel Spacing="4" >
+                        <ct:SettingsCard l:Uids.Uid="Settings_CheckUpdate" x:Name="SettingsCU"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                            IsEnabled="True">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock l:Uids.Uid="Settings_CheckUpdate_Version" VerticalAlignment="Center" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
+                                <TextBlock x:Name="VersionNumber" VerticalAlignment="Center" Margin="5,0,0,0" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
+                                <Button l:Uids.Uid="Settings_CheckUpdate_CheckNow" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" Margin="20,0,0,0" />
+                                <ToggleSwitch l:Uids.Uid="Settings_CheckUpdate_Toggle" IsOn="{Binding IsCheckForUpdate, Mode=TwoWay}" Margin="30,0,0,0" />
+                            </StackPanel>
+                        </ct:SettingsCard>
 
                         <ct:SettingsCard l:Uids.Uid="Settings_NumberFormat" Margin="0,0,0,0"
                                HeaderIcon="{ui:FontIcon Glyph=&#xF110;}"
@@ -73,18 +83,25 @@
                             </ComboBox>
                         </ct:SettingsCard>
 
+                        <ct:SettingsCard l:Uids.Uid="Settings_AppTheme"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
+                            IsEnabled="True">
+                            <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{Binding AppTheme, Mode=TwoWay, Converter={StaticResource ThemeToBoolConverter}}" />
+                        </ct:SettingsCard>
+
+                        <ct:SettingsCard l:Uids.Uid="Settings_HideCapitalFlow"
+                             HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
+                             IsEnabled="True">
+                            <ToggleSwitch l:Uids.Uid="Settings_HideCapitalFlow_Toggle" IsOn="{Binding IsHidingCapitalFlow, Mode=TwoWay}" />
+                        </ct:SettingsCard>
+
                         <ct:SettingsCard l:Uids.Uid="Settings_HideZeroBalances"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
                             IsEnabled="True">
                             <ToggleSwitch l:Uids.Uid="Settings_HideZeroBalances_Toggle" IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
                         </ct:SettingsCard>
-
-                        <ct:SettingsCard l:Uids.Uid="Settings_AppTheme"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
-                           IsEnabled="True">
-                            <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{Binding AppTheme, Mode=TwoWay, Converter={StaticResource ThemeToBoolConverter}}" />
-                        </ct:SettingsCard>
-                    
+                       
+                        
                         <ct:SettingsCard l:Uids.Uid="Settings_KeepScrollBarsExpanded"
                            HeaderIcon="{ui:FontIcon Glyph=&#xECE7;}"
                            IsEnabled="True">
@@ -92,19 +109,7 @@
                         </ct:SettingsCard>
 
 
-                        <ct:SettingsCard l:Uids.Uid="Settings_CheckUpdate" x:Name="SettingsCU"
-                                         Description="Enables automatic checking for available updates of the app."
-                            Header="Check for Update"
-                            HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
-                            IsEnabled="True">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock l:Uids.Uid="Settings_CheckUpdate_Version" VerticalAlignment="Center" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
-                                <TextBlock x:Name="VersionNumber" VerticalAlignment="Center" Margin="5,0,0,0" FontSize ="{Binding FontSize, ElementName=SettingsCU}"/>
-                                <Button l:Uids.Uid="Settings_CheckUpdate_CheckNow" Style="{StaticResource AccentButtonStyle}" Command="{Binding CheckUpdateNowCommand}" Margin="30,0,0,0" />
-                                <ToggleSwitch l:Uids.Uid="Settings_CheckUpdate_Toggle" IsOn="{Binding IsCheckForUpdate, Mode=TwoWay}" Margin="60,0,0,0" />
-                            </StackPanel>
-                        </ct:SettingsCard>
-                    </StackPanel>
+                        </StackPanel>
                 </ScrollViewer>
             </Border>
         </Grid>

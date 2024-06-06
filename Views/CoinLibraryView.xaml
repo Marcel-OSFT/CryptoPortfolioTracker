@@ -9,8 +9,10 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
-   Loading="View_Loading"
+    Loading="View_Loading"
+    Unloaded="View_Unloaded"
     mc:Ignorable="d">
+    
     <Page.Resources>
         <converters:AddPrefixConverter x:Key="AddPrefixConverter"/>
 
@@ -41,11 +43,30 @@
                 <Grid Name="LibraryContent" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <controls:CoinLibraryListViewControl x:Name="MyCoinLibraryListViewControl" x:FieldModifier="public" Grid.Row="0" />
-                    <Button l:Uids.Uid="Library_AddCoin" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
-                            Command="{Binding ShowAddCoinDialogCommand}" Name="AddCoinButton" Margin="10,10,0,0"/>
+                    <controls:CoinLibraryListViewControl 
+                        x:Name="MyCoinLibraryListViewControl"
+                        Grid.Row="0"
+                        x:FieldModifier="public"  />
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" >
+                        
+                        <Button l:Uids.Uid="Library_AddCoin" 
+                            VerticalAlignment="Bottom" 
+                            HorizontalAlignment="Stretch" 
+                            Width="250"
+                            Command="{Binding ShowAddCoinDialogCommand}" 
+                            Name="AddCoinButton" 
+                            Margin="10,10,0,0"/>
+                        <Button l:Uids.Uid="Library_AddPreListingCoin" 
+                            VerticalAlignment="Bottom" 
+                            HorizontalAlignment="Stretch"
+                            Width="250"
+                            Command="{Binding ShowAddPreListingCoinDialogCommand}" 
+                            Name="AddPreListingCoinButton" 
+                            Margin="10,10,0,0"/>
+                        
+                    </StackPanel>
                 </Grid>
             </Border>
         </Grid>

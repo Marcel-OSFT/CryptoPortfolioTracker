@@ -12,10 +12,10 @@ namespace CryptoPortfolioTracker.Models;
 [Serializable]
 public class UserPreferences
 {
-    private Serilog.ILogger Logger
-    {
-        get; set;
-    }
+    //private Serilog.ILogger Logger
+    //{
+    //    get; set;
+    //}
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public UserPreferences()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -26,6 +26,7 @@ public class UserPreferences
         fontSize = AppFontSize.Normal;
         appTheme = ElementTheme.Default;
         refreshIntervalMinutes = 5;
+        isHidingCapitalFlow = false;
 
         if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.ToLower() == "nl")
         {
@@ -48,7 +49,7 @@ public class UserPreferences
             if (value != refreshIntervalMinutes)
             {
                 refreshIntervalMinutes = value;
-                SaveUserPreferences(nameof(RefreshIntervalMinutes), value);
+                //SaveUserPreferences(nameof(RefreshIntervalMinutes), value);
             }
         }
     }
@@ -62,8 +63,8 @@ public class UserPreferences
             if (value != appTheme)
             {
                 appTheme = value;
-                SetTheme(value);
-                SaveUserPreferences(nameof(AppTheme), value);
+                //SetTheme(value);
+                //SaveUserPreferences(nameof(AppTheme), value);
             }
         }
     }
@@ -78,7 +79,7 @@ public class UserPreferences
             if (value != isScrollBarsExpanded)
             {
                 isScrollBarsExpanded = value;
-                SaveUserPreferences(nameof(IsScrollBarsExpanded), value);
+                //SaveUserPreferences(nameof(IsScrollBarsExpanded), value);
             }
         }
     }
@@ -93,7 +94,7 @@ public class UserPreferences
             if (value != isHidingZeroBalances)
             {
                 isHidingZeroBalances = value;
-                SaveUserPreferences(nameof(IsHidingZeroBalances), value);
+                //SaveUserPreferences(nameof(IsHidingZeroBalances), value);
             }
         }
     }
@@ -107,7 +108,7 @@ public class UserPreferences
             if (value != numberFormat)
             {
                 numberFormat = value;
-                SaveUserPreferences(nameof(NumberFormat), value);
+                //SaveUserPreferences(nameof(NumberFormat), value);
             }
         }
     }
@@ -121,8 +122,8 @@ public class UserPreferences
             if (value != appCultureLanguage)
             {
                 appCultureLanguage = value;
-                SetCulture();
-                SaveUserPreferences(nameof(AppCultureLanguage), value);
+                //SetCulture();
+                //SaveUserPreferences(nameof(AppCultureLanguage), value);
             }
         }
     }
@@ -138,7 +139,7 @@ public class UserPreferences
             if (value != isCheckForUpdate)
             {
                 isCheckForUpdate = value;
-                SaveUserPreferences(nameof(IsCheckForUpdate), value);
+                //SaveUserPreferences(nameof(IsCheckForUpdate), value);
             }
         }
     }
@@ -153,55 +154,70 @@ public class UserPreferences
             if (value != fontSize)
             {
                 fontSize = value;
-                SaveUserPreferences(nameof(FontSize), value);
+                //SaveUserPreferences(nameof(FontSize), value);
             }
         }
     }
 
-    public void SaveUserPreferences(string propertyName, object value)
+    private bool isHidingCapitalFlow;
+    public bool IsHidingCapitalFlow
     {
-        if (App.isAppInitializing)
+        get => isHidingCapitalFlow;
+        set
         {
-            return;
-        }
-
-        Logger?.Information("{0} set to {1}", propertyName, value.ToString());
-        var mySerializer = new XmlSerializer(typeof(UserPreferences));
-        var myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
-        mySerializer.Serialize(myWriter, this);
-        myWriter.Close();
-    }
-
-    public void AttachLogger()
-    {
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(UserPreferences).Name.PadRight(22));
-
-        Logger.Information("AppCultureLanguage set to {0}", AppCultureLanguage.ToString());
-        Logger.Information("DecimalSeparator set to {0}", NumberFormat.NumberDecimalSeparator.ToString());
-        Logger.Information("Font Size set to {0}", FontSize.ToString());
-        Logger.Information("IsHidingZeroBalances set to {0}", IsHidingZeroBalances.ToString());
-        Logger.Information("Theme set to {0}", AppTheme.ToString());
-        Logger.Information("IsScrollBarsExpanded set to {0}", IsScrollBarsExpanded.ToString());
-        Logger.Information("IsCheckForUpdate set to {0}", IsCheckForUpdate);
-
-    }
-    private void SetCulture()
-    {
-        if (App.Localizer == null)
-        {
-            return;
-        }
-
-        App.Localizer.SetLanguage(AppCultureLanguage);
-    }
-
-    private static void SetTheme(ElementTheme theme)
-    {
-        if (App.Window != null && App.Window.Content is FrameworkElement frameworkElement)
-        {
-            frameworkElement.RequestedTheme = theme;
+            if (value != isHidingCapitalFlow)
+            {
+                isHidingCapitalFlow = value;
+                //SaveUserPreferences(nameof(IsHidingCapitalFlow), value);
+            }
         }
     }
+
+    //public void SaveUserPreferences(string propertyName, object value)
+    //{
+    //    if (App.isAppInitializing)
+    //    {
+    //        return;
+    //    }
+
+    //    Logger?.Information("{0} set to {1}", propertyName, value.ToString());
+    //    var mySerializer = new XmlSerializer(typeof(UserPreferences));
+    //    var myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
+    //    mySerializer.Serialize(myWriter, this);
+    //    myWriter.Close();
+    //}
+
+    //public void AttachLogger()
+    //{
+    //    Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(UserPreferences).Name.PadRight(22));
+
+    //    Logger.Information("AppCultureLanguage set to {0}", AppCultureLanguage.ToString());
+    //    Logger.Information("DecimalSeparator set to {0}", NumberFormat.NumberDecimalSeparator.ToString());
+    //    Logger.Information("Font Size set to {0}", FontSize.ToString());
+    //    Logger.Information("IsHidingZeroBalances set to {0}", IsHidingZeroBalances.ToString());
+    //    Logger.Information("Theme set to {0}", AppTheme.ToString());
+    //    Logger.Information("IsScrollBarsExpanded set to {0}", IsScrollBarsExpanded.ToString());
+    //    Logger.Information("IsCheckForUpdate set to {0}", IsCheckForUpdate);
+    //    Logger.Information("IsHidingCapitalFlow set to {0}", IsHidingCapitalFlow);
+
+    //}
+    //private void SetCulture()
+    //{
+    //    if (App.Localizer == null)
+    //    {
+    //        return;
+    //    }
+
+    //    App.Localizer.SetLanguage(AppCultureLanguage);
+    //}
+
+    //private static void SetTheme(ElementTheme theme)
+    //{
+    //    if (App.Window != null && App.Window.Content is FrameworkElement frameworkElement)
+    //    {
+    //        frameworkElement.RequestedTheme = theme;
+    //    }
+    //}
 
 
 }

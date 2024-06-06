@@ -13,7 +13,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.0.5.4</Version>
+    <Version>1.1.0.0</Version>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -56,16 +56,19 @@
     <None Remove="Controls\AssetAccountsGridViewControl.xaml" />
     <None Remove="Controls\AssetTransactionsListViewControl.xaml" />
     <None Remove="Controls\AutoSuggestBoxWithValidation.xaml" />
+    <None Remove="Controls\ColumnHeaderButton.xaml" />
     <None Remove="Dialogs\AccountDialog.xaml" />
     <None Remove="Controls\AccountsListViewControl.xaml" />
     <None Remove="Controls\AssetsListViewControl.xaml" />
     <None Remove="Controls\CoinLibraryListViewControl.xaml" />
     <None Remove="Dialogs\AddNoteDialog.xaml" />
+    <None Remove="Dialogs\AddPrereleaseCoinDialog.xaml" />
     <None Remove="Dialogs\BlankWindow1.xaml" />
     <None Remove="Dialogs\TransactionDialog.xaml" />
     <None Remove="LogWindow.xaml" />
     <None Remove="MK_Styles.xaml" />
     <None Remove="SplashScreen.xaml" />
+    <None Remove="Views\GraphicView.xaml" />
     <None Remove="Views\SettingsView.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +112,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LanguageExt.Core" Version="4.4.8" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc2.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.1" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
@@ -328,6 +332,15 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\GraphicView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Dialogs\AddPrereleaseCoinDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Controls\ColumnHeaderButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Update="HelpFile_NL.rtf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

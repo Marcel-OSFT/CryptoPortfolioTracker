@@ -372,7 +372,7 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
     <value>Note</value>
   </data>
   <data name="TransactionDialog_Note.PlaceholderText" xml:space="preserve">
-    <value>Set note...</value>
+    <value>e.g. this is a note...</value>
   </data>
   <data name="TransactionDialog_PriceB.PlaceholderText" xml:space="preserve">
     <value>calculated price...</value>
@@ -447,7 +447,7 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
     <value>Account Name</value>
   </data>
   <data name="AccountDialog_Name.PlaceholderText" xml:space="preserve">
-    <value>ex: Bybit Funding...</value>
+    <value>e.g. Bybit Funding...</value>
   </data>
   <data name="AccountDialog_CloseButton" xml:space="preserve">
     <value>Cancel</value>
@@ -501,7 +501,7 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
     <value>Note</value>
   </data>
   <data name="NoteDialog_Note.PlaceholderText" xml:space="preserve">
-    <value>Note goes here....</value>
+    <value>e.g. this is the place to put a note....</value>
   </data>
   <data name="NoteDialog_PrimaryButton" xml:space="preserve">
     <value>Accept</value>
@@ -676,5 +676,89 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   </data>
   <data name="ASBox_NoSuitableItems_Msg" xml:space="preserve">
     <value>No results found</value>
+  </data>
+  <data name="Assets_InFlow.Text" xml:space="preserve">
+    <value>Inflow</value>
+  </data>
+  <data name="Assets_OutFlow.Text" xml:space="preserve">
+    <value>Outflow</value>
+  </data>
+  <data name="Settings_HideCapitalFlow.Description" xml:space="preserve">
+    <value>Determine if you want to have the Inflow and Outflow information shown on the Portfolio View.</value>
+  </data>
+  <data name="Settings_HideCapitalFlow.Header" xml:space="preserve">
+    <value>Hide Capital Flow</value>
+  </data>
+  <data name="Settings_HideCapitalFlow_Toggle.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Settings_HideCapitalFlow_Toggle.OnContent" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Assets_InFlowPanel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Capital Inflow based on sum of all Deposits</value>
+  </data>
+  <data name="Assets_OutFlowPanel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Capital Outflow based on sum of all Withdraws</value>
+  </data>
+  <data name="Library_AddPreListingCoin.Content" xml:space="preserve">
+    <value>Add Pre-Listing Coin</value>
+  </data>
+  <data name="PreListingCoinDialog_About.Header" xml:space="preserve">
+    <value>Description/Note</value>
+  </data>
+  <data name="PreListingCoinDialog_About.PlaceholderText" xml:space="preserve">
+    <value>e.g. Coin listing expected to be in Q1 2025</value>
+  </data>
+  <data name="PreListingCoinDialog_Name.Header" xml:space="preserve">
+    <value>Coin Name</value>
+  </data>
+  <data name="PreListingCoinDialog_Name.PlaceholderText" xml:space="preserve">
+    <value>e.g. Promising Project</value>
+  </data>
+  <data name="PreListingCoinDialog_Symbol.Header" xml:space="preserve">
+    <value>Coin Symbol</value>
+  </data>
+  <data name="PreListingCoinDialog_Symbol.PlaceholderText" xml:space="preserve">
+    <value>e.g. PTKN</value>
+  </data>
+  <data name="PreListingCoinDialog_Title" xml:space="preserve">
+    <value>Add a Pre-listing Coin</value>
+  </data>
+  <data name="PreListingCoinDialog_Price.Header" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="LibraryLV_Merge.Label" xml:space="preserve">
+    <value>Merge pre-listing coin...</value>
+  </data>
+  <data name="PreListingCoinDialog_Explainer.Text" xml:space="preserve">
+    <value>Sometimes a new coin you have invested in, is not yet listed at data aggregators like CoinGecko. In this case you can add a pre-listing coin here. In a later stage, when the coin becomes listed, you can 'merge' this coin with the listed one. See the 'merge' action at the three dots ...</value>
+  </data>
+  <data name="CoinDialog_MergeTitle" xml:space="preserve">
+    <value>Merge pre-listing Coin</value>
+  </data>
+  <data name="Navigation_Graphic.Content" xml:space="preserve">
+    <value>Chart</value>
+  </data>
+  <data name="GrahicView_UpdateText.Text" xml:space="preserve">
+    <value>Background service is updating Historical Data.</value>
+  </data>
+  <data name="GraphicView_InFlowSeriesTitle" xml:space="preserve">
+    <value>Inflow</value>
+  </data>
+  <data name="GraphicView_OutFlowSeriesTitle" xml:space="preserve">
+    <value>Outflow</value>
+  </data>
+  <data name="GraphicView_PortfolioSeriesTitle" xml:space="preserve">
+    <value>Portfolio Value</value>
+  </data>
+  <data name="GraphicView_DateFormat" xml:space="preserve">
+    <value>MMMM dd, yyyy</value>
+  </data>
+  <data name="Navigation_About.Content" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Navigation_Exit.Content" xml:space="preserve">
+    <value>Exit</value>
   </data>
 </root>

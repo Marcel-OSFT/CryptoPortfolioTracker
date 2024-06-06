@@ -1,5 +1,5 @@
 <Page
-    x:Class="CryptoPortfolioTracker.Views.HelpView"
+    x:Class="CryptoPortfolioTracker.Views.AboutView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:CryptoPortfolioTracker.Models"
@@ -9,7 +9,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:l="using:WinUI3Localizer"
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
-    d:DataContext="{d:DesignInstance Type=viewmodels:HelpViewModel}"
+    d:DataContext="{d:DesignInstance Type=viewmodels:AboutViewModel}"
+    Unloaded="View_Unloaded"
     mc:Ignorable="d">
     
     <Page.Resources>

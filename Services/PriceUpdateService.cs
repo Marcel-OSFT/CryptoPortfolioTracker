@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Infrastructure;
@@ -9,12 +11,21 @@ using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
 using LanguageExt;
+using LanguageExt.ClassInstances;
 using LanguageExt.Common;
+using LanguageExt.Pipes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
 using Serilog.Core;
+using Windows.ApplicationModel.Appointments;
+using Windows.UI;
+using Windows.UI.Notifications;
+using static System.Net.WebRequestMethods;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 using HttpClient = System.Net.Http.HttpClient;
 
@@ -26,17 +37,20 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
     private readonly CancellationTokenSource cts = new();
     private Task? timerTask;
     private readonly PortfolioContext coinContext;
+    private readonly IPreferencesService _preferencesService;
 
     private static ILogger Logger
     {
         get; set;
     }
+    public bool IsPaused { get; set; }
 
-    public PriceUpdateService(PortfolioContext portfolioContext)
+    public PriceUpdateService(PortfolioContext portfolioContext, IPreferencesService preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceUpdateService).Name.PadRight(22));
         coinContext = portfolioContext;
-        timer = new (System.TimeSpan.FromMinutes(App.userPreferences.RefreshIntervalMinutes));
+        _preferencesService = preferencesService;
+        timer = new (System.TimeSpan.FromMinutes(_preferencesService.GetRefreshIntervalMinutes()));
     }
 
     public void Start()
@@ -44,16 +58,22 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         Logger.Information("PriceUpdateService started");
         timerTask = DoWorkAsync();
     }
-
     private async Task DoWorkAsync()
     {
         try
         {
-            await UpdatePricesAllCoins(); // get them right away...           
+            await UpdatePricesAllCoins(); // get them right away...
             while (await timer.WaitForNextTickAsync(cts.Token))
             {
-                Logger.Information("NextTick handled");
-                await UpdatePricesAllCoins();
+                if (!IsPaused)
+                {
+                    Logger.Information("NextTick received");
+                    await UpdatePricesAllCoins();
+                }
+                else
+                {
+                    Logger.Information("NextTick received => service paused");
+                }
             }
         }
         catch (OperationCanceledException)
@@ -64,9 +84,9 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         {
             Logger.Error(ex, "PriceUpdateService stopped unexpected");
         }
+        
     }
-
-    public void Stop()
+    public async Task Stop()
     {
         if (timerTask is null)
         {
@@ -74,17 +94,28 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         }
         cts.Cancel();
         cts.Dispose();
+        
         Logger.Information("PriceUpdateService stopped");
     }
-
-    private async Task<Result<bool>> UpdatePricesAllCoins()
+    public void Pause()
     {
-        var coinIdsTemp = await coinContext.Coins.Select(c => c.ApiId).ToListAsync();
+        IsPaused = true;
+        Logger.Information("PriceUpdateService Paused");
+    }
+    public void Continue()
+    {
+        IsPaused = false;
+        Logger.Information("PriceUpdateService Continued");
+    }
+
+    private async Task UpdatePricesAllCoins()
+    {
+
+        var coinIdsTemp = await coinContext.Coins.Where(x => x.Name.Length<=12 || (x.Name.Length>12 && x.Name.Substring(x.Name.Length-12) != "_pre-listing") ).Select(c => c.ApiId).ToListAsync();
         if (!coinIdsTemp.Any())
         {
-            return false;
+            return;
         }
-
         var coinIds = ShiftCoinIdsRandom(coinIdsTemp);
 
         //cut nr of coins in pieces here instead of in GetMeket.... 
@@ -98,6 +129,10 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
 
         for (var pageNr = 1; pageNr <= nrOfPages; pageNr++)
         {
+            if (cts is null || cts.IsCancellationRequested || IsPaused)
+            {
+                return; //break in case GraphUpdateService has been canceled or paused
+            }
             var coinMarketsResult = await GetMarketDataFromGecko(coinIdsPerPage[pageNr - 1], dataPerPage);
             coinMarketsResult.IfSucc(async list => result = await UpdatePricesWithMarketData(list));
             coinMarketsResult.IfFail(err => result = new Result<bool>(err));
@@ -109,9 +144,8 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
 
             await coinContext.SaveChangesAsync();
         }
-        return result;
+        return;
     }
-
     private static List<string> ShiftCoinIdsRandom(List<string> _coinIds)
     {
         //*** shift the order of coinIds in the list to get a different URL each time
@@ -134,7 +168,6 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         }
         return shiftedCoinIds;
     }
-
     private static string[] SplitCoinIdsPerPageAndJoin(List<string> coinIds, int dataPerPage, int nrOfPages)
     {
         var coinIdsPerPage = new string[nrOfPages];
@@ -154,7 +187,6 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         }
         return coinIdsPerPage;
     }
-
     private async Task<Result<List<CoinMarkets>>> GetMarketDataFromGecko(string coinIds, int dataPerPage)
     {
         var Retries = 0;
@@ -166,7 +198,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         var strategy = new ResiliencePipelineBuilder().AddRetry(new()
         {
             ShouldHandle = new PredicateBuilder().Handle<System.Exception>(),
-            MaxRetryAttempts = 3,
+            MaxRetryAttempts = 5,
             Delay = System.TimeSpan.FromSeconds(30), // Wait between each try
             OnRetry = args =>
             {
@@ -178,7 +210,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         }).Build();
 
 
-        var httpClient = new HttpClient();
+        using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
         var serializerSettings = new JsonSerializerSettings();
 
@@ -187,7 +219,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         System.Exception? error = null;
         List<CoinMarkets>? coinMarketsPage = null;
 
-        while (!cancellationToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested && !IsPaused)
         {
             TotalRequests++;
 
@@ -228,10 +260,11 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
 
         return coinMarketsPage ?? new Result<List<CoinMarkets>>(new NullReferenceException());
     }
-
     private async Task<Result<bool>> UpdatePricesWithMarketData(List<CoinMarkets> marketDataList)
     {
         System.Exception? error = null;
+
+        if (marketDataList is null) { return new Result<bool>(error); }
 
         Logger.Information("Updating Market Data.");
         foreach (var coinData in marketDataList)
@@ -239,10 +272,12 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             var coinResult = await UpdatePriceCoin(coinData);
             coinResult.IfFail(err => error = err);
         }
-        AssetsViewModel.Current.CalculateAssetsTotalValues();
+        if (AssetsViewModel.Current is not null)
+        {
+            await AssetsViewModel.Current.CalculateAssetsTotalValues();
+        }
         return error == null ? true : new Result<bool>(error);
     }
-
     private async Task<Result<Coin>> UpdatePriceCoin(CoinMarkets coinData)
     {
         Coin coin;
@@ -262,23 +297,12 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             coin.Change52Week = coinData.PriceChangePercentage1YInCurrency ?? 0;
 
             coinContext.Coins.Update(coin);
+            Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
 
-            var list = AssetsViewModel.Current.ListAssetTotals;
-            var asset = list?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
-            if (asset != null && list != null && oldPrice != newPrice)
+            if (AssetsViewModel.Current is not null)
             {
-                Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
-                var index = -1;
-                for (var i = 0; i < list.Count; i++)
-                {
-                    if (list[i].Coin.Id == asset.Coin.Id)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                list[index].Coin = coin;
-                list[index].MarketValue = list[index].Qty * coin.Price;
+                Logger.Information("Updating Assets Overview");
+                AssetsViewModel.Current.UpdatePricesAssetTotals(coin, oldPrice, newPrice);
             }
         }
         catch (System.Exception ex)
@@ -288,12 +312,12 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         }
         return coin;
     }
-
+    
     public void Dispose() // Implement IDisposable
     {
         Stop();
         timer.Dispose();
-        GC.SuppressFinalize(this);
+        //GC.SuppressFinalize(this);
     }
 
 }

@@ -8,7 +8,7 @@
       <group id="CRYPTOPORTFOLIOTRACKER/STRINGS/EN-US/RESOURCES.RESW" datatype="resx">
         <trans-unit id="AppDisplayName" translate="yes" xml:space="preserve">
           <source>Crypto Portfolio Tracker</source>
-          <target state="final">Crypto Portfolio Tracker</target>
+          <target state="translated">Crypto Portfolio Tracker</target>
         </trans-unit>
         <trans-unit id="AppDescription" translate="yes" xml:space="preserve">
           <source>Crypto Portfolio Tracker</source>
@@ -160,7 +160,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="AssetsLV_ProfitLoss.Text" translate="yes" xml:space="preserve">
           <source>Profit/Loss</source>
-          <target state="final">Verlies/Winst</target>
+          <target state="translated">Winst/Verlies</target>
         </trans-unit>
         <trans-unit id="AssetsLV_Quantity.Text" translate="yes" xml:space="preserve">
           <source>Quantity</source>
@@ -412,11 +412,11 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="TransactionDialog_FeeQty.PlaceholderText" translate="yes" xml:space="preserve">
           <source>Set fee</source>
-          <target state="final">Kosten opgeven..</target>
+          <target state="final">Kosten opgeven...</target>
         </trans-unit>
         <trans-unit id="TransactionDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>Set note...</source>
-          <target state="final">notitie opgeven...</target>
+          <source>e.g. this is a note...</source>
+          <target state="final">bijv. hier kun je een notitie ingeven</target>
         </trans-unit>
         <trans-unit id="TransactionDialog_PriceA.PlaceholderText" translate="yes" xml:space="preserve">
           <source>Set price...</source>
@@ -447,7 +447,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <target state="final">Naam</target>
         </trans-unit>
         <trans-unit id="AccountDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>ex: Bybit Funding...</source>
+          <source>e.g. Bybit Funding...</source>
           <target state="final">bijv: Bybit Funding...</target>
         </trans-unit>
         <trans-unit id="AccountDialog_CloseButton" translate="yes" xml:space="preserve">
@@ -519,8 +519,8 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <target state="final">Notitie</target>
         </trans-unit>
         <trans-unit id="NoteDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>Note goes here....</source>
-          <target state="final">Notitie komt hier....</target>
+          <source>e.g. this is the place to put a note....</source>
+          <target state="final">bijv. hier kun je een notitie ingeven</target>
         </trans-unit>
         <trans-unit id="NoteDialog_PrimaryButton" translate="yes" xml:space="preserve">
           <source>Accept</source>
@@ -753,6 +753,118 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="ASBox_NoSuitableItems_Msg" translate="yes" xml:space="preserve">
           <source>No results found</source>
           <target state="final">niets gevonden</target>
+        </trans-unit>
+        <trans-unit id="Assets_InFlow.Text" translate="yes" xml:space="preserve">
+          <source>Inflow</source>
+          <target state="final">Instroom</target>
+        </trans-unit>
+        <trans-unit id="Assets_OutFlow.Text" translate="yes" xml:space="preserve">
+          <source>Outflow</source>
+          <target state="final">Uitstroom</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideCapitalFlow.Description" translate="yes" xml:space="preserve">
+          <source>Determine if you want to have the Inflow and Outflow information shown on the Portfolio View.</source>
+          <target state="final">Geef aan of u de kapitaal in- en uitstroom wil tonen in het portefeuille-overzicht.</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideCapitalFlow.Header" translate="yes" xml:space="preserve">
+          <source>Hide Capital Flow</source>
+          <target state="final">Kapitaal Stroom verbergen</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideCapitalFlow_Toggle.OffContent" translate="yes" xml:space="preserve">
+          <source>Off</source>
+          <target state="final">Uit</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideCapitalFlow_Toggle.OnContent" translate="yes" xml:space="preserve">
+          <source>On</source>
+          <target state="final">Aan</target>
+        </trans-unit>
+        <trans-unit id="Assets_InFlowPanel.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>Capital Inflow based on sum of all Deposits</source>
+          <target state="final">Kapitaal Instroom gebaseerd op de som van alle Stortingen.</target>
+        </trans-unit>
+        <trans-unit id="Assets_OutFlowPanel.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>Capital Outflow based on sum of all Withdraws</source>
+          <target state="final">Kapitaal Uitstroom gebaseerd op de som van alle Opnames.</target>
+        </trans-unit>
+        <trans-unit id="Library_AddPreListingCoin.Content" translate="yes" xml:space="preserve">
+          <source>Add Pre-Listing Coin</source>
+          <target state="final">Pre-Listing Munt toevoegen</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_About.Header" translate="yes" xml:space="preserve">
+          <source>Description/Note</source>
+          <target state="final">Omschrijving/Notitie</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_About.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. Coin listing expected to be in Q1 2025</source>
+          <target state="final">bijv. munt listing verwacht in Q1-2025</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Name.Header" translate="yes" xml:space="preserve">
+          <source>Coin Name</source>
+          <target state="final">Munt Naam</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. Promising Project</source>
+          <target state="final">bijv. Veelbelovend Project</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Symbol.Header" translate="yes" xml:space="preserve">
+          <source>Coin Symbol</source>
+          <target state="final">Munt Symbool</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Symbol.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. PTKN</source>
+          <target state="final">bijv. VTKN</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Title" translate="yes" xml:space="preserve">
+          <source>Add a Pre-listing Coin</source>
+          <target state="final">Voeg een pre-listing munt toe</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Price.Header" translate="yes" xml:space="preserve">
+          <source>Price</source>
+          <target state="final">Prijs</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>Sometimes a new coin you have invested in, is not yet listed at data aggregators like CoinGecko. In this case you can add a pre-listing coin here. In a later stage, when the coin becomes listed, you can 'merge' this coin with the listed one. See the 'merge' action at the three dots ...</source>
+          <target state="final">Soms staat een nieuwe munt waarin je hebt geïnvesteerd nog niet vermeld bij data-aggregators zoals CoinGecko. In dit geval kun je hier een pre-listingmunt toevoegen. In een later stadium, wanneer de munt genoteerd (gelist) wordt, kunt u deze munt samenvoegen met de 'geliste' munt. Zie de actie 'samenvoegen' bij de drie stippen...</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Merge.Label" translate="yes" xml:space="preserve">
+          <source>Merge pre-listing coin...</source>
+          <target state="final">Pre-listing munt Samenvoegen...</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_MergeTitle" translate="yes" xml:space="preserve">
+          <source>Merge pre-listing Coin</source>
+          <target state="final">Pre-listing Munt samenvoegen </target>
+        </trans-unit>
+        <trans-unit id="Navigation_Graphic.Content" translate="yes" xml:space="preserve">
+          <source>Chart</source>
+          <target state="final">Grafiek</target>
+        </trans-unit>
+        <trans-unit id="GrahicView_UpdateText.Text" translate="yes" xml:space="preserve">
+          <source>Background service is updating Historical Data.</source>
+          <target state="final">De achtergrondservice werkt historische gegevens bij.</target>
+        </trans-unit>
+        <trans-unit id="GraphicView_InFlowSeriesTitle" translate="yes" xml:space="preserve">
+          <source>Inflow</source>
+          <target state="final">Instroom</target>
+        </trans-unit>
+        <trans-unit id="GraphicView_OutFlowSeriesTitle" translate="yes" xml:space="preserve">
+          <source>Outflow</source>
+          <target state="final">Uitstroom</target>
+        </trans-unit>
+        <trans-unit id="GraphicView_PortfolioSeriesTitle" translate="yes" xml:space="preserve">
+          <source>Portfolio Value</source>
+          <target state="final">Portefeuille Waarde</target>
+        </trans-unit>
+        <trans-unit id="GraphicView_DateFormat" translate="yes" xml:space="preserve">
+          <source>MMMM dd, yyyy</source>
+          <target state="translated">dd MMMM yyyy</target>
+        </trans-unit>
+        <trans-unit id="Navigation_About.Content" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="final">Over</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Exit.Content" translate="yes" xml:space="preserve">
+          <source>Exit</source>
+          <target state="final">Sluiten</target>
         </trans-unit>
       </group>
     </body>

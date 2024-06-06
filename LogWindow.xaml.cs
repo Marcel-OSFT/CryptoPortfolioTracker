@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using CryptoPortfolioTracker.Helpers;
+using CryptoPortfolioTracker.Services;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -18,14 +19,16 @@ public sealed partial class LogWindow : Window
 {
     private LoggingLevelSwitch _levelSwitch;
     private ItemsRepeaterLogBroker _logBroker;
+    private readonly IPreferencesService _preferencesService;
 
     private ILogger Logger  { get; set; }
 
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public LogWindow()
+    public LogWindow(IPreferencesService preferencesService)
     {
         InitializeComponent();
+        _preferencesService = preferencesService;
         ConfigureLogger();
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -94,7 +97,7 @@ public sealed partial class LogWindow : Window
 
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainWindow).Name.PadRight(22));
 
-        App.userPreferences.AttachLogger();
+        _preferencesService.AttachLogger();
 
         _logBroker.IsAutoScrollOn = true;
     }

@@ -7,11 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
+using CryptoPortfolioTracker.Helpers;
 using LanguageExt;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
@@ -20,28 +22,56 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public sealed partial class AccountsViewModel : BaseViewModel
+public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AccountsViewModel Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public readonly IAccountService _accountService;
+    private readonly IPreferencesService _preferencesService;
 
     [ObservableProperty] private ObservableCollection<Account>? listAccounts;
     [ObservableProperty] private ObservableCollection<AssetTotals>? listAssetTotals;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
-    private bool isHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
+    private bool isHidingZeroBalances;
 
     private Account? selectedAccount = null;
 
-    public AccountsViewModel(IAccountService accountService)
+    public AccountsViewModel(IAccountService accountService, IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AccountsViewModel).Name.PadRight(22));
         Current = this;
         _accountService = accountService;
+        _preferencesService =  preferencesService;
+        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+    }
+
+    public void Dispose()
+    {
+        Current = null;
+
+        MkOsft.ClearObservableCollection<AssetTotals>(ListAssetTotals);
+
+        
+
+        if (ListAccounts is not null)
+        {
+            for (var i = 0; i < ListAccounts.Count; i++)
+            {
+                ListAccounts[i].Assets = null;
+                //ListAccounts[i] = null;
+                ListAccounts.RemoveAt(i);
+            }
+            ListAccounts = null;
+        }
+       
+
+
+       // MkOsft.ClearObservableCollection<Account>(listAccounts);
+
     }
 
     [ObservableProperty]
@@ -56,7 +86,80 @@ public sealed partial class AccountsViewModel : BaseViewModel
     public async Task SetDataSource()
     {
         (await _accountService.GetAccounts())
-            .IfSucc(list => ListAccounts = new ObservableCollection<Account>(list));
+            .IfSucc(list => ListAccounts = new ObservableCollection<Account>(list.OrderByDescending(x => x.TotalValue)));
+    }
+
+
+    private Task DoSorting(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    {
+        if (ListAssetTotals is not null)
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderByDescending(sortFunc));
+            }
+        }
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnName(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOn24Hour(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOn1Month(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnMarketValue(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.MarketValue;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnCostBase(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.CostBase;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnPnL(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnPnLPerc(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
     }
 
     [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
@@ -67,7 +170,7 @@ public sealed partial class AccountsViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing AccountDialog for Adding");
-            var dialog = new AccountDialog(Current, DialogAction.Add)
+            var dialog = new AccountDialog(_preferencesService , Current, DialogAction.Add)
             {
                 XamlRoot = AccountsView.Current.XamlRoot
             };
@@ -112,7 +215,7 @@ public sealed partial class AccountsViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing Account Dialog for Editing");
-            var dialog = new AccountDialog(Current, DialogAction.Edit, account)
+            var dialog = new AccountDialog(_preferencesService , Current, DialogAction.Edit, account)
             {
                 XamlRoot = AccountsView.Current.XamlRoot
             };

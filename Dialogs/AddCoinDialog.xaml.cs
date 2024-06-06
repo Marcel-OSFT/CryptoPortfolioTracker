@@ -6,9 +6,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Controls;
+using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Extensions;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -25,11 +27,13 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
 {
     private readonly DispatcherQueue dispatcherQueue;
     public readonly CoinLibraryViewModel _viewModel;
+    private readonly IPreferencesService _preferencesService;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AddCoinDialog Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private CoinFullDataById? coinFullDataById;
     public Coin? selectedCoin;
+    private DialogAction _dialogAction;
     private readonly ILocalizer loc = Localizer.Get();
 
     private List<string> coinCollection;
@@ -74,25 +78,36 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
     }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public AddCoinDialog(List<string> coinList, CoinLibraryViewModel viewModel)
+    public AddCoinDialog(List<string> coinList, CoinLibraryViewModel viewModel, DialogAction dialogAction, IPreferencesService preferencesService)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         CoinName = "";
         Current = this;
+        _dialogAction = dialogAction;
         CoinCollection = coinList ?? new List<string>();
         InitializeComponent();
         _viewModel = viewModel;
+        _preferencesService = preferencesService;
         BePatientVisibility = Visibility.Collapsed;
         SetDialogTitleAndButtons();
     }
 
     private void SetDialogTitleAndButtons()
     {
-        Title = loc.GetLocalizedString("CoinDialog_Title");
-        PrimaryButtonText = loc.GetLocalizedString("CoinDialog_PrimaryButton");
-        CloseButtonText = loc.GetLocalizedString("CoinDialog_CloseButton");
+        PrimaryButtonText = loc.GetLocalizedString("Common_AcceptButton");
+        CloseButtonText = loc.GetLocalizedString("Common_CancelButton");
         IsPrimaryButtonEnabled = false;
+
+        if (_dialogAction == DialogAction.Add)
+        {
+            Title = loc.GetLocalizedString("CoinDialog_Title");
+        }
+        else //merge
+        {
+            Title = loc.GetLocalizedString("CoinDialog_MergeTitle");
+        }
+        
     }
 
     /// <summary>
@@ -186,6 +201,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         {
             var msgbox = new MessageDialog(loc.GetLocalizedString("Messages_AddingCoinFailed" + ex.Message));
         }
+        finally { Current = null; }
     }
 
     public async Task<CoinFullDataById> GetCoinDetails(string coinId)
@@ -284,9 +300,9 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != App.userPreferences.AppTheme)
+        if (sender.ActualTheme != _preferencesService.GetAppTheme())
         {
-            sender.RequestedTheme = App.userPreferences.AppTheme;
+            sender.RequestedTheme = _preferencesService.GetAppTheme();
         }
     }
 }

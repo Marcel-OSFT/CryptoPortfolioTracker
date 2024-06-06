@@ -13,6 +13,7 @@ using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Polly;
+using WinUI3Localizer;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 using Exception = System.Exception;
 
@@ -35,6 +36,32 @@ public class LibraryService : ILibraryService
         try
         {
             context.Coins.Add(newCoin);
+            _result = await context.SaveChangesAsync() > 0;
+        }
+        catch (Exception ex)
+        {
+            return new Result<bool>(ex);
+        }
+        return _result;
+    }
+
+    public async Task<Result<bool>> MergeCoin(Coin prelistingCoin, Coin? newCoin)
+    {
+        var _result = false;
+
+        if (newCoin == null || prelistingCoin == null) { return _result; }
+        try
+        {
+            var plCoin = await context.Coins.Where(x => x.ApiId.ToLower() == prelistingCoin.ApiId.ToLower()).SingleAsync();
+            plCoin.ApiId = newCoin.ApiId;
+            plCoin.Name = newCoin.Name;
+            plCoin.Symbol = newCoin.Symbol;
+            plCoin.About = newCoin.About;
+            plCoin.ImageUri = newCoin.ImageUri;
+            plCoin.Price = newCoin.Price;
+            
+            context.Coins.Update(plCoin);
+            
             _result = await context.SaveChangesAsync() > 0;
         }
         catch (Exception ex)
@@ -100,8 +127,8 @@ public class LibraryService : ILibraryService
         var strategy = new ResiliencePipelineBuilder().AddRetry(new()
         {
             ShouldHandle = new PredicateBuilder().Handle<Exception>(),
-            MaxRetryAttempts = 5,
-            Delay = System.TimeSpan.FromSeconds(30), // Wait between each try
+            MaxRetryAttempts = 8,
+            Delay = System.TimeSpan.FromSeconds(15), // Wait between each try
             OnRetry = args =>
             {
                 var exception = args.Outcome.Exception!;
@@ -112,7 +139,7 @@ public class LibraryService : ILibraryService
 
         List<CoinList>? coinList = null;
 
-        var httpClient = new HttpClient();
+        using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
         var serializerSettings = new JsonSerializerSettings();
 
@@ -158,8 +185,8 @@ public class LibraryService : ILibraryService
         var strategy = new ResiliencePipelineBuilder().AddRetry(new()
         {
             ShouldHandle = new PredicateBuilder().Handle<Exception>(),
-            MaxRetryAttempts = 5,
-            Delay = System.TimeSpan.FromSeconds(30), // Wait between each try
+            MaxRetryAttempts = 8,
+            Delay = System.TimeSpan.FromSeconds(15), // Wait between each try
             OnRetry = args =>
             {
                 var exception = args.Outcome.Exception!;
@@ -174,7 +201,7 @@ public class LibraryService : ILibraryService
 
         CoinFullDataById? coinFullDataById = null;
 
-        var httpClient = new HttpClient();
+        using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
         var serializerSettings = new JsonSerializerSettings();
 
@@ -226,6 +253,22 @@ public class LibraryService : ILibraryService
             return new Result<bool>(ex);
         }
         return result;
+    }
+
+    public bool IsNotAsset(Coin coin)
+    {
+        List<Asset> assets; 
+
+        if (coin == null || coin.ApiId == "") { return false; }
+        try
+        {
+            assets = context.Assets.Where(x => x.Coin.ApiId.ToLower() == coin.ApiId.ToLower()).ToList();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return !assets.Any();
     }
 
     public void RejectChanges()

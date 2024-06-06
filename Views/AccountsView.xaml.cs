@@ -38,8 +38,14 @@ public partial class AccountsView : Page, IDisposable
         InitAssetsListView();
     }
 
-    public void Dispose() // Implement IDisposable
+    private void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        GC.SuppressFinalize(this);
     }
-}
+
+    public void Dispose()
+    {
+        Current = null;
+        
+    }
+     
+ }

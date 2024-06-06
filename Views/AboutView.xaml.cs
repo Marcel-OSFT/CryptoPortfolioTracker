@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -10,7 +11,7 @@ using WinRT;
 
 namespace CryptoPortfolioTracker.Views;
 
-public partial class HelpView : Page
+public partial class AboutView : Page, IDisposable
 {
 
     [ComImport, System.Runtime.InteropServices.Guid("3E68D4BD-7135-4D10-8018-9FB6D9F33FA1"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -23,15 +24,12 @@ public partial class HelpView : Page
     private static extern IntPtr GetActiveWindow();
 
 
-    public readonly HelpViewModel _viewModel;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public static HelpView Current;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-    public HelpView(HelpViewModel viewModel)
+    public readonly AboutViewModel _viewModel;
+    private readonly IPreferencesService _preferencesService;
+    public AboutView(AboutViewModel viewModel, IPreferencesService preferencesService)
     {
-        Current = this;
         _viewModel = viewModel;
+        _preferencesService = preferencesService;
         InitializeComponent();
         DataContext = _viewModel;
     }
@@ -41,11 +39,11 @@ public partial class HelpView : Page
         var helpFilePath = App.appPath + "\\HelpFile.rtf";
         try
         {
-            if (App.userPreferences.AppCultureLanguage[..2].ToLower() == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
+            if (_preferencesService.GetAppCultureLanguage()[..2].ToLower() == "nl") { helpFilePath = App.appPath + "\\HelpFile_NL.rtf"; }
 
             editor.IsReadOnly = false;
             var helpFile = await StorageFile.GetFileFromPathAsync(helpFilePath);
-            var randAccStream = await helpFile.OpenAsync(Windows.Storage.FileAccessMode.Read);
+            using var randAccStream = await helpFile.OpenAsync(Windows.Storage.FileAccessMode.Read);
 
             // Load the file into the Document property of the RichEditBox.
             editor.Document.LoadFromStream(Microsoft.UI.Text.TextSetOptions.FormatRtf, randAccStream);
@@ -139,5 +137,14 @@ public partial class HelpView : Page
             editor.IsReadOnly = false;
             EditorButtons.Visibility = Visibility.Visible;
         };
+    }
+
+    private void View_Unloaded(object sender, RoutedEventArgs e)
+    {
+    }
+
+    public void Dispose()
+    {
+       
     }
 }

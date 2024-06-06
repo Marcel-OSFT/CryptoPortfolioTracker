@@ -1,27 +1,33 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
+using SQLitePCL;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
+public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, IDisposable
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static SettingsViewModel Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+    private readonly IPreferencesService _preferencesService;
+    //private UserPreferences userPref;
+
     [ObservableProperty]
     private ElementTheme appTheme;
-    partial void OnAppThemeChanged(ElementTheme value) => App.userPreferences.AppTheme = value;
+    partial void OnAppThemeChanged(ElementTheme value) => _preferencesService.SetAppTheme(value);
 
     [ObservableProperty]
     private int numberFormatIndex;
@@ -33,38 +39,52 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 
     [ObservableProperty]
     private double fontSize;
-    partial void OnFontSizeChanged(double value) => App.userPreferences.FontSize = (AppFontSize)value;
+    partial void OnFontSizeChanged(double value) => _preferencesService.SetFontSize((AppFontSize)value);
 
     [ObservableProperty]
     private bool isHidingZeroBalances;
-    partial void OnIsHidingZeroBalancesChanged(bool value) => App.userPreferences.IsHidingZeroBalances = value;
+    partial void OnIsHidingZeroBalancesChanged(bool value) => _preferencesService.SetHidingZeroBalances(value);
 
     [ObservableProperty]
     private bool isCheckForUpdate;
-    partial void OnIsCheckForUpdateChanged(bool value) => App.userPreferences.IsCheckForUpdate = value;
+    partial void OnIsCheckForUpdateChanged(bool value) => _preferencesService.SetCheckingForUpdate(value);
 
     [ObservableProperty]
     private bool isScrollBarsExpanded;
-    partial void OnIsScrollBarsExpandedChanged(bool value) => App.userPreferences.IsScrollBarsExpanded = value;
+    partial void OnIsScrollBarsExpandedChanged(bool value) => _preferencesService.SetExpandingScrollBars(value);
+    
+    [ObservableProperty]
+    private bool isHidingCapitalFlow;
+    partial void OnIsHidingCapitalFlowChanged(bool value) => _preferencesService.SetHidingCapitalFlow(value);
 
-    public SettingsViewModel()
+    public SettingsViewModel(IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
         Current = this;
-        GetPreferences();
+        _preferencesService = preferencesService;
+        InitializeFields();
+        
     }
 
-    private void GetPreferences()
+    public void Dispose()
     {
-        NumberFormatIndex = App.userPreferences.NumberFormat.NumberDecimalSeparator == "," ? 0 : 1;
-        AppCultureIndex = App.userPreferences.AppCultureLanguage[..2].ToLower() == "nl" ? 0 : 1;
-        IsHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
-        IsCheckForUpdate = App.userPreferences.IsCheckForUpdate;
-        FontSize = (double)App.userPreferences.FontSize;
-        IsScrollBarsExpanded = App.userPreferences.IsScrollBarsExpanded;
-        AppTheme = App.userPreferences.AppTheme;
+        Current = null;
     }
-    private static void SetNumberSeparators(int index)
+
+    private void InitializeFields()
+    {
+        NumberFormatIndex =  _preferencesService.GetNumberFormat().NumberDecimalSeparator == "," ? 0 : 1;
+        AppCultureIndex = _preferencesService.GetAppCultureLanguage()[..2].ToLower() == "nl" ? 0 : 1;
+        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+        IsCheckForUpdate = _preferencesService.GetCheckingForUpdate();
+        FontSize = (double)_preferencesService.GetFontSize();
+        IsScrollBarsExpanded = _preferencesService.GetExpandingScrollBars();
+        AppTheme = _preferencesService.GetAppTheme();
+        IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
+
+    }
+
+    private void SetNumberSeparators(int index)
     {
         NumberFormatInfo nf = new();
         if (index == 0)
@@ -77,18 +97,18 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             nf.NumberDecimalSeparator = ".";
             nf.NumberGroupSeparator = ",";
         }
-        App.userPreferences.NumberFormat = nf;
+        _preferencesService.SetNumberFormat(nf); 
 
     }
-    private static void SetCulturePreference(int index)
+    private void SetCulturePreference(int index)
     {
         if (index == 0)
         {
-            App.userPreferences.AppCultureLanguage = "nl";
+            _preferencesService.SetAppCultureLanguage("nl");
         }
         else
         {
-            App.userPreferences.AppCultureLanguage = "en-US";
+            _preferencesService.SetAppCultureLanguage("en-US");
         }
     }
 

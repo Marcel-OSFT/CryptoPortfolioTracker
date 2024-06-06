@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -690,18 +691,21 @@ public class TransactionService : ITransactionService
                 var mutationNew = mutationsNew[i];
                 var mutationToEdit = mutationsToEdit[i];
 
-                if (mutationToEdit.Type != TransactionKind.Fee)
+                if ( !(mutationToEdit.Price.Equals(mutationNew.Price) && mutationToEdit.Qty.Equals(mutationNew.Qty)) )
                 {
-                    mutationToEdit.Asset = (await ReverseAndRecalculateAsset(mutationNew, mutationToEdit))
-                        .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
-                    mutationToEdit.Qty = mutationNew.Qty;
-                    mutationToEdit.Price = mutationNew.Price;
-                }
-                else // if 'Fee'
-                {
-                    mutationToEdit.Asset = (await ReverseAndRecalculateFee(mutationNew, mutationToEdit))
-                        .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
-                    mutationToEdit.Qty = mutationNew.Qty;
+                    if (mutationToEdit.Type != TransactionKind.Fee)
+                    {
+                        mutationToEdit.Asset = (await ReverseAndRecalculateAsset(mutationNew, mutationToEdit))
+                            .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
+                        mutationToEdit.Qty = mutationNew.Qty;
+                        mutationToEdit.Price = mutationNew.Price;
+                    }
+                    else // if 'Fee'
+                    {
+                        mutationToEdit.Asset = (await ReverseAndRecalculateFee(mutationNew, mutationToEdit))
+                            .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
+                        mutationToEdit.Qty = mutationNew.Qty;
+                    }
                 }
             } // *** end of all mutations
 

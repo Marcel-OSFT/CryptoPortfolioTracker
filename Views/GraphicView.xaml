@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="CryptoPortfolioTracker.Views.GraphicView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CryptoPortfolioTracker.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
+    xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"
+    xmlns:converters="using:CryptoPortfolioTracker.Converters"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    x:Name="Root"
+    xmlns:l="using:WinUI3Localizer"
+    xmlns:toolkit="using:AK.Toolkit.WinUI3"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    d:DataContext="{d:DesignInstance Type=viewmodels:GraphicViewModel}"
+    Unloaded="View_Unloaded"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        
+        <lvc:CartesianChart
+            x:Name="thisChart"
+            Series="{Binding Series}" 
+            ZoomMode="Both"
+            XAxes="{Binding XAxes}"
+            YAxes="{Binding YAxes}"
+            LegendPosition="Top"
+            LegendTextPaint="{Binding LegendTextPaint}"
+            LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
+            LegendTextSize="20"  
+            TooltipTextSize="14">
+        </lvc:CartesianChart>
+
+        <StackPanel x:Name="layoutRoot" Background="black" Opacity="0.5" 
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            Margin="150,60,0,0"
+            Visibility="{Binding IsFinishedLoading, Converter={StaticResource BoolToVisibilityConverter }}">
+            <StackPanel BorderBrush="PaleGoldenrod"  BorderThickness="2" Padding="12">
+                <TextBlock  l:Uids.Uid="GrahicView_UpdateText" />
+                <StackPanel Orientation="Vertical">
+                    <ProgressBar x:Name="progressBar2" Value="{Binding ProgressValue}" Maximum="100" Margin="0,12"/>
+                    <TextBlock Text="{Binding ProgressValue, 
+                Converter={StaticResource StringFormatConverter}, 
+                ConverterParameter='{}{0:0} %'}"/>
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>
+
+    </Grid>
+</Page>

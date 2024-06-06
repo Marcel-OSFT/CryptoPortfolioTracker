@@ -8,6 +8,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:l="using:WinUI3Localizer"
+    x:Name="Root"
+    
     Loaded="MainPage_Loaded"
    
     mc:Ignorable="d">
@@ -22,6 +24,7 @@
         
         <NavigationView x:Name="navigationView"
                 IsSettingsVisible="True"
+                   
                 IsBackButtonVisible="Collapsed"
                 SelectionChanged="NavigationView_SelectionChanged"
                 PaneDisplayMode="Auto"  
@@ -49,16 +52,39 @@
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F1;"/>
                         </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
+                <NavigationViewItem l:Uids.Uid="Navigation_Graphic" Tag="GraphicView">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D2;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
+
+
+            
+
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem l:Uids.Uid="Navigation_Help" Tag="HelpView" >
+
+                <NavigationViewItem l:Uids.Uid="Navigation_About" Tag="AboutView" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA1F;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem l:Uids.Uid="Navigation_Help" Tag="Help" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE897;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+
+                <NavigationViewItem l:Uids.Uid="Navigation_Exit" Tag="Exit" >
+                        <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF78A;"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+
             </NavigationView.FooterMenuItems>
-            
-            
+
             <Frame x:Name="contentFrame" Margin="0"/>
         </NavigationView>
     </Grid>

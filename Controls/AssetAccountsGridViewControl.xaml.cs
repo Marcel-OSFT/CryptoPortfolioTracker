@@ -1,6 +1,9 @@
+using System;
 using System.Diagnostics;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -33,7 +36,7 @@ public sealed partial class AssetAccountsGridViewControl : UserControl
             }
             var scale = AssetsView.Current.XamlRoot.RasterizationScale;
             //** the Tag is used for binding with the width of the Name Textbox
-            switch ((int)App.userPreferences.FontSize)
+            switch ((int)App._preferencesService.GetFontSize())
             {
                 case 0: //small
                     {
@@ -62,4 +65,12 @@ public sealed partial class AssetAccountsGridViewControl : UserControl
             SetGridViewItemWidth();
         }
     }
+
+    private void Control_Unload(object sender, RoutedEventArgs e)
+    {
+        AssetAccountsGridView = null;
+        DataContext = null;
+
+    }
+
 }

@@ -1,5 +1,6 @@
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using WinUI3Localizer;
@@ -11,14 +12,16 @@ public sealed partial class AccountDialog : ContentDialog
     public readonly AccountsViewModel _viewModel;
     public Account? newAccount;
     private readonly Account? _accountToEdit;
+    private readonly IPreferencesService _preferencesService;
 
     private readonly ILocalizer loc = Localizer.Get();
 
-    public AccountDialog(AccountsViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Account? accountToEdit = null)
+    public AccountDialog(IPreferencesService preferencesService, AccountsViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Account? accountToEdit = null)
     {
         InitializeComponent();
         _viewModel = viewModel;
         _accountToEdit = accountToEdit;
+        _preferencesService = preferencesService;
         SetDialogTitleAndButtons(dialogAction);
     }
 
@@ -61,9 +64,9 @@ public sealed partial class AccountDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != App.userPreferences.AppTheme)
+        if (sender.ActualTheme != _preferencesService.GetAppTheme())
         {
-            sender.RequestedTheme = App.userPreferences.AppTheme;
+            sender.RequestedTheme = _preferencesService.GetAppTheme();
         }
     }
 

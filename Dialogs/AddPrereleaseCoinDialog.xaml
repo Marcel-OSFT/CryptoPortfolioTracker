@@ -1,0 +1,72 @@
+ <ContentDialog
+    x:Class="CryptoPortfolioTracker.Dialogs.AddPrereleaseCoinDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:local="using:CryptoPortfolioTracker" 
+    xmlns:controls="using:CryptoPortfolioTracker.Controls"
+    xmlns:l="using:WinUI3Localizer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    Loading="Dialog_Loading"
+    DefaultButton="Primary"
+    PrimaryButtonClick="Button_Click_AcceptCoin">
+    
+    <ContentDialog.Resources>
+    <!-- Overriding ContentDialogMaxWidth value -->
+    <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
+</ContentDialog.Resources>
+
+    
+    <Grid  Margin="0,0,0,0" Width="600">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock l:Uids.Uid="PreListingCoinDialog_Explainer" 
+                   TextWrapping="Wrap" 
+                   Grid.Row="0"
+                   Margin="15,10,5,30"/>
+
+        <StackPanel Grid.Row="1" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
+            <StackPanel.Background>
+                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
+            </StackPanel.Background>
+            <TextBox l:Uids.Uid="PreListingCoinDialog_Name" x:Name="CoinName" PlaceholderForeground="Wheat" 
+                         TextChanging="CoinName_TextChanging" Margin="10,10,10,10"></TextBox>
+        </StackPanel>
+        <StackPanel Grid.Row="2" HorizontalAlignment="Stretch" Margin="5,0,0,0" Orientation="Horizontal" >
+            <StackPanel.Background>
+                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
+            </StackPanel.Background>
+            <TextBox l:Uids.Uid="PreListingCoinDialog_Symbol" 
+                PlaceholderForeground="Wheat" 
+                x:Name="CoinSymbol" 
+                Margin="10,10,10,10" 
+                TextChanging="CoinSymbol_TextChanging" 
+                MinWidth="40" >
+            </TextBox>
+            <controls:RegExTextBox x:Name ="CoinPrice" 
+                l:Uids.Uid="PreListingCoinDialog_Price"
+                Text="0"
+                IsEntryValid="False"
+                RegEx="RegExPositiveDecimal" 
+                IsZeroAllowed="False" 
+                Style="{StaticResource MK_TextBoxStyle}"
+                TextChanged="CoinPrice_Changed" 
+                Width="160" Margin="5,10,0,10"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
+            <StackPanel.Background>
+                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
+            </StackPanel.Background>
+            <TextBox l:Uids.Uid="PreListingCoinDialog_About" PlaceholderForeground="Wheat" x:Name="CoinAbout" Margin="10,10,10,0" AutomationProperties.Name="multi-line TextBox"
+                 TextWrapping="Wrap" AcceptsReturn="True" MinWidth="400" MinHeight="150">
+            </TextBox>
+        </StackPanel>
+    </Grid>
+
+</ContentDialog>
+

@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.WinUI.UI;
+using CryptoPortfolioTracker.Services;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -26,6 +28,17 @@ public enum MyEnum
 
 public class RegExTextBox : TextBox, INotifyPropertyChanged
 {
+    const string RegExPositiveDecimalEn = "^([0-9])*(\\.[0-9]+)?$";
+    const string RegExPositiveIntEn = "^([0-9])?([^\\.])([0-9])*$";
+    const string RegExDecimalEn = "^(-?)([0-9])*(\\.[0-9]+)?$";
+    const string RegExIntEn  = "^(-?)([0-9])?([^\\.])([0-9])*$";
+    const string RegExEmail = "^([a-z])+@([a-z])+\\.([a-z]+)$";
+
+    const string RegExPositiveDecimalNl = "^([0-9])*(\\,[0-9]+)?$";
+    const string RegExPositiveIntNl = "^([0-9])?([^\\,])([0-9])*$";
+    const string RegExDecimalNl = "^(-?)([0-9])*(\\,[0-9]+)?$";
+    const string RegExIntNl = "^(-?)([0-9])?([^\\,])([0-9])*$";
+
     public event EventHandler? TextChanged;
     //public event EventHandler<KeyRoutedEventArgs>? KeyDown;
     public event EventHandler<PointerRoutedEventArgs>? PointerPressed;
@@ -75,6 +88,21 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         get => (MyEnum)GetValue(RegExProperty);
         set => SetValue(RegExProperty, value);
     }
+
+    public string DecimalSeparator
+    {
+        get
+        {
+            if (GetValue(DecimalSeparatorProperty).GetType().Name == "Int32")
+            {
+                return string.Empty;
+            }
+            return (string)GetValue(DecimalSeparatorProperty);
+        }
+        set => SetValue(DecimalSeparatorProperty, value);
+    }
+
+
     private string customRegEx;
     public string CustomRegEx
     {
@@ -92,10 +120,22 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         }
     }
 
+
+
     // Using a DependencyProperty as the backing store for Ownenum.  This enables animation, styling, binding, etc...  
     public static readonly DependencyProperty RegExProperty = DependencyProperty.Register("RegEx", typeof(MyEnum), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(RegExChangedCallBack)));
     public static readonly DependencyProperty IsEntryValidProperty = DependencyProperty.Register("IsEntryValid", typeof(bool), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryValidChangedCallBack)));
+    public static readonly DependencyProperty DecimalSeparatorProperty = DependencyProperty.Register("DecimalSeparator", typeof(string), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(DecimalSeparatorChangedCallBack)));
 
+    private static void DecimalSeparatorChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is RegExTextBox tbox)
+        {
+            Debug.WriteLine("Separator " + tbox.DecimalSeparator);
+            tbox.SetRegex(tbox.RegEx);
+        }
+        
+    }
 
     private static void IsEntryValidChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -153,50 +193,51 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
 
     private static void RegExChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {   // process logic  
-        if (d is not RegExTextBox thisInstance)
+        if (d is RegExTextBox thisInstance)
         {
-            return;
+            thisInstance.SetRegex((MyEnum)e.NewValue);
         }
 
-        SelectedRegEx = (MyEnum)e.NewValue;
+    }
+
+    private void SetRegex(MyEnum value)
+    {
+        if (DecimalSeparator == string.Empty) { return; }
+
+        SelectedRegEx = value;
         switch (SelectedRegEx)
         {
             case MyEnum.RegExPositiveDecimal:
-                thisInstance.regExChoosen = App.userPreferences.NumberFormat.NumberDecimalSeparator == "." 
-                    ? App.Current.Resources["RegExPositiveDecimalEn"] as string 
-                    : App.Current.Resources["RegExPositiveDecimalNl"] as string;
-                thisInstance.KeyDown += (sender, e) => KeyDownNumeric(sender, e, true, true);
-                
+                regExChoosen = DecimalSeparator == "." ? RegExPositiveDecimalEn : RegExPositiveDecimalNl;
+                KeyDown += (sender, e) => KeyDownNumeric(sender, e, true, true);
                 break;
+
             case MyEnum.RegExPositiveInt:
-                thisInstance.regExChoosen = App.userPreferences.NumberFormat.NumberDecimalSeparator == "." 
-                    ? App.Current.Resources["RegExPositiveIntEn"] as string 
-                    : App.Current.Resources["RegExPositiveIntNl"] as string;
-                thisInstance.KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, true);
+                regExChoosen = DecimalSeparator == "." ? RegExPositiveIntEn : RegExPositiveIntNl;
+                KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, true);
                 break;
             case MyEnum.RegExEmail:
-                thisInstance.regExChoosen = App.Current.Resources["RegExEmail"] as string;
+                regExChoosen = RegExEmail;
                 break;
             case MyEnum.RegExPhone:
                 // To-Do -> regExChoosen = @"^([0 - 9]) * (\.[0 - 9]+)?$";
                 break;
             case MyEnum.RegExDecimal:
-                thisInstance.regExChoosen = App.userPreferences.NumberFormat.NumberDecimalSeparator == "." 
-                    ? App.Current.Resources["RegExDecimalEn"] as string 
-                    : App.Current.Resources["RegExDecimalNl"] as string;
-                thisInstance.KeyDown += (sender, e) => KeyDownNumeric(sender, e, true, false);
+                regExChoosen = DecimalSeparator == "." ? RegExDecimalEn : RegExDecimalNl;
+                KeyDown += (sender, e) => KeyDownNumeric(sender, e, true, false);
                 break;
             case MyEnum.RegExInt:
-                thisInstance.regExChoosen = App.userPreferences.NumberFormat.NumberDecimalSeparator == "." 
-                    ? App.Current.Resources["RegExIntEn"] as string 
-                    : App.Current.Resources["RegExIntNl"] as string;
-                thisInstance.KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, false);
-               
+                regExChoosen = DecimalSeparator == "." ? RegExIntEn : RegExIntNl;
+                KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, false);
+
                 break;
             default:
                 break;
+
         }
-        TextBoxExtensions.SetRegex(thisInstance, thisInstance.regExChoosen);
+        Debug.WriteLine("SetRegex " + regExChoosen);
+        TextBoxExtensions.SetRegex(this, regExChoosen);
+
     }
 
     private void This_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -213,7 +254,7 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         }
         // Initialize the flag to false.
         invalidKeyEntered = false;
-        var decimalChar = App.userPreferences.NumberFormat.NumberDecimalSeparator;
+        var decimalChar = thisInstance.DecimalSeparator;
         var decimalKey = decimalChar == "." ? 190 : 188;
 
         // Determine whether the keystroke is a number from the top of the keyboard.

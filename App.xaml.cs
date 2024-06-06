@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CryptoPortfolioTracker.Infrastructure;
+using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
@@ -32,24 +35,25 @@ public partial class App : Application
     public static string ProductVersion = string.Empty;
     public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
     public static bool isBusy;
-    public static UserPreferences userPreferences;
     public static bool isAppInitializing;
 
     public static bool isLogWindowEnabled;
     private static ILogger? Logger;
     public static ILocalizer? Localizer;
-
+    public static IPreferencesService _preferencesService;
     public static IServiceProvider Container  { get; private set;  }
+    //public Graph PortfolioGraph;
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public App()
     {
         InitializeComponent();
-        userPreferences = new UserPreferences();
+       
         GetAppEnvironmentals();
 
         Container = RegisterServices();
+        _preferencesService = Container.GetService<IPreferencesService>();
     }
 
     /// <summary>
@@ -62,39 +66,73 @@ public partial class App : Application
         Splash.Activate();
         await Task.Delay(1000);
 
-        GetUserPreferences();
+        _preferencesService.LoadUserPreferencesFromXml();
+       //await LoadPortfolioValueGraph();
         InitializeLogger();
         await InitializeLocalizer();
         CheckDatabase();
 
-        Window = new MainWindow();
+        Window = Container.GetService<MainWindow>(); ;
         Window.Activate();
     }
     /// <summary>
     /// GetUserPreferences need to be called in the App's Constructor, because of setting the RequestedTheme
     /// which only can be done in the constructor
     /// </summary>
-    private static void GetUserPreferences()
-    {
-        try
-        {
-            if (File.Exists(appDataPath + "\\prefs.xml"))
-            {
-                isAppInitializing = true;
-                var mySerializer = new XmlSerializer(typeof(UserPreferences));
-                var myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
+    //private static void GetUserPreferences()
+    //{
+    //    try
+    //    {
+    //        if (File.Exists(appDataPath + "\\prefs.xml"))
+    //        {
+    //            isAppInitializing = true;
+    //            var mySerializer = new XmlSerializer(typeof(UserPreferences));
+    //            using var myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
 
-                userPreferences = (mySerializer.Deserialize(myFileStream) as UserPreferences) ?? new UserPreferences();
-            }
-        }
-        catch { }
-        finally
-        {
-            isAppInitializing = false;
-        }
-    }
+    //            userPreferences = (mySerializer.Deserialize(myFileStream) as UserPreferences) ?? new UserPreferences();
+    //        }
+    //    }
+    //    catch { }
+    //    finally
+    //    {
+    //        isAppInitializing = false;
+    //    }
+    //}
+    //private async Task LoadPortfolioValueGraph()
+    //{
+    //    try
+    //    {
+    //        var pGraphSingleton = Container.GetService<Graph>();
 
-    private static async Task InitializeLocalizer()
+    //        if (!Directory.Exists(App.appDataPath + "\\MarketCharts"))
+    //        {
+    //            Directory.CreateDirectory(App.appDataPath + "\\MarketCharts");
+    //        }
+    //        var fileName = App.appDataPath + "\\MarketCharts\\graph.json";
+    //        if (File.Exists(fileName))
+    //        {
+    //            using FileStream openStream = File.OpenRead(fileName);
+    //            var pGraph = await JsonSerializer.DeserializeAsync<Graph>(openStream);
+
+    //            pGraphSingleton.DataPointsPortfolio = pGraph.DataPointsPortfolio;
+    //            pGraphSingleton.DataPointsInFlow = pGraph.DataPointsInFlow;
+    //            pGraphSingleton.DataPointsOutFlow = pGraph.DataPointsOutFlow;
+
+    //        }
+
+    //        fileName = App.appDataPath + "\\MarketCharts\\HistoryBuffer.json";
+    //        if (File.Exists(fileName))
+    //        {
+    //            using FileStream openStream = File.OpenRead(fileName);
+    //            pGraphSingleton.HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataById>>(openStream);
+    //        }
+
+    //    }
+    //    catch { }
+
+    //}
+
+    private async Task InitializeLocalizer()
     {
         // Initialize a "Strings" folder in the executables folder.
         var StringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
@@ -103,17 +141,17 @@ public partial class App : Application
             .AddStringResourcesFolderForLanguageDictionaries(StringsFolderPath)
             .Build();
 
-         Logger.Information("Setting Language to {0}", userPreferences.AppCultureLanguage);
-        await Localizer.SetLanguage(userPreferences.AppCultureLanguage);
+         Logger.Information("Setting Language to {0}", _preferencesService.GetAppCultureLanguage());
+        await Localizer.SetLanguage(_preferencesService.GetAppCultureLanguage());
     }
 
-    private static void CheckDatabase()
+    private void CheckDatabase()
     {
         var context = App.Container.GetService<PortfolioContext>();
         context?.Database.EnsureCreated();
     }
 
-    private static void GetAppEnvironmentals()
+    private void GetAppEnvironmentals()
     {
         appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
         appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
@@ -126,21 +164,28 @@ public partial class App : Application
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         ProductVersion = version is not null ? version.ToString() : string.Empty ;
     }
-    private static IServiceProvider RegisterServices()
+    private IServiceProvider RegisterServices()
     {
         var services = new ServiceCollection();
 
         services.AddScoped<AssetsView>();
         services.AddScoped<AccountsView>();
         services.AddScoped<CoinLibraryView>();
-        services.AddScoped<HelpView>();
+        services.AddScoped<AboutView>();
         services.AddScoped<SettingsView>();
+        services.AddScoped<GraphicView>();
+        services.AddScoped<MainPage>();
+        services.AddScoped<LogWindow>();
+        services.AddScoped<MainWindow>();
+
 
         services.AddScoped<AssetsViewModel>();
         services.AddScoped<AccountsViewModel>();
         services.AddScoped<CoinLibraryViewModel>();
-        services.AddScoped<HelpViewModel>();
+        services.AddScoped<AboutViewModel>();
         services.AddScoped<SettingsViewModel>();
+        services.AddScoped<GraphicViewModel>();
+        services.AddScoped<BaseViewModel>();
 
         services.AddDbContext<PortfolioContext>(options =>
         {
@@ -152,6 +197,13 @@ public partial class App : Application
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ILibraryService, LibraryService>();
         services.AddScoped<IPriceUpdateService, PriceUpdateService>();
+        
+        services.AddScoped<IGraphUpdateService, GraphUpdateService>();
+
+        services.AddSingleton<IGraphService, GraphService>();
+        services.AddSingleton<IPreferencesService, PreferencesService>();
+
+
         return services.BuildServiceProvider();
     }
 
@@ -172,7 +224,7 @@ public partial class App : Application
                        rollingInterval: RollingInterval.Day,
                        retainedFileCountLimit: 3,
                        outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
-               
+               //.MinimumLevel.Is(Serilog.Events.LogEventLevel.Verbose)
                .CreateLogger();
 #else
 
@@ -183,7 +235,7 @@ public partial class App : Application
                            outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
                   .CreateLogger();
 #endif
-            App.userPreferences.AttachLogger();
+            _preferencesService.AttachLogger();
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
             Logger.Information("------------------------------------");
             Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);

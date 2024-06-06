@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using CryptoPortfolioTracker.Services;
 using Microsoft.UI.Xaml.Data;
 using WinUI3Localizer;
 
@@ -14,15 +15,15 @@ public class MaxQtyAConverter : IValueConverter
         var _double = (double)value;
 
         CultureInfo ci;
-        if (App.userPreferences.NumberFormat.NumberDecimalSeparator == ",")
+        if (App._preferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
         {
             ci = new CultureInfo("nl-NL");
-            ci.NumberFormat = App.userPreferences.NumberFormat;
+            ci.NumberFormat = App._preferencesService.GetNumberFormat();
         }
         else
         {
             ci = new CultureInfo("en-US");
-            ci.NumberFormat = App.userPreferences.NumberFormat;
+            ci.NumberFormat = App._preferencesService.GetNumberFormat();
         }
 
         var maxQty = _double.ToString("0.########", ci);
