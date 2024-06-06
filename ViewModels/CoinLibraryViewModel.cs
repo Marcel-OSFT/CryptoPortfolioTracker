@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
+using CryptoPortfolioTracker.Helpers;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
 using LanguageExt;
+using LanguageExt.Common;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
@@ -18,9 +22,10 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public partial class CoinLibraryViewModel : BaseViewModel
+public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
 {
     public readonly ILibraryService _libraryService;
+    private readonly IPreferencesService _preferencesService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
@@ -29,18 +34,27 @@ public partial class CoinLibraryViewModel : BaseViewModel
     [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public static AddCoinDialog dialog;
+    public AddCoinDialog dialog;
+    public AddPrereleaseCoinDialog preListingDialog;
     public static CoinLibraryViewModel Current;
-    public static List<string> searchListGecko;
-    public static List<CoinList> coinListGecko;
+    public List<string> searchListGecko;
+    public List<CoinList> coinListGecko;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public CoinLibraryViewModel(ILibraryService libraryService)
+    public CoinLibraryViewModel(ILibraryService libraryService, IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(CoinLibraryViewModel).Name.PadRight(22));
         Current = this;
         IsAllCoinDataRetrieved = false;
         _libraryService = libraryService;
+        _preferencesService = preferencesService;
+    }
+
+    public void Dispose()
+    {
+        Current = null;
+        MkOsft.ClearList<string>(searchListGecko);
+        MkOsft.ClearList<CoinList>(coinListGecko);
     }
 
     /// <summary>
@@ -51,7 +65,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public async Task SetDataSource()
     {
         (await _libraryService.GetCoinsOrderedByRank())
-            .IfSucc(list => ListCoins = new ObservableCollection<Coin>(list));
+            .IfSucc(list => ListCoins = new ObservableCollection<Coin>(list.OrderBy(x => x.Rank)));
     }
     /// <summary>
     /// RetrieveAllCoinData async task is called from the View_Loading event of the associated View
@@ -80,6 +94,86 @@ public partial class CoinLibraryViewModel : BaseViewModel
         return searchList;
     }
 
+    private Task DoSorting<T>(SortingOrder sortingOrder, Func<Coin, T> sortFunc)
+    {
+        if (ListCoins is not null)
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(sortFunc));
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+
+    [RelayCommand]
+    public Task SortOnName(SortingOrder sortingOrder)
+    {
+        Func<Coin, string> sortFunc = x => x.Name;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    public Task SortOn24HrChange(SortingOrder sortingOrder)
+    {
+        Func<Coin, double> sortFunc = x => x.Change24Hr;
+        DoSorting(sortingOrder, sortFunc);
+        
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    public Task SortOn52WeekChange(SortingOrder sortingOrder)
+    {
+        Func<Coin, double> sortFunc = x => x.Change52Week;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    public Task SortOn30DayChange(SortingOrder sortingOrder)
+    {
+        Func<Coin, double> sortFunc = x => x.Change1Month;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    public Task SortOnAth(SortingOrder sortingOrder)
+    {
+        Func<Coin, double> sortFunc = x => x.Ath;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    public Task SortOnMarketCap(SortingOrder sortingOrder)
+    {
+        Func<Coin, double> sortFunc = x => x.MarketCap;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    public Task SortOnRank(SortingOrder sortingOrder)
+    {
+        Func<Coin, double> sortFunc = x => x.Rank;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+
 
     [RelayCommand(CanExecute = nameof(CanShowAddCoinDialog))]
     public async Task ShowAddCoinDialog()
@@ -89,7 +183,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         var loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(searchListGecko, Current)
+            dialog = new AddCoinDialog(searchListGecko, Current, Enums.DialogAction.Add, _preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -129,6 +223,102 @@ public partial class CoinLibraryViewModel : BaseViewModel
         return IsAllCoinDataRetrieved;
     }
 
+    [RelayCommand(CanExecute = nameof(CanMergePreListingCoin))]
+    public async Task MergePreListingCoin(Coin preListingCoin)
+    {
+        Logger.Information("Showing Coin Dialog");
+        App.isBusy = true;
+        var loc = Localizer.Get();
+        try
+        {
+            dialog = new AddCoinDialog(searchListGecko, Current, Enums.DialogAction.Merge, _preferencesService)
+            {
+                XamlRoot = CoinLibraryView.Current.XamlRoot
+            };
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var coinName = dialog.selectedCoin is not null ? dialog.selectedCoin.Name : string.Empty;
+                Logger.Information("Merging Coin in Library  - {0}", coinName);
+                await (await _libraryService.MergeCoin(preListingCoin, dialog.selectedCoin))
+                    .Match(Succ: succ => UpdateListCoinsAfterMerge(preListingCoin, dialog.selectedCoin),
+                    Fail: async err =>
+                    {
+                        await ShowMessageDialog(
+                            loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
+                            err.Message,
+                             loc.GetLocalizedString("Common_CloseButton"));
+                        Logger.Error(err, "Merging Coin in Library Failed");
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to show Coin Dialog");
+
+            await ShowMessageDialog(
+                loc.GetLocalizedString("Messages_CoinDialogFailed_Title"),
+                ex.Message,
+                 loc.GetLocalizedString("Common_CloseButton"));
+        }
+        finally { App.isBusy = false; }
+
+        App.isBusy = false;
+    }
+
+
+    private bool CanMergePreListingCoin(Coin coin)
+    {
+        return coin.Name.Contains("_pre-listing");
+    }
+
+
+    [RelayCommand]
+    public async Task ShowAddPreListingCoinDialog()
+    {
+        Logger.Information("Showing Pre-Listing Coin Dialog");
+        App.isBusy = true;
+        var loc = Localizer.Get();
+        try
+        {
+            preListingDialog = new AddPrereleaseCoinDialog(Current, _preferencesService)
+            {
+                XamlRoot = CoinLibraryView.Current.XamlRoot
+            };
+            var result = await preListingDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var coinName = preListingDialog.newCoin is not null ? preListingDialog.newCoin.Name : string.Empty;
+                Logger.Information("Adding Pre-Listing Coin to Library  - {0}", coinName);
+                await (await _libraryService.CreateCoin(preListingDialog.newCoin))
+                    .Match(Succ: succ => AddToListCoins(preListingDialog.newCoin),
+                    Fail: async err =>
+                    {
+                        await ShowMessageDialog(
+                            loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
+                            err.Message,
+                             loc.GetLocalizedString("Common_CloseButton"));
+                        Logger.Error(err, "Adding Pre-Listing Coin to Library Failed");
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to show Pre-Listing Coin Dialog");
+
+            await ShowMessageDialog(
+                loc.GetLocalizedString("Messages_CoinDialogFailed_Title"),
+                ex.Message,
+                 loc.GetLocalizedString("Common_CloseButton"));
+        }
+        finally { App.isBusy = false; }
+
+        App.isBusy = false;
+    }
+
+
     [RelayCommand]
     public async Task ShowAddNoteDialog(Coin coin)
     {
@@ -137,7 +327,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         Logger.Information("Showing Note Dialog");
         try
         {
-            var dialog = new AddNoteDialog(coin)
+            var dialog = new AddNoteDialog(coin, _preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -190,7 +380,8 @@ public partial class CoinLibraryViewModel : BaseViewModel
         var result = false;
         try
         {
-            result = !ListCoins.Where(x => x.ApiId.ToLower() == coin.ApiId.ToLower()).Single().IsAsset;
+            //result = !ListCoins.Where(x => x.ApiId.ToLower() == coin.ApiId.ToLower()).Single().IsAsset;
+            result = _libraryService.IsNotAsset(coin); 
         }
         catch (Exception)
         {
@@ -207,7 +398,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         Logger.Information("Showing Description Dialog for {0}}", coin.Name);
         if (coin != null)
         {
-            var dialog = new DescriptionDialog(coin)
+            var dialog = new DescriptionDialog(coin, _preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -236,5 +427,24 @@ public partial class CoinLibraryViewModel : BaseViewModel
         return Task.FromResult(true);
     }
 
+    private Task UpdateListCoinsAfterMerge(Coin prelistingCoin, Coin? newCoin)
+    {
+        //if (newCoin == null || prelistingCoin == null) { return Task.FromResult(false); }
+        //try
+        //{
+        //    var plCoin = ListCoins.Where(x => x.ApiId.ToLower() == prelistingCoin.ApiId.ToLower()).Single();
+        //    plCoin.ApiId = newCoin.ApiId;
+        //    plCoin.Name = newCoin.Name;
+        //    plCoin.Symbol = newCoin.Symbol;
+        //    plCoin.About = newCoin.About;
+
+           
+        //}
+        //catch (Exception ex)
+        //{
+        //    return Task.FromResult(false); ;
+        //}
+        return Task.FromResult(true);
+    }
 }
 

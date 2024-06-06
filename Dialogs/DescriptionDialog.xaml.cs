@@ -1,4 +1,5 @@
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Services;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using WinUI3Localizer;
@@ -14,10 +15,11 @@ namespace CryptoPortfolioTracker.Dialogs;
 public sealed partial class DescriptionDialog : ContentDialog
 {
     private readonly ILocalizer loc = Localizer.Get();
-    public DescriptionDialog(Coin coin)
+    private readonly IPreferencesService _preferencesService;
+    public DescriptionDialog(Coin coin, IPreferencesService preferencesService)
     {
         InitializeComponent();
-
+        _preferencesService = preferencesService;
         var run = new Run
         {
             //TODO Pull Coin Description from the Web API in a localized way 
@@ -40,9 +42,9 @@ public sealed partial class DescriptionDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != App.userPreferences.AppTheme)
+        if (sender.ActualTheme != _preferencesService.GetAppTheme())
         {
-            sender.RequestedTheme = App.userPreferences.AppTheme;
+            sender.RequestedTheme = _preferencesService.GetAppTheme();
         }
     }
 }

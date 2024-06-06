@@ -9,7 +9,7 @@ using CryptoPortfolioTracker.Enums;
 
 namespace CryptoPortfolioTracker.Models;
 
-public partial class Transaction : BaseModel
+public partial class Transaction : BaseModel, IDisposable
 {
 
     public Transaction()
@@ -172,6 +172,12 @@ public partial class Transaction : BaseModel
         catch (Exception ) {  }
     }
 
+    public void Dispose()
+    {
+        mutations.Clear();
+        mutations = null;
+
+    }
 }
 
 

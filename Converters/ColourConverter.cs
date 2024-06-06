@@ -1,4 +1,5 @@
 ﻿using System;
+using CryptoPortfolioTracker.Services;
 using Microsoft.UI;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
@@ -7,10 +8,11 @@ namespace CryptoPortfolioTracker.Converters;
 
 public class ColourConverter : IValueConverter
 {
+    
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         var greenColor = new SolidColorBrush(Colors.ForestGreen);
-        if ( App.userPreferences.AppTheme==Microsoft.UI.Xaml.ElementTheme.Dark)
+        if ( App._preferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
         {
             greenColor = new SolidColorBrush(Colors.LimeGreen);
         }

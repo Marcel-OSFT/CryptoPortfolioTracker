@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -6,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CryptoPortfolioTracker.Models;
 
-public partial class Account : BaseModel
+public partial class Account : BaseModel, IDisposable
 {
     public Account(string name = "")
     {
@@ -43,5 +44,8 @@ public partial class Account : BaseModel
         else { TotalValue = 0; }
     }
 
-
+    public void Dispose()
+    {
+       
+    }
 }

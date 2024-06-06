@@ -102,7 +102,7 @@ public sealed partial class AutoSuggestBoxWithValidation : UserControl    //, IN
         innerASBox.AddHandler(TextBox.KeyDownEvent, new KeyEventHandler(InnerASBox_KeyDown), true);
         innerASBox.Visibility = Visibility.Collapsed;
     }
-    
+
     private static void PlaceholderTextChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var thisBox = (AutoSuggestBoxWithValidation)d;

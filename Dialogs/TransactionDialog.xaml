@@ -154,12 +154,9 @@
         <RelativePanel Name="QtyAndPriceSelectionA" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch" Width="360" Margin="0,0,0,0" >
             <controls:RegExTextBox x:Name ="TBoxQtyA" 
                 RegEx="RegExPositiveDecimal" 
-                IsZeroAllowed="False" 
-                Text="{Binding QtyA, 
-                    ElementName=Root, 
-                    Mode=TwoWay, 
-                    Converter={StaticResource StringFormatConverter}, 
-                    ConverterParameter='{}{0:0.########}'}"
+                IsZeroAllowed="False"
+                DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
+                Text="{Binding QtyA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
                 Header="{Binding MaxQtyA, Converter={StaticResource myMaxQtyAConverter}}" 
                 IsEntryValid="{Binding Validator.EntryCollection[4], 
                     ElementName=Root, 
@@ -169,7 +166,9 @@
                 Width="160" Margin="5,0,5,0"/>
             <controls:RegExTextBox l:Uids.Uid="TransactionDialog_PriceA" x:Name ="TBoxPriceA" 
                 RegEx="RegExPositiveDecimal" 
-                IsZeroAllowed="False" 
+                IsZeroAllowed="False"
+                DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
+                                   
                 Text="{Binding PriceA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.##################}'}" 
                 IsEntryValid="{Binding Validator.EntryCollection[5], 
                     ElementName=Root, 
@@ -185,7 +184,9 @@
         <RelativePanel Name="QtyAndPriceSelectionB" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,0,0,0" >
             <controls:RegExTextBox l:Uids.Uid="TransactionDialog_QtyB" x:Name ="TBoxQtyB" 
                 RegEx="RegExPositiveDecimal" 
-                IsZeroAllowed="False" 
+                IsZeroAllowed="False"
+                DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
+                                   
                 Text="{Binding QtyB, 
                     ElementName=Root, 
                     Mode=TwoWay, 
@@ -201,6 +202,7 @@
             <controls:RegExTextBox l:Uids.Uid="TransactionDialog_PriceB" x:Name ="TBoxPriceB" 
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="False" 
+                DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
                 Text="{Binding PriceB, 
                     ElementName=Root, 
                     Mode=TwoWay, 
@@ -224,6 +226,7 @@
             <controls:RegExTextBox l:Uids.Uid="TransactionDialog_FeeQty" x:Name="TBoxQtyFee" 
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="True" 
+                DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
                 Text="{Binding FeeQty, 
                     ElementName=Root, 
                     Mode=TwoWay, 

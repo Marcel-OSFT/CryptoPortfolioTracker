@@ -1,21 +1,28 @@
 using CryptoPortfolioTracker.ViewModels;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 
 namespace CryptoPortfolioTracker.Views;
 
-public partial class SettingsView : Page
+public partial class SettingsView : Page, IDisposable
 {
     public readonly SettingsViewModel _viewModel;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public static SettingsView Current;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public SettingsView(SettingsViewModel viewModel)
     {
-        Current = this;
         _viewModel = viewModel;
         InitializeComponent();
         DataContext = _viewModel;
         VersionNumber.Text = App.ProductVersion;
+    }
+
+    private void View_Unloaded(object sender, RoutedEventArgs e)
+    {
+    }
+
+    public void Dispose()
+    {
+       
     }
 }

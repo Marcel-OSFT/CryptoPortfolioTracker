@@ -16,6 +16,7 @@
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     SizeChanged="GridView_SizeChanged"
+    Unloaded="Control_Unload"
     mc:Ignorable="d">
 
     <UserControl.Resources>

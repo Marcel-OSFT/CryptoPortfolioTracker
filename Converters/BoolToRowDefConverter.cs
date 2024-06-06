@@ -1,4 +1,5 @@
 ﻿using System;
+using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
 using Microsoft.UI.Xaml.Data;
 
@@ -28,7 +29,7 @@ public class BoolToRowDefConverter : IValueConverter
         {
             var scale = MainPage.Current.XamlRoot.RasterizationScale;
             //** adjust return value for selected app font
-            switch (App.userPreferences.FontSize.ToString())
+            switch (App._preferencesService.GetFontSize().ToString())
             {
                 case "Small":
                     {

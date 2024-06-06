@@ -7,34 +7,48 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
+using CryptoPortfolioTracker.Helpers;
 using LanguageExt;
 using LanguageExt.Pipes;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
 using WinUI3Localizer;
+using static WinUI3Localizer.LanguageDictionary;
+using LanguageExt.Common;
+
+
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public sealed partial class AssetsViewModel : BaseViewModel
+public sealed partial class AssetsViewModel : BaseViewModel, IDisposable
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AssetsViewModel Current;
+
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public readonly IAssetService _assetService;
-    public readonly IPriceUpdateService _priceUpdateBackgroundService;
+    //public readonly IPriceUpdateService _priceUpdateService;
+   // public readonly IGraphUpdateService _graphUpdateService;
     public readonly ITransactionService _transactionService;
+    public readonly IGraphService _graphService;
+    private readonly IPreferencesService _preferencesService;
 
     [ObservableProperty] private double totalAssetsValue;
     [ObservableProperty] private double totalAssetsCostBase;
     [ObservableProperty] private double totalAssetsPnLPerc;
+
+    [ObservableProperty] private double inFlow;
+    [ObservableProperty] private double outFlow;
 
     [ObservableProperty] private ObservableCollection<AssetTotals>? listAssetTotals;
     [ObservableProperty] private ObservableCollection<AssetAccount>? listAssetAccounts;
@@ -49,19 +63,43 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
-    private bool isHidingZeroBalances = App.userPreferences.IsHidingZeroBalances;
+    private bool isHidingZeroBalances;
+    [ObservableProperty] private bool isHidingCapitalFlow;
 
     public static List<CoinList>? coinListGecko;
+    private bool disposedValue;
 
-    public AssetsViewModel(IAssetService assetService, IPriceUpdateService priceUpdateBackgroundService, ITransactionService transactionService)
+    private SortingOrder currentSortingOrder;
+    private Func<AssetTotals, object> currentSortFunc;
+
+    public AssetsViewModel(IGraphService graphService, 
+            IAssetService assetService, 
+            ITransactionService transactionService, 
+            IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
         _assetService = assetService;
-        _priceUpdateBackgroundService = priceUpdateBackgroundService;
         _transactionService = transactionService;
-        _priceUpdateBackgroundService.Start();
+        _graphService = graphService;
+        _preferencesService = preferencesService;
+
+        IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
+        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+
     }
+
+    public void Dispose()
+    {
+        coinListGecko?.Clear();
+        coinListGecko = null;
+        Current = null;
+
+        MkOsft.ClearObservableCollection<AssetTotals>(ListAssetTotals);
+        MkOsft.ClearObservableCollection<AssetAccount>(listAssetAccounts);
+        MkOsft.ClearObservableCollection<Transaction>(ListAssetTransactions);
+    }
+
 
     /// <summary>
     /// SetDataSource async task is called from the View_Loading event of the associated View
@@ -70,9 +108,88 @@ public sealed partial class AssetsViewModel : BaseViewModel
     /// <returns></returns>
     public async Task SetDataSource()
     {
-        var result = (await _assetService.GetAssetTotals())
-             .Match(Succ: s => CreateListAssetTotals(s), Fail: e => CreateListWithDummyAssetTotals());
+        var getAssetTotalsResult = await _assetService.GetAssetTotals();
+        getAssetTotalsResult.IfSucc( s => CreateListAssetTotals(s));
+        getAssetTotalsResult.IfFail( e => CreateListWithDummyAssetTotals());
     }
+
+    private Task DoSorting(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    {
+        if (ListAssetTotals is not null)
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderByDescending(sortFunc));
+            }
+        }
+
+        currentSortingOrder = sortingOrder;
+        currentSortFunc = sortFunc;
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnName(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
+        DoSorting(sortingOrder, sortFunc);
+        
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOn24Hour(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOn1Month(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnMarketValue(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.MarketValue;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnCostBase(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.CostBase;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnPnL(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+    [RelayCommand]
+    public Task SortOnPnLPerc(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
+        DoSorting(sortingOrder, sortFunc);
+
+        return Task.CompletedTask;
+    }
+
+
 
     [RelayCommand]
     public async Task AssetItemClicked(AssetTotals clickedAsset)
@@ -120,7 +237,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing Transaction Dialog for Adding");
-            var dialog = new TransactionDialog(_transactionService, DialogAction.Add)
+            var dialog = new TransactionDialog(_transactionService, _preferencesService, DialogAction.Add)
             {
                 XamlRoot = AssetsView.Current.XamlRoot
             };
@@ -176,7 +293,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
             accountAffected = ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
 #pragma warning restore CS8604 // Possible null reference argument.
 
-            var dialog = new TransactionDialog(_transactionService, DialogAction.Edit, transaction)
+            var dialog = new TransactionDialog(_transactionService, _preferencesService, DialogAction.Edit, transaction)
             {
                 XamlRoot = AssetsView.Current.XamlRoot
             };
@@ -196,6 +313,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
                             await UpdateListAssetTotals(dialog.transactionNew);
                             await UpdateListAssetAccount(accountAffected);
                             await UpdateListAssetTransaction(dialog.transactionNew, transaction);
+                            await _graphService.RegisterModification(dialog.transactionNew, transaction);
                         },
                             Fail: async err =>
                             {
@@ -205,7 +323,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
                                 loc.GetLocalizedString("Common_CloseButton"));
                                 Logger.Error(err, "Editing Transaction failed");
                             });
-                CalculateAssetsTotalValues();
+                await CalculateAssetsTotalValues();
             }
         }
         catch (Exception ex)
@@ -249,6 +367,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
                              await UpdateListAssetTotals(transaction);
                              await UpdateListAssetAccount(accountAffected);
                              await RemoveFromListAssetTransactions(transaction);
+                             await _graphService.RegisterModification(transaction);
+
                          },
                             Fail: async err =>
                             {
@@ -340,7 +460,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
         if (ListAssetAccounts is null)
         {
             return;
-        } (await _assetService.GetAccountByAsset(accountAffected.AssetId))
+        } 
+        (await _assetService.GetAccountByAsset(accountAffected.AssetId))
             .IfSucc(s =>
             {
                 var index = -1;
@@ -438,11 +559,15 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
         return Task.CompletedTask;
     }
-    public bool CreateListAssetTotals(List<AssetTotals> list)
+    public async Task<bool> CreateListAssetTotals(List<AssetTotals> list)
     {
         ListAssetTotals = new ObservableCollection<AssetTotals>(list.OrderByDescending(x => x.MarketValue));
         HideZeroBalances(IsHidingZeroBalances);
-        CalculateAssetsTotalValues();
+        await CalculateAssetsTotalValues();
+
+        currentSortingOrder = SortingOrder.Descending;
+        currentSortFunc = new Func<AssetTotals, object>(x => x.MarketValue);
+
         return ListAssetTotals.Any();
     }
     public bool CreateListAssetAcounts(List<AssetAccount> list)
@@ -486,7 +611,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         return Task.FromResult(true);
     }
 
-    public void CalculateAssetsTotalValues()
+    public async Task CalculateAssetsTotalValues()
     {
         if (ListAssetTotals != null && ListAssetTotals.Count > 0 && ListAssetTotals[0].Coin.Symbol != "EXCEPTIONAL ERROR")
         {
@@ -494,7 +619,38 @@ public sealed partial class AssetsViewModel : BaseViewModel
             TotalAssetsCostBase = ListAssetTotals.Sum(x => x.CostBase);
             TotalAssetsPnLPerc = 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase;
         }
+        await CalculateInAndOutFlow();
         Logger.Information("CalculatingTotals {0}", TotalAssetsValue);
     }
+
+    private async Task CalculateInAndOutFlow()
+    {
+        InFlow = await _assetService.GetInFlow();
+        OutFlow = await _assetService.GetOutFlow();
+    }
+
+    public void UpdatePricesAssetTotals(Coin coin, double oldPrice, double? newPrice)
+    {
+        var asset = ListAssetTotals?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
+        if (asset != null && ListAssetTotals != null && oldPrice != newPrice)
+        {
+            //Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
+            var index = -1;
+            for (var i = 0; i < ListAssetTotals.Count; i++)
+            {
+                if (ListAssetTotals[i].Coin.Id == asset.Coin.Id)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            ListAssetTotals[index].Coin = coin;
+            ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
+        }
+        //apply/refresh sorting
+       DoSorting(currentSortingOrder, currentSortFunc);
+
+    }
+
 }
 

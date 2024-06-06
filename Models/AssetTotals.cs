@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Xml.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CryptoPortfolioTracker.Models;
 
-public partial class AssetTotals : BaseModel
+public partial class AssetTotals : BaseModel, IDisposable
 {
 
     public AssetTotals()
@@ -46,4 +48,8 @@ public partial class AssetTotals : BaseModel
         MarketValue = Qty * value.Price;
     }
 
+    public void Dispose()
+    {
+        coin = null;
+    }
 }

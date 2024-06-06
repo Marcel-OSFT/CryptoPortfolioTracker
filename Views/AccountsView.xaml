@@ -10,7 +10,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
     Loading="View_Loading"
+    Unloaded="View_Unloaded"
      mc:Ignorable="d">
+    
     <Page.Resources>
         <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
 
@@ -41,12 +43,18 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=95|1*}"/>
                         <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=1*|0}"/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <controls:AccountsListViewControl x:Name="MyAccountsListViewControl" x:FieldModifier="public" Grid.Row="0" />
                     <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Grid.Row="1" Margin="0,-8,0,0" />
-                    <Button l:Uids.Uid="Accounts_AddAccount" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
-                        Command="{Binding ShowAccountDialogToAddCommand}" Name="AddAccountButton" Margin="10,10,0,0"/>
+                    <Button l:Uids.Uid="Accounts_AddAccount" 
+                            Grid.Row="2" 
+                            VerticalAlignment="Bottom" 
+                            HorizontalAlignment="Stretch" 
+                        Command="{Binding ShowAccountDialogToAddCommand}" 
+                            Name="AddAccountButton" 
+                            Margin="10,10,0,0"
+                            />
                 </Grid>
             </Border>
         </Grid>

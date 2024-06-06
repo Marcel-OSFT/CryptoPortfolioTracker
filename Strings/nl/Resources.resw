@@ -126,7 +126,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Marktwaarde</value>
   </data>
   <data name="AssetsLV_ProfitLoss.Text" xml:space="preserve">
-    <value>Verlies/Winst</value>
+    <value>Winst/Verlies</value>
   </data>
   <data name="AssetsLV_Quantity.Text" xml:space="preserve">
     <value>Aantal</value>
@@ -315,10 +315,10 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Aantal</value>
   </data>
   <data name="TransactionDialog_FeeQty.PlaceholderText" xml:space="preserve">
-    <value>Kosten opgeven..</value>
+    <value>Kosten opgeven...</value>
   </data>
   <data name="TransactionDialog_Note.PlaceholderText" xml:space="preserve">
-    <value>notitie opgeven...</value>
+    <value>bijv. hier kun je een notitie ingeven</value>
   </data>
   <data name="TransactionDialog_PriceA.PlaceholderText" xml:space="preserve">
     <value>price opgeven...</value>
@@ -396,7 +396,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Notitie</value>
   </data>
   <data name="NoteDialog_Note.PlaceholderText" xml:space="preserve">
-    <value>Notitie komt hier....</value>
+    <value>bijv. hier kun je een notitie ingeven</value>
   </data>
   <data name="NoteDialog_PrimaryButton" xml:space="preserve">
     <value>Accepteren</value>
@@ -571,5 +571,89 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="ASBox_NoSuitableItems_Msg" xml:space="preserve">
     <value>niets gevonden</value>
+  </data>
+  <data name="Assets_InFlow.Text" xml:space="preserve">
+    <value>Instroom</value>
+  </data>
+  <data name="Assets_OutFlow.Text" xml:space="preserve">
+    <value>Uitstroom</value>
+  </data>
+  <data name="Settings_HideCapitalFlow.Description" xml:space="preserve">
+    <value>Geef aan of u de kapitaal in- en uitstroom wil tonen in het portefeuille-overzicht.</value>
+  </data>
+  <data name="Settings_HideCapitalFlow.Header" xml:space="preserve">
+    <value>Kapitaal Stroom verbergen</value>
+  </data>
+  <data name="Settings_HideCapitalFlow_Toggle.OffContent" xml:space="preserve">
+    <value>Uit</value>
+  </data>
+  <data name="Settings_HideCapitalFlow_Toggle.OnContent" xml:space="preserve">
+    <value>Aan</value>
+  </data>
+  <data name="Assets_InFlowPanel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Kapitaal Instroom gebaseerd op de som van alle Stortingen.</value>
+  </data>
+  <data name="Assets_OutFlowPanel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Kapitaal Uitstroom gebaseerd op de som van alle Opnames.</value>
+  </data>
+  <data name="Library_AddPreListingCoin.Content" xml:space="preserve">
+    <value>Pre-Listing Munt toevoegen</value>
+  </data>
+  <data name="PreListingCoinDialog_About.Header" xml:space="preserve">
+    <value>Omschrijving/Notitie</value>
+  </data>
+  <data name="PreListingCoinDialog_About.PlaceholderText" xml:space="preserve">
+    <value>bijv. munt listing verwacht in Q1-2025</value>
+  </data>
+  <data name="PreListingCoinDialog_Name.Header" xml:space="preserve">
+    <value>Munt Naam</value>
+  </data>
+  <data name="PreListingCoinDialog_Name.PlaceholderText" xml:space="preserve">
+    <value>bijv. Veelbelovend Project</value>
+  </data>
+  <data name="PreListingCoinDialog_Symbol.Header" xml:space="preserve">
+    <value>Munt Symbool</value>
+  </data>
+  <data name="PreListingCoinDialog_Symbol.PlaceholderText" xml:space="preserve">
+    <value>bijv. VTKN</value>
+  </data>
+  <data name="PreListingCoinDialog_Title" xml:space="preserve">
+    <value>Voeg een pre-listing munt toe</value>
+  </data>
+  <data name="PreListingCoinDialog_Price.Header" xml:space="preserve">
+    <value>Prijs</value>
+  </data>
+  <data name="PreListingCoinDialog_Explainer.Text" xml:space="preserve">
+    <value>Soms staat een nieuwe munt waarin je hebt geïnvesteerd nog niet vermeld bij data-aggregators zoals CoinGecko. In dit geval kun je hier een pre-listingmunt toevoegen. In een later stadium, wanneer de munt genoteerd (gelist) wordt, kunt u deze munt samenvoegen met de 'geliste' munt. Zie de actie 'samenvoegen' bij de drie stippen...</value>
+  </data>
+  <data name="LibraryLV_Merge.Label" xml:space="preserve">
+    <value>Pre-listing munt Samenvoegen...</value>
+  </data>
+  <data name="CoinDialog_MergeTitle" xml:space="preserve">
+    <value>Pre-listing Munt samenvoegen </value>
+  </data>
+  <data name="Navigation_Graphic.Content" xml:space="preserve">
+    <value>Grafiek</value>
+  </data>
+  <data name="GrahicView_UpdateText.Text" xml:space="preserve">
+    <value>De achtergrondservice werkt historische gegevens bij.</value>
+  </data>
+  <data name="GraphicView_InFlowSeriesTitle" xml:space="preserve">
+    <value>Instroom</value>
+  </data>
+  <data name="GraphicView_OutFlowSeriesTitle" xml:space="preserve">
+    <value>Uitstroom</value>
+  </data>
+  <data name="GraphicView_PortfolioSeriesTitle" xml:space="preserve">
+    <value>Portefeuille Waarde</value>
+  </data>
+  <data name="GraphicView_DateFormat" xml:space="preserve">
+    <value>dd MMMM yyyy</value>
+  </data>
+  <data name="Navigation_About.Content" xml:space="preserve">
+    <value>Over</value>
+  </data>
+  <data name="Navigation_Exit.Content" xml:space="preserve">
+    <value>Sluiten</value>
   </data>
 </root>

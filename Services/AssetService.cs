@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using LanguageExt.Common;
@@ -42,6 +43,43 @@ public class AssetService : IAssetService
         assetsTotals ??= new List<AssetTotals>();
 
         return assetsTotals;
+    }
+    public async Task<Double> GetInFlow()
+    {
+        double inFlow = 0;
+        try
+        {
+            var deposits = await context.Mutations
+            .Where(m => m.Type == TransactionKind.Deposit)
+            .ToListAsync();
+            
+            inFlow = deposits.Sum(s => s.Qty * s.Price);
+        }
+        catch (Exception)
+        {
+            return -1;
+        }
+
+        return inFlow;
+    }
+    public async Task<Double> GetOutFlow()
+    {
+        double outFlow = 0;
+        try
+        {
+            var withdraws = await context.Mutations
+            .Where(m => m.Type == TransactionKind.Withdraw)
+            .ToListAsync();
+            
+            outFlow = withdraws.Sum(s => s.Qty * s.Price);
+
+        }
+        catch (Exception)
+        {
+            return -1;
+        }
+
+        return outFlow;
     }
 
     public async Task<Result<AssetTotals>> GetAssetTotalsByCoin(Coin coin)

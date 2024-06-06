@@ -15,6 +15,7 @@
     x:Name="Root"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:CoinLibraryViewModel}"
+    Unloaded="Control_Unload"
     mc:Ignorable="d">
 
 
@@ -43,45 +44,125 @@
                 <ColumnDefinition Width="70"/>
                 <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="0.3*"/>
-                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.23*"/>
                 <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
-            <RichTextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" >
-                <Paragraph TextAlignment="Left" >
-                <Run l:Uids.Uid="LibraryLV_Name" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-                <Paragraph TextAlignment="Left">
-                <Run l:Uids.Uid="LibraryLV_Symbol" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            </RichTextBlock>
-            <RichTextBlock Grid.Row="0" Grid.Column="2" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" >
-                <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="LibraryLV_Price" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-                <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="LibraryLV_24HrChange" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            </RichTextBlock>
-            <RichTextBlock Grid.Row="0" Grid.Column="3" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" >
-                <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="LibraryLV_52WeekChange" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-                <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="LibraryLV_30DayChange" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-                <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="LibraryLV_Ath" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            </RichTextBlock>
-        <RichTextBlock Grid.Row="0" Grid.Column="4" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" >
-                <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="LibraryLV_MarketCap" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-                <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="LibraryLV_Rank" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            </RichTextBlock>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_Name" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Left"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOnNameCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_Symbol" 
+                IsEnabled="False" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Left"
+                />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="2" Margin="5" VerticalAlignment="Center" >
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_Price" 
+                IsEnabled="False" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                />
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_24HrChange" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOn24HrChangeCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="3" Margin="5" VerticalAlignment="Center" >
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_52WeekChange" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOn52WeekChangeCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_30DayChange" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOn30DayChangeCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_Ath" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOnAthCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />      
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="4" Margin="5" VerticalAlignment="Center" >
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_MarketCap" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOnMarketCapCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="LibraryLV_Rank" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                SortingOrder="Ascending"
+                Command="{Binding SortOnRankCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+        </StackPanel>
        
         <Rectangle Grid.Row="1" Grid.ColumnSpan="6" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
         <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="6" x:FieldModifier="public" ItemsSource="{Binding ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
@@ -99,7 +180,7 @@
                                             <RowDefinition Height="auto"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto" MinWidth="42"/>
                                             <ColumnDefinition Width="0.3*"/>
                                             <ColumnDefinition Width="0.3*"/>
                                             <ColumnDefinition Width="0.2*"/>
@@ -178,7 +259,12 @@
                                                 <AppBarButton l:Uids.Uid="LibraryLV_AddEditNote" Visibility="Visible" x:Name="HoverButtonNote" Command="{Binding DataContext.DataContext.ShowAddNoteDialogCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                     <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                 </AppBarButton>
-                                                <AppBarButton l:Uids.Uid="LibraryLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="{Binding IsAsset, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
+
+                                                <AppBarButton l:Uids.Uid="LibraryLV_Merge" Visibility="Visible" x:Name="HoverButtonMerge" Command="{Binding DataContext.DataContext.MergePreListingCoinCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
+                                                    <FontIcon  Glyph="&#xEA3C;" FontWeight="Normal"  />
+                                                </AppBarButton>
+
+                                                <AppBarButton l:Uids.Uid="LibraryLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>

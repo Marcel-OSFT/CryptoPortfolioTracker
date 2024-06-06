@@ -17,6 +17,7 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
+    Unloaded="Control_Unload"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -39,73 +40,166 @@
    
     <Grid Name="ColumnHeadersAndListView" Margin="15,0,5,0" Padding="10,8,0,0" x:FieldModifier="public" >
         <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="65"/>
             <ColumnDefinition Width="0.18*"/>
             <ColumnDefinition Width="0.18*"/>
-            <ColumnDefinition Width="0.096*"/>
+            <ColumnDefinition Width="0.11*"/>
             <ColumnDefinition Width="0.18*"/>
             <ColumnDefinition Width="0.18*"/>
             <ColumnDefinition Width="0.18*"/>
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Orientation="Horizontal" >
-            <RichTextBlock x:Name="rtbName"  Margin="0,0,0,5" VerticalAlignment="Bottom">
-                <Paragraph TextAlignment="Left" >
-                    <Run l:Uids.Uid="AssetsLV_Name" FontSize="12" FontStyle="Italic" />
-                </Paragraph>
-            </RichTextBlock>
-            <CheckBox l:Uids.Uid="AssetsLV_HideZeroBalances" x:FieldModifier="public" FontSize="12" FontStyle="Italic" 
-                Margin="30,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center"
+        
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="AssetsLV_Name" 
+                IsEnabled="True" 
+                Margin="0,0,0,5"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Left"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOnNameCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+
+            <CheckBox l:Uids.Uid="AssetsLV_HideZeroBalances" x:FieldModifier="public" FontSize="12" FontStyle="Normal" 
+                Margin="15,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center"
                 IsChecked="{Binding IsHidingZeroBalances, Mode=TwoWay}" 
                 Command="{Binding HideZeroBalancesCommand}" 
                 CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"/>
         </StackPanel>
-        <RichTextBlock Grid.Row="0" Grid.Column="2" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_Quantity" FontSize="12" FontStyle="Italic"/>
-            </Paragraph>
-        </RichTextBlock>
+       
 
-        <RichTextBlock Grid.Row="0" Grid.Column="3" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_24Hour" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_1Month" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_Change" FontSize="12" FontStyle="Italic"/>
-            </Paragraph>
-        </RichTextBlock>
-        <RichTextBlock Grid.Row="0" Grid.Column="4" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_MarketValue" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_ActualPrice" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-        </RichTextBlock>
-        <RichTextBlock Grid.Row="0" Grid.Column="5" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_CostBase" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_AverageCostPrice" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-        </RichTextBlock>
-        <RichTextBlock Grid.Row="0" Grid.Column="6" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" >
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_ProfitLoss" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-            <Paragraph TextAlignment="Right">
-                <Run l:Uids.Uid="AssetsLV_ProfitLossPerc" FontSize="12" FontStyle="Italic" />
-            </Paragraph>
-        </RichTextBlock>
+        <local:ColumnHeaderButton Grid.Row="0" Grid.Column="2"
+            l:Uids.Uid="AssetsLV_Quantity" 
+            IsEnabled="False" 
+            Margin="0,0,0,5"
+            FontSize="12"
+            FontStyle="Italic"
+            VerticalAlignment="Bottom"
+            HorizontalTextAlignment="Right"
+            />  
+
+        <StackPanel Grid.Row="0" Grid.Column="3" Margin="0,0,0,5">
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="AssetsLV_24Hour" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOn24HourCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            <local:ColumnHeaderButton
+                l:Uids.Uid="AssetsLV_1Month" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOn1MonthCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />      
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="AssetsLV_Change" 
+                IsEnabled="False" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="4" Margin="0,0,0,5" VerticalAlignment="Bottom">
+
+            <local:ColumnHeaderButton
+                l:Uids.Uid="AssetsLV_MarketValue" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                SortingOrder="Descending"
+                Command="{Binding SortOnMarketValueCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="AssetsLV_ActualPrice" 
+                IsEnabled="False" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                />
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="5" Margin="0,0,0,5" VerticalAlignment="Bottom">
+
+            <local:ColumnHeaderButton
+                l:Uids.Uid="AssetsLV_CostBase" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOnCostBaseCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="AssetsLV_AverageCostPrice" 
+                IsEnabled="False" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                />
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="6" Margin="0,0,0,5" VerticalAlignment="Bottom">
+
+            <local:ColumnHeaderButton
+                l:Uids.Uid="AssetsLV_ProfitLoss" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOnPnLCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            <local:ColumnHeaderButton 
+                l:Uids.Uid="AssetsLV_ProfitLossPerc" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Command="{Binding SortOnPnLPercCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+        </StackPanel>
+
 
         <Rectangle Fill="#eebc3f" Grid.Row="1" Grid.ColumnSpan="8" Height="2" Margin="5,0,8,0"/>
 
@@ -127,10 +221,10 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto" MinWidth="42"/>
                                         <ColumnDefinition Width="0.18*"/>
                                         <ColumnDefinition Width="0.18*"/>
-                                        <ColumnDefinition Width="0.096*"/>
+                                        <ColumnDefinition Width="0.11*"/>
                                         <ColumnDefinition Width="0.18*"/>
                                         <ColumnDefinition Width="0.18*"/>
                                         <ColumnDefinition Width="0.18*"/>

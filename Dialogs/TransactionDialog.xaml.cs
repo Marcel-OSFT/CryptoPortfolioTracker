@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Extensions;
@@ -28,6 +29,8 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     public Transaction? transactionToEdit;
     public Transaction transactionNew;
     private readonly ITransactionService _transactionService;
+    private readonly IPreferencesService _preferencesService;
+
     private TransactionKind transactionType;
     private List<string> listCoinA;
     private List<string> listCoinB;
@@ -399,6 +402,20 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
             }
         }
     }
+    private string decimalSeparator;
+    public string DecimalSeparator
+    {
+        get => decimalSeparator;
+        set
+        {
+            if (value != decimalSeparator)
+            {
+                decimalSeparator = value;
+                OnPropertyChanged(nameof(DecimalSeparator));
+            }
+        }
+    }
+
     public DateTimeOffset TimeStamp
     {
         get => DateTimeOffset.Parse(timeStamp.ToString());
@@ -420,12 +437,13 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     #region Constructor(s)
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public TransactionDialog(ITransactionService transactionService, DialogAction _dialogAction, Transaction? transaction = null)
+    public TransactionDialog(ITransactionService transactionService, IPreferencesService preferencesService, DialogAction _dialogAction, Transaction? transaction = null)
     {
         InitializeComponent();
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         dialogAction = _dialogAction;
         _transactionService = transactionService;
+        _preferencesService = preferencesService;
         transactionToEdit = transaction;
         InitializeAllFields();
         TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
@@ -464,7 +482,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     #region Methods  
     public void Dispose() // Implement IDisposable
     {
-        GC.SuppressFinalize(this);
+        //GC.SuppressFinalize(this);
     }
     private async void GetMaxQtyAndPrice()
     {
@@ -701,7 +719,8 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         }
 
     }
-    private static string ClearStringIfNoMatchWithList(string _string, List<string> list)
+    //private static  string ClearStringIfNoMatchWithList(string _string, List<string> list)
+    private string ClearStringIfNoMatchWithList(string _string, List<string> list)
     {
         if (!list.Contains(_string))
         {
@@ -712,6 +731,8 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     
     private void InitializeAllFields()
     {
+        DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
+
         CoinA = CoinB = AccountFrom = AccountTo = Note = FeeCoin = "";
         HeaderCoinA = HeaderCoinB = HeaderAccountFrom = HeaderAccountTo = "";
 
@@ -1036,6 +1057,10 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
             
             AccountTo = AccountFrom;
         }
+        else
+        {
+            AccountTo = string.Empty;
+        }
     }
     #endregion ASBoxAccountFrom Events
 
@@ -1099,10 +1124,12 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != App.userPreferences.AppTheme)
+        if (sender.ActualTheme != _preferencesService.GetAppTheme())
         {
-            sender.RequestedTheme = App.userPreferences.AppTheme;
+            sender.RequestedTheme = _preferencesService.GetAppTheme();
         }
     }
+
+    
 }
 

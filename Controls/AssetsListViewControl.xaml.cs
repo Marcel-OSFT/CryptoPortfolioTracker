@@ -1,8 +1,14 @@
+using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Models;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -13,9 +19,6 @@ namespace CryptoPortfolioTracker.Controls;
 public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
 {
     // public readonly AssetsViewModel _viewModel;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public static AssetsListViewControl Current;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     //***********************************************//
     //** All databound fields are in the viewModel**//
@@ -23,7 +26,6 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
     public AssetsListViewControl()
     {
         InitializeComponent();
-        Current = this;
     }
 
     private void AssetsListView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -45,4 +47,35 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
     {
        //dummy
     }
+
+    private Brush originalBackground;
+
+    private void SortOnNameBtn_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            originalBackground = btn.Background;
+            btn.Background = new SolidColorBrush(Colors.Orange);
+            Debug.WriteLine("changed");
+        }
+    }
+
+    private void SortOnNameBtn_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is Button btn && originalBackground is not null)
+        {
+            btn.Background = originalBackground;
+            Debug.WriteLine("and back");
+
+        }
+    }
+
+    private void Control_Unload(object sender, RoutedEventArgs e)
+    {
+        DataContext = null;
+        AssetsListView = null;
+        ColumnHeadersAndListView = null;
+        Root = null;
+    }
+
 }

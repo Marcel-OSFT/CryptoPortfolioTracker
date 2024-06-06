@@ -15,6 +15,7 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
+    Unloaded="Control_Unload"
     mc:Ignorable="d">
 
     <UserControl.Resources>
