@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Helpers;
 
 
 namespace CryptoPortfolioTracker.Models;
@@ -22,10 +23,7 @@ public partial class Asset : BaseModel
     //******* Navigation Properties
     [ObservableProperty] private Coin coin;
     [ObservableProperty] private Account account;
-    public ICollection<Mutation> Mutations
-    {
-        get; set;
-    }
+    public ICollection<Mutation> Mutations { get; set; }
 
-
+    
 }

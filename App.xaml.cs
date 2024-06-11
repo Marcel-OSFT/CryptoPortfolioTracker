@@ -34,6 +34,7 @@ public partial class App : Application
     public static string appDataPath = string.Empty;
     public static string ProductVersion = string.Empty;
     public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
+    public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
     public static bool isBusy;
     public static bool isAppInitializing;
 
@@ -72,66 +73,9 @@ public partial class App : Application
         await InitializeLocalizer();
         CheckDatabase();
 
-        Window = Container.GetService<MainWindow>(); ;
+        Window = Container.GetService<MainWindow>(); 
         Window.Activate();
     }
-    /// <summary>
-    /// GetUserPreferences need to be called in the App's Constructor, because of setting the RequestedTheme
-    /// which only can be done in the constructor
-    /// </summary>
-    //private static void GetUserPreferences()
-    //{
-    //    try
-    //    {
-    //        if (File.Exists(appDataPath + "\\prefs.xml"))
-    //        {
-    //            isAppInitializing = true;
-    //            var mySerializer = new XmlSerializer(typeof(UserPreferences));
-    //            using var myFileStream = new FileStream(appDataPath + "\\prefs.xml", FileMode.Open);
-
-    //            userPreferences = (mySerializer.Deserialize(myFileStream) as UserPreferences) ?? new UserPreferences();
-    //        }
-    //    }
-    //    catch { }
-    //    finally
-    //    {
-    //        isAppInitializing = false;
-    //    }
-    //}
-    //private async Task LoadPortfolioValueGraph()
-    //{
-    //    try
-    //    {
-    //        var pGraphSingleton = Container.GetService<Graph>();
-
-    //        if (!Directory.Exists(App.appDataPath + "\\MarketCharts"))
-    //        {
-    //            Directory.CreateDirectory(App.appDataPath + "\\MarketCharts");
-    //        }
-    //        var fileName = App.appDataPath + "\\MarketCharts\\graph.json";
-    //        if (File.Exists(fileName))
-    //        {
-    //            using FileStream openStream = File.OpenRead(fileName);
-    //            var pGraph = await JsonSerializer.DeserializeAsync<Graph>(openStream);
-
-    //            pGraphSingleton.DataPointsPortfolio = pGraph.DataPointsPortfolio;
-    //            pGraphSingleton.DataPointsInFlow = pGraph.DataPointsInFlow;
-    //            pGraphSingleton.DataPointsOutFlow = pGraph.DataPointsOutFlow;
-
-    //        }
-
-    //        fileName = App.appDataPath + "\\MarketCharts\\HistoryBuffer.json";
-    //        if (File.Exists(fileName))
-    //        {
-    //            using FileStream openStream = File.OpenRead(fileName);
-    //            pGraphSingleton.HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataById>>(openStream);
-    //        }
-
-    //    }
-    //    catch { }
-
-    //}
-
     private async Task InitializeLocalizer()
     {
         // Initialize a "Strings" folder in the executables folder.
@@ -171,7 +115,6 @@ public partial class App : Application
         services.AddScoped<AssetsView>();
         services.AddScoped<AccountsView>();
         services.AddScoped<CoinLibraryView>();
-        services.AddScoped<AboutView>();
         services.AddScoped<SettingsView>();
         services.AddScoped<GraphicView>();
         services.AddScoped<MainPage>();
@@ -182,7 +125,6 @@ public partial class App : Application
         services.AddScoped<AssetsViewModel>();
         services.AddScoped<AccountsViewModel>();
         services.AddScoped<CoinLibraryViewModel>();
-        services.AddScoped<AboutViewModel>();
         services.AddScoped<SettingsViewModel>();
         services.AddScoped<GraphicViewModel>();
         services.AddScoped<BaseViewModel>();
@@ -197,7 +139,6 @@ public partial class App : Application
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ILibraryService, LibraryService>();
         services.AddScoped<IPriceUpdateService, PriceUpdateService>();
-        
         services.AddScoped<IGraphUpdateService, GraphUpdateService>();
 
         services.AddSingleton<IGraphService, GraphService>();

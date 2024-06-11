@@ -19,20 +19,23 @@ using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
 using WinUI3Localizer;
+using System.ComponentModel;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
+public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyChanged
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AccountsViewModel Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public readonly IAccountService _accountService;
+    public IAccountService _accountService {  get; private set; }
+    public IAssetService _assetService { get; private set; }
+
     private readonly IPreferencesService _preferencesService;
 
-    [ObservableProperty] private ObservableCollection<Account>? listAccounts;
-    [ObservableProperty] private ObservableCollection<AssetTotals>? listAssetTotals;
+    //[ObservableProperty] private ObservableCollection<Account>? listAccounts;
+    //[ObservableProperty] private ObservableCollection<AssetTotals>? listAssetTotals;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
@@ -40,38 +43,16 @@ public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
 
     private Account? selectedAccount = null;
 
-    public AccountsViewModel(IAccountService accountService, IPreferencesService preferencesService) : base(preferencesService)
+    public AccountsViewModel(IAccountService accountService, IAssetService assetService, IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AccountsViewModel).Name.PadRight(22));
         Current = this;
         _accountService = accountService;
         _preferencesService =  preferencesService;
-        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
-    }
-
-    public void Dispose()
-    {
-        Current = null;
-
-        MkOsft.ClearObservableCollection<AssetTotals>(ListAssetTotals);
-
+        _assetService = assetService;
         
 
-        if (ListAccounts is not null)
-        {
-            for (var i = 0; i < ListAccounts.Count; i++)
-            {
-                ListAccounts[i].Assets = null;
-                //ListAccounts[i] = null;
-                ListAccounts.RemoveAt(i);
-            }
-            ListAccounts = null;
-        }
-       
-
-
-       // MkOsft.ClearObservableCollection<Account>(listAccounts);
-
+        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
     }
 
     [ObservableProperty]
@@ -83,83 +64,91 @@ public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
     /// <returns></returns>
-    public async Task SetDataSource()
+    public async Task Initialize()
     {
-        (await _accountService.GetAccounts())
-            .IfSucc(list => ListAccounts = new ObservableCollection<Account>(list.OrderByDescending(x => x.TotalValue)));
+        //var getAccountsResult = await _accountService.GetAccounts();
+        //getAccountsResult.IfSucc(s => CreateListAccounts(s));
+
+        await _accountService.PopulateAccountsList();
     }
 
-
-    private Task DoSorting(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    public void Terminate()
     {
-        if (ListAssetTotals is not null)
-        {
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderBy(sortFunc));
-            }
-            else
-            {
-                ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderByDescending(sortFunc));
-            }
-        }
-        return Task.CompletedTask;
+       // ListAssetTotals = MkOsft.NullObservableCollection<AssetTotals>(ListAssetTotals);
+       // ListAccounts = MkOsft.NullObservableCollection<Account>(ListAccounts);
+
+        _accountService.ClearAccountsByAssetList();
+
+        selectedAccount = null;
+        IsExtendedView = false;
     }
+
+    //public async Task<bool> CreateListAccounts(List<Account> list)
+    //{
+    //    ListAccounts = new ObservableCollection<Account>(list.OrderByDescending(x => x.TotalValue));
+
+    //    return ListAccounts.Any();
+    //}
+
+    //private Task DoSorting(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    //{
+    //    if (ListAssetTotals is not null)
+    //    {
+    //        if (sortingOrder == SortingOrder.Ascending)
+    //        {
+    //            ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderBy(sortFunc));
+    //        }
+    //        else
+    //        {
+    //            ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderByDescending(sortFunc));
+    //        }
+    //    }
+    //    return Task.CompletedTask;
+    //}
     [RelayCommand]
-    public Task SortOnName(SortingOrder sortingOrder)
+    public void SortOnName(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        _assetService.SortList(sortingOrder, sortFunc);
     }
     [RelayCommand]
-    public Task SortOn24Hour(SortingOrder sortingOrder)
+    public void SortOn24Hour(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        _assetService.SortList(sortingOrder, sortFunc);
     }
     [RelayCommand]
-    public Task SortOn1Month(SortingOrder sortingOrder)
+    public void SortOn1Month(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        _assetService.SortList(sortingOrder, sortFunc);
     }
     [RelayCommand]
-    public Task SortOnMarketValue(SortingOrder sortingOrder)
+    public void SortOnMarketValue(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.MarketValue;
-        DoSorting(sortingOrder, sortFunc);
+        _assetService.SortList(sortingOrder, sortFunc);
 
-        return Task.CompletedTask;
     }
     [RelayCommand]
-    public Task SortOnCostBase(SortingOrder sortingOrder)
+    public void SortOnCostBase(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.CostBase;
-        DoSorting(sortingOrder, sortFunc);
+        _assetService.SortList(sortingOrder, sortFunc);
 
-        return Task.CompletedTask;
     }
     [RelayCommand]
-    public Task SortOnPnL(SortingOrder sortingOrder)
+    public void SortOnPnL(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
-        DoSorting(sortingOrder, sortFunc);
+        _assetService.SortList(sortingOrder, sortFunc);
 
-        return Task.CompletedTask;
     }
     [RelayCommand]
-    public Task SortOnPnLPerc(SortingOrder sortingOrder)
+    public void SortOnPnLPerc(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        _assetService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
@@ -181,7 +170,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
                 var accountName = dialog.newAccount is not null ? dialog.newAccount.Name : string.Empty;
                 Logger.Information("Adding Account ({0})", accountName);
                 await (await _accountService.CreateAccount(dialog.newAccount))
-                    .Match(Succ: succ => AddToListAccounts(dialog.newAccount),
+                    .Match(Succ: succ => _accountService.AddToListAccounts(dialog.newAccount),
                         Fail: async err =>
                         {
                             await ShowMessageDialog(
@@ -263,7 +252,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
             {
                 Logger.Information("Deleting Account");
                 await (await _accountService.RemoveAccount(account.Id))
-                    .Match(Succ: s => RemoveFromListAccounts(account.Id),
+                    .Match(Succ: s => _accountService.RemoveFromListAccounts(account.Id),
                         Fail: async err =>
                         {
                             await ShowMessageDialog(
@@ -295,17 +284,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
     }
     private bool CanDeleteAccount(Account account)
     {
-        if (ListAccounts is null) { return false; }
-        var result = false;
-        try
-        {
-            result = !ListAccounts.Where(x => x.Id == account.Id).Single().IsHoldingAsset;
-        }
-        catch (Exception)
-        {
-            //Element just removed from the list...
-        }
-        return result;
+        return !_accountService.IsAccountHoldingAssets(account);   
     }
 
     [RelayCommand]
@@ -328,7 +307,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
             }
             else //if Assets are shown -> close Assets List and resize Accounts Listview to full-size
             {
-                ListAssetTotals?.Clear();
+                _assetService.ClearAssetTotalsList();
                 IsExtendedView = false;
             }
         }
@@ -338,26 +317,28 @@ public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
     [RelayCommand]
     public void HideZeroBalances(bool param)
     {
-        if (ListAssetTotals == null)
-        {
-            return;
-        }
-        //IsHideZeroBalances = param;
-        if (param)
-        {
-            var itemsToHide = ListAssetTotals.Where(x => x.MarketValue <= 0).ToList();
-            foreach (var item in itemsToHide)
-            {
-                item.IsHidden = true; ;
-            }
-        }
-        else
-        {
-            foreach (var item in ListAssetTotals)
-            {
-                item.IsHidden = false; ;
-            }
-        }
+        _assetService.IsHidingZeroBalances = param;
+
+    //    //if (ListAssetTotals == null)
+    //    //{
+    //    //    return;
+    //    //}
+    //    ////IsHideZeroBalances = param;
+    //    //if (param)
+    //    //{
+    //    //    var itemsToHide = ListAssetTotals.Where(x => x.MarketValue <= 0).ToList();
+    //    //    foreach (var item in itemsToHide)
+    //    //    {
+    //    //        item.IsHidden = true; ;
+    //    //    }
+    //    //}
+    //    //else
+    //    //{
+    //    //    foreach (var item in ListAssetTotals)
+    //    //    {
+    //    //        item.IsHidden = false; ;
+    //    //    }
+    //    //}
     }
 
     [RelayCommand]
@@ -368,39 +349,41 @@ public sealed partial class AccountsViewModel : BaseViewModel, IDisposable
 
     public async Task ShowAssets(Account clickedAccount)
     {
-        (await _accountService.GetAssetsByAccount(clickedAccount.Id))
-            .IfSucc(list => ListAssetTotals = new ObservableCollection<AssetTotals>(list.OrderByDescending(x => x.MarketValue)));
-        HideZeroBalances(IsHidingZeroBalances);
+
+        await _assetService.PopulateAssetTotalsByAccountList(clickedAccount);
+
+        //(await _accountService.GetAssetsByAccount(clickedAccount.Id))
+        //    .IfSucc(list => ListAssetTotals = new ObservableCollection<AssetTotals>(list.OrderByDescending(x => x.MarketValue)));
+
+        //_assetService.IsHidingZeroBalances = IsHidingZeroBalances;
     }
 
-    public Task RemoveFromListAccounts(int accountId)
-    {
-        if (ListAccounts is null) { return Task.FromResult(false); }
-        try
-        {
-            var account = ListAccounts.Where(x => x.Id == accountId).Single();
-            ListAccounts.Remove(account);
-        }
-        catch (Exception)
-        {
-            return Task.FromResult(false);
-        }
-        return Task.FromResult(true);
-    }
+    //public Task RemoveFromListAccounts(int accountId)
+    //{
+    //    if (ListAccounts is null) { return Task.FromResult(false); }
+    //    try
+    //    {
+    //        var account = ListAccounts.Where(x => x.Id == accountId).Single();
+    //        ListAccounts.Remove(account);
+    //    }
+    //    catch (Exception)
+    //    {
+    //        return Task.FromResult(false);
+    //    }
+    //    return Task.FromResult(true);
+    //}
 
-    public Task AddToListAccounts(Account? newAccount)
-    {
-        if (ListAccounts is null || newAccount is null) { return Task.FromResult(false); }
-        try
-        {
-            ListAccounts.Add(newAccount);
-        }
-        catch (Exception) { Task.FromResult(false); }
+    //public Task AddToListAccounts(Account? newAccount)
+    //{
+    //    if (ListAccounts is null || newAccount is null) { return Task.FromResult(false); }
+    //    try
+    //    {
+    //        ListAccounts.Add(newAccount);
+    //    }
+    //    catch (Exception) { Task.FromResult(false); }
 
-        return Task.FromResult(true);
-    }
-
-    
+    //    return Task.FromResult(true);
+    //}
 
 }
 

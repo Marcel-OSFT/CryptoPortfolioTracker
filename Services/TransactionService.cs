@@ -1,25 +1,131 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
+using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryptoPortfolioTracker.Services;
 
-public class TransactionService : ITransactionService
+public partial class TransactionService :  ObservableObject, ITransactionService
 {
     private readonly PortfolioContext _context;
+    [ObservableProperty] private static ObservableCollection<Transaction>? listAssetTransactions;
+
 
     public TransactionService(PortfolioContext context)
     {
         _context = context;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+
+    public async Task<ObservableCollection<Transaction>> PopulateTransactionsByAssetList(int assetId)
+    {
+        var getResult = await GetTransactionsByAsset(assetId);
+        getResult.IfSucc(s => ListAssetTransactions = new ObservableCollection<Transaction>(s));
+        getResult.IfFail(err => ListAssetTransactions = new());
+
+        return ListAssetTransactions;
+    }
+
+    private async Task<Result<List<Transaction>>> GetTransactionsByAsset(int assetId)
+    {
+
+        if (assetId <= 0) { return new List<Transaction>(); }
+        List<Transaction> assetTransactions = new();
+        try
+        {
+            assetTransactions = await _context.Mutations
+                .Include(t => t.Transaction)
+                .ThenInclude(m => m.Mutations)
+                .ThenInclude(a => a.Asset)
+                .ThenInclude(ac => ac.Account)
+                .Where(c => c.Asset.Id == assetId)
+                .GroupBy(g => g.Transaction.Id)
+                .Select(grouped => new Transaction
+                {
+                    Id = grouped.Key,
+                    RequestedAsset = grouped.Select(a => a.Asset).Where(w => w.Id == assetId).SingleOrDefault() ?? new Asset(),
+                    TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
+                    Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault() ?? string.Empty,
+                    Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault() ?? new List<Mutation>(),
+                })
+                .OrderByDescending(o => o.TimeStamp)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<Transaction>>(ex);
+        }
+        assetTransactions ??= new List<Transaction>();
+
+        return assetTransactions;
+    }
+
+    public void ClearAssetTransactionsList()
+    {
+        if (ListAssetTransactions is not null)
+        {
+            ListAssetTransactions.Clear();
+        }
+    }
+
+
+    public Task UpdateListAssetTransactions(Transaction transactionNew, Transaction transactionToEdit)
+    {
+
+        if (ListAssetTransactions is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        var index = -1;
+        for (var i = 0; i < ListAssetTransactions.Count; i++)
+        {
+            if (ListAssetTransactions[i].Id == transactionToEdit.Id)
+            {
+                index = i;
+                break;
+            }
+        }
+        if (index >= 0)
+        {
+            ListAssetTransactions[index] = transactionNew;
+        }
+
+        return Task.CompletedTask;
+    }
+
+
+    public Task<bool> RemoveFromListAssetTransactions(Transaction deletedTransaction)
+    {
+
+        if (ListAssetTransactions is null) { return Task.FromResult(false); }
+        var transactionToUpdate = ListAssetTransactions.Where(x => x.Id == deletedTransaction.Id).Single();
+        ListAssetTransactions.Remove(deletedTransaction);
+
+        return Task.FromResult(true);
+    }
+
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
 
     public async Task<Result<List<string>>> GetCoinSymbolsFromLibrary()
     {

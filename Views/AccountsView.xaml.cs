@@ -24,28 +24,32 @@ public partial class AccountsView : Page, IDisposable
     private void InitAssetsListView()
     {
         // When assets are shown for an account, the general assets listview is used.
-        MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
-        if (_viewModel.ListAccounts != null && _viewModel.ListAccounts.Count > 0)
-        {
+        //if (_viewModel.ListAccounts != null && _viewModel.ListAccounts.Count > 0)
+        //{
             MyAccountsListViewControl.AccountsListView.SelectedIndex = 0;
             MyAssetsListViewControl.AssetsListView.IsItemClickEnabled = false;
-        }
+        //}
     }
 
     private async void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        await _viewModel.SetDataSource();
+        MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
+
+        await _viewModel.Initialize();
         InitAssetsListView();
     }
 
     private void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        // Current = null;
+
+        _viewModel.Terminate();
+        MyAssetsListViewControl.AssetsListView.DataContext = null;
     }
 
     public void Dispose()
     {
         Current = null;
-        
     }
      
  }

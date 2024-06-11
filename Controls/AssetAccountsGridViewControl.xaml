@@ -14,7 +14,6 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
-    d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     SizeChanged="GridView_SizeChanged"
     Unloaded="Control_Unload"
     mc:Ignorable="d">
@@ -24,7 +23,7 @@
     </UserControl.Resources>
 
 
-    <GridView x:Name="AssetAccountsGridView" x:FieldModifier="public" ItemsSource="{Binding ListAssetAccounts, Mode=TwoWay}" 
+    <GridView x:Name="AssetAccountsGridView" x:FieldModifier="public" ItemsSource="{Binding _accountService.ListAssetAccounts, Mode=TwoWay}" 
               ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
         ScrollViewer.HorizontalScrollMode="Enabled" SelectedIndex="0" 
         IsItemClickEnabled="True" SelectionMode="Single"  Margin="30,0,0,20" toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}"  >

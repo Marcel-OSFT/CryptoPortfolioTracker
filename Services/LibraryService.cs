@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
@@ -19,14 +22,119 @@ using Exception = System.Exception;
 
 namespace CryptoPortfolioTracker.Services;
 
-public class LibraryService : ILibraryService
+public partial class LibraryService : ObservableObject, ILibraryService
 {
     private readonly PortfolioContext context;
+    [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
+
+    private SortingOrder currentSortingOrder;
+    private Func<Coin, object> currentSortFunc;
+
 
     public LibraryService(PortfolioContext portfolioContext)
     {
         context = portfolioContext;
+        currentSortFunc = x => x.Rank;
+        currentSortingOrder = SortingOrder.Descending;
+
     }
+
+    public async Task<ObservableCollection<Coin>>  PopulateCoinsList()
+    {
+        var getResult = await GetCoinsFromContext();
+        getResult.IfSucc(list =>
+        {
+            if (currentSortingOrder == SortingOrder.Ascending)
+            {
+                ListCoins = new ObservableCollection<Coin>(list.OrderBy(currentSortFunc));
+            }
+            else
+            {
+                ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(currentSortFunc));
+            }
+        });
+        getResult.IfFail(err => ListCoins = new());
+        return ListCoins;
+    }
+
+    public bool IsCoinsListEmpty()
+    {
+        return !ListCoins.Any();
+    }
+
+    public void ClearCoinsList()
+    {
+        ListCoins.Clear();
+    }
+
+    public Task RemoveFromCoinsList(Coin coin)
+    {
+        if (ListCoins is null) { return Task.FromResult(false); }
+        try
+        {
+            ListCoins.Remove(coin);
+        }
+        catch (Exception)
+        {
+            return Task.FromResult(false);
+        }
+        return Task.FromResult(true);
+    }
+
+    public Task AddToCoinsList(Coin coin)
+    {
+        if (coin == null) { return Task.FromResult(false); }
+
+        try
+        {
+            ListCoins.Add(coin);
+        }
+        catch (Exception) { Task.FromResult(false); }
+
+        return Task.FromResult(true);
+    }
+
+    public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
+    {
+        if (ListCoins is not null)
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(sortFunc));
+            }
+        }
+
+        currentSortingOrder = sortingOrder;
+        currentSortFunc = sortFunc;
+
+    }
+    /// <summary>
+    /// this function without parameters will sort the list using the last used settings.
+    /// </summary>
+    public void SortList()
+    {
+        if (ListCoins is not null)
+        {
+            if (currentSortingOrder == SortingOrder.Ascending)
+            {
+                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(currentSortFunc));
+            }
+            else
+            {
+                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(currentSortFunc));
+            }
+        }
+    }
+
+
+
+
+
+
 
     public async Task<Result<bool>> CreateCoin(Coin? newCoin)
     {
@@ -86,7 +194,7 @@ public class LibraryService : ILibraryService
         return coin;
     }
 
-    public async Task<Result<List<Coin>>> GetCoinsOrderedByRank()
+    public async Task<Result<List<Coin>>> GetCoinsFromContext()
     {
         List<Coin>? coinList = null;
         try

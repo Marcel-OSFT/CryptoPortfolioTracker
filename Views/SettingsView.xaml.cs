@@ -5,7 +5,7 @@ using System;
 
 namespace CryptoPortfolioTracker.Views;
 
-public partial class SettingsView : Page, IDisposable
+public partial class SettingsView : Page
 {
     public readonly SettingsViewModel _viewModel;
 
@@ -17,12 +17,4 @@ public partial class SettingsView : Page, IDisposable
         VersionNumber.Text = App.ProductVersion;
     }
 
-    private void View_Unloaded(object sender, RoutedEventArgs e)
-    {
-    }
-
-    public void Dispose()
-    {
-       
-    }
 }

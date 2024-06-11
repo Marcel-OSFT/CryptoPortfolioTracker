@@ -11,6 +11,7 @@ namespace CryptoPortfolioTracker.Services
 {
     public interface IGraphService
     {
+        bool IsLoadingFromJson { get; set; }
         public Task LoadGraphFromJson();
 
         public Task SaveGraphToJson();

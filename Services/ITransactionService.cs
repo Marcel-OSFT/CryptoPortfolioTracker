@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Models;
 using LanguageExt.Common;
@@ -26,4 +27,8 @@ public interface ITransactionService
     public Task<Result<int>> DeleteTransaction(Transaction transactionToDelete, AssetAccount assetAccountAffected);
     public Task<Result<int>> EditTransaction(Transaction transactionNew, Transaction transactionOld);
     public Task<Result<Transaction>> GetTransactionById(int transactionId);
+    Task<ObservableCollection<Transaction>> PopulateTransactionsByAssetList(int assetId);
+    Task UpdateListAssetTransactions(Transaction transactionNew, Transaction transactionToEdit);
+    Task<bool> RemoveFromListAssetTransactions(Transaction deletedTransaction);
+    void ClearAssetTransactionsList();
 }

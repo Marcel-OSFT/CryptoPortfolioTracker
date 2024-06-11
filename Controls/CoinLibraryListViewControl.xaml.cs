@@ -25,9 +25,9 @@ public partial class CoinLibraryListViewControl : UserControl
 
     private void Control_Unload(object sender, RoutedEventArgs e)
     {
-        CoinLibraryListView = null;
-        DataContext = null;
-        ColumnHeadersAndListView = null;
+        //CoinLibraryListView = null;
+        //DataContext = null;
+        //ColumnHeadersAndListView = null;
     }
     
 }

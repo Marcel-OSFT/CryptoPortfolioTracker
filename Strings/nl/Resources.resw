@@ -656,4 +656,19 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Navigation_Exit.Content" xml:space="preserve">
     <value>Sluiten</value>
   </data>
+  <data name="Messages_HelpFile_FailedMsg" xml:space="preserve">
+    <value>Kan het Online Help-bestand niet openen in de standaardbrowser.</value>
+  </data>
+  <data name="Messages_HelpFile_FailedTitle" xml:space="preserve">
+    <value>Kan het Online Help-bestand niet openen</value>
+  </data>
+  <data name="AboutView_Title.Text" xml:space="preserve">
+    <value>Over</value>
+  </data>
+  <data name="TransactionDialog_Earnings.Content" xml:space="preserve">
+    <value>Staking opbrengst</value>
+  </data>
+  <data name="AboutDialog_Title" xml:space="preserve">
+    <value>Over</value>
+  </data>
 </root>

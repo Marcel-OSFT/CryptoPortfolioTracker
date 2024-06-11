@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Helpers;
 
 
 namespace CryptoPortfolioTracker.Models;
 
-public partial class Account : BaseModel, IDisposable
+public partial class Account : BaseModel
 {
     public Account(string name = "")
     {
@@ -18,10 +19,7 @@ public partial class Account : BaseModel, IDisposable
 
     //******* Public Properties
     [Key]
-    public int Id
-    {
-        get; private set;
-    }
+    public int Id { get; private set; }
 
     [ObservableProperty] private string name;
     [ObservableProperty] private string about;
@@ -44,8 +42,5 @@ public partial class Account : BaseModel, IDisposable
         else { TotalValue = 0; }
     }
 
-    public void Dispose()
-    {
-       
-    }
+    
 }

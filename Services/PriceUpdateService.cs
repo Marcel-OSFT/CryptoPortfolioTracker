@@ -38,6 +38,7 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
     private Task? timerTask;
     private readonly PortfolioContext coinContext;
     private readonly IPreferencesService _preferencesService;
+    private readonly IAssetService _assetService;
 
     private static ILogger Logger
     {
@@ -45,11 +46,12 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
     }
     public bool IsPaused { get; set; }
 
-    public PriceUpdateService(PortfolioContext portfolioContext, IPreferencesService preferencesService)
+    public PriceUpdateService(PortfolioContext portfolioContext, IAssetService assetService, IPreferencesService preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceUpdateService).Name.PadRight(22));
         coinContext = portfolioContext;
         _preferencesService = preferencesService;
+        _assetService = assetService;
         timer = new (System.TimeSpan.FromMinutes(_preferencesService.GetRefreshIntervalMinutes()));
     }
 
@@ -143,6 +145,8 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             }
 
             await coinContext.SaveChangesAsync();
+            _assetService.SortList();
+            await _assetService.CalculateAssetsTotalValues();
         }
         return;
     }
@@ -272,10 +276,11 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             var coinResult = await UpdatePriceCoin(coinData);
             coinResult.IfFail(err => error = err);
         }
-        if (AssetsViewModel.Current is not null)
-        {
-            await AssetsViewModel.Current.CalculateAssetsTotalValues();
-        }
+        //if (AssetsViewModel.Current is not null)
+        //{
+        //    //await AssetsViewModel.Current.CalculateAssetsTotalValues();
+        //    await _assetService.CalculateAssetsTotalValues();
+        //}
         return error == null ? true : new Result<bool>(error);
     }
     private async Task<Result<Coin>> UpdatePriceCoin(CoinMarkets coinData)
@@ -302,7 +307,8 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             if (AssetsViewModel.Current is not null)
             {
                 Logger.Information("Updating Assets Overview");
-                AssetsViewModel.Current.UpdatePricesAssetTotals(coin, oldPrice, newPrice);
+                //AssetsViewModel.Current.UpdatePricesAssetTotals(coin, oldPrice, newPrice);
+                _assetService.UpdatePricesAssetTotals(coin, oldPrice, newPrice);
             }
         }
         catch (System.Exception ex)

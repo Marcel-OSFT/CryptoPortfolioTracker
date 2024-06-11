@@ -6,12 +6,12 @@ using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Enums;
+using CryptoPortfolioTracker.Helpers;
 
 namespace CryptoPortfolioTracker.Models;
 
-public partial class Transaction : BaseModel, IDisposable
+public partial class Transaction : BaseModel
 {
-
     public Transaction()
     {
         Mutations = new Collection<Mutation>();
@@ -172,12 +172,6 @@ public partial class Transaction : BaseModel, IDisposable
         catch (Exception ) {  }
     }
 
-    public void Dispose()
-    {
-        mutations.Clear();
-        mutations = null;
-
-    }
 }
 
 

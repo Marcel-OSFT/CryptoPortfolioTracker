@@ -7,9 +7,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CryptoPortfolioTracker.Models;
 
-public partial class AssetTotals : BaseModel, IDisposable
+public partial class AssetTotals : BaseModel
 {
-
     public AssetTotals()
     {
         
@@ -48,8 +47,5 @@ public partial class AssetTotals : BaseModel, IDisposable
         MarketValue = Qty * value.Price;
     }
 
-    public void Dispose()
-    {
-        coin = null;
-    }
+    
 }

@@ -1,15 +1,25 @@
-﻿using System;
+﻿
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Uri = System.Uri;
+using System;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class ImageUriToBitmapImageConverter : IValueConverter
+public class FormatUriConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return value is string && (string)value != string.Empty ? value : new Uri(App.appPath + "\\Assets\\QuestionMarkRed.png");
+        string result = (string)value;
+        try
+        {
+            if ((string)value == string.Empty)
+            {
+                result =  App.appPath + "\\Assets\\QuestionMarkRed.png" ;
+            }
+        }
+        catch { }
+
+        return new Uri(result);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -17,6 +27,4 @@ public class ImageUriToBitmapImageConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
-
-
-
+    

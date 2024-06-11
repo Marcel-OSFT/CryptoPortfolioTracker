@@ -20,6 +20,11 @@ public class UserPreferences
     public UserPreferences()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
+        SetDefaultPreferences();
+    }
+
+    private void SetDefaultPreferences()
+    {
         isHidingZeroBalances = false;
         isScrollBarsExpanded = false;
         isCheckForUpdate = true;
@@ -69,7 +74,6 @@ public class UserPreferences
         }
     }
 
-
     private bool isScrollBarsExpanded;
     public bool IsScrollBarsExpanded
     {
@@ -83,7 +87,6 @@ public class UserPreferences
             }
         }
     }
-
 
     private bool isHidingZeroBalances;
     public bool IsHidingZeroBalances
@@ -128,8 +131,6 @@ public class UserPreferences
         }
     }
 
-
-
     private bool isCheckForUpdate;
     public bool IsCheckForUpdate
     {
@@ -143,7 +144,6 @@ public class UserPreferences
             }
         }
     }
-
 
     private AppFontSize fontSize;
     public AppFontSize FontSize
@@ -172,52 +172,6 @@ public class UserPreferences
             }
         }
     }
-
-    //public void SaveUserPreferences(string propertyName, object value)
-    //{
-    //    if (App.isAppInitializing)
-    //    {
-    //        return;
-    //    }
-
-    //    Logger?.Information("{0} set to {1}", propertyName, value.ToString());
-    //    var mySerializer = new XmlSerializer(typeof(UserPreferences));
-    //    var myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
-    //    mySerializer.Serialize(myWriter, this);
-    //    myWriter.Close();
-    //}
-
-    //public void AttachLogger()
-    //{
-    //    Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(UserPreferences).Name.PadRight(22));
-
-    //    Logger.Information("AppCultureLanguage set to {0}", AppCultureLanguage.ToString());
-    //    Logger.Information("DecimalSeparator set to {0}", NumberFormat.NumberDecimalSeparator.ToString());
-    //    Logger.Information("Font Size set to {0}", FontSize.ToString());
-    //    Logger.Information("IsHidingZeroBalances set to {0}", IsHidingZeroBalances.ToString());
-    //    Logger.Information("Theme set to {0}", AppTheme.ToString());
-    //    Logger.Information("IsScrollBarsExpanded set to {0}", IsScrollBarsExpanded.ToString());
-    //    Logger.Information("IsCheckForUpdate set to {0}", IsCheckForUpdate);
-    //    Logger.Information("IsHidingCapitalFlow set to {0}", IsHidingCapitalFlow);
-
-    //}
-    //private void SetCulture()
-    //{
-    //    if (App.Localizer == null)
-    //    {
-    //        return;
-    //    }
-
-    //    App.Localizer.SetLanguage(AppCultureLanguage);
-    //}
-
-    //private static void SetTheme(ElementTheme theme)
-    //{
-    //    if (App.Window != null && App.Window.Content is FrameworkElement frameworkElement)
-    //    {
-    //        frameworkElement.RequestedTheme = theme;
-    //    }
-    //}
 
 
 }

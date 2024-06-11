@@ -10,12 +10,16 @@ using LiveChartsCore.Defaults;
 using WinUI3Localizer;
 using System.Globalization;
 using CryptoPortfolioTracker.Services;
+using System.Xml.Linq;
+using System.Linq;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class GraphicViewModel : BaseViewModel, IDisposable
 {
-    private readonly ILocalizer loc = Localizer.Get();
+    //private readonly ILocalizer loc = Localizer.Get();
 
     public static GraphicViewModel Current;
 
@@ -32,15 +36,29 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
 
     [ObservableProperty] public int progressValue;
 
-    [ObservableProperty] public bool isFinishedLoading;
+    [ObservableProperty] public bool isUpdating;
 
-    partial void OnIsFinishedLoadingChanged(bool oldValue, bool newValue)
+    [ObservableProperty] public bool isLoadingFromJson;
+
+    [ObservableProperty] public bool isNotUpdating;
+
+    [ObservableProperty] public bool isNotLoadingFromJson;
+
+
+    //private bool _isInitializing;
+    partial void OnIsLoadingFromJsonChanged(bool value)
     {
-        if (IsFinishedLoading)
+        IsNotLoadingFromJson = !value;
+    }
+
+    partial void OnIsUpdatingChanged(bool value)
+    {
+        if (!IsUpdating) // && !_isInitializing)
         {
             GetValues();
             SetSeries();
         }
+        IsNotUpdating = !value;
     }
 
 
@@ -48,9 +66,47 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
     {
         Current = this;
         _graphService = graphService;
-        IsFinishedLoading = _graphService.HasDataPoints();
-        SetAxes();
+        IsNotUpdating = !isUpdating;
+        IsNotLoadingFromJson = !IsLoadingFromJson;
+        SetYAxes();
+        SetXAxes();
+    }
+
+    public async Task InitializeGraph()
+    {
+        //_isInitializing = true;
+        var loc = Localizer.Get();
+        var ci = new CultureInfo(loc.GetCurrentLanguage());
         
+        try
+        {
+            await WaitForJsonToLoad();
+            if (_graphService.HasDataPoints())
+            {
+                GetValues();
+                SetSeries();
+            }
+
+            //IsFinishedUpdating = _graphService.HasDataPoints();
+            // re-set the labels because language settings might have changed
+            XAxes[0].Labeler = value => value.AsDate().ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci);
+            YAxes[0].Name = loc.GetLocalizedString("GraphicView_PortfolioSeriesTitle");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+        }
+       // _isInitializing = false;
+    }
+
+    private async Task WaitForJsonToLoad()
+    {
+        while (_graphService.IsLoadingFromJson)
+        {
+            IsLoadingFromJson = true;
+            await Task.Delay(1000);
+        }
+        IsLoadingFromJson = false;
     }
 
     public void Dispose()
@@ -79,6 +135,8 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
 
     private void SetSeries()
     {
+        var loc = Localizer.Get();
+
         if (Series is not null) 
         { 
             Series.Clear();
@@ -114,10 +172,15 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
         
     }
 
-    private void SetAxes()
+    private void SetXAxes()
     {
+        var loc = Localizer.Get();
         var ci = new CultureInfo(App.Localizer.GetCurrentLanguage());
 
+        if (XAxes is not null)
+        {
+            XAxes = null;
+        }
         XAxes = new Axis[]
         {
             new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci))
@@ -130,7 +193,16 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
                 },
             }
         };
-     
+    }
+
+    private void SetYAxes()
+    {
+        var loc = Localizer.Get();
+
+        if (YAxes is not null)
+        {
+            YAxes = null;
+        }
         YAxes = new Axis[]
         {
             new Axis
@@ -152,9 +224,9 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
 
                 Labeler = value => string.Format("$ {0:N0}", value)
             }
-            
+
         };
-    
+
     }
 
 

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Extensions;
+using CryptoPortfolioTracker.Helpers;
 using Microsoft.UI.Dispatching;
 
 

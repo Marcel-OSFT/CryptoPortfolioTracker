@@ -72,12 +72,19 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
 
 
     public bool AnimateBorder { get; set; } = true;
-    public bool IsZeroAllowed { get; set; } = true;
+   // public bool IsZeroAllowed { get; set; } = true;
     private string? regExChoosen;
 
     private static MyEnum SelectedRegEx;
     private static bool invalidKeyEntered;
-    
+
+    public bool IsZeroAllowed
+    {
+        get => (bool)GetValue(IsZeroAllowedProperty);
+        set => SetValue(IsZeroAllowedProperty, value);
+    }
+
+
     public bool IsEntryValid
     {
         get => (bool)GetValue(IsEntryValidProperty);
@@ -125,6 +132,7 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
     // Using a DependencyProperty as the backing store for Ownenum.  This enables animation, styling, binding, etc...  
     public static readonly DependencyProperty RegExProperty = DependencyProperty.Register("RegEx", typeof(MyEnum), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(RegExChangedCallBack)));
     public static readonly DependencyProperty IsEntryValidProperty = DependencyProperty.Register("IsEntryValid", typeof(bool), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryValidChangedCallBack)));
+    public static readonly DependencyProperty IsZeroAllowedProperty = DependencyProperty.Register("IsZeroAllowed", typeof(bool), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(IsZeroAllowedChangedCallBack)));
     public static readonly DependencyProperty DecimalSeparatorProperty = DependencyProperty.Register("DecimalSeparator", typeof(string), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(DecimalSeparatorChangedCallBack)));
 
     private static void DecimalSeparatorChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -143,6 +151,10 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         {
             tbox.SetBorderColor();
         }
+    }
+    private static void IsZeroAllowedChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        
     }
 
     private void TextEntryChanged(object sender, RoutedEventArgs e)

@@ -5,14 +5,13 @@ using System.Runtime.CompilerServices;
 namespace CryptoPortfolioTracker.Models;
 
 
-public partial class AssetAccount : BaseModel, IDisposable
+public partial class AssetAccount : BaseModel
 {
     public AssetAccount()
     {
         name = string.Empty;
         symbol = string.Empty;
     }
-
 
     [ObservableProperty] private string name;
 
@@ -22,8 +21,5 @@ public partial class AssetAccount : BaseModel, IDisposable
 
     [ObservableProperty] private int assetId;
 
-    public void Dispose()
-    {
-       
-    }
+    
 }

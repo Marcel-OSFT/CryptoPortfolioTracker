@@ -761,4 +761,19 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="Navigation_Exit.Content" xml:space="preserve">
     <value>Exit</value>
   </data>
+  <data name="Messages_HelpFile_FailedMsg" xml:space="preserve">
+    <value>Unable to open the Online Help file in your default browser.</value>
+  </data>
+  <data name="Messages_HelpFile_FailedTitle" xml:space="preserve">
+    <value>Failed to open Online Help.</value>
+  </data>
+  <data name="AboutView_Title.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="TransactionDialog_Earnings.Content" xml:space="preserve">
+    <value>Staking yield</value>
+  </data>
+  <data name="AboutDialog_Title" xml:space="preserve">
+    <value>About</value>
+  </data>
 </root>

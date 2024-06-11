@@ -22,417 +22,125 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
-public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, IDisposable
+[ObservableObject]
+public partial class TransactionDialog : ContentDialog //, INotifyPropertyChanged
 {
-    #region fields
     private readonly DialogAction dialogAction;
     public Transaction? transactionToEdit;
     public Transaction transactionNew;
     private readonly ITransactionService _transactionService;
     private readonly IPreferencesService _preferencesService;
 
-    private TransactionKind transactionType;
-    private List<string> listCoinA;
-    private List<string> listCoinB;
-    private List<string> listAccountFrom;
-    private List<string> listAccountTo;
-    private List<string> listFeeCoin;
-    private string coinA;
-    private string coinB;
-    private string accountFrom;
-    private string accountTo;
-    private bool isAccountsLinked;
-    private bool isValidTest = false;
-    private string transactionText;
-    private string headerAccountFrom;
-    private string headerAccountTo;
-    private string headerCoinA;
-    private string headerCoinB;
-    private double maxQtyA;
-    private double qtyA;
-    private double qtyB;
-    private double actualPriceA;
-    private double priceA;
-    private double priceB;
-    private string feeCoin;
-    private double feeQty;
-    private string note;
-    private DateTimeOffset timeStamp;
-    private Validator validator;
-
-    #endregion fields
-
-    #region Public Properties
-
-    public Exception Exception
-    {
-        get; private set;
-    }
-
-    public Validator Validator
-    {
-        get => validator;
-        set
-        {
-            if (value != validator)
-            {
-                validator = value;
-                OnPropertyChanged(nameof(Validator));
-            }
-        }
-    }
-    public bool IsValidTest
-    {
-        get => isValidTest;
-        set
-        {
-            if (value != isValidTest)
-            {
-                isValidTest = value;
-                OnPropertyChanged(nameof(IsValidTest));
-            }
-        }
-    }
-    public List<string> ListCoinA
-    {
-        get => listCoinA;
-        set
-        {
-            if (value != listCoinA)
-            {
-                listCoinA = value;
-                OnPropertyChanged(nameof(ListCoinA));
-            }
-        }
-    }
-    public List<string> ListCoinB
-    {
-        get => listCoinB;
-        set
-        {
-            if (value != listCoinB)
-            {
-                listCoinB = value;
-                OnPropertyChanged(nameof(ListCoinB));
-            }
-        }
-    }
-    public List<string> ListAccountFrom
-    {
-        get => listAccountFrom;
-        set
-        {
-            if (value != listAccountFrom)
-            {
-                listAccountFrom = value;
-                OnPropertyChanged(nameof(ListAccountFrom));
-            }
-        }
-    }
-    public List<string> ListAccountTo
-    {
-        get => listAccountTo;
-        set
-        {
-            if (value != listAccountTo)
-            {
-                listAccountTo = value;
-                OnPropertyChanged(nameof(ListAccountTo));
-            }
-        }
-    }
-    public List<string> ListFeeCoin
-    {
-        get => listFeeCoin;
-        set
-        {
-            if (value != listFeeCoin)
-            {
-                listFeeCoin = value;
-                PresetFeeCoinToETH();
-                OnPropertyChanged(nameof(ListFeeCoin));
-            }
-        }
-    }
-    public string CoinA
-    {
-        get => coinA;
-        set
-        {
-            if (value != coinA)
-            {
-                coinA = value;
-                if (AccountFrom != null && AccountFrom != "")
-                {
-                    GetMaxQtyAndPrice();
-                }
-                if (FeeCoin is null || FeeCoin == string.Empty)
-                {
-                    FeeCoin = coinA;
-                }
-                OnPropertyChanged(nameof(CoinA));
-            }
-        }
-    }
-    public string CoinB
-    {
-        get => coinB;
-        set
-        {
-            if (value != coinB)
-            {
-                coinB = value;
-                OnPropertyChanged(nameof(CoinB));
-            }
-        }
-    }
-    public string FeeCoin
-    {
-        get => feeCoin;
-        set
-        {
-            if (value != feeCoin)
-            {
-                feeCoin = value;
-                OnPropertyChanged(nameof(FeeCoin));
-            }
-        }
-    }
-    public string AccountFrom
-    {
-        get => accountFrom;
-        set
-        {
-            if (value != accountFrom)
-            {
-                accountFrom = value;
-                if (CoinA != null && CoinA != "")
-                {
-                    GetMaxQtyAndPrice();
-                }
-                OnPropertyChanged(nameof(AccountFrom));
-            }
-        }
-    }
-    public string AccountTo
-    {
-        get => accountTo;
-        set
-        {
-            if (value != accountTo)
-            {
-                accountTo = value;
-                OnPropertyChanged(nameof(AccountTo));
-            }
-        }
-    }
-    public bool IsAccountsLinked
-    {
-        get => isAccountsLinked;
-        set
-        {
-            if (value != isAccountsLinked)
-            {
-                isAccountsLinked = value;
-                OnPropertyChanged(nameof(IsAccountsLinked));
-            }
-        }
-    }
-    public string TransactionText
-    {
-        get => transactionText;
-        set
-        {
-            if (value != transactionText)
-            {
-                transactionText = value;
-                OnPropertyChanged(nameof(TransactionText));
-            }
-        }
-    }
-    public string HeaderCoinA
-    {
-        get => headerCoinA;
-        set
-        {
-            if (value != headerCoinA)
-            {
-                headerCoinA = value;
-                OnPropertyChanged(nameof(HeaderCoinA));
-            }
-        }
-    }
-    public string HeaderCoinB
-    {
-        get => headerCoinB;
-        set
-        {
-            if (value != headerCoinB)
-            {
-                headerCoinB = value;
-                OnPropertyChanged(nameof(HeaderCoinB));
-            }
-        }
-    }
-    public string HeaderAccountFrom
-    {
-        get => headerAccountFrom;
-        set
-        {
-            if (value != headerAccountFrom)
-            {
-                headerAccountFrom = value;
-                OnPropertyChanged(nameof(HeaderAccountFrom));
-            }
-        }
-    }
-    public string HeaderAccountTo
-    {
-        get => headerAccountTo;
-        set
-        {
-            if (value != headerAccountTo)
-            {
-                headerAccountTo = value;
-                OnPropertyChanged(nameof(HeaderAccountTo));
-            }
-        }
-    }
-    public double QtyA
-    {
-        get => qtyA;
-        set
-        {
-            if (value != qtyA)
-            {
-                if (maxQtyA >= 0 && value > MaxQtyA)
-                {
-                    value = MaxQtyA;
-                }
-
-                qtyA = value;
-                CalculatePriceB();
-                OnPropertyChanged(nameof(QtyA));
-            }
-        }
-    }
-    public double QtyB
-    {
-        get => qtyB;
-        set
-        {
-            if (value != qtyB)
-            {
-                qtyB = value;
-                CalculatePriceB();
-                OnPropertyChanged(nameof(QtyB));
-            }
-        }
-    }
-    public double MaxQtyA
-    {
-        get => maxQtyA;
-        set
-        {
-            if (value != maxQtyA)
-            {
-                maxQtyA = value;
-                OnPropertyChanged(nameof(MaxQtyA));
-            }
-        }
-    }
-    public double ActualPriceA
-    {
-        get => actualPriceA;
-        set
-        {
-            if (value != actualPriceA)
-            {
-                actualPriceA = value;
-                OnPropertyChanged(nameof(ActualPriceA));
-            }
-        }
-    }
-    public double PriceA
-    {
-        get => priceA;
-        set
-        {
-            if (value != priceA)
-            {
-                priceA = value;
-                CalculatePriceB();
-                OnPropertyChanged(nameof(PriceA));
-            }
-        }
-    }
-    public double PriceB
-    {
-        get => priceB;
-        set
-        {
-            if (value != priceB)
-            {
-                priceB = value;
-                OnPropertyChanged(nameof(PriceB));
-            }
-        }
-    }
-    public double FeeQty
-    {
-        get => feeQty;
-        set
-        {
-            if (value != feeQty)
-            {
-                feeQty = value;
-                OnPropertyChanged(nameof(FeeQty));
-            }
-        }
-    }
-    public string Note
-    {
-        get => note;
-        set
-        {
-            if (value != note)
-            {
-                note = value;
-                OnPropertyChanged(nameof(Note));
-            }
-        }
-    }
-    private string decimalSeparator;
-    public string DecimalSeparator
-    {
-        get => decimalSeparator;
-        set
-        {
-            if (value != decimalSeparator)
-            {
-                decimalSeparator = value;
-                OnPropertyChanged(nameof(DecimalSeparator));
-            }
-        }
-    }
-
-    public DateTimeOffset TimeStamp
-    {
-        get => DateTimeOffset.Parse(timeStamp.ToString());
-        set
-        {
-            if (value != timeStamp)
-            {
-                timeStamp = DateTimeOffset.Parse(value.ToString()); ;
-                OnPropertyChanged(nameof(TimeStamp));
-            }
-        }
-    }
+    public Exception Exception;
 
     private readonly DispatcherQueue dispatcherQueue;
     private readonly ILocalizer loc = Localizer.Get();
 
-    #endregion Public Properties
+    [ObservableProperty] private TransactionKind transactionType;
+    partial void OnTransactionTypeChanged(TransactionKind value)
+    {
+        if (value == TransactionKind.Deposit)
+        {
+            EarningsCheckBoxVisibility = Visibility.Visible;
+        }
+        else EarningsCheckBoxVisibility = Visibility.Collapsed;
+    }
+
+    [ObservableProperty] private List<string> listCoinA;
+    [ObservableProperty] private List<string> listCoinB;
+    [ObservableProperty] private List<string> listAccountFrom;
+    [ObservableProperty] private List<string> listAccountTo;
+    [ObservableProperty] private List<string> listFeeCoin;
+    [ObservableProperty] private string coinA;
+    [ObservableProperty] private string coinB;
+    [ObservableProperty] private string accountFrom;
+    [ObservableProperty] private string accountTo;
+    [ObservableProperty] private bool isAccountsLinked;
+    [ObservableProperty] private bool isValidTest = false;
+    [ObservableProperty] private string transactionText;
+    [ObservableProperty] private string headerAccountFrom;
+    [ObservableProperty] private string headerAccountTo;
+    [ObservableProperty] private string headerCoinA;
+    [ObservableProperty] private string headerCoinB;
+    [ObservableProperty] private double maxQtyA;
+    [ObservableProperty] private double qtyA;
+    [ObservableProperty] private double actualPriceA;
+    [ObservableProperty] private double priceA;
+    [ObservableProperty] private double qtyB;
+    [ObservableProperty] private double priceB;
+    [ObservableProperty] private string feeCoin;
+    [ObservableProperty] private double feeQty;
+    [ObservableProperty] private string note;
+    [ObservableProperty] private DateTimeOffset timeStamp;
+    [ObservableProperty] private Validator validator;
+    [ObservableProperty] private string decimalSeparator;
+
+    [ObservableProperty] private Visibility earningsCheckBoxVisibility;
+    [ObservableProperty] private bool isEarnings;
+    partial void OnIsEarningsChanged(bool value)
+    {
+        if (value)
+        {
+            PriceA = 0;
+        }
+        else
+        {
+            GetMaxQtyAndPrice();
+        }
+        
+        
+    }
+
+
+    partial void OnListFeeCoinChanged(List<string> value)
+    {
+        if (listFeeCoin != null && listFeeCoin.Count > 0)
+        {
+            var result = listFeeCoin.Where(x => x.ToString().ToLower() == "eth ethereum").FirstOrDefault();
+            if (result != null)
+            {
+                FeeCoin = (string)result;
+            }
+            else { FeeCoin = ""; }
+        }
+    }
+    partial void OnCoinAChanged(string value)
+    {
+        if (AccountFrom != null && AccountFrom != "")
+        {
+            GetMaxQtyAndPrice();
+        }
+        if (FeeCoin is null || FeeCoin == string.Empty)
+        {
+            FeeCoin = coinA;
+        }
+    }
+    partial void OnAccountFromChanged(string value)
+    {
+        if (CoinA != null && CoinA != "")
+        {
+            GetMaxQtyAndPrice();
+        }
+    }
+    partial void OnQtyAChanging(double value)
+    {
+        if (maxQtyA >= 0 && value > MaxQtyA)
+        {
+            value = MaxQtyA;
+        }
+    }
+    partial void OnQtyAChanged(double value)
+    {
+        CalculatePriceB();
+    }
+    partial void OnQtyBChanged(double value)
+    {
+        CalculatePriceB();
+    }
+    partial void OnPriceAChanged(double value)
+    {
+        CalculatePriceB();
+    }
 
     #region Constructor(s)
 
@@ -480,10 +188,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     #endregion Constructors
 
     #region Methods  
-    public void Dispose() // Implement IDisposable
-    {
-        //GC.SuppressFinalize(this);
-    }
+    
     private async void GetMaxQtyAndPrice()
     {
         //in case of a 'Deposit' the MaxQtyA doesn't need to be set....
@@ -652,18 +357,18 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         }
         PriceB = QtyA * PriceA / QtyB;
     }
-    private void PresetFeeCoinToETH()
-    {
-        if (listFeeCoin != null && listFeeCoin.Count > 0)
-        {
-            var result = listFeeCoin.Where(x => x.ToString().ToLower() == "eth ethereum").FirstOrDefault();
-            if (result != null)
-            {
-                FeeCoin = (string)result;
-            }
-            else { FeeCoin = ""; }
-        }
-    }
+    //private void PresetFeeCoinToETH()
+    //{
+    //    if (listFeeCoin != null && listFeeCoin.Count > 0)
+    //    {
+    //        var result = listFeeCoin.Where(x => x.ToString().ToLower() == "eth ethereum").FirstOrDefault();
+    //        if (result != null)
+    //        {
+    //            FeeCoin = (string)result;
+    //        }
+    //        else { FeeCoin = ""; }
+    //    }
+    //}
     private void ConfigureDialogFields(string explainType, string assetTextA, string assetTextB, string accountTextA, string accountTextB, bool isAccountLinkEnabled = true)
     {
         TransactionText = explainType;
@@ -807,7 +512,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
             {
                 case 0: //Deposit                       
                     Validator.RegisterEntriesToValidate(new int[4] { 0, 2, 4, 5 });
-                    transactionType = TransactionKind.Deposit;
+                    TransactionType = TransactionKind.Deposit;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Deposit_Explainer"), CoinHeader, "", AccountToHeader, "");
                     ListCoinA = (await _transactionService
                         .GetCoinSymbolsFromLibrary())
@@ -818,7 +523,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     break;
                 case 1: //Withdraw
                     Validator.RegisterEntriesToValidate(new int[4] { 0, 2, 4, 5 });
-                    transactionType = TransactionKind.Withdraw;
+                    TransactionType =  TransactionKind.Withdraw;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Withdraw_Explainer"), CoinHeader, "", AccountFromHeader, "");
                     ListCoinA = (await _transactionService
                         .GetCoinSymbolsFromAssets())
@@ -829,7 +534,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     break;
                 case 2: //Transfer
                     Validator.RegisterEntriesToValidate(new int[6] { 0, 2, 3, 4, 8, 9 });
-                    transactionType = TransactionKind.Transfer;
+                    TransactionType =  TransactionKind.Transfer;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Transfer_Explainer"), CoinHeader, "", AccountFromHeader, AccountToHeader, false);
                     ListCoinA = (await _transactionService
                         .GetCoinSymbolsFromAssets())
@@ -839,7 +544,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     break;
                 case 3: //Convert
                     Validator.RegisterEntriesToValidate(new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-                    transactionType = TransactionKind.Convert;
+                    TransactionType =  TransactionKind.Convert;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Convert_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService
                         .GetCoinSymbolsExcludingUsdtUsdcFromAssets())
@@ -852,7 +557,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     break;
                 case 4: //Buy
                     Validator.RegisterEntriesToValidate(new int[10] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-                    transactionType = TransactionKind.Buy;
+                    TransactionType =  TransactionKind.Buy;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Buy_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService
                         .GetUsdtUsdcSymbolsFromAssets())
@@ -867,7 +572,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                     break;
                 case 5: //Sell
                     Validator.RegisterEntriesToValidate(new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-                    transactionType = TransactionKind.Sell;
+                    TransactionType =  TransactionKind.Sell;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Sell_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
                     ListCoinA = (await _transactionService
                         .GetCoinSymbolsExcludingUsdtUsdcFromAssets())
@@ -907,6 +612,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
                 ASBoxCoinB.IsEnabled = false;
                 ASBoxAccountFrom.IsEnabled = false;
                 ASBoxAccountTo.IsEnabled = false;
+                IsEarnings = PriceA == 0 ;
             }
         }
     }
@@ -1098,21 +804,7 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
     }
     #endregion PrimaryButton events
 
-    #region Event Handlers
-    //******* EventHandlers
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged(string name)
-    {
-        dispatcherQueue.TryEnqueue(() =>
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        },
-        exception =>
-        {
-            throw new Exception(exception.Message);
-        });
-    }
-    #endregion Event Handlers
+    
 
     #region Dialog Events
     private void CloseButton_Cancel(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -1130,6 +822,9 @@ public partial class TransactionDialog : ContentDialog, INotifyPropertyChanged, 
         }
     }
 
-    
+    private void EarningsCheckbox_Checked(object sender, RoutedEventArgs e)
+    {
+        PriceA = 0;
+    }
 }
 

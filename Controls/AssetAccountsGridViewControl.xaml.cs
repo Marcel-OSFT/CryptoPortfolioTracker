@@ -68,8 +68,8 @@ public sealed partial class AssetAccountsGridViewControl : UserControl
 
     private void Control_Unload(object sender, RoutedEventArgs e)
     {
-        AssetAccountsGridView = null;
-        DataContext = null;
+        //AssetAccountsGridView = null;
+        //DataContext = null;
 
     }
 

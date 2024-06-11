@@ -1,22 +1,214 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Helpers;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
+using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryptoPortfolioTracker.Services;
 
-public class AccountService : IAccountService
+public partial class AccountService : ObservableObject, IAccountService
 {
     private readonly PortfolioContext context;
+    [ObservableProperty] private static ObservableCollection<Account>? listAccounts;
+    [ObservableProperty] private static ObservableCollection<AssetAccount>? listAssetAccounts;
+
 
     public AccountService(PortfolioContext portfolioContext)
     {
         context = portfolioContext;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="newAccount"></param>
+    /// <returns></returns>
+
+    public async Task<ObservableCollection<Account>> PopulateAccountsList()
+    {
+        var getAccountsResult = await GetAccounts();
+        getAccountsResult.IfSucc(s =>
+        {
+            ListAccounts = new ObservableCollection<Account>(s.OrderByDescending(x => x.TotalValue));
+        });
+
+        return ListAccounts;
+    }
+    public async Task<ObservableCollection<AssetAccount>> PopulateAccountsByAssetList(int coinId)
+    {
+        var getResult = await GetAccountsByAsset(coinId);
+        getResult.IfSucc(list => ListAssetAccounts = new(list.OrderByDescending(x => x.Qty))); 
+        getResult.IfFail(err =>  ListAssetAccounts = new());
+
+        return ListAssetAccounts;
+    }
+
+    public void ClearAccountsByAssetList()
+    {
+        if (ListAssetAccounts is not null)
+        {
+            ListAssetAccounts.Clear(); 
+        }
+    }
+
+    public AssetAccount GetAffectedAccount(Transaction transaction)
+    {
+        return ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
+    }
+
+
+
+    public bool IsAccountHoldingAssets(Account account)
+    {
+        if (account is null || ListAccounts is null) { return false; }
+        var result = false;
+        try
+        {
+            result = ListAccounts.Where(x => x.Id == account.Id).Single().IsHoldingAsset;
+        }
+        catch (Exception)
+        {
+            //Element just removed from the list...
+        }
+        return result;
+    }
+
+    private async Task<Result<List<AssetAccount>>> GetAccountsByAsset(int coinId)
+    {
+        if (coinId <= 0) { return new List<AssetAccount>(); }
+        List<AssetAccount> assetAccounts;
+        try
+        {
+            assetAccounts = await context.Assets
+                .Include(x => x.Coin)
+                .Where(c => c.Coin.Id == coinId)
+                .Include(a => a.Account)
+                .Select(assets => new AssetAccount
+                {
+                    Qty = assets.Qty,
+                    Name = assets.Account.Name,
+                    Symbol = assets.Coin.Symbol,
+                    AssetId = assets.Id,
+
+                }).ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<AssetAccount>>(ex);
+        }
+        assetAccounts ??= new List<AssetAccount>();
+
+        return assetAccounts;
+    }
+
+    public Task RemoveFromListAccounts(int accountId)
+    {
+        if (ListAccounts is null) { return Task.FromResult(false); }
+        try
+        {
+            var account = ListAccounts.Where(x => x.Id == accountId).Single();
+            ListAccounts.Remove(account);
+        }
+        catch (Exception)
+        {
+            return Task.FromResult(false);
+        }
+        return Task.FromResult(true);
+    }
+
+    public Task AddToListAccounts(Account? newAccount)
+    {
+        if (ListAccounts is null || newAccount is null) { return Task.FromResult(false); }
+        try
+        {
+            ListAccounts.Add(newAccount);
+        }
+        catch (Exception) { Task.FromResult(false); }
+
+        return Task.FromResult(true);
+    }
+
+
+
+    public async Task UpdateListAssetAccount(AssetAccount accountAffected)
+    {
+
+        if (ListAssetAccounts is null)
+        {
+            return;
+        }
+        (await GetAccountByAsset(accountAffected.AssetId))
+            .IfSucc(s =>
+            {
+                var index = -1;
+
+                for (var i = 0; i < ListAssetAccounts.Count; i++)
+                {
+                    if (ListAssetAccounts[i].Name == accountAffected.Name)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index == -1)
+                {
+                    return;
+                }
+
+                if (s != null && s.Name != string.Empty)
+                {
+                    ListAssetAccounts[index] = s;
+                }
+                else
+                {
+                    ListAssetAccounts.RemoveAt(index);
+                }
+            });
+    }
+
+    public async Task<Result<AssetAccount>> GetAccountByAsset(int assetId)
+    {
+        if (assetId <= 0) { return new AssetAccount(); }
+        AssetAccount? assetAccount;
+        try
+        {
+            assetAccount = await context.Assets
+                .Where(c => c.Id == assetId)
+                .Include(x => x.Coin)
+                .Include(a => a.Account)
+                .Select(assets => new AssetAccount
+                {
+                    Qty = assets.Qty,
+                    Name = assets.Account.Name,
+                    Symbol = assets.Coin.Symbol,
+                    AssetId = assets.Id,
+
+                }).SingleOrDefaultAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<AssetAccount>(ex);
+        }
+
+        return assetAccount ?? new AssetAccount();
+    }
+
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="newAccount"></param>
+    /// <returns></returns>
+
 
     public async Task<Result<bool>> CreateAccount(Account? newAccount)
     {

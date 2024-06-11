@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="CryptoPortfolioTracker.Dialogs.AboutDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CryptoPortfolioTracker.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loading="Dialog_Loading"
+    Name="Root"
+    mc:Ignorable="d">
+
+    <ContentDialog.Resources>
+
+        <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </ContentDialog.Resources>
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        
+
+        <!--Border  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,10,0"-->
+            <Grid Width="500">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="center" Grid.Row="0">
+                <Image Source="{Binding ImagePath}" Width="100" Height="100" VerticalAlignment="Center" Margin="0,0,30,0" />
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Crypto Portfolio Tracker" Foreground="Peru" FontWeight="SemiBold" HorizontalTextAlignment="Center" FontSize="18"/>
+                    <TextBlock Text="{Binding Version}" Foreground="Gray" HorizontalTextAlignment="Center" FontSize="14"/>
+                    <TextBlock Text="mk-osft © 2024" Foreground="Gray" HorizontalTextAlignment="Center" FontSize="14"/>
+                </StackPanel>
+            </StackPanel>
+
+            
+
+            <StackPanel Grid.Row="1">
+                <RichTextBlock Name="CoinGecko" SelectionHighlightColor="Green" Margin="15,20,15,20" >
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,5">
+                        <Run FontSize="16" Text="CoinGecko public API" FontWeight="SemiBold" TextDecorations="Underline"/>
+                    </Paragraph>
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,10">
+                        <Run FontSize="12" 
+                             Text="This app is retrieving its data using the public API provided by CoinGecko, a Crypto market data aggregator."  />
+                    </Paragraph>
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,10">
+                        <Run FontSize="12" 
+                            Text="CoinGecko’s Public API has a rate limit of 5 to 15 calls per minute, depending on usage conditions worldwide. Most of the time it turns out to be around 5 requests per minute. When a 'Too Many Requests' occurs then a 30 seconds timeout is build in before re-trying the request. " />
+                    </Paragraph>
+
+                </RichTextBlock>
+
+                <RichTextBlock Name="Donation" SelectionHighlightColor="Green" Margin="15,0,15,10" >
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,5">
+                        <Run FontSize="16" Text="Donation" FontWeight="SemiBold" TextDecorations="Underline"/>
+                    </Paragraph>
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,10">
+                        <Run FontSize="12" Text="If you find this app valuable and would like to support further development, you can make a donation to one of the following addresses: "  />
+                    </Paragraph>
+                </RichTextBlock>
+                <StackPanel Orientation="Horizontal" Margin="150,10,0,0">
+                    <Image Source="{Binding BtcImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
+                    <TextBlock Text="{Binding BtcAddress}" FontSize="12"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="150,10,0,0">
+                    <Image Source="{Binding EthImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
+                    <TextBlock Text="{Binding EthAddress}" FontSize="12"/>
+                </StackPanel>
+
+                <RichTextBlock Name="Support" SelectionHighlightColor="Green" Margin="15,20,15,10" >
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,5">
+                        <Run FontSize="16" Text="Contact and Support" FontWeight="SemiBold" TextDecorations="Underline"/>
+                    </Paragraph>
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,10">
+                        <Run FontSize="12" Text="The navigation menu on the left has an 'Help' option which opens a PDF document in your browser. This document is updated regularly, if needed."  />
+                    </Paragraph>
+
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,10">
+                        <Run FontSize="12" Text="Need for additional support or do you have a question, comment or request? Please feel free to send me an email (mk_osft@hotmail.com) or contact me on Discord (MarcelK)."  />
+                    </Paragraph>
+
+                </RichTextBlock>
+
+
+
+            </StackPanel>
+            
+
+        </Grid>
+        <!--/Border-->
+       
+    </Grid>
+</ContentDialog>

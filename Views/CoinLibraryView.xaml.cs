@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoPortfolioTracker.Views;
 
-public sealed partial class CoinLibraryView : Page, IDisposable
+public sealed partial class CoinLibraryView : Page
 {
 
 public readonly CoinLibraryViewModel _viewModel;
@@ -23,16 +23,13 @@ public readonly CoinLibraryViewModel _viewModel;
 
     private async void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        await _viewModel.SetDataSource();
+        await _viewModel.Initialize();
         await _viewModel.RetrieveAllCoinData();
     }
 
     private void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        _viewModel.Terminate();
     }
 
-    public void Dispose()
-    {
-        Current = null;
-    }
 }

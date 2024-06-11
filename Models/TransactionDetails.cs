@@ -1,4 +1,5 @@
 ﻿using CryptoPortfolioTracker.Enums;
+using System;
 
 
 namespace CryptoPortfolioTracker.Models;
@@ -38,9 +39,5 @@ public partial class TransactionDetails : BaseModel
     public string ImageUriFee { get; set; } = string.Empty;
     public double ValueA { get; set; }
     public double ValueB { get; set; }
-
-
-
-
 
 }
