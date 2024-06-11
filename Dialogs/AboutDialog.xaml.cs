@@ -41,18 +41,19 @@ public partial class AboutDialog : ContentDialog
         _theme = theme;
         SetDialogTitleAndButtons();
 
-        BtcAddress = "BTC : 0xfedhuppeldepupeldepup";
-        EthAddress = "ETH : 0x23deennogwatmeervandit";
-
+        // BtcAddress = "BTC : 0xfedhuppeldepupeldepup";
+        // EthAddress = "ETH : 0x23deennogwatmeervandit";
+        
 
     }
 
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    private async void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
         if (sender.ActualTheme != _theme)
         {
             sender.RequestedTheme = _theme;
         }
+        await GetCryptoAddresses();
     }
 
     private void SetDialogTitleAndButtons()
@@ -63,7 +64,7 @@ public partial class AboutDialog : ContentDialog
     }
 
 
-    public async Task GetCryptoAddresses(string updateUrl, string appVersion)
+    public async Task GetCryptoAddresses()
     {
         /* Temporary output file to work with (located in AppData)*/
         var temp_file = App.appDataPath + "\\addresses.txt";
