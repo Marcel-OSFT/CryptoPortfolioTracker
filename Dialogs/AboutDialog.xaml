@@ -67,13 +67,13 @@
                         <Run FontSize="12"  Text="If you find this app valuable and would like to support further development, you can make a donation to one of the following addresses: "  />
                     </Paragraph>
                 </RichTextBlock>
-                <StackPanel Orientation="Horizontal" Margin="150,10,0,0">
+                <StackPanel Orientation="Horizontal" Margin="100,10,0,0">
                     <Image Source="{Binding BtcImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
                     <TextBlock Text="{Binding BtcAddress}" FontSize="12" IsTextSelectionEnabled="True"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="150,10,0,0">
+                <StackPanel Orientation="Horizontal" Margin="100,10,0,0">
                     <Image Source="{Binding EthImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding EthAddress}" FontSize="12"   IsTextSelectionEnabled="True" />
+                    <TextBlock Text="{Binding EthAddress}" FontSize="12" IsTextSelectionEnabled="True" />
                 </StackPanel>
 
                 <RichTextBlock Name="Support" SelectionHighlightColor="Green" Margin="15,20,15,10" >
