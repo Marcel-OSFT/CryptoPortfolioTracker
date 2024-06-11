@@ -74,7 +74,7 @@ public partial class BaseViewModel : ObservableObject
         return dlgResult;
     }
 
-    //public static void Dispose()
+    //public void Dispose()
     //{
 
     //}

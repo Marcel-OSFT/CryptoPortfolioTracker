@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Models;
 using LanguageExt.Common;
@@ -14,4 +15,13 @@ public interface IAccountService
     public Task<Result<Account>> GetAccountByName(string name);
     public Task<Result<List<AssetTotals>>> GetAssetsByAccount(int accountId);
     public Task<Result<bool>> AccountHasNoAssets(int assetId);
+    Task<ObservableCollection<Account>> PopulateAccountsList();
+    Task<ObservableCollection<AssetAccount>> PopulateAccountsByAssetList(int coinId);
+    Task<Result<AssetAccount>> GetAccountByAsset(int assetId);
+    Task UpdateListAssetAccount(AssetAccount accountAffected);
+    void ClearAccountsByAssetList();
+    bool IsAccountHoldingAssets(Account account);
+    Task RemoveFromListAccounts(int accountId);
+    Task AddToListAccounts(Account? newAccount);
+    AssetAccount GetAffectedAccount(Transaction transaction);
 }

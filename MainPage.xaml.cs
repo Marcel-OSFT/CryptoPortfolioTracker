@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
@@ -151,7 +152,7 @@ public partial class MainPage : Page, INotifyPropertyChanged
         navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
     }
 
-    private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+    private async void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         var selectedItem = (NavigationViewItem)args.SelectedItem;
         Type? pageType;
@@ -176,15 +177,31 @@ public partial class MainPage : Page, INotifyPropertyChanged
             }
             else if (pageType is null)
             {
-                if ((string)selectedItem.Tag == "Exit")
+
+                switch ((string)selectedItem.Tag)
                 {
-                    Logger.Information("Application Exit");
-                    Environment.Exit(0);
+                    case "Exit":
+                        {
+                            Logger.Information("Application Exit");
+                            Environment.Exit(0);
+                            break;
+                        }
+                    case "Help":
+                        {
+                            DisplayHelpFile();
+                            Logger.Information("Help File Requested");
+                            break;
+                        }
+                    case "About":
+                        {
+                            var dialog = new AboutDialog(_preferencesService.GetAppTheme());
+                            dialog.XamlRoot = MainPage.Current.XamlRoot;
+                            var result = await dialog.ShowAsync();
+                            break;
+                        }
+
                 }
-                else if ((string)selectedItem.Tag == "Help")
-                {
-                    Logger.Information("Help File Requested");
-                }
+
                 navigationView.SelectedItem = lastSelectedNavigationItem;
             }
         }
@@ -192,9 +209,9 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     private void LoadView(Type pageType)
     {
-        _currentServiceScope?.Dispose();
-        _currentServiceScope = null;
-        _currentServiceScope = App.Container.CreateAsyncScope();
+        //_currentServiceScope?.Dispose();
+        //_currentServiceScope = null;
+        //_currentServiceScope = App.Container.CreateAsyncScope();
 
         if (pageType.Name == "CoinLibraryView" )
         {
@@ -208,9 +225,36 @@ public partial class MainPage : Page, INotifyPropertyChanged
         }
         lastPageType = pageType;
 
-        //contentFrame.Content = App.Container.GetService(pageType);
-        contentFrame.Content = _currentServiceScope.ServiceProvider.GetService(pageType);
+         contentFrame.Content = App.Container.GetService(pageType);
+       // contentFrame.Content = _currentServiceScope.ServiceProvider.GetService(pageType);
     }
+
+    private void DisplayHelpFile()
+    {
+        var loc = Localizer.Get();
+        var fileName = "HelpFile_NL.pdf";
+
+        if (_preferencesService.GetAppCultureLanguage() == "en-US")
+        {
+            fileName = "HelpFile_EN.pdf";
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo(App.Url + fileName) { UseShellExecute = true });
+            Logger.Information("HelpFile Displayed");
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, "Failed to display HelpFile");
+            ShowMessageDialog(
+                loc.GetLocalizedString("Messages_HelpFile_FailedTitle"),
+                loc.GetLocalizedString("Messages_HelpFile_FailedMsg"),
+                loc.GetLocalizedString("Common_CloseButton"));
+        }
+    }
+
+
     public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
     {
         var dialog = new ContentDialog()

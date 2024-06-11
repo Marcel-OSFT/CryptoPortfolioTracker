@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI;
 using CryptoPortfolioTracker.Models;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using WinUI3Localizer;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -16,9 +18,13 @@ using Microsoft.UI.Xaml.Media;
 
 namespace CryptoPortfolioTracker.Controls;
 
-public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
+public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged, IDisposable
 {
     // public readonly AssetsViewModel _viewModel;
+
+    private int selectedItemIndex;
+    private bool isSettingIndex;
+
 
     //***********************************************//
     //** All databound fields are in the viewModel**//
@@ -28,8 +34,14 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
         InitializeComponent();
     }
 
+    private void AssetsListView_Loading(FrameworkElement sender, object args)
+    {
+        selectedItemIndex = 0;
+    }
+    
     private void AssetsListView_SizeChanged(object sender, SizeChangedEventArgs e)
     {
+
         if (sender is ListView listView)
         {
             listView.ScrollIntoView(listView.SelectedItem);
@@ -48,34 +60,46 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
        //dummy
     }
 
-    private Brush originalBackground;
-
-    private void SortOnNameBtn_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-        if (sender is Button btn)
-        {
-            originalBackground = btn.Background;
-            btn.Background = new SolidColorBrush(Colors.Orange);
-            Debug.WriteLine("changed");
-        }
-    }
-
-    private void SortOnNameBtn_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-        if (sender is Button btn && originalBackground is not null)
-        {
-            btn.Background = originalBackground;
-            Debug.WriteLine("and back");
-
-        }
-    }
-
     private void Control_Unload(object sender, RoutedEventArgs e)
     {
-        DataContext = null;
-        AssetsListView = null;
-        ColumnHeadersAndListView = null;
-        Root = null;
+        
     }
 
+    public void Dispose()
+    {
+        
+    }
+
+    /// <summary>
+    /// Changing selection will be monitored. After sorting a list, the SelectedItem is set to NULL
+    /// After an price update thelist is automatically sorted again. An eventual slected Item will be 
+    /// 'lost' and can't be kept visible in the list. 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void AssetsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        
+        if (sender is ListView listView)
+        {
+            if (listView.SelectedItem is AssetTotals asset)
+            {
+                selectedItemIndex = listView.SelectedIndex;
+
+                if (isSettingIndex)
+                {
+                    listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
+                    isSettingIndex = false;
+                }
+            }
+            else
+            {
+                isSettingIndex = true;
+                listView.SelectedIndex = selectedItemIndex;
+            }
+        }
+
+    }
+
+    
 }

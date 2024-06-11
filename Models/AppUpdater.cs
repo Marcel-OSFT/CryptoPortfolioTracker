@@ -154,6 +154,7 @@ public class AppUpdater
             process.StartInfo.Arguments = "/SP- /silent /noicons";
             process.StartInfo.WorkingDirectory = App.appPath;
             process.Start();
+       
         }
         catch (Exception)
         {

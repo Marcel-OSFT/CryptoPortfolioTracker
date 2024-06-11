@@ -43,9 +43,9 @@ public partial class AssetTransactionsListViewControl : UserControl
 
     private void Control_Unload(object sender, RoutedEventArgs e)
     {
-        AssetTransactionListView = null;
-        DataContext = null;
-        ColumnHeaders = null;
+        //AssetTransactionListView = null;
+        //DataContext = null;
+        //ColumnHeaders = null;
     }
 
     

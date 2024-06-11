@@ -165,7 +165,7 @@
         </StackPanel>
        
         <Rectangle Grid.Row="1" Grid.ColumnSpan="6" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
-        <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="6" x:FieldModifier="public" ItemsSource="{Binding ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
+        <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="6" x:FieldModifier="public" ItemsSource="{Binding _libraryService.ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
                             IsItemClickEnabled="True" SelectionMode="None" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                             ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                             CanReorderItems="False" AllowDrop="false" Margin="10,0,0,0" >

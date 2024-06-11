@@ -15,6 +15,7 @@
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     d:DataContext="{d:DesignInstance Type=viewmodels:GraphicViewModel}"
+    Loading="View_Loading"
     Unloaded="View_Unloaded"
     mc:Ignorable="d">
 
@@ -38,14 +39,19 @@
             TooltipTextSize="14">
         </lvc:CartesianChart>
 
+        <ProgressRing IsActive="{Binding IsLoadingFromJson}" Visibility="{Binding IsNotLoadingFromJson, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
         <StackPanel x:Name="layoutRoot" Background="black" Opacity="0.5" 
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Margin="150,60,0,0"
-            Visibility="{Binding IsFinishedLoading, Converter={StaticResource BoolToVisibilityConverter }}">
+            Visibility="{Binding IsNotUpdating, Converter={StaticResource BoolToVisibilityConverter }}">
             <StackPanel BorderBrush="PaleGoldenrod"  BorderThickness="2" Padding="12">
                 <TextBlock  l:Uids.Uid="GrahicView_UpdateText" />
                 <StackPanel Orientation="Vertical">
-                    <ProgressBar x:Name="progressBar2" Value="{Binding ProgressValue}" Maximum="100" Margin="0,12"/>
+                    <ProgressBar x:Name="progressBar2" 
+                        Value="{Binding ProgressValue}" 
+                        Maximum="100" 
+                        Margin="0,12"/>
                     <TextBlock Text="{Binding ProgressValue, 
                 Converter={StaticResource StringFormatConverter}, 
                 ConverterParameter='{}{0:0} %'}"/>

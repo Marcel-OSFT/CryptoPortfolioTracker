@@ -1,6 +1,11 @@
 ﻿
+using CryptoPortfolioTracker.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+
 
 namespace CryptoPortfolioTracker.Helpers
 {
@@ -11,29 +16,43 @@ namespace CryptoPortfolioTracker.Helpers
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
-        public static void ClearObservableCollection<T>(ObservableCollection<T> list)
+        public static ObservableCollection<T> NullObservableCollection<T>(ObservableCollection<T> list) where T : BaseModel
         {
             if (list is not null)
             {
-                for (var i = 0; i < list.Count; i++)
+                while (list.Any())
                 {
-                    list[i] = default(T);
-                    list.RemoveAt(i);
+                    try
+                    {
+                        //list[0].Dispose();
+                       var item = list[0];
+                        list.RemoveAt(0);
+                        item = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                        list.RemoveAt(0);
+                    }
                 }
                 list = null;
             }
+            return list;
         }
-        public static void ClearList<T>(List<T> list)
+
+        public static List<T> NullList<T>(List<T> list)
         {
             if (list is not null)
             {
-                for (var i = 0; i < list.Count; i++)
+                while (list.Any())
                 {
-                    list[i] = default(T);
-                    list.RemoveAt(i);
+                    list[0] = default(T);
+                    list.RemoveAt(0);
                 }
                 list = null;
             }
+            return list;
         }
+
     }
 }

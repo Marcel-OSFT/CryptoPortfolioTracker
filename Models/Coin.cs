@@ -15,14 +15,8 @@ public partial class Coin : BaseModel
     }
 
     //*** Navigation Property
-    public ICollection<Asset> Assets
-    {
-        get; set;
-    }
-    public int Id
-    {
-        get; set;
-    }
+    public ICollection<Asset> Assets  { get; set; }
+    public int Id { get; set; }
 
     //*** Public Properties
     [ObservableProperty] private string apiId = string.Empty;
@@ -40,5 +34,5 @@ public partial class Coin : BaseModel
     [ObservableProperty] private string note = string.Empty;
     [ObservableProperty] private bool isAsset;
 
-
+    
 }

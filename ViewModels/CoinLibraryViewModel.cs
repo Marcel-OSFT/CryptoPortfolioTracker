@@ -24,14 +24,14 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
 {
-    public readonly ILibraryService _libraryService;
+    public ILibraryService _libraryService { get; private set; }
     private readonly IPreferencesService _preferencesService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
     private bool isAllCoinDataRetrieved;
 
-    [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
+   // [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AddCoinDialog dialog;
@@ -53,8 +53,9 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
     public void Dispose()
     {
         Current = null;
-        MkOsft.ClearList<string>(searchListGecko);
-        MkOsft.ClearList<CoinList>(coinListGecko);
+        searchListGecko = MkOsft.NullList<string>(searchListGecko);
+        coinListGecko = MkOsft.NullList<CoinList>(coinListGecko);
+
     }
 
     /// <summary>
@@ -62,11 +63,23 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
     /// <returns></returns>
-    public async Task SetDataSource()
+    public async Task Initialize()
     {
-        (await _libraryService.GetCoinsOrderedByRank())
-            .IfSucc(list => ListCoins = new ObservableCollection<Coin>(list.OrderBy(x => x.Rank)));
+        if (_libraryService.IsCoinsListEmpty())
+        {
+            await _libraryService.PopulateCoinsList();
+        }
     }
+
+    public void Terminate()
+    {
+        //Current = null;
+        searchListGecko = MkOsft.NullList<string>(searchListGecko);
+        coinListGecko = MkOsft.NullList<CoinList>(coinListGecko);
+
+       // _libraryService.ClearCoinsList();
+    }
+
     /// <summary>
     /// RetrieveAllCoinData async task is called from the View_Loading event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
@@ -94,84 +107,53 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
         return searchList;
     }
 
-    private Task DoSorting<T>(SortingOrder sortingOrder, Func<Coin, T> sortFunc)
-    {
-        if (ListCoins is not null)
-        {
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(sortFunc));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(sortFunc));
-            }
-        }
-        return Task.CompletedTask;
-    }
-
-
     [RelayCommand]
-    public Task SortOnName(SortingOrder sortingOrder)
+    private void SortOnName(SortingOrder sortingOrder)
     {
         Func<Coin, string> sortFunc = x => x.Name;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        _libraryService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand]
-    public Task SortOn24HrChange(SortingOrder sortingOrder)
+    public void SortOn24HrChange(SortingOrder sortingOrder)
     {
-        Func<Coin, double> sortFunc = x => x.Change24Hr;
-        DoSorting(sortingOrder, sortFunc);
-        
-        return Task.CompletedTask;
+        Func<Coin, object> sortFunc = x => x.Change24Hr;
+        _libraryService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand]
-    public Task SortOn52WeekChange(SortingOrder sortingOrder)
+    public void SortOn52WeekChange(SortingOrder sortingOrder)
     {
-        Func<Coin, double> sortFunc = x => x.Change52Week;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        Func<Coin, object> sortFunc = x => x.Change52Week;
+        _libraryService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand]
-    public Task SortOn30DayChange(SortingOrder sortingOrder)
+    public void SortOn30DayChange(SortingOrder sortingOrder)
     {
-        Func<Coin, double> sortFunc = x => x.Change1Month;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        Func<Coin, object> sortFunc = x => x.Change1Month;
+        _libraryService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand]
-    public Task SortOnAth(SortingOrder sortingOrder)
+    public void SortOnAth(SortingOrder sortingOrder)
     {
-        Func<Coin, double> sortFunc = x => x.Ath;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        Func<Coin, object> sortFunc = x => x.Ath;
+        _libraryService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand]
-    public Task SortOnMarketCap(SortingOrder sortingOrder)
+    public void SortOnMarketCap(SortingOrder sortingOrder)
     {
-        Func<Coin, double> sortFunc = x => x.MarketCap;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        Func<Coin, object> sortFunc = x => x.MarketCap;
+        _libraryService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand]
-    public Task SortOnRank(SortingOrder sortingOrder)
+    public void SortOnRank(SortingOrder sortingOrder)
     {
-        Func<Coin, double> sortFunc = x => x.Rank;
-        DoSorting(sortingOrder, sortFunc);
-
-        return Task.CompletedTask;
+        Func<Coin, object> sortFunc = x => x.Rank;
+        _libraryService.SortList(sortingOrder, sortFunc);
     }
 
 
@@ -194,7 +176,7 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
                 var coinName = dialog.selectedCoin is not null ? dialog.selectedCoin.Name : string.Empty;
                 Logger.Information("Adding Coin to Library  - {0}", coinName);
                 await (await _libraryService.CreateCoin(dialog.selectedCoin))
-                    .Match(Succ: succ => AddToListCoins(dialog.selectedCoin),
+                    .Match(Succ: succ => _libraryService.AddToCoinsList(dialog.selectedCoin),
                     Fail: async err =>
                     {
                         await ShowMessageDialog(
@@ -293,7 +275,7 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
                 var coinName = preListingDialog.newCoin is not null ? preListingDialog.newCoin.Name : string.Empty;
                 Logger.Information("Adding Pre-Listing Coin to Library  - {0}", coinName);
                 await (await _libraryService.CreateCoin(preListingDialog.newCoin))
-                    .Match(Succ: succ => AddToListCoins(preListingDialog.newCoin),
+                    .Match(Succ: succ =>_libraryService.AddToCoinsList(preListingDialog.newCoin),
                     Fail: async err =>
                     {
                         await ShowMessageDialog(
@@ -365,7 +347,7 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
         Logger.Information("Deleting coin {0}", coin.Name);
         var loc = Localizer.Get();
         await (await _libraryService.RemoveCoin(coin))
-           .Match(Succ: s => RemoveFromListCoins(coin),
+           .Match(Succ: s => _libraryService.RemoveFromCoinsList(coin),
                    Fail: async err =>
                    {
                        await ShowMessageDialog(
@@ -407,25 +389,17 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
         App.isBusy = false;
     }
 
-    private Task RemoveFromListCoins(Coin coin)
-    {
-        try
-        {
-            ListCoins.Remove(coin);
-        }
-        catch
-        {
-            return Task.FromResult(false);
-        }
-        return Task.FromResult(true);
-    }
-    private Task AddToListCoins(Coin? coin)
-    {
-        if (coin == null) { return Task.FromResult(false); }
-        ListCoins.Add(coin);
+    //private Task RemoveFromListCoins(Coin coin)
+    //{
+        
+    //}
+    //private Task AddToListCoins(Coin? coin)
+    //{
+    //    if (coin == null) { return Task.FromResult(false); }
+    //    ListCoins.Add(coin);
 
-        return Task.FromResult(true);
-    }
+    //    return Task.FromResult(true);
+    //}
 
     private Task UpdateListCoinsAfterMerge(Coin prelistingCoin, Coin? newCoin)
     {

@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoPortfolioTracker.Views;
 
-public partial class AssetsView : Page, IDisposable
+public partial class AssetsView : Page
 {
     public AssetsViewModel _viewModel;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -19,29 +19,32 @@ public partial class AssetsView : Page, IDisposable
         _viewModel = viewModel;
         InitializeComponent();
         DataContext = _viewModel;
-        MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
     }
 
     private async void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        await _viewModel.SetDataSource();
-    }
-
-    private void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        
-    }
-
-    public void Dispose()
-    {
-        Debug.WriteLine("Dispose");
-        Current = null;
+        MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
+        await _viewModel.Initialize();
     }
 
     private void View_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        //App.Splash?.Close();
-        //App.Splash = null;
+        if (MyAssetsListViewControl.AssetsListView.Items.Count > 0)
+        {
+            MyAssetsListViewControl.AssetsListView.SelectedIndex = 0;
+        }
+        else
+        {
+            MyAssetsListViewControl.AssetsListView.SelectedIndex = -1;
+        }
     }
+
+    private async void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        _viewModel.Terminate();
+        MyAssetsListViewControl.AssetsListView.DataContext = null;
+    }
+
+
 }
 

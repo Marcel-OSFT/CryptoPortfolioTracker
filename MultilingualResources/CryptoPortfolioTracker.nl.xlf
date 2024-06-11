@@ -856,7 +856,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="GraphicView_DateFormat" translate="yes" xml:space="preserve">
           <source>MMMM dd, yyyy</source>
-          <target state="translated">dd MMMM yyyy</target>
+          <target state="final">dd MMMM yyyy</target>
         </trans-unit>
         <trans-unit id="Navigation_About.Content" translate="yes" xml:space="preserve">
           <source>About</source>
@@ -865,6 +865,26 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="Navigation_Exit.Content" translate="yes" xml:space="preserve">
           <source>Exit</source>
           <target state="final">Sluiten</target>
+        </trans-unit>
+        <trans-unit id="Messages_HelpFile_FailedMsg" translate="yes" xml:space="preserve">
+          <source>Unable to open the Online Help file in your default browser.</source>
+          <target state="final">Kan het Online Help-bestand niet openen in de standaardbrowser.</target>
+        </trans-unit>
+        <trans-unit id="Messages_HelpFile_FailedTitle" translate="yes" xml:space="preserve">
+          <source>Failed to open Online Help.</source>
+          <target state="final">Kan het Online Help-bestand niet openen</target>
+        </trans-unit>
+        <trans-unit id="AboutView_Title.Text" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="final">Over</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Earnings.Content" translate="yes" xml:space="preserve">
+          <source>Staking yield</source>
+          <target state="final">Staking opbrengst</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Title" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="final">Over</target>
         </trans-unit>
       </group>
     </body>

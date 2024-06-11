@@ -1,4 +1,5 @@
 ﻿
+using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -17,26 +19,35 @@ using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Services
 {
-    public class GraphService : IGraphService
+    [ObservableObject]
+    public partial class GraphService : IGraphService
     {
         private Graph graph;
         private static ILogger Logger { get; set; }
 
         private List<HistoricalDataById> HistoricalDataByIdsBufferList { get; set; }
 
+        [ObservableProperty] bool isLoadingFromJson;
+
+
+
+
         public GraphService() 
         {
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
-
             //graph = new();
             HistoricalDataByIdsBufferList = new();
         }
-
 
         public async Task LoadGraphFromJson()
         {
             try
             {
+                IsLoadingFromJson = true;
+
+                // test
+               // await Task.Delay(5000);
+
                 if (!Directory.Exists(App.appDataPath + "\\MarketCharts"))
                 {
                     Directory.CreateDirectory(App.appDataPath + "\\MarketCharts");
@@ -46,7 +57,6 @@ namespace CryptoPortfolioTracker.Services
                 {
                     using FileStream openStream = File.OpenRead(fileName);
                     graph = await JsonSerializer.DeserializeAsync<Graph>(openStream);
-                    
                 }
 
                 fileName = App.appDataPath + "\\MarketCharts\\HistoryBuffer.json";
@@ -60,6 +70,10 @@ namespace CryptoPortfolioTracker.Services
             catch (Exception ex)
             {
                 Logger.Error(ex, "Failed to de-serialize HGraph data");
+            }
+            finally
+            {
+                IsLoadingFromJson = false;
             }
 
         }
@@ -139,6 +153,8 @@ namespace CryptoPortfolioTracker.Services
         {
             var values = new ObservableCollection<DateTimePoint>();
 
+            if (graph is null) { return values; }
+
             for (int i = 0; i < graph.DataPointsPortfolio.Count; i++)
             {
                 var dateTimePoint = new DateTimePoint(graph.DataPointsPortfolio[i].Date.ToDateTime(TimeOnly.Parse("01:00 AM")), graph.DataPointsPortfolio[i].Value);
@@ -150,6 +166,7 @@ namespace CryptoPortfolioTracker.Services
         public ObservableCollection<DateTimePoint> GetInFlowValues()
         {
             var values = new ObservableCollection<DateTimePoint>();
+            if (graph is null) { return values; }
 
             for (int i = 0; i < graph.DataPointsInFlow.Count; i++)
             {
@@ -162,7 +179,7 @@ namespace CryptoPortfolioTracker.Services
         public ObservableCollection<DateTimePoint> GetOutFlowValues()
         {
             var values = new ObservableCollection<DateTimePoint>();
-
+            if (graph is null) { return values; }
             for (int i = 0; i < graph.DataPointsOutFlow.Count; i++)
             {
                 var dateTimePoint = new DateTimePoint(graph.DataPointsOutFlow[i].Date.ToDateTime(TimeOnly.Parse("01:00 AM")), graph.DataPointsOutFlow[i].Value);
@@ -211,7 +228,8 @@ namespace CryptoPortfolioTracker.Services
 
         public bool HasDataPoints()
         {
-            return graph.DataPointsPortfolio.Count > 0;
+
+            return graph is not null ? graph.DataPointsPortfolio.Count > 0 : false;
         }
         public bool HasHistoricalDataBuffer()
         {

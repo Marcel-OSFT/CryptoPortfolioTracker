@@ -57,6 +57,7 @@
     <None Remove="Controls\AssetTransactionsListViewControl.xaml" />
     <None Remove="Controls\AutoSuggestBoxWithValidation.xaml" />
     <None Remove="Controls\ColumnHeaderButton.xaml" />
+    <None Remove="Dialogs\AboutDialog.xaml" />
     <None Remove="Dialogs\AccountDialog.xaml" />
     <None Remove="Controls\AccountsListViewControl.xaml" />
     <None Remove="Controls\AssetsListViewControl.xaml" />
@@ -332,6 +333,9 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Dialogs\AboutDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\GraphicView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

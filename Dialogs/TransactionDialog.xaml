@@ -151,8 +151,16 @@
                 Width="315"
                 />
         </RelativePanel>
+        <CheckBox x:Name="Earnings" l:Uids.Uid="TransactionDialog_Earnings"  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
+            
+            Margin="0,0,0,5" 
+            VerticalContentAlignment="Center"
+                  VerticalAlignment="Bottom"
+                  IsChecked="{Binding IsEarnings, Mode=TwoWay}"
+            Visibility="{Binding EarningsCheckBoxVisibility}"/>
         <RelativePanel Name="QtyAndPriceSelectionA" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch" Width="360" Margin="0,0,0,0" >
-            <controls:RegExTextBox x:Name ="TBoxQtyA" 
+            
+            <controls:RegExTextBox x:Name ="TBoxQtyA"
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="False"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
@@ -166,9 +174,9 @@
                 Width="160" Margin="5,0,5,0"/>
             <controls:RegExTextBox l:Uids.Uid="TransactionDialog_PriceA" x:Name ="TBoxPriceA" 
                 RegEx="RegExPositiveDecimal" 
-                IsZeroAllowed="False"
+                IsZeroAllowed="{Binding IsEarnings}"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                                   
+                        IsEnabled="{Binding Path=IsChecked, ElementName=Earnings, Converter={StaticResource myInvertBoolConverter}, Mode=TwoWay}"           
                 Text="{Binding PriceA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.##################}'}" 
                 IsEntryValid="{Binding Validator.EntryCollection[5], 
                     ElementName=Root, 
@@ -178,8 +186,10 @@
                 TextChanged="TBoxPriceA_TextChanged" 
                 PointerPressed="QtyOrPrice_pressed"
                 Margin="5,0,5,0" 
-                RelativePanel.RightOf="TBoxQtyA"
+                RelativePanel.RightOf="TBoxQtyA" 
+                RelativePanel.AlignBottomWith="TBoxQtyA"
                 ToolTipService.ToolTip="The price of the underlying coin"/>
+            
         </RelativePanel>
         <RelativePanel Name="QtyAndPriceSelectionB" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,0,0,0" >
             <controls:RegExTextBox l:Uids.Uid="TransactionDialog_QtyB" x:Name ="TBoxQtyB" 

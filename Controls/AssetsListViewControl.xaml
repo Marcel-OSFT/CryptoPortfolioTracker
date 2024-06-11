@@ -16,7 +16,6 @@
     x:Name="Root"
     xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
-    d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     Unloaded="Control_Unload"
     mc:Ignorable="d">
 
@@ -24,8 +23,10 @@
 
         <converters:ColourConverter x:Key="myColourConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:BoolToCommandConverter x:Key="BoolToCommandConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
         <converters:FontSizeToImageSizeConverter x:Key="FontSizeToImageSizeConverter"/>
+        <converters:FormatUriConverter x:Key="FormatUriConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="MinHeight" Value="25"/>
@@ -57,6 +58,7 @@
         
         <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal">
             <local:ColumnHeaderButton 
+                x:Name="NameHeader"
                 l:Uids.Uid="AssetsLV_Name" 
                 IsEnabled="True" 
                 Margin="0,0,0,5"
@@ -69,7 +71,9 @@
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
 
-            <CheckBox l:Uids.Uid="AssetsLV_HideZeroBalances" x:FieldModifier="public" FontSize="12" FontStyle="Normal" 
+            <CheckBox 
+                x:Name="HideZeroBalances"
+                l:Uids.Uid="AssetsLV_HideZeroBalances" x:FieldModifier="public" FontSize="12" FontStyle="Normal" 
                 Margin="15,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center"
                 IsChecked="{Binding IsHidingZeroBalances, Mode=TwoWay}" 
                 Command="{Binding HideZeroBalancesCommand}" 
@@ -89,6 +93,7 @@
 
         <StackPanel Grid.Row="0" Grid.Column="3" Margin="0,0,0,5">
             <local:ColumnHeaderButton 
+                x:Name="Change24HrHeader"
                 l:Uids.Uid="AssetsLV_24Hour" 
                 IsEnabled="True" 
                 Margin="0,0,0,0"
@@ -101,6 +106,7 @@
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
             <local:ColumnHeaderButton
+                x:Name="Change1MonthHeader"
                 l:Uids.Uid="AssetsLV_1Month" 
                 IsEnabled="True" 
                 Margin="0,0,0,0"
@@ -126,6 +132,7 @@
         <StackPanel Grid.Row="0" Grid.Column="4" Margin="0,0,0,5" VerticalAlignment="Bottom">
 
             <local:ColumnHeaderButton
+                x:Name="MarketValueHeader"
                 l:Uids.Uid="AssetsLV_MarketValue" 
                 IsEnabled="True" 
                 Margin="0,0,0,0"
@@ -151,6 +158,7 @@
         <StackPanel Grid.Row="0" Grid.Column="5" Margin="0,0,0,5" VerticalAlignment="Bottom">
 
             <local:ColumnHeaderButton
+                x:Name="CostBaseHeader"
                 l:Uids.Uid="AssetsLV_CostBase" 
                 IsEnabled="True" 
                 Margin="0,0,0,0"
@@ -175,6 +183,7 @@
         <StackPanel Grid.Row="0" Grid.Column="6" Margin="0,0,0,5" VerticalAlignment="Bottom">
 
             <local:ColumnHeaderButton
+                x:Name="PnlHeader"
                 l:Uids.Uid="AssetsLV_ProfitLoss" 
                 IsEnabled="True" 
                 Margin="0,0,0,0"
@@ -187,6 +196,7 @@
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
             <local:ColumnHeaderButton 
+                x:Name="PnlPercHeader"
                 l:Uids.Uid="AssetsLV_ProfitLossPerc" 
                 IsEnabled="True" 
                 Margin="0,0,0,0"
@@ -204,11 +214,14 @@
         <Rectangle Fill="#eebc3f" Grid.Row="1" Grid.ColumnSpan="8" Height="2" Margin="5,0,8,0"/>
 
 
-        <ListView x:Name="AssetsListView" Grid.Row="2" Grid.ColumnSpan="8" x:FieldModifier="public" ItemsSource="{Binding ListAssetTotals, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
-                        IsItemClickEnabled="True" SelectionMode="Single" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
+        <ListView x:Name="AssetsListView" Grid.Row="2" Grid.ColumnSpan="8" x:FieldModifier="public" 
+                  ItemsSource="{Binding _assetService.ListAssetTotals, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
+                        IsItemClickEnabled="True" SelectionMode="Single" 
+                  toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                   ui:ListViewExtensions.Command="{Binding AssetItemClickedCommand}" SizeChanged="AssetsListView_SizeChanged" ItemClick="View_ItemClick"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                        CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" >
+                        CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" 
+                  SelectionChanged="AssetsListView_SelectionChanged" Loading="AssetsListView_Loading">
 
             <ListView.ItemTemplate>
             <DataTemplate x:DataType="models:AssetTotals" >
@@ -235,7 +248,7 @@
                                             <Image Stretch="UniformToFill" Margin="10,5,0,5">
                                                 <Image.Source>
                                                     <BitmapImage DecodePixelHeight="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy, Converter={StaticResource FontSizeToImageSizeConverter}}"
-                                                        UriSource="{Binding Coin.ImageUri}"/>
+                                                        UriSource="{Binding Coin.ImageUri, Converter={StaticResource FormatUriConverter}}"/>
                                                 </Image.Source>
                                             </Image>
                                         </Border>

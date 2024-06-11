@@ -363,7 +363,7 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
 
             Logger.Information("Historical Data updated and saved");
             //MainPage.Current.IsChartLoaded = portfolioGraph.DataPointsPortfolio.Any();
-            if (GraphicViewModel.Current is not null ) GraphicViewModel.Current.IsFinishedLoading = true;
+            if (GraphicViewModel.Current is not null ) GraphicViewModel.Current.IsUpdating = false;
         }
 
         return true;
@@ -428,11 +428,11 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
             if (GraphicViewModel.Current is not null)
             {
                 //check/set 'isFinishedLoading' to false to show message
-                GraphicViewModel.Current.IsFinishedLoading = false;
+                GraphicViewModel.Current.IsUpdating = true;
 
                 var newValue = startValue + (stepSize * i);
                 GraphicViewModel.Current.ProgressValue = Convert.ToInt16((double)newValue);
-                Debug.WriteLine("progressValue = " + GraphicViewModel.Current.ProgressValue.ToString());
+               // Debug.WriteLine("progressValue = " + GraphicViewModel.Current.ProgressValue.ToString());
 
             }
         }

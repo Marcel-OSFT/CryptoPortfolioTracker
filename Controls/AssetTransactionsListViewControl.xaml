@@ -14,7 +14,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
-    d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     Unloaded="Control_Unload"
     mc:Ignorable="d">
 
@@ -60,7 +59,7 @@
         <!--Rectangle Fill="#eebc3f" Grid.Row="0"  Height="1" Margin="5,0,8,0"/-->
 
 
-        <ListView x:Name="AssetTransactionListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding ListAssetTransactions}" BorderBrush="Transparent" BorderThickness="1"                             
+        <ListView x:Name="AssetTransactionListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding _transactionService.ListAssetTransactions}" BorderBrush="Transparent" BorderThickness="1"                             
                         IsItemClickEnabled="True" SelectionMode="None"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                         CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >

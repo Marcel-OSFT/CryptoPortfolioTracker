@@ -60,12 +60,9 @@
                 </NavigationViewItem>
             </NavigationView.MenuItems>
 
-
-            
-
             <NavigationView.FooterMenuItems>
 
-                <NavigationViewItem l:Uids.Uid="Navigation_About" Tag="AboutView" >
+                <NavigationViewItem l:Uids.Uid="Navigation_About" Tag="About" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA1F;"/>
                     </NavigationViewItem.Icon>

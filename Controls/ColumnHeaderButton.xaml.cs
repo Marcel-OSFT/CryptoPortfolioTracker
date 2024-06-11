@@ -31,7 +31,7 @@ public enum SortingOrder
     Ascending = 2,
 }
 
-public sealed partial class ColumnHeaderButton : UserControl
+public sealed partial class ColumnHeaderButton : UserControl, IDisposable
 {
     public bool IsEnabled
     {
@@ -89,6 +89,7 @@ public sealed partial class ColumnHeaderButton : UserControl
     private static List<ColumnHeaderButton> _buttons = new();
     private static Brush _originalBrush;
     private bool _isClicked;
+    private bool _disposing;
 
     public ColumnHeaderButton()
     {
@@ -101,8 +102,7 @@ public sealed partial class ColumnHeaderButton : UserControl
     
     private static void SortingOrderChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-
-        if (d is ColumnHeaderButton btn && btn.SortingOrder is not SortingOrder.None && !btn._isClicked)
+        if (d is ColumnHeaderButton btn && btn.SortingOrder is not SortingOrder.None && !btn._isClicked && !btn._disposing)
         {
             switch (btn.SortingOrder)
             {
@@ -126,7 +126,7 @@ public sealed partial class ColumnHeaderButton : UserControl
     }
     private static void TextChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is ColumnHeaderButton btn)
+        if (d is ColumnHeaderButton btn && !btn._disposing)
         {
 
         }
@@ -189,4 +189,10 @@ public sealed partial class ColumnHeaderButton : UserControl
         }
     }
 
+    public void Dispose()
+    {
+        _disposing = true;
+
+        Command = null;
+    }
 }
