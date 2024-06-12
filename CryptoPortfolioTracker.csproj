@@ -71,6 +71,7 @@
     <None Remove="SplashScreen.xaml" />
     <None Remove="Views\GraphicView.xaml" />
     <None Remove="Views\SettingsView.xaml" />
+    <None Remove="Views\Temporary.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png">
@@ -333,6 +334,9 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\Temporary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Dialogs\AboutDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

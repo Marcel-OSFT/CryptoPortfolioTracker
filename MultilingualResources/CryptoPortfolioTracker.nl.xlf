@@ -886,6 +886,46 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>About</source>
           <target state="final">Over</target>
         </trans-unit>
+        <trans-unit id="AboutDialog_CoinGecko_Sub1.Text" translate="yes" xml:space="preserve">
+          <source>This app is retrieving its data using the public API provided by CoinGecko, a Crypto market data aggregator.</source>
+          <target state="final">Deze app haalt zijn gegevens op met behulp van de openbare API van CoinGecko, een Crypto-marktgegevensaggregator.</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_CoinGecko_Sub2.Text" translate="yes" xml:space="preserve">
+          <source>CoinGecko’s Public API has a rate limit of 5 to 15 calls per minute, depending on usage conditions worldwide. Most of the time it turns out to be around 5 requests per minute. When a 'Too Many Requests' occurs then a 30 seconds timeout is build in before re-trying the request.</source>
+          <target state="translated">De openbare API van CoinGecko heeft een snelheidslimiet van 5 tot 15 oproepen per minuut, afhankelijk van de gebruiksomstandigheden wereldwijd. Meestal blijkt het rond de 5 verzoeken per minuut te zijn. Wanneer er een 'Too Many Requests' optreedt, wordt er een time-out van 30 seconden aangehouden voordat het verzoek opnieuw wordt geprobeerd.</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_CoinGecko_Title.Text" translate="yes" xml:space="preserve">
+          <source>CoinGecko public API</source>
+          <target state="final">CoinGecko openbare API</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Contact_Sub1.Text" translate="yes" xml:space="preserve">
+          <source>The navigation menu on the left has an 'Help' option which opens a PDF document in your browser. This document is updated regularly, if needed.</source>
+          <target state="final">Het navigatiemenu aan de linkerkant heeft een 'Help'-optie waarmee een PDF-document in uw browser wordt geopend. Dit document wordt indien nodig regelmatig bijgewerkt.</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Contact_Sub2a.Text" translate="yes" xml:space="preserve">
+          <source>Need for additional support or do you have a question, comment or request? Please feel free to send me an email (</source>
+          <target state="final">Heeft u behoefte aan extra ondersteuning of heeft u een vraag, opmerking of verzoek? Stuur mij gerust een e-mail (</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Contact_Sub2b.Text" translate="yes" xml:space="preserve">
+          <source>) or contact me on Discord (</source>
+          <target state="final">) of neem contact met mij op via Discord (</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Contact_Title.Text" translate="yes" xml:space="preserve">
+          <source>Contact and Support</source>
+          <target state="final">Contact en ondersteuning</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Donation_Sub.Text" translate="yes" xml:space="preserve">
+          <source>If you find this app valuable and would like to support further development, you can make a donation to one of the following addresses:</source>
+          <target state="final">Als u deze app waardevol vindt en de verdere ontwikkeling wilt ondersteunen, kunt u een donatie doen op één van de volgende adressen:</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Donation_Title.Text" translate="yes" xml:space="preserve">
+          <source>Donation</source>
+          <target state="final">Donatie</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Version.Text" translate="yes" xml:space="preserve">
+          <source>Version</source>
+          <target state="final">Versie</target>
+        </trans-unit>
       </group>
     </body>
   </file>

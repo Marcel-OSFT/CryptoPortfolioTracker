@@ -226,7 +226,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
         lastPageType = pageType;
 
          contentFrame.Content = App.Container.GetService(pageType);
-       // contentFrame.Content = _currentServiceScope.ServiceProvider.GetService(pageType);
     }
 
     private void DisplayHelpFile()

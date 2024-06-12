@@ -120,6 +120,9 @@ public partial class App : Application
         services.AddScoped<MainPage>();
         services.AddScoped<LogWindow>();
         services.AddScoped<MainWindow>();
+       
+        
+        services.AddScoped<Temporary>();
 
 
         services.AddScoped<AssetsViewModel>();

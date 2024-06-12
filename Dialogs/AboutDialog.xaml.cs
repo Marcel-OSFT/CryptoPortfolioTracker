@@ -35,16 +35,11 @@ public partial class AboutDialog : ContentDialog
         ImagePath = App.appPath + "\\Assets\\CryptoPortfolioTracker.ico";
         BtcImage = App.appPath + "\\Assets\\bitcoin.png";
         EthImage = App.appPath + "\\Assets\\ethereum.png";
-        Version = "version " + App.ProductVersion;
+        Version = App.ProductVersion;
         InitializeComponent();
         DataContext = this;
         _theme = theme;
         SetDialogTitleAndButtons();
-
-        // BtcAddress = "BTC : 0xfedhuppeldepupeldepup";
-        // EthAddress = "ETH : 0x23deennogwatmeervandit";
-        
-
     }
 
     private async void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
