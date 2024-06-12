@@ -671,4 +671,34 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="AboutDialog_Title" xml:space="preserve">
     <value>Over</value>
   </data>
+  <data name="AboutDialog_CoinGecko_Sub1.Text" xml:space="preserve">
+    <value>Deze app haalt zijn gegevens op met behulp van de openbare API van CoinGecko, een Crypto-marktgegevensaggregator.</value>
+  </data>
+  <data name="AboutDialog_CoinGecko_Sub2.Text" xml:space="preserve">
+    <value>De openbare API van CoinGecko heeft een snelheidslimiet van 5 tot 15 oproepen per minuut, afhankelijk van de gebruiksomstandigheden wereldwijd. Meestal blijkt het rond de 5 verzoeken per minuut te zijn. Wanneer er een 'Too Many Requests' optreedt, wordt er een time-out van 30 seconden aangehouden voordat het verzoek opnieuw wordt geprobeerd.</value>
+  </data>
+  <data name="AboutDialog_CoinGecko_Title.Text" xml:space="preserve">
+    <value>CoinGecko openbare API</value>
+  </data>
+  <data name="AboutDialog_Contact_Sub1.Text" xml:space="preserve">
+    <value>Het navigatiemenu aan de linkerkant heeft een 'Help'-optie waarmee een PDF-document in uw browser wordt geopend. Dit document wordt indien nodig regelmatig bijgewerkt.</value>
+  </data>
+  <data name="AboutDialog_Contact_Sub2a.Text" xml:space="preserve">
+    <value>Heeft u behoefte aan extra ondersteuning of heeft u een vraag, opmerking of verzoek? Stuur mij gerust een e-mail (</value>
+  </data>
+  <data name="AboutDialog_Contact_Sub2b.Text" xml:space="preserve">
+    <value>) of neem contact met mij op via Discord (</value>
+  </data>
+  <data name="AboutDialog_Contact_Title.Text" xml:space="preserve">
+    <value>Contact en ondersteuning</value>
+  </data>
+  <data name="AboutDialog_Donation_Sub.Text" xml:space="preserve">
+    <value>Als u deze app waardevol vindt en de verdere ontwikkeling wilt ondersteunen, kunt u een donatie doen op één van de volgende adressen:</value>
+  </data>
+  <data name="AboutDialog_Donation_Title.Text" xml:space="preserve">
+    <value>Donatie</value>
+  </data>
+  <data name="AboutDialog_Version.Text" xml:space="preserve">
+    <value>Versie</value>
+  </data>
 </root>

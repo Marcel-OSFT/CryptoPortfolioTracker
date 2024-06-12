@@ -6,6 +6,7 @@
     xmlns:local="using:CryptoPortfolioTracker.Dialogs"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:l="using:WinUI3Localizer"
     Loading="Dialog_Loading"
     Name="Root"
     mc:Ignorable="d">
@@ -28,15 +29,27 @@
             <Grid Width="500">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="center" Grid.Row="0">
-                <Image Source="{Binding ImagePath}" Width="100" Height="100" VerticalAlignment="Center" Margin="0,0,30,0" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Margin="100,0,0,0">
+                <Image Source="{Binding ImagePath}" Width="70" Height="70" VerticalAlignment="Center" Margin="0,0,30,0" />
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Crypto Portfolio Tracker" Foreground="Peru" FontWeight="SemiBold" HorizontalTextAlignment="Center" FontSize="18"/>
-                    <TextBlock Text="{Binding Version}" Foreground="Gray" HorizontalTextAlignment="Center" FontSize="14"/>
+                    <TextBlock  Text="Crypto Portfolio Tracker" 
+                                Foreground="Goldenrod" 
+                                FontWeight="SemiBold" 
+                                HorizontalTextAlignment="Center" 
+                                FontSize="18"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock l:Uids.Uid="AboutDialog_Version" 
+                                   Foreground="Gray" 
+                                   HorizontalTextAlignment="Center" 
+                                   FontSize="14" Margin="0,0,5,0"/>
+                        <TextBlock Text="{Binding Version}" 
+                                   Foreground="Gray" 
+                                   HorizontalTextAlignment="Center" 
+                                   FontSize="14"/>
+                    </StackPanel>
                     <TextBlock Text="mk-osft © 2024" Foreground="Gray" HorizontalTextAlignment="Center" FontSize="14"/>
                 </StackPanel>
             </StackPanel>
@@ -44,48 +57,51 @@
             
 
             <StackPanel Grid.Row="1">
-                <RichTextBlock Name="CoinGecko" SelectionHighlightColor="Green" Margin="15,20,15,20" >
+                <RichTextBlock Name="CoinGecko" Margin="15,5,15,10" IsTextSelectionEnabled="False" >
                     <Paragraph TextAlignment="Left" Margin="0,0,0,5">
-                        <Run FontSize="16" Text="CoinGecko public API" FontWeight="SemiBold" TextDecorations="Underline"/>
+                        <Run l:Uids.Uid="AboutDialog_CoinGecko_Title" FontSize="16" FontWeight="SemiBold" TextDecorations="Underline"/>
                     </Paragraph>
                     <Paragraph TextAlignment="Left" Margin="0,0,0,10">
-                        <Run FontSize="12" 
-                             Text="This app is retrieving its data using the public API provided by CoinGecko, a Crypto market data aggregator."  />
+                        <Run FontSize="14" l:Uids.Uid="AboutDialog_CoinGecko_Sub1" />
                     </Paragraph>
                     <Paragraph TextAlignment="Left" Margin="0,0,0,10">
-                        <Run FontSize="12" 
-                            Text="CoinGecko’s Public API has a rate limit of 5 to 15 calls per minute, depending on usage conditions worldwide. Most of the time it turns out to be around 5 requests per minute. When a 'Too Many Requests' occurs then a 30 seconds timeout is build in before re-trying the request. " />
+                        <Run FontSize="14" l:Uids.Uid="AboutDialog_CoinGecko_Sub2" />
                     </Paragraph>
 
                 </RichTextBlock>
 
-                <RichTextBlock Name="Donation" SelectionHighlightColor="Green"  Margin="15,0,15,10" >
+                <RichTextBlock Name="Donation" Margin="15,0,15,10" IsTextSelectionEnabled="False" >
                     <Paragraph TextAlignment="Left" Margin="0,0,0,5">
-                        <Run FontSize="16" Text="Donation" FontWeight="SemiBold" TextDecorations="Underline"/>
+                        <Run l:Uids.Uid="AboutDialog_Donation_Title" FontSize="16" FontWeight="SemiBold" TextDecorations="Underline"/>
                     </Paragraph>
                     <Paragraph TextAlignment="Left" Margin="0,0,0,10">
-                        <Run FontSize="12"  Text="If you find this app valuable and would like to support further development, you can make a donation to one of the following addresses: "  />
+                        <Run FontSize="14" l:Uids.Uid="AboutDialog_Donation_Sub" />
                     </Paragraph>
                 </RichTextBlock>
-                <StackPanel Orientation="Horizontal" Margin="100,10,0,0">
+                <StackPanel Orientation="Horizontal" Margin="50,0,0,0">
                     <Image Source="{Binding BtcImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding BtcAddress}" FontSize="12" IsTextSelectionEnabled="True"/>
+                    <TextBlock Text="{Binding BtcAddress}" FontSize="14" SelectionHighlightColor="Green" IsTextSelectionEnabled="True" Foreground="Goldenrod"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="100,10,0,0">
+                <StackPanel Orientation="Horizontal" Margin="50,5,0,0">
                     <Image Source="{Binding EthImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding EthAddress}" FontSize="12" IsTextSelectionEnabled="True" />
+                    <TextBlock Text="{Binding EthAddress}" FontSize="14" SelectionHighlightColor="Green" IsTextSelectionEnabled="True" Foreground="Goldenrod" />
                 </StackPanel>
 
-                <RichTextBlock Name="Support" SelectionHighlightColor="Green" Margin="15,20,15,10" >
+                <RichTextBlock Name="Support1" Margin="15,10,15,10" IsTextSelectionEnabled="False"  >
                     <Paragraph TextAlignment="Left" Margin="0,0,0,5">
-                        <Run FontSize="16" Text="Contact and Support" FontWeight="SemiBold" TextDecorations="Underline"/>
+                        <Run FontSize="16" l:Uids.Uid="AboutDialog_Contact_Title" FontWeight="SemiBold" TextDecorations="Underline"/>
                     </Paragraph>
                     <Paragraph TextAlignment="Left" Margin="0,0,0,10">
-                        <Run FontSize="12" Text="The navigation menu on the left has an 'Help' option which opens a PDF document in your browser. This document is updated regularly, if needed."  />
+                        <Run FontSize="14" l:Uids.Uid="AboutDialog_Contact_Sub1" />
                     </Paragraph>
-
-                    <Paragraph TextAlignment="Left" Margin="0,0,0,10">
-                        <Run FontSize="12" Text="Need for additional support or do you have a question, comment or request? Please feel free to send me an email (mk_osft@hotmail.com) or contact me on Discord (MarcelK)."  />
+                    </RichTextBlock>
+                <RichTextBlock Name="Support2" SelectionHighlightColor="Green" Margin="15,0,15,10" IsTextSelectionEnabled="True">
+                    <Paragraph TextAlignment="Left" Margin="0,0,0,10" >
+                        <Run l:Uids.Uid="AboutDialog_Contact_Sub2a" FontSize="14" />
+                        <Run Text="mk_osft@hotmail.com" FontStyle="Italic" Foreground="Goldenrod" />
+                        <Run l:Uids.Uid="AboutDialog_Contact_Sub2b" />
+                        <Run Text="MarcelK" FontStyle="Italic" Foreground="Goldenrod"/> 
+                        <Run Text=")."  />
                     </Paragraph>
 
                 </RichTextBlock>

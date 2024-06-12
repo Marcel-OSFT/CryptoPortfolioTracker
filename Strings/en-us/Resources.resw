@@ -776,4 +776,34 @@ Build up your assets by adding transactions using the 'Add a new Transaction' bu
   <data name="AboutDialog_Title" xml:space="preserve">
     <value>About</value>
   </data>
+  <data name="AboutDialog_CoinGecko_Sub1.Text" xml:space="preserve">
+    <value>This app is retrieving its data using the public API provided by CoinGecko, a Crypto market data aggregator.</value>
+  </data>
+  <data name="AboutDialog_CoinGecko_Sub2.Text" xml:space="preserve">
+    <value>CoinGecko’s Public API has a rate limit of 5 to 15 calls per minute, depending on usage conditions worldwide. Most of the time it turns out to be around 5 requests per minute. When a 'Too Many Requests' occurs then a 30 seconds timeout is build in before re-trying the request.</value>
+  </data>
+  <data name="AboutDialog_CoinGecko_Title.Text" xml:space="preserve">
+    <value>CoinGecko public API</value>
+  </data>
+  <data name="AboutDialog_Contact_Sub1.Text" xml:space="preserve">
+    <value>The navigation menu on the left has an 'Help' option which opens a PDF document in your browser. This document is updated regularly, if needed.</value>
+  </data>
+  <data name="AboutDialog_Contact_Sub2a.Text" xml:space="preserve">
+    <value>Need for additional support or do you have a question, comment or request? Please feel free to send me an email (</value>
+  </data>
+  <data name="AboutDialog_Contact_Sub2b.Text" xml:space="preserve">
+    <value>) or contact me on Discord (</value>
+  </data>
+  <data name="AboutDialog_Contact_Title.Text" xml:space="preserve">
+    <value>Contact and Support</value>
+  </data>
+  <data name="AboutDialog_Donation_Sub.Text" xml:space="preserve">
+    <value>If you find this app valuable and would like to support further development, you can make a donation to one of the following addresses:</value>
+  </data>
+  <data name="AboutDialog_Donation_Title.Text" xml:space="preserve">
+    <value>Donation</value>
+  </data>
+  <data name="AboutDialog_Version.Text" xml:space="preserve">
+    <value>Version</value>
+  </data>
 </root>
