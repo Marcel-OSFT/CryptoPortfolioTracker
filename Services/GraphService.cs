@@ -45,6 +45,7 @@ namespace CryptoPortfolioTracker.Services
                 {
                     using FileStream openStream = File.OpenRead(fileName);
                     graph = await JsonSerializer.DeserializeAsync<Graph>(openStream);
+                    Logger.Information("Graph data de-serialized succesfully ({0} data points)", graph.DataPointsPortfolio.Count);
                 }
 
                 fileName = App.appDataPath + "\\MarketCharts\\HistoryBuffer.json";
@@ -53,7 +54,11 @@ namespace CryptoPortfolioTracker.Services
                     using FileStream openStream = File.OpenRead(fileName);
                     HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataById>>(openStream);
                 }
-                Logger.Information("Graph data de-serialized succesfully ({0} data points)", graph.DataPointsPortfolio.Count );
+
+                if (graph is null)
+                {
+                    graph = new();
+                }
             }
             catch (Exception ex)
             {
@@ -178,12 +183,12 @@ namespace CryptoPortfolioTracker.Services
 
         public bool IsModificationRequested()
         {
-            return graph.IsModificationRequested;
+            return  graph is not null ? graph.IsModificationRequested : false;
         }
 
         public DateOnly GetModifyFromDate()
         {
-            return graph.ModifyFromDate;
+            return graph is not null ? graph.ModifyFromDate : DateOnly.MinValue;
         }
 
         public void AddDataPointInFlow(DataPoint dataPoint)

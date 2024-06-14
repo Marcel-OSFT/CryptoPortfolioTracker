@@ -152,6 +152,7 @@
                 IsEntryValid="{Binding Validator.EntryCollection[4], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}"
                 PointerPressed="QtyOrPrice_pressed" 
+                LostFocus="TBoxQtyA_LostFocus"
                 Width="160" Margin="5,0,5,0"/>
             <controls:RegExTextBox l:Uids.Uid="TransactionDialog_PriceA" x:Name ="TBoxPriceA" 
                 RegEx="RegExPositiveDecimal" 
