@@ -13,21 +13,13 @@ namespace CryptoPortfolioTracker.Services
     {
         bool IsLoadingFromJson { get; set; }
         public Task LoadGraphFromJson();
-
         public Task SaveGraphToJson();
-
         public Task SaveHistoricalDataBufferToJson();
-
         public Task RegisterModification(Transaction transactionA, Transaction? transactionB = null);
-
         public Task ApplyModification();
-
         public ObservableCollection<DateTimePoint> GetPortfolioValues();
-
         public ObservableCollection<DateTimePoint> GetInFlowValues();
-
         public ObservableCollection<DateTimePoint> GetOutFlowValues();
-
         public bool IsModificationRequested();
         public DateOnly GetModifyFromDate();
         public void ClearHistoricalDataBuffer();

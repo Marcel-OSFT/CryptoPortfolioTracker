@@ -12,11 +12,12 @@ namespace CryptoPortfolioTracker.Helpers;
 public class ItemsRepeaterLogBroker : IWinUi3LogBroker
 {
     private readonly ILogViewModelBuilder _logViewModelBuilder;
+    public Action<LogEvent> AddLogEvent { get; }
+    public DispatcherQueue DispatcherQueue { get; }
+    public bool IsAutoScrollOn { get; set; }
+    private ObservableCollection<ILogViewModel> Logs { get; init; } = new();
 
-    public ItemsRepeaterLogBroker(
-        ItemsRepeater itemsRepeater,
-        ScrollViewer scrollViewer,
-        ILogViewModelBuilder logViewModelBuilder)
+    public ItemsRepeaterLogBroker(ItemsRepeater itemsRepeater, ScrollViewer scrollViewer, ILogViewModelBuilder logViewModelBuilder)
     {
         itemsRepeater.SetBinding(ItemsRepeater.ItemsSourceProperty, new Binding() { Source = Logs });
 
@@ -37,18 +38,5 @@ public class ItemsRepeaterLogBroker : IWinUi3LogBroker
         };
     }
 
-    public Action<LogEvent> AddLogEvent
-    {
-        get;
-    }
-    public DispatcherQueue DispatcherQueue
-    {
-        get;
-    }
-    public bool IsAutoScrollOn
-    {
-        get; set;
-    }
-
-    private ObservableCollection<ILogViewModel> Logs { get; init; } = new();
+    
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using CryptoPortfolioTracker.Helpers;
 using CryptoPortfolioTracker.Services;
 using Microsoft.UI;
@@ -20,7 +19,6 @@ public sealed partial class LogWindow : Window
     private LoggingLevelSwitch _levelSwitch;
     private ItemsRepeaterLogBroker _logBroker;
     private readonly IPreferencesService _preferencesService;
-
     private ILogger Logger  { get; set; }
 
 
@@ -65,23 +63,19 @@ public sealed partial class LogWindow : Window
             new EmojiLogViewModelBuilder((defaultTextForegroundBrush as SolidColorBrush)?.Color)
 
                 .SetTimestampFormat(new ExpressionTemplate("[{@t:yyyy-MM-dd HH:mm:ss.fff}]"))
-
                 .SetLevelsFormat(new ExpressionTemplate("{@l:u3}"))
                 .SetLevelForeground(LogEventLevel.Verbose, Colors.Gray)
                 .SetLevelForeground(LogEventLevel.Debug, Colors.Gray)
                 .SetLevelForeground(LogEventLevel.Warning, Colors.Yellow)
                 .SetLevelForeground(LogEventLevel.Error, Colors.Red)
                 .SetLevelForeground(LogEventLevel.Fatal, Colors.HotPink)
-
                 .SetSourceContextFormat(new ExpressionTemplate("{Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}"))
-
                 .SetMessageFormat(new ExpressionTemplate("{@m}"))
                 .SetMessageForeground(LogEventLevel.Verbose, Colors.Gray)
                 .SetMessageForeground(LogEventLevel.Debug, Colors.Gray)
                 .SetMessageForeground(LogEventLevel.Warning, Colors.Yellow)
                 .SetMessageForeground(LogEventLevel.Error, Colors.Red)
                 .SetMessageForeground(LogEventLevel.Fatal, Colors.HotPink)
-
                 .SetExceptionFormat(new ExpressionTemplate("{@x}"))
                 .SetExceptionForeground(Colors.HotPink)
                 );

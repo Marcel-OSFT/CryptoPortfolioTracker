@@ -237,7 +237,7 @@
   <data name="Assets_Explainer.Text" xml:space="preserve">
     <value>Assets are the crypto currencies that you have in portfolio at one or more accounts.
 Crypto of your interest need to be added first to the Coin Library. Also one or more accounts need to be configured.
-Build up your assets by adding transactions using the 'Add a new Transaction' button at the bottom of this window.</value>
+Build up your assets by adding transactions using the 'Add Transaction' button at the bottom of this window.</value>
   </data>
   <data name="Assets_Title.Text" xml:space="preserve">
     <value>Assets</value>

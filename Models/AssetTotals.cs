@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Xml.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CryptoPortfolioTracker.Models;
 
@@ -24,7 +19,6 @@ public partial class AssetTotals : BaseModel
     [ObservableProperty] private Coin coin = new();
     [ObservableProperty] private bool isHidden = false;
 
-    // 'On...Changed'and 'On...Changing' methods provided by the 'ObservableProperty' implementation
     partial void OnQtyChanged(double value)
     {
         if (Coin != null && Coin.Name != string.Empty) MarketValue = value * Coin.Price;

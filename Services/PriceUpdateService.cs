@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Infrastructure;
@@ -11,27 +8,19 @@ using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
 using LanguageExt;
-using LanguageExt.ClassInstances;
 using LanguageExt.Common;
 using LanguageExt.Pipes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.UI;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
 using Serilog.Core;
-using Windows.ApplicationModel.Appointments;
-using Windows.UI;
-using Windows.UI.Notifications;
-using static System.Net.WebRequestMethods;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 using HttpClient = System.Net.Http.HttpClient;
 
 namespace CryptoPortfolioTracker.Services;
 
-public class PriceUpdateService : IPriceUpdateService, IDisposable
+public class PriceUpdateService : IPriceUpdateService
 {
     private readonly PeriodicTimer timer;
     private readonly CancellationTokenSource cts = new();
@@ -39,7 +28,6 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
     private readonly PortfolioContext coinContext;
     private readonly IPreferencesService _preferencesService;
     private readonly IAssetService _assetService;
-
     private static ILogger Logger
     {
         get; set;
@@ -112,7 +100,6 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
 
     private async Task UpdatePricesAllCoins()
     {
-
         var coinIdsTemp = await coinContext.Coins.Where(x => x.Name.Length<=12 || (x.Name.Length>12 && x.Name.Substring(x.Name.Length-12) != "_pre-listing") ).Select(c => c.ApiId).ToListAsync();
         if (!coinIdsTemp.Any())
         {
@@ -276,11 +263,6 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             var coinResult = await UpdatePriceCoin(coinData);
             coinResult.IfFail(err => error = err);
         }
-        //if (AssetsViewModel.Current is not null)
-        //{
-        //    //await AssetsViewModel.Current.CalculateAssetsTotalValues();
-        //    await _assetService.CalculateAssetsTotalValues();
-        //}
         return error == null ? true : new Result<bool>(error);
     }
     private async Task<Result<Coin>> UpdatePriceCoin(CoinMarkets coinData)
@@ -307,7 +289,6 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
             if (AssetsViewModel.Current is not null)
             {
                 Logger.Information("Updating Assets Overview");
-                //AssetsViewModel.Current.UpdatePricesAssetTotals(coin, oldPrice, newPrice);
                 _assetService.UpdatePricesAssetTotals(coin, oldPrice, newPrice);
             }
         }
@@ -319,13 +300,6 @@ public class PriceUpdateService : IPriceUpdateService, IDisposable
         return coin;
     }
     
-    public void Dispose() // Implement IDisposable
-    {
-        Stop();
-        timer.Dispose();
-        //GC.SuppressFinalize(this);
-    }
-
 }
 
 

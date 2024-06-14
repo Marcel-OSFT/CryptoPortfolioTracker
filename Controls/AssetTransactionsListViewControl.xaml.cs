@@ -4,10 +4,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CryptoPortfolioTracker.Controls;
 
 public partial class AssetTransactionsListViewControl : UserControl
@@ -40,13 +36,5 @@ public partial class AssetTransactionsListViewControl : UserControl
         }
 
     }
-
-    private void Control_Unload(object sender, RoutedEventArgs e)
-    {
-        //AssetTransactionListView = null;
-        //DataContext = null;
-        //ColumnHeaders = null;
-    }
-
     
 }

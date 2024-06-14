@@ -11,9 +11,9 @@
     PrimaryButtonClick="Button_Click_AcceptCoin">
     
     <ContentDialog.Resources>
-    <!-- Overriding ContentDialogMaxWidth value -->
-    <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
-</ContentDialog.Resources>
+        <!-- Overriding ContentDialogMaxWidth value -->
+        <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
+    </ContentDialog.Resources>
 
     
     <Grid  Margin="0,0,0,0" Width="600">

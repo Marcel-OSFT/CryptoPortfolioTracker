@@ -10,7 +10,6 @@
     x:Name="Root"
     mc:Ignorable="d">
 
-
     <Grid>
 
         <AutoSuggestBox Name="innerASBox"
@@ -22,7 +21,6 @@
                         SuggestionChosen="InnerASBox_SuggestionChosen"
                         KeyDown="InnerASBox_KeyDown"
                         />
-
 
     </Grid>
 

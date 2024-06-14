@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Helpers;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using LanguageExt;
@@ -19,18 +18,10 @@ public partial class AccountService : ObservableObject, IAccountService
     [ObservableProperty] private static ObservableCollection<Account>? listAccounts;
     [ObservableProperty] private static ObservableCollection<AssetAccount>? listAssetAccounts;
 
-
     public AccountService(PortfolioContext portfolioContext)
     {
         context = portfolioContext;
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="newAccount"></param>
-    /// <returns></returns>
-
     public async Task<ObservableCollection<Account>> PopulateAccountsList()
     {
         var getAccountsResult = await GetAccounts();
@@ -49,7 +40,6 @@ public partial class AccountService : ObservableObject, IAccountService
 
         return ListAssetAccounts;
     }
-
     public void ClearAccountsByAssetList()
     {
         if (ListAssetAccounts is not null)
@@ -57,14 +47,10 @@ public partial class AccountService : ObservableObject, IAccountService
             ListAssetAccounts.Clear(); 
         }
     }
-
     public AssetAccount GetAffectedAccount(Transaction transaction)
     {
         return ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
     }
-
-
-
     public bool IsAccountHoldingAssets(Account account)
     {
         if (account is null || ListAccounts is null) { return false; }
@@ -79,35 +65,6 @@ public partial class AccountService : ObservableObject, IAccountService
         }
         return result;
     }
-
-    private async Task<Result<List<AssetAccount>>> GetAccountsByAsset(int coinId)
-    {
-        if (coinId <= 0) { return new List<AssetAccount>(); }
-        List<AssetAccount> assetAccounts;
-        try
-        {
-            assetAccounts = await context.Assets
-                .Include(x => x.Coin)
-                .Where(c => c.Coin.Id == coinId)
-                .Include(a => a.Account)
-                .Select(assets => new AssetAccount
-                {
-                    Qty = assets.Qty,
-                    Name = assets.Account.Name,
-                    Symbol = assets.Coin.Symbol,
-                    AssetId = assets.Id,
-
-                }).ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            return new Result<List<AssetAccount>>(ex);
-        }
-        assetAccounts ??= new List<AssetAccount>();
-
-        return assetAccounts;
-    }
-
     public Task RemoveFromListAccounts(int accountId)
     {
         if (ListAccounts is null) { return Task.FromResult(false); }
@@ -122,7 +79,6 @@ public partial class AccountService : ObservableObject, IAccountService
         }
         return Task.FromResult(true);
     }
-
     public Task AddToListAccounts(Account? newAccount)
     {
         if (ListAccounts is null || newAccount is null) { return Task.FromResult(false); }
@@ -134,9 +90,6 @@ public partial class AccountService : ObservableObject, IAccountService
 
         return Task.FromResult(true);
     }
-
-
-
     public async Task UpdateListAssetAccount(AssetAccount accountAffected)
     {
 
@@ -172,7 +125,6 @@ public partial class AccountService : ObservableObject, IAccountService
                 }
             });
     }
-
     public async Task<Result<AssetAccount>> GetAccountByAsset(int assetId)
     {
         if (assetId <= 0) { return new AssetAccount(); }
@@ -199,17 +151,6 @@ public partial class AccountService : ObservableObject, IAccountService
 
         return assetAccount ?? new AssetAccount();
     }
-
-
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="newAccount"></param>
-    /// <returns></returns>
-
-
     public async Task<Result<bool>> CreateAccount(Account? newAccount)
     {
         bool _result;
@@ -226,7 +167,6 @@ public partial class AccountService : ObservableObject, IAccountService
         }
         return _result;
     }
-
     public async Task<Result<bool>> EditAccount(Account newAccount, Account accountToEdit)
     {
         bool _result;
@@ -248,7 +188,6 @@ public partial class AccountService : ObservableObject, IAccountService
         }
         return _result;
     }
-
     public async Task<Result<bool>> RemoveAccount(int accountId)
     {
         bool _result;
@@ -265,7 +204,6 @@ public partial class AccountService : ObservableObject, IAccountService
         }
         return _result;
     }
-
     public async Task<Result<List<Account>>> GetAccounts()
     {
         List<Account> accounts;
@@ -310,32 +248,6 @@ public partial class AccountService : ObservableObject, IAccountService
         }
         return account;
     }
-
-    public async Task<Result<List<AssetTotals>>> GetAssetsByAccount(int accountId)
-    {
-        List<AssetTotals> assetsTotals;
-        if (accountId <= 0) { return new List<AssetTotals>(); }
-        try
-        {
-            assetsTotals = await context.Assets
-            .Where(c => c.Account.Id == accountId)
-            .Include(x => x.Coin)
-            .GroupBy(asset => asset.Coin)
-            .Select(assetGroup => new AssetTotals
-            {
-                Qty = assetGroup.Sum(x => x.Qty),
-                CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
-                Coin = assetGroup.Key
-            })
-            .ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            return new Result<List<AssetTotals>>(ex);
-        }
-        return assetsTotals;
-    }
-
     public async Task<Result<bool>> AccountHasNoAssets(int accountId)
     {
         Account account;
@@ -352,6 +264,33 @@ public partial class AccountService : ObservableObject, IAccountService
             return new Result<bool>(ex);
         }
         return account.Assets == null || account.Assets.Count == 0;
+    }
+    private async Task<Result<List<AssetAccount>>> GetAccountsByAsset(int coinId)
+    {
+        if (coinId <= 0) { return new List<AssetAccount>(); }
+        List<AssetAccount> assetAccounts;
+        try
+        {
+            assetAccounts = await context.Assets
+                .Include(x => x.Coin)
+                .Where(c => c.Coin.Id == coinId)
+                .Include(a => a.Account)
+                .Select(assets => new AssetAccount
+                {
+                    Qty = assets.Qty,
+                    Name = assets.Account.Name,
+                    Symbol = assets.Coin.Symbol,
+                    AssetId = assets.Id,
+
+                }).ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<AssetAccount>>(ex);
+        }
+        assetAccounts ??= new List<AssetAccount>();
+
+        return assetAccounts;
     }
 
 }

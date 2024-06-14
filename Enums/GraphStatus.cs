@@ -1,10 +1,10 @@
 ﻿
-namespace CryptoPortfolioTracker.Enums
+namespace CryptoPortfolioTracker.Enums;
+
+public enum GraphStatus
 {
-    public enum GraphStatus
-    {
-        Idle = 0,
-        Updating = 1,
-        Modifying = 2,
-    }
+    Idle = 0,
+    Updating = 1,
+    Modifying = 2,
 }
+

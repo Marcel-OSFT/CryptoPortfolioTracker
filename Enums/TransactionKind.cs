@@ -19,7 +19,6 @@ public static class TransactionKindExt
     {
         var loc = Localizer.Get();
 
-
         switch (transactionKind)
         {
             case TransactionKind.Deposit: return loc.GetLocalizedString("TransactionKind_Deposit");
@@ -28,7 +27,6 @@ public static class TransactionKindExt
             case TransactionKind.Convert: return loc.GetLocalizedString("TransactionKind_Convert");
             case TransactionKind.Buy: return loc.GetLocalizedString("TransactionKind_Buy");
             case TransactionKind.Sell: return loc.GetLocalizedString("TransactionKind_Sell");
-
         }
         return string.Empty;
     }

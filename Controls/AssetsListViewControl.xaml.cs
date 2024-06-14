@@ -12,19 +12,12 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using WinUI3Localizer;
 
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CryptoPortfolioTracker.Controls;
 
-public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged, IDisposable
+public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
 {
-    // public readonly AssetsViewModel _viewModel;
-
     private int selectedItemIndex;
     private bool isSettingIndex;
-
 
     //***********************************************//
     //** All databound fields are in the viewModel**//
@@ -60,16 +53,6 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
        //dummy
     }
 
-    private void Control_Unload(object sender, RoutedEventArgs e)
-    {
-        
-    }
-
-    public void Dispose()
-    {
-        
-    }
-
     /// <summary>
     /// Changing selection will be monitored. After sorting a list, the SelectedItem is set to NULL
     /// After an price update thelist is automatically sorted again. An eventual slected Item will be 
@@ -79,7 +62,6 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
     /// <param name="e"></param>
     private void AssetsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        
         if (sender is ListView listView)
         {
             if (listView.SelectedItem is AssetTotals asset)
@@ -98,7 +80,6 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
                 listView.SelectedIndex = selectedItemIndex;
             }
         }
-
     }
 
     

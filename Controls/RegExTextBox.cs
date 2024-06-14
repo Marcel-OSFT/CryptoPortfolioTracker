@@ -12,9 +12,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Windows.System;
+using System.Text.RegularExpressions;
 
 namespace CryptoPortfolioTracker.Controls;
-
 
 public enum MyEnum
 {
@@ -40,7 +40,6 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
     const string RegExIntNl = "^(-?)([0-9])?([^\\,])([0-9])*$";
 
     public event EventHandler? TextChanged;
-    //public event EventHandler<KeyRoutedEventArgs>? KeyDown;
     public event EventHandler<PointerRoutedEventArgs>? PointerPressed;
 
     public RegExTextBox()
@@ -56,25 +55,17 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         {
             regExChoosen = CustomRegEx;
         }
-
         TextBoxExtensions.SetValidationMode(this, TextBoxExtensions.ValidationMode.Forced);
-
         (this as TextBox).TextChanged += TextEntryChanged;
-        
-
         if (AnimateBorder)
         {
             InitBorderBrush();
         }
-
         base.OnApplyTemplate();
     }
 
-
     public bool AnimateBorder { get; set; } = true;
-   // public bool IsZeroAllowed { get; set; } = true;
     private string? regExChoosen;
-
     private static MyEnum SelectedRegEx;
     private static bool invalidKeyEntered;
 
@@ -83,7 +74,6 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         get => (bool)GetValue(IsZeroAllowedProperty);
         set => SetValue(IsZeroAllowedProperty, value);
     }
-
 
     public bool IsEntryValid
     {
@@ -109,7 +99,6 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         set => SetValue(DecimalSeparatorProperty, value);
     }
 
-
     private string customRegEx;
     public string CustomRegEx
     {
@@ -120,19 +109,16 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
             {
                 return;
             }
-
             customRegEx = value;
             TextBoxExtensions.SetRegex(this, customRegEx);
             OnPropertyChanged();
         }
     }
 
-
-
     // Using a DependencyProperty as the backing store for Ownenum.  This enables animation, styling, binding, etc...  
     public static readonly DependencyProperty RegExProperty = DependencyProperty.Register("RegEx", typeof(MyEnum), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(RegExChangedCallBack)));
     public static readonly DependencyProperty IsEntryValidProperty = DependencyProperty.Register("IsEntryValid", typeof(bool), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(IsEntryValidChangedCallBack)));
-    public static readonly DependencyProperty IsZeroAllowedProperty = DependencyProperty.Register("IsZeroAllowed", typeof(bool), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(IsZeroAllowedChangedCallBack)));
+    public static readonly DependencyProperty IsZeroAllowedProperty = DependencyProperty.Register("IsZeroAllowed", typeof(bool), typeof(RegExTextBox), null);
     public static readonly DependencyProperty DecimalSeparatorProperty = DependencyProperty.Register("DecimalSeparator", typeof(string), typeof(RegExTextBox), new PropertyMetadata(0, new PropertyChangedCallback(DecimalSeparatorChangedCallBack)));
 
     private static void DecimalSeparatorChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -142,7 +128,6 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
             Debug.WriteLine("Separator " + tbox.DecimalSeparator);
             tbox.SetRegex(tbox.RegEx);
         }
-        
     }
 
     private static void IsEntryValidChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -152,14 +137,12 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
             tbox.SetBorderColor();
         }
     }
-    private static void IsZeroAllowedChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        
-    }
 
     private void TextEntryChanged(object sender, RoutedEventArgs e)
     {
-       if (invalidKeyEntered)
+        var _text = (sender as TextBox).Text;
+
+        if (invalidKeyEntered)
         {
             var cursorPosition = SelectionStart - 1;
             if (cursorPosition >= 0) 
@@ -178,7 +161,8 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         }
         else
         {
-            IsEntryValid = TextBoxExtensions.GetIsValid(this);
+            IsEntryValid = Text == Regex.Match(Text, regExChoosen).Value;
+            //IsEntryValid = TextBoxExtensions.GetIsValid(this); //<= this one doesn't work properly... does not allow 1 decimal...
         }
         OnPropertyChanged(nameof(Text));
         TextChanged?.Invoke(this, EventArgs.Empty);
@@ -209,13 +193,11 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         {
             thisInstance.SetRegex((MyEnum)e.NewValue);
         }
-
     }
 
     private void SetRegex(MyEnum value)
     {
         if (DecimalSeparator == string.Empty) { return; }
-
         SelectedRegEx = value;
         switch (SelectedRegEx)
         {
@@ -223,7 +205,6 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
                 regExChoosen = DecimalSeparator == "." ? RegExPositiveDecimalEn : RegExPositiveDecimalNl;
                 KeyDown += (sender, e) => KeyDownNumeric(sender, e, true, true);
                 break;
-
             case MyEnum.RegExPositiveInt:
                 regExChoosen = DecimalSeparator == "." ? RegExPositiveIntEn : RegExPositiveIntNl;
                 KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, true);
@@ -241,15 +222,10 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
             case MyEnum.RegExInt:
                 regExChoosen = DecimalSeparator == "." ? RegExIntEn : RegExIntNl;
                 KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, false);
-
                 break;
-            default:
-                break;
-
         }
         Debug.WriteLine("SetRegex " + regExChoosen);
         TextBoxExtensions.SetRegex(this, regExChoosen);
-
     }
 
     private void This_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -257,14 +233,9 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         PointerPressed?.Invoke(this, e);
     }
 
-
     private static void KeyDownNumeric(object sender, KeyRoutedEventArgs e, bool _isDecimal, bool _isOnlyPositive)
     {
-        if (sender is not RegExTextBox thisInstance)
-        {
-            return;
-        }
-        // Initialize the flag to false.
+        if (sender is not RegExTextBox thisInstance)  { return; }
         invalidKeyEntered = false;
         var decimalChar = thisInstance.DecimalSeparator;
         var decimalKey = decimalChar == "." ? 190 : 188;
@@ -302,13 +273,11 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         }
         //If shift key was pressed, it's not a number.
         var modKey = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
-        
         if ( modKey.HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down))
         {
             invalidKeyEntered = true;
         }
     }
-
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>

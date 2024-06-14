@@ -4,14 +4,11 @@ using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using LiveChartsCore.Defaults;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -24,18 +21,12 @@ namespace CryptoPortfolioTracker.Services
     {
         private Graph graph;
         private static ILogger Logger { get; set; }
-
         private List<HistoricalDataById> HistoricalDataByIdsBufferList { get; set; }
-
         [ObservableProperty] bool isLoadingFromJson;
-
-
-
 
         public GraphService() 
         {
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
-            //graph = new();
             HistoricalDataByIdsBufferList = new();
         }
 
@@ -44,9 +35,6 @@ namespace CryptoPortfolioTracker.Services
             try
             {
                 IsLoadingFromJson = true;
-
-                // test
-               // await Task.Delay(5000);
 
                 if (!Directory.Exists(App.appDataPath + "\\MarketCharts"))
                 {

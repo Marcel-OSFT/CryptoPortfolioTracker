@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 
 namespace CryptoPortfolioTracker.Models;
 public class DataPoint

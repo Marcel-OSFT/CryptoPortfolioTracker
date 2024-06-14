@@ -11,7 +11,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
-using SQLitePCL;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
@@ -63,7 +62,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
         Current = this;
         _preferencesService = preferencesService;
         InitializeFields();
-        
     }
 
     public void Dispose()
@@ -81,7 +79,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
         IsScrollBarsExpanded = _preferencesService.GetExpandingScrollBars();
         AppTheme = _preferencesService.GetAppTheme();
         IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
-
     }
 
     private void SetNumberSeparators(int index)
@@ -98,7 +95,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
             nf.NumberGroupSeparator = ",";
         }
         _preferencesService.SetNumberFormat(nf); 
-
     }
     private void SetCulturePreference(int index)
     {

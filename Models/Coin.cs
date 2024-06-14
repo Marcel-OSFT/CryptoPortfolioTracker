@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SQLitePCL;
 
 namespace CryptoPortfolioTracker.Models;
 

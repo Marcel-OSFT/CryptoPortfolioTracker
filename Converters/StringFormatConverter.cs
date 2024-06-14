@@ -31,7 +31,6 @@ public sealed class StringFormatConverter : IValueConverter
             ci = new CultureInfo("en-US");
             ci.NumberFormat =   App._preferencesService.GetNumberFormat();
         }
-
        
         if (value is double)
         {

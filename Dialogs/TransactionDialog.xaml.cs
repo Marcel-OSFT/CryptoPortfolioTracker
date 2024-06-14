@@ -30,22 +30,11 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     public Transaction transactionNew;
     private readonly ITransactionService _transactionService;
     private readonly IPreferencesService _preferencesService;
-
     public Exception Exception;
-
     private readonly DispatcherQueue dispatcherQueue;
     private readonly ILocalizer loc = Localizer.Get();
 
     [ObservableProperty] private TransactionKind transactionType;
-    partial void OnTransactionTypeChanged(TransactionKind value)
-    {
-        if (value == TransactionKind.Deposit)
-        {
-            EarningsCheckBoxVisibility = Visibility.Visible;
-        }
-        else EarningsCheckBoxVisibility = Visibility.Collapsed;
-    }
-
     [ObservableProperty] private List<string> listCoinA;
     [ObservableProperty] private List<string> listCoinB;
     [ObservableProperty] private List<string> listAccountFrom;
@@ -74,7 +63,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     [ObservableProperty] private DateTimeOffset timeStamp;
     [ObservableProperty] private Validator validator;
     [ObservableProperty] private string decimalSeparator;
-
     [ObservableProperty] private Visibility earningsCheckBoxVisibility;
     [ObservableProperty] private bool isEarnings;
     partial void OnIsEarningsChanged(bool value)
@@ -87,11 +75,15 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         {
             GetMaxQtyAndPrice();
         }
-        
-        
     }
-
-
+    partial void OnTransactionTypeChanged(TransactionKind value)
+    {
+        if (value == TransactionKind.Deposit)
+        {
+            EarningsCheckBoxVisibility = Visibility.Visible;
+        }
+        else EarningsCheckBoxVisibility = Visibility.Collapsed;
+    }
     partial void OnListFeeCoinChanged(List<string> value)
     {
         if (listFeeCoin != null && listFeeCoin.Count > 0)
@@ -214,7 +206,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
             ActualPriceA = PriceA = (await _transactionService.GetPriceFromLibrary(CoinA)).Match(Succ: price => price, Fail: err => 0);
         }
     }
-
     private async Task<Transaction> WrapUpTransactionData()
     {
         var transactionToAdd = new Transaction();
@@ -357,18 +348,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         }
         PriceB = QtyA * PriceA / QtyB;
     }
-    //private void PresetFeeCoinToETH()
-    //{
-    //    if (listFeeCoin != null && listFeeCoin.Count > 0)
-    //    {
-    //        var result = listFeeCoin.Where(x => x.ToString().ToLower() == "eth ethereum").FirstOrDefault();
-    //        if (result != null)
-    //        {
-    //            FeeCoin = (string)result;
-    //        }
-    //        else { FeeCoin = ""; }
-    //    }
-    //}
     private void ConfigureDialogFields(string explainType, string assetTextA, string assetTextB, string accountTextA, string accountTextB, bool isAccountLinkEnabled = true)
     {
         TransactionText = explainType;
@@ -424,7 +403,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         }
 
     }
-    //private static  string ClearStringIfNoMatchWithList(string _string, List<string> list)
     private string ClearStringIfNoMatchWithList(string _string, List<string> list)
     {
         if (!list.Contains(_string))
@@ -433,7 +411,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         }
         return _string;
     }
-    
     private void InitializeAllFields()
     {
         DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
@@ -498,7 +475,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     #region TransactionType Events
     private async void TransactionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        //if (dialogAction == DialogAction.Edit) TransactionTypeRadioButtons.SelectedItem = transactionToEdit.TransactionType.ToString();
         InitializeAllFields();
         var CoinFromHeader = loc.GetLocalizedString("TransactionDialog_CoinFromHeader");
         var CoinToHeader = loc.GetLocalizedString("TransactionDialog_CoinToHeader");
@@ -642,8 +618,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         var selectedText = args.SelectedItem.ToString() ?? string.Empty;
         await SetEntriesBasedOnCoinA(selectedText);
     }
-    #endregion ASBoxCoinA Events
-
     private async Task SetEntriesBasedOnCoinA(string coin)
     {
         switch (transactionType.ToString())
@@ -707,6 +681,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
                 break;
         }
     }
+    #endregion ASBoxCoinA Events
 
     #region ASBoxAccountFrom Events
     private async void ASBoxAccountFrom_TextChanged(object sender, EventArgs e)
@@ -804,14 +779,11 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     }
     #endregion PrimaryButton events
 
-    
-
     #region Dialog Events
     private void CloseButton_Cancel(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         Validator.Stop();
     }
-
     #endregion Dialog Events
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)

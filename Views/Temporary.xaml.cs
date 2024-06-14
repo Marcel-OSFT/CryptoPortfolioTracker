@@ -6,11 +6,9 @@ namespace CryptoPortfolioTracker.Views;
 
 public sealed partial class Temporary : Page
 {
-
     public Temporary()
     {
         InitializeComponent();
     }
-
 
 }

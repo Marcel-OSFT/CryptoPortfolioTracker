@@ -1,24 +1,14 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
-using System.Xml.Serialization;
 using CryptoPortfolioTracker.Enums;
 using Microsoft.UI.Xaml;
-using Serilog;
-using Serilog.Core;
 
 namespace CryptoPortfolioTracker.Models;
 
 [Serializable]
 public class UserPreferences
 {
-    //private Serilog.ILogger Logger
-    //{
-    //    get; set;
-    //}
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public UserPreferences()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         SetDefaultPreferences();
     }

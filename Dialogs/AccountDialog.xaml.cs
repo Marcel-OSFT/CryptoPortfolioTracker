@@ -52,7 +52,6 @@ public sealed partial class AccountDialog : ContentDialog
             Name = AccountNameText.Text,
             About = DescriptionText.Text,
         };
-
         newAccount = account;
     }
 

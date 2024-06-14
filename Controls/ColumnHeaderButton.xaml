@@ -34,13 +34,10 @@
                         <ContentPresenter.BackgroundTransition>
                             <BrushTransition Duration="0:0:0.083" />
                         </ContentPresenter.BackgroundTransition>
-
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal" />
-
                                 <VisualState x:Name="PointerOver">
-
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding PointerHoverColor, ElementName=Root, Mode=OneWay}" />
@@ -52,31 +49,21 @@
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonForegroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
-
                                 </VisualState>
-
-                                    
-
                                 </VisualStateGroup>
-
                         </VisualStateManager.VisualStateGroups>
                     </ContentPresenter>
-
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     </UserControl.Resources>
 
-
     <Grid 
-       
         VerticalAlignment="Stretch"
         HorizontalAlignment="Stretch">
-
         <RichTextBlock Name="innerRtb"
             Margin="5,0,5,0" 
-            
             VerticalAlignment="Center"
             HorizontalTextAlignment="{Binding HorizontalTextAlignment, ElementName=Root, Mode=OneWay}">
             <Paragraph  >
@@ -85,7 +72,7 @@
                     FontStyle="{Binding FontStyle, ElementName=Root, Mode=OneWay}"/>
             </Paragraph>
         </RichTextBlock>
-        <Button  
+        <Button 
             Style="{StaticResource ColumnHeaderButtonStyle}" 
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"

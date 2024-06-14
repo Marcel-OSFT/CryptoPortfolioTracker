@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Extensions;
-using CryptoPortfolioTracker.Helpers;
 using Microsoft.UI.Dispatching;
 
 
@@ -18,7 +17,6 @@ public partial class Validator : BaseModel, INotifyPropertyChanged
 {
     private readonly CancellationTokenSource tokenSource2 = new();
     private readonly DispatcherQueue dispatcherQueue;
-
     public Validator(int numberOfItemsToValidate, bool directStart)
     {
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -26,7 +24,6 @@ public partial class Validator : BaseModel, INotifyPropertyChanged
         RegisterValidationItems(numberOfItemsToValidate, directStart);
         IsAllEntriesValid = false;
     }
-
     [ObservableProperty] private ObservableCollection<bool> entryCollection;
     private List<int>? entriesToValidate;
 
@@ -71,7 +68,6 @@ public partial class Validator : BaseModel, INotifyPropertyChanged
         tokenSource2.Cancel();
         tokenSource2.Dispose();
     }
-
     private void RegisterValidationItems(int numberOfPropertiesToValidate, bool directStart)
     {
         //** Bind 'IsValid..' properties with Validator.IsValidEntry[x] in your XAML
@@ -86,7 +82,6 @@ public partial class Validator : BaseModel, INotifyPropertyChanged
             ValidateEntriesAsync();
         }
     }
-
     private Task ValidateEntriesAsync()
     {
         
@@ -125,8 +120,6 @@ public partial class Validator : BaseModel, INotifyPropertyChanged
         }, tokenSource2.Token); // Pass same token to Task.Run.
         return task;
     }
-
-
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? name = null)
     {

@@ -12,13 +12,9 @@ using System.Diagnostics;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
-/// <summary>
-/// An empty window that can be used on its own or navigated to within a Frame.
-/// </summary>
 [ObservableObject]
 public partial class AboutDialog : ContentDialog
 {
-
     private readonly ILocalizer loc = Localizer.Get();
     private readonly ElementTheme _theme;
 
@@ -28,7 +24,6 @@ public partial class AboutDialog : ContentDialog
     [ObservableProperty] private string version;
     [ObservableProperty] private string btcAddress;
     [ObservableProperty] private string ethAddress;
-
 
     public AboutDialog(ElementTheme theme)
     {
@@ -93,9 +88,11 @@ public partial class AboutDialog : ContentDialog
             BtcAddress = address_data[0];
             EthAddress = address_data[1];
         }
-
+        /* Delete the temporary file after using it */
+        if (File.Exists(temp_file))
+        {
+            File.Delete(temp_file);
+        }
     }
-
-
 
 }

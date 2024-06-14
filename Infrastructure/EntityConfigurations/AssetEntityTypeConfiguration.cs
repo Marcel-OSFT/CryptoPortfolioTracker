@@ -9,9 +9,7 @@ class AssetEntityTypeConfiguration : IEntityTypeConfiguration<Asset>
     public void Configure(EntityTypeBuilder<Asset> configuration)
     {
         configuration.ToTable("Assets");
-
         configuration.HasKey(x => x.Id);
-
         configuration
             .Property("Id")
             .ValueGeneratedOnAdd()
@@ -49,12 +47,8 @@ class AssetEntityTypeConfiguration : IEntityTypeConfiguration<Asset>
             .HasForeignKey("CoinId");
 
         configuration.Navigation("Account");
-
         configuration.Navigation("Coin");
-
         configuration.Navigation("Mutations");
-
-
-
     }
+
 }
