@@ -1,9 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,8 +9,6 @@ using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
-using CryptoPortfolioTracker.Helpers;
-using LanguageExt;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
@@ -33,15 +27,17 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     public IAssetService _assetService { get; private set; }
 
     private readonly IPreferencesService _preferencesService;
+    private SortingOrder currentSortingOrder;
+    private Func<AssetTotals, object> currentSortFunc;
 
-    //[ObservableProperty] private ObservableCollection<Account>? listAccounts;
-    //[ObservableProperty] private ObservableCollection<AssetTotals>? listAssetTotals;
 
+    [ObservableProperty] private string sortGroup;
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
     private bool isHidingZeroBalances;
 
     private Account? selectedAccount = null;
+    private bool _isAssetsListViewInitialized;
 
     public AccountsViewModel(IAccountService accountService, IAssetService assetService, IPreferencesService preferencesService) : base(preferencesService)
     {
@@ -50,7 +46,10 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         _accountService = accountService;
         _preferencesService =  preferencesService;
         _assetService = assetService;
-        
+
+        SortGroup = "Accounts";
+        currentSortFunc = x => x.MarketValue;
+        currentSortingOrder = SortingOrder.Descending;
 
         IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
     }
@@ -60,94 +59,76 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     private bool isExtendedView = false;
 
     /// <summary>
-    /// SetDataSource async task is called from the View_Loading event of the associated View
+    /// Initialize async task is called from the View_Loading event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
     /// <returns></returns>
     public async Task Initialize()
     {
-        //var getAccountsResult = await _accountService.GetAccounts();
-        //getAccountsResult.IfSucc(s => CreateListAccounts(s));
-
         await _accountService.PopulateAccountsList();
     }
 
     public void Terminate()
     {
-       // ListAssetTotals = MkOsft.NullObservableCollection<AssetTotals>(ListAssetTotals);
-       // ListAccounts = MkOsft.NullObservableCollection<Account>(ListAccounts);
-
         _accountService.ClearAccountsByAssetList();
-
         selectedAccount = null;
         IsExtendedView = false;
     }
 
-    //public async Task<bool> CreateListAccounts(List<Account> list)
-    //{
-    //    ListAccounts = new ObservableCollection<Account>(list.OrderByDescending(x => x.TotalValue));
-
-    //    return ListAccounts.Any();
-    //}
-
-    //private Task DoSorting(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
-    //{
-    //    if (ListAssetTotals is not null)
-    //    {
-    //        if (sortingOrder == SortingOrder.Ascending)
-    //        {
-    //            ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderBy(sortFunc));
-    //        }
-    //        else
-    //        {
-    //            ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderByDescending(sortFunc));
-    //        }
-    //    }
-    //    return Task.CompletedTask;
-    //}
     [RelayCommand]
     public void SortOnName(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
     [RelayCommand]
     public void SortOn24Hour(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
     [RelayCommand]
     public void SortOn1Month(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
     [RelayCommand]
     public void SortOnMarketValue(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.MarketValue;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
-
     }
     [RelayCommand]
     public void SortOnCostBase(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.CostBase;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
-
     }
     [RelayCommand]
     public void SortOnPnL(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
-
     }
     [RelayCommand]
     public void SortOnPnLPerc(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
 
@@ -319,26 +300,6 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     {
         _assetService.IsHidingZeroBalances = param;
 
-    //    //if (ListAssetTotals == null)
-    //    //{
-    //    //    return;
-    //    //}
-    //    ////IsHideZeroBalances = param;
-    //    //if (param)
-    //    //{
-    //    //    var itemsToHide = ListAssetTotals.Where(x => x.MarketValue <= 0).ToList();
-    //    //    foreach (var item in itemsToHide)
-    //    //    {
-    //    //        item.IsHidden = true; ;
-    //    //    }
-    //    //}
-    //    //else
-    //    //{
-    //    //    foreach (var item in ListAssetTotals)
-    //    //    {
-    //    //        item.IsHidden = false; ;
-    //    //    }
-    //    //}
     }
 
     [RelayCommand]
@@ -349,41 +310,9 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
     public async Task ShowAssets(Account clickedAccount)
     {
-
-        await _assetService.PopulateAssetTotalsByAccountList(clickedAccount);
-
-        //(await _accountService.GetAssetsByAccount(clickedAccount.Id))
-        //    .IfSucc(list => ListAssetTotals = new ObservableCollection<AssetTotals>(list.OrderByDescending(x => x.MarketValue)));
-
-        //_assetService.IsHidingZeroBalances = IsHidingZeroBalances;
+        await _assetService.PopulateAssetTotalsByAccountList(clickedAccount, currentSortingOrder, currentSortFunc);
     }
 
-    //public Task RemoveFromListAccounts(int accountId)
-    //{
-    //    if (ListAccounts is null) { return Task.FromResult(false); }
-    //    try
-    //    {
-    //        var account = ListAccounts.Where(x => x.Id == accountId).Single();
-    //        ListAccounts.Remove(account);
-    //    }
-    //    catch (Exception)
-    //    {
-    //        return Task.FromResult(false);
-    //    }
-    //    return Task.FromResult(true);
-    //}
-
-    //public Task AddToListAccounts(Account? newAccount)
-    //{
-    //    if (ListAccounts is null || newAccount is null) { return Task.FromResult(false); }
-    //    try
-    //    {
-    //        ListAccounts.Add(newAccount);
-    //    }
-    //    catch (Exception) { Task.FromResult(false); }
-
-    //    return Task.FromResult(true);
-    //}
 
 }
 

@@ -12,13 +12,9 @@ public class AddSuffixConverter : IValueConverter
         {
             return value;
         }
-
         string[] parameters = { "", "", "" };
         if (parameter is string param) { parameters = param.Split('|'); }
-
-        //NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
         var result = ((double)value).ToString((string)parameters[1], CultureInfo.InvariantCulture) + (string)parameters[0];
-
         return result;
     }
 

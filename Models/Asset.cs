@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Helpers;
-
 
 namespace CryptoPortfolioTracker.Models;
 
 public partial class Asset : BaseModel
 {
-    //***** Constructor
     public Asset()
     {
         Coin = new Coin();

@@ -18,7 +18,6 @@ public class FormatUriConverter : IValueConverter
             }
         }
         catch { }
-
         return new Uri(result);
     }
 

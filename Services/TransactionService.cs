@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -20,60 +19,18 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     private readonly PortfolioContext _context;
     [ObservableProperty] private static ObservableCollection<Transaction>? listAssetTransactions;
 
-
     public TransactionService(PortfolioContext context)
     {
         _context = context;
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
 
     public async Task<ObservableCollection<Transaction>> PopulateTransactionsByAssetList(int assetId)
     {
         var getResult = await GetTransactionsByAsset(assetId);
         getResult.IfSucc(s => ListAssetTransactions = new ObservableCollection<Transaction>(s));
         getResult.IfFail(err => ListAssetTransactions = new());
-
         return ListAssetTransactions;
     }
-
-    private async Task<Result<List<Transaction>>> GetTransactionsByAsset(int assetId)
-    {
-
-        if (assetId <= 0) { return new List<Transaction>(); }
-        List<Transaction> assetTransactions = new();
-        try
-        {
-            assetTransactions = await _context.Mutations
-                .Include(t => t.Transaction)
-                .ThenInclude(m => m.Mutations)
-                .ThenInclude(a => a.Asset)
-                .ThenInclude(ac => ac.Account)
-                .Where(c => c.Asset.Id == assetId)
-                .GroupBy(g => g.Transaction.Id)
-                .Select(grouped => new Transaction
-                {
-                    Id = grouped.Key,
-                    RequestedAsset = grouped.Select(a => a.Asset).Where(w => w.Id == assetId).SingleOrDefault() ?? new Asset(),
-                    TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
-                    Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault() ?? string.Empty,
-                    Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault() ?? new List<Mutation>(),
-                })
-                .OrderByDescending(o => o.TimeStamp)
-                .ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            return new Result<List<Transaction>>(ex);
-        }
-        assetTransactions ??= new List<Transaction>();
-
-        return assetTransactions;
-    }
-
     public void ClearAssetTransactionsList()
     {
         if (ListAssetTransactions is not null)
@@ -81,8 +38,6 @@ public partial class TransactionService :  ObservableObject, ITransactionService
             ListAssetTransactions.Clear();
         }
     }
-
-
     public Task UpdateListAssetTransactions(Transaction transactionNew, Transaction transactionToEdit)
     {
 
@@ -104,29 +59,15 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         {
             ListAssetTransactions[index] = transactionNew;
         }
-
         return Task.CompletedTask;
     }
-
-
     public Task<bool> RemoveFromListAssetTransactions(Transaction deletedTransaction)
     {
-
         if (ListAssetTransactions is null) { return Task.FromResult(false); }
         var transactionToUpdate = ListAssetTransactions.Where(x => x.Id == deletedTransaction.Id).Single();
         ListAssetTransactions.Remove(deletedTransaction);
-
         return Task.FromResult(true);
     }
-
-
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-
     public async Task<Result<List<string>>> GetCoinSymbolsFromLibrary()
     {
         List<string> _result;
@@ -170,7 +111,6 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return account;
     }
-    
     public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string symbolName)
     {
         List<string> _result;
@@ -194,7 +134,6 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return _result ?? new List<string>();
     }
-
     public async Task<Result<int>> GetAssetIdByCoinAndAccount(Coin coin, Account account)
     {
         Asset? asset;
@@ -212,7 +151,6 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return asset != null ? asset.Id : 0;
     }
-
     public async Task<Result<List<string>>> GetCoinSymbolsFromAssets()
     {
         List<string> _result;
@@ -248,7 +186,6 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return _result ?? new List<string>();
     }
-    
     public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibrary()
     {
         List<string> _result;
@@ -267,7 +204,6 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return _result ?? new List<string>();
     }
-    
     public async Task<Result<List<string>>> GetUsdtUsdcSymbolsFromAssets()
     {
         List<string> _result;
@@ -330,7 +266,6 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return _result ?? (new double[] { 0, 0, 0 });
     }
-    
     public async Task<Result<double>> GetPriceFromLibrary(string symbolName)
     {
         double _result;
@@ -412,7 +347,335 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return _result ?? new List<string>();
     }
+    public async Task<Result<AssetTotals>> GetAssetTotalsByCoin(Coin coin)
+    {
+        if (coin == null) { return new AssetTotals(); }
+        AssetTotals assetTotals;
+        try
+        {
+            assetTotals = await _context.Assets
+           .Where(c => c.Coin.Id == coin.Id)
+           .Include(x => x.Coin)
+           .GroupBy(asset => asset.Coin)
+           .Select(assetGroup => new AssetTotals
+           {
+               Qty = assetGroup.Sum(x => x.Qty),
+               CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
+               Coin = assetGroup.Key
+           })
+           .SingleAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<AssetTotals>(ex);
+        }
+        return assetTotals;
+    }
+    public async Task<Result<int>> AddTransaction(Transaction transaction)
+    {
+        var result = 0;
+        Asset? addedAsset = null;
+        if (transaction == null || transaction.Mutations == null || transaction.Mutations.Count == 0)
+        {
+            return 0;
+        }
 
+        var mutations = transaction.Mutations.OrderByDescending(x => x.Direction).OrderBy(y => y.Type);
+
+        try
+        {
+            foreach (var mutation in mutations)
+            {
+                //Check if ASSET (=combination CoinId and AccountId) already exists.
+                Asset? currentAsset;
+                
+                currentAsset = mutation.Asset is not null 
+                    ? await _context.Assets
+                        .Where(x => x.Coin.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutation.Asset.Account.Name.ToLower())
+                        .SingleOrDefaultAsync()
+                        : null;
+
+                if (currentAsset == null && addedAsset != null)
+                {
+                    currentAsset = addedAsset;
+                    addedAsset = null;
+                }
+
+                if (currentAsset != null)
+                {
+                    mutation.Asset = RecalculateAsset(mutation, currentAsset)
+                       .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
+                }
+                else
+                {
+                    mutation.Asset = CreateNewAsset(mutation)
+                       .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
+                    // New Asset, so add this to the context
+                    addedAsset = mutation.Asset;
+                    if (mutation.Asset is not null) { _context.Assets.Add(mutation.Asset); }
+                }
+            } //End of All mutations
+
+            //******** Transaction transactionNew = new Transaction();
+            var transactionNew = new Transaction
+            {
+                Mutations = transaction.Mutations,
+                TimeStamp = transaction.TimeStamp,
+                Note = transaction.Note
+            };
+
+            _context.Transactions.Update(transactionNew);
+            result = await _context.SaveChangesAsync();
+
+            return transactionNew.Id;
+        }
+        catch (Exception ex)
+        {
+            RejectChanges();
+            return new Result<int>(ex);
+        }
+    }
+    /// <summary>
+    /// Only used for the Run Tests
+    /// </summary>
+    /// <param name="coinName"></param>
+    /// <param name="accountName"></param>
+    /// <returns></returns>
+    public async Task<Result<Transaction>> GetTransactionById(int transactionId)
+    {
+        Transaction assetTransaction;
+        if (transactionId <= 0)
+        {
+            return new Result<Transaction>();
+        }
+        try
+        {
+            assetTransaction = await _context.Mutations
+                .Include(t => t.Transaction)
+                .ThenInclude(m => m.Mutations)
+                .ThenInclude(a => a.Asset)
+                .ThenInclude(ac => ac.Account)
+                .Where(c => c.Transaction.Id == transactionId)
+                .GroupBy(g => g.Transaction.Id)
+                .Select(grouped => new Transaction
+                {
+                    Id = grouped.Key,
+                    TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
+                    Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault() ?? string.Empty,
+                    Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault() ?? new List<Mutation>(),
+                })
+                .SingleAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<Transaction>(ex);
+        }
+        return assetTransaction;
+    }
+    public async Task<Result<int>> EditTransaction(Transaction transactionNew, Transaction _transactionToEdit)
+    {
+        var result = 0;
+        if (_transactionToEdit == null || transactionNew == null)
+        {
+            return 0;
+        }
+        try
+        {
+            var transactionToEdit = await _context.Transactions
+                .Where(x => x.Id == _transactionToEdit.Id)
+                .Include(x => x.Mutations)
+                .ThenInclude(a => a.Asset.Coin)
+                .SingleAsync();
+
+            var mutationsNew = new List<Mutation>(transactionNew.Mutations.OrderBy(x => x.Type));
+            var mutationsToEdit = new List<Mutation>(transactionToEdit.Mutations.OrderBy(x => x.Type));
+
+            //*** In case of an edit related to a FEE (added or deleted),
+            //*** the count of both mutations will NOT be equal which will give an issue when going through
+            //*** the mutations side-by-side.
+            //*** Adding a dummy FEE mutation with qty 0 will equalize this
+            if (mutationsNew.Count != mutationsToEdit.Count)
+            {
+                EqualizeMutationsForFee(mutationsNew, mutationsToEdit);
+            }
+
+            var numberOfMutations = mutationsNew.Count;
+            //Go through mutations side by side
+            for (var i = 0; i < numberOfMutations; i++)
+            {
+                var mutationNew = mutationsNew[i];
+                var mutationToEdit = mutationsToEdit[i];
+
+                if ( !(mutationToEdit.Price.Equals(mutationNew.Price) && mutationToEdit.Qty.Equals(mutationNew.Qty)) )
+                {
+                    if (mutationToEdit.Type != TransactionKind.Fee)
+                    {
+                        mutationToEdit.Asset = (await ReverseAndRecalculateAsset(mutationNew, mutationToEdit))
+                            .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
+                        mutationToEdit.Qty = mutationNew.Qty;
+                        mutationToEdit.Price = mutationNew.Price;
+                    }
+                    else // if 'Fee'
+                    {
+                        mutationToEdit.Asset = (await ReverseAndRecalculateFee(mutationNew, mutationToEdit))
+                            .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
+                        mutationToEdit.Qty = mutationNew.Qty;
+                    }
+                }
+            } // *** end of all mutations
+
+            //*** update Notes and TimeStamp in case that might have changed
+            transactionToEdit.Note = transactionNew.Note;
+            transactionToEdit.TimeStamp = transactionNew.TimeStamp;
+            transactionToEdit.Mutations = mutationsToEdit;
+
+            _context.Transactions.Update(transactionToEdit);
+            result = await _context.SaveChangesAsync();
+
+            //*** reflect type 'Transaction' also to 'Transaction' for Binding purpose
+            _transactionToEdit.Mutations = transactionToEdit.Mutations;
+        }
+        catch (Exception ex)
+        {
+            RejectChanges();
+            return new Result<int>(ex);
+        }
+        return _transactionToEdit.Id;
+    }
+    public async Task<Result<int>> DeleteTransaction(Transaction _transactionToDelete, AssetAccount _accountAffected)
+    {
+        var result = 0;
+        try
+        {
+            var transaction = await _context.Transactions
+                .Where(x => x.Id == _transactionToDelete.Id)
+                .Include(m => m.Mutations)
+                .ThenInclude(m => m.Asset)
+                .SingleAsync();
+
+            foreach (var mutation in transaction.Mutations.OrderBy(x => x.Type))
+            {
+                mutation.Asset = (await ReverseAndRecalculateAsset(mutation))
+                    .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err)); ;
+                _context.Mutations.Remove(mutation);
+            }
+            _context.Transactions.Remove(transaction);
+            result = _context.SaveChanges();
+            await RemoveAssetsWithoutMutations();
+        }
+        catch (Exception ex)
+        {
+            RejectChanges();
+            return new Result<int>(ex);
+        }
+        return _transactionToDelete.Id;
+    }
+    
+    
+    
+    private async Task<Result<bool>> RemoveAssetsWithoutMutations()
+    {
+        var result = 0;
+        //*** Due to deletion of a transaction it could be that an asset (coin/account combi) doesn't have any mutations left.
+        //*** In that case the qty for this coin in that specific account will also be zero and the asset can be removed as well
+        try
+        {
+            var assetsWithoutMutations = await _context.Assets.Where(x => x.Mutations.Count == 0).ToListAsync();
+            if (assetsWithoutMutations != null)
+            {
+                foreach (var asset in assetsWithoutMutations)
+                {
+                    _context.Assets.Remove(asset);
+                }
+                result = _context.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            RejectChanges();
+            return new Result<bool>(ex);
+        }
+        return result > 0;
+    }
+    private static void EqualizeMutationsForFee(List<Mutation> mutsNew, List<Mutation> mutsToEdit)
+    {
+        Mutation dummyMutation;
+        if (mutsNew.Count > mutsToEdit.Count)
+        {
+            dummyMutation = (Mutation)CloneMutation(mutsNew.Last());
+            dummyMutation.Qty = 0;
+            mutsToEdit.Add(dummyMutation);
+        }
+        else
+        {
+            dummyMutation = (Mutation)CloneMutation(mutsToEdit.Last());
+            dummyMutation.Qty = 0;
+            mutsNew.Add(dummyMutation);
+        }
+    }
+    private static object CloneMutation(Mutation mut)
+    {
+        var cloneMut = new Mutation();
+        var properties = mut.GetType().GetProperties();
+        foreach (var property in properties)
+        {
+            var value = property.GetValue(mut);
+            if (cloneMut.GetType().GetProperty(property.Name) is PropertyInfo prop)
+            {
+                prop.SetValue(cloneMut, value);
+            }
+        }
+        return cloneMut;
+    }
+    private void RejectChanges()
+    {
+        foreach (var entry in _context.ChangeTracker.Entries())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Modified:
+                case EntityState.Deleted:
+                    entry.State = EntityState.Modified; //Revert changes made to deleted entity.
+                    entry.State = EntityState.Unchanged;
+                    break;
+                case EntityState.Added:
+                    entry.State = EntityState.Detached;
+                    break;
+            }
+        }
+    }
+    private async Task<Result<List<Transaction>>> GetTransactionsByAsset(int assetId)
+    {
+        if (assetId <= 0) { return new List<Transaction>(); }
+        List<Transaction> assetTransactions = new();
+        try
+        {
+            assetTransactions = await _context.Mutations
+                .Include(t => t.Transaction)
+                .ThenInclude(m => m.Mutations)
+                .ThenInclude(a => a.Asset)
+                .ThenInclude(ac => ac.Account)
+                .Where(c => c.Asset.Id == assetId)
+                .GroupBy(g => g.Transaction.Id)
+                .Select(grouped => new Transaction
+                {
+                    Id = grouped.Key,
+                    RequestedAsset = grouped.Select(a => a.Asset).Where(w => w.Id == assetId).SingleOrDefault() ?? new Asset(),
+                    TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
+                    Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault() ?? string.Empty,
+                    Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault() ?? new List<Mutation>(),
+                })
+                .OrderByDescending(o => o.TimeStamp)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<Transaction>>(ex);
+        }
+        assetTransactions ??= new List<Transaction>();
+
+        return assetTransactions;
+    }
     private static Result<Asset> RecalculateAsset(Mutation mutation, Asset asset)
     {
         try
@@ -435,9 +698,9 @@ public partial class TransactionService :  ObservableObject, ITransactionService
                     //OUT flow does not affect the averageCostPrice of the remaining qty. So no calculation needed for this.
                     asset.Qty -= mutation.Qty;
                     //if very small amount remains then set it to zero. Might be a precision failure
-                    if (Math.Abs(asset.Qty) < 0.0001 
-                        && asset.Coin is not null 
-                        && asset.Coin.Price > 0 
+                    if (Math.Abs(asset.Qty) < 0.0001
+                        && asset.Coin is not null
+                        && asset.Coin.Price > 0
                         && (asset.Coin.Price * Math.Abs(asset.Qty)) < 0.01)
                     {
                         asset.Qty = 0;
@@ -566,7 +829,6 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return assetNew;
     }
-
     private static Result<Asset> CreateNewAsset(Mutation mutation)
     {
         Asset asset;
@@ -633,304 +895,4 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return asset;
     }
-    
-    public async Task<Result<AssetTotals>> GetAssetTotalsByCoin(Coin coin)
-    {
-        if (coin == null) { return new AssetTotals(); }
-        AssetTotals assetTotals;
-        try
-        {
-            assetTotals = await _context.Assets
-           .Where(c => c.Coin.Id == coin.Id)
-           .Include(x => x.Coin)
-           .GroupBy(asset => asset.Coin)
-           .Select(assetGroup => new AssetTotals
-           {
-               Qty = assetGroup.Sum(x => x.Qty),
-               CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
-               Coin = assetGroup.Key
-           })
-           .SingleAsync();
-        }
-        catch (Exception ex)
-        {
-            return new Result<AssetTotals>(ex);
-        }
-        return assetTotals;
-    }
-
-    public async Task<Result<int>> AddTransaction(Transaction transaction)
-    {
-        var result = 0;
-        Asset? addedAsset = null;
-        if (transaction == null || transaction.Mutations == null || transaction.Mutations.Count == 0)
-        {
-            return 0;
-        }
-
-        var mutations = transaction.Mutations.OrderByDescending(x => x.Direction).OrderBy(y => y.Type);
-
-        try
-        {
-            foreach (var mutation in mutations)
-            {
-                //Check if ASSET (=combination CoinId and AccountId) already exists.
-                Asset? currentAsset;
-                
-                currentAsset = mutation.Asset is not null 
-                    ? await _context.Assets
-                        .Where(x => x.Coin.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutation.Asset.Account.Name.ToLower())
-                        .SingleOrDefaultAsync()
-                        : null;
-
-                if (currentAsset == null && addedAsset != null)
-                {
-                    currentAsset = addedAsset;
-                    addedAsset = null;
-                }
-
-                if (currentAsset != null)
-                {
-                    mutation.Asset = RecalculateAsset(mutation, currentAsset)
-                       .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
-                }
-                else
-                {
-                    mutation.Asset = CreateNewAsset(mutation)
-                       .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
-                    // New Asset, so add this to the context
-                    addedAsset = mutation.Asset;
-                    if (mutation.Asset is not null) { _context.Assets.Add(mutation.Asset); }
-                }
-            } //End of All mutations
-
-            //******** Transaction transactionNew = new Transaction();
-            var transactionNew = new Transaction
-            {
-                Mutations = transaction.Mutations,
-                TimeStamp = transaction.TimeStamp,
-                Note = transaction.Note
-            };
-
-            _context.Transactions.Update(transactionNew);
-            result = await _context.SaveChangesAsync();
-
-            return transactionNew.Id;
-        }
-        catch (Exception ex)
-        {
-            RejectChanges();
-            return new Result<int>(ex);
-        }
-    }
-
-    /// <summary>
-    /// Only used for the Run Tests
-    /// </summary>
-    /// <param name="coinName"></param>
-    /// <param name="accountName"></param>
-    /// <returns></returns>
-    public async Task<Result<Transaction>> GetTransactionById(int transactionId)
-    {
-        Transaction assetTransaction;
-        if (transactionId <= 0)
-        {
-            return new Result<Transaction>();
-        }
-        try
-        {
-            assetTransaction = await _context.Mutations
-                .Include(t => t.Transaction)
-                .ThenInclude(m => m.Mutations)
-                .ThenInclude(a => a.Asset)
-                .ThenInclude(ac => ac.Account)
-                .Where(c => c.Transaction.Id == transactionId)
-                .GroupBy(g => g.Transaction.Id)
-                .Select(grouped => new Transaction
-                {
-                    Id = grouped.Key,
-                    TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
-                    Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault() ?? string.Empty,
-                    Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault() ?? new List<Mutation>(),
-                })
-                .SingleAsync();
-        }
-        catch (Exception ex)
-        {
-            return new Result<Transaction>(ex);
-        }
-        return assetTransaction;
-    }
-
-
-    public async Task<Result<int>> EditTransaction(Transaction transactionNew, Transaction _transactionToEdit)
-    {
-        var result = 0;
-        if (_transactionToEdit == null || transactionNew == null)
-        {
-            return 0;
-        }
-        try
-        {
-            var transactionToEdit = await _context.Transactions
-                .Where(x => x.Id == _transactionToEdit.Id)
-                .Include(x => x.Mutations)
-                .ThenInclude(a => a.Asset.Coin)
-                .SingleAsync();
-
-            var mutationsNew = new List<Mutation>(transactionNew.Mutations.OrderBy(x => x.Type));
-            var mutationsToEdit = new List<Mutation>(transactionToEdit.Mutations.OrderBy(x => x.Type));
-
-            //*** In case of an edit related to a FEE (added or deleted),
-            //*** the count of both mutations will NOT be equal which will give an issue when going through
-            //*** the mutations side-by-side.
-            //*** Adding a dummy FEE mutation with qty 0 will equalize this
-            if (mutationsNew.Count != mutationsToEdit.Count)
-            {
-                EqualizeMutationsForFee(mutationsNew, mutationsToEdit);
-            }
-
-            var numberOfMutations = mutationsNew.Count;
-            //Go through mutations side by side
-            for (var i = 0; i < numberOfMutations; i++)
-            {
-                var mutationNew = mutationsNew[i];
-                var mutationToEdit = mutationsToEdit[i];
-
-                if ( !(mutationToEdit.Price.Equals(mutationNew.Price) && mutationToEdit.Qty.Equals(mutationNew.Qty)) )
-                {
-                    if (mutationToEdit.Type != TransactionKind.Fee)
-                    {
-                        mutationToEdit.Asset = (await ReverseAndRecalculateAsset(mutationNew, mutationToEdit))
-                            .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
-                        mutationToEdit.Qty = mutationNew.Qty;
-                        mutationToEdit.Price = mutationNew.Price;
-                    }
-                    else // if 'Fee'
-                    {
-                        mutationToEdit.Asset = (await ReverseAndRecalculateFee(mutationNew, mutationToEdit))
-                            .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
-                        mutationToEdit.Qty = mutationNew.Qty;
-                    }
-                }
-            } // *** end of all mutations
-
-            //*** update Notes and TimeStamp in case that might have changed
-            transactionToEdit.Note = transactionNew.Note;
-            transactionToEdit.TimeStamp = transactionNew.TimeStamp;
-            transactionToEdit.Mutations = mutationsToEdit;
-
-            _context.Transactions.Update(transactionToEdit);
-            result = await _context.SaveChangesAsync();
-
-            //*** reflect type 'Transaction' also to 'Transaction' for Binding purpose
-            _transactionToEdit.Mutations = transactionToEdit.Mutations;
-        }
-        catch (Exception ex)
-        {
-            RejectChanges();
-            return new Result<int>(ex);
-        }
-        return _transactionToEdit.Id;
-    }
-    public async Task<Result<int>> DeleteTransaction(Transaction _transactionToDelete, AssetAccount _accountAffected)
-    {
-        var result = 0;
-        try
-        {
-            var transaction = await _context.Transactions
-                .Where(x => x.Id == _transactionToDelete.Id)
-                .Include(m => m.Mutations)
-                .ThenInclude(m => m.Asset)
-                .SingleAsync();
-
-            foreach (var mutation in transaction.Mutations.OrderBy(x => x.Type))
-            {
-                mutation.Asset = (await ReverseAndRecalculateAsset(mutation))
-                    .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err)); ;
-                _context.Mutations.Remove(mutation);
-            }
-            _context.Transactions.Remove(transaction);
-            result = _context.SaveChanges();
-            await RemoveAssetsWithoutMutations();
-        }
-        catch (Exception ex)
-        {
-            RejectChanges();
-            return new Result<int>(ex);
-        }
-        return _transactionToDelete.Id;
-    }
-    public async Task<Result<bool>> RemoveAssetsWithoutMutations()
-    {
-        var result = 0;
-        //*** Due to deletion of a transaction it could be that an asset (coin/account combi) doesn't have any mutations left.
-        //*** In that case the qty for this coin in that specific account will also be zero and the asset can be removed as well
-        try
-        {
-            var assetsWithoutMutations = await _context.Assets.Where(x => x.Mutations.Count == 0).ToListAsync();
-            if (assetsWithoutMutations != null)
-            {
-                foreach (var asset in assetsWithoutMutations)
-                {
-                    _context.Assets.Remove(asset);
-                }
-                result = _context.SaveChanges();
-            }
-        }
-        catch (Exception ex)
-        {
-            RejectChanges();
-            return new Result<bool>(ex);
-        }
-        return result > 0;
-    }
-    private static void EqualizeMutationsForFee(List<Mutation> mutsNew, List<Mutation> mutsToEdit)
-    {
-        Mutation dummyMutation;
-        if (mutsNew.Count > mutsToEdit.Count)
-        {
-            dummyMutation = (Mutation)CloneMutation(mutsNew.Last());
-            dummyMutation.Qty = 0;
-            mutsToEdit.Add(dummyMutation);
-        }
-        else
-        {
-            dummyMutation = (Mutation)CloneMutation(mutsToEdit.Last());
-            dummyMutation.Qty = 0;
-            mutsNew.Add(dummyMutation);
-        }
-    }
-    private static object CloneMutation(Mutation mut)
-    {
-        var cloneMut = new Mutation();
-        var properties = mut.GetType().GetProperties();
-        foreach (var property in properties)
-        {
-            var value = property.GetValue(mut);
-            if (cloneMut.GetType().GetProperty(property.Name) is PropertyInfo prop)
-            {
-                prop.SetValue(cloneMut, value);
-            }
-        }
-        return cloneMut;
-    }
-    private void RejectChanges()
-    {
-        foreach (var entry in _context.ChangeTracker.Entries())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Modified:
-                case EntityState.Deleted:
-                    entry.State = EntityState.Modified; //Revert changes made to deleted entity.
-                    entry.State = EntityState.Unchanged;
-                    break;
-                case EntityState.Added:
-                    entry.State = EntityState.Detached;
-                    break;
-            }
-        }
-    }
-
 }

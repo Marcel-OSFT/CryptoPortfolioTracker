@@ -10,22 +10,17 @@
     PrimaryButtonClick="Button_Click_AcceptNote">
 
     <ContentDialog.Resources>
-
         <!-- Overriding ContentDialogMaxWidth value -->
         <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
     </ContentDialog.Resources>
 
-
     <Grid  Margin="0,0,0,0" Width="600">
-
         <Grid.RowDefinitions>
             <RowDefinition Height="200"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" MaxWidth="600"/>
-
         </Grid.ColumnDefinitions>
-        
         <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15,0,0,0" >
             <StackPanel.Background>
                 <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
@@ -34,9 +29,6 @@
                      TextWrapping="Wrap" AcceptsReturn="True" MinWidth="400" MinHeight="150">
             </TextBox>
         </StackPanel>
-
     </Grid>
-
-
 
 </ContentDialog>

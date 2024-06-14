@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Services;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
-using SQLitePCL;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
@@ -73,10 +72,5 @@ public partial class BaseViewModel : ObservableObject
         var dlgResult = await dialog.ShowAsync();
         return dlgResult;
     }
-
-    //public void Dispose()
-    //{
-
-    //}
 
 }

@@ -1,7 +1,4 @@
-using System;
-using System.Diagnostics;
 using CryptoPortfolioTracker.ViewModels;
-using LiveChartsCore;
 using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoPortfolioTracker.Views;
@@ -23,8 +20,5 @@ public partial class GraphicView : Page
     {
         _viewModel.InitializeGraph();
     }
-    private void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-
-    }
+    
 }

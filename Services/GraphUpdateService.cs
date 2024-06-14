@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Infrastructure;
@@ -12,46 +8,30 @@ using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
 using LanguageExt;
-using LanguageExt.ClassInstances;
 using LanguageExt.Common;
 using LanguageExt.Pipes;
-using LiveChartsCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
 using Serilog.Core;
-using Windows.ApplicationModel.Appointments;
-using Windows.UI;
-using Windows.UI.Notifications;
-using static System.Net.WebRequestMethods;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 using HttpClient = System.Net.Http.HttpClient;
-using System.Text.Json;
 
 namespace CryptoPortfolioTracker.Services;
 
-public class GraphUpdateService : IGraphUpdateService, IDisposable
+public class GraphUpdateService : IGraphUpdateService
 {
     private readonly PeriodicTimer timer;
     private readonly CancellationTokenSource cts = new();
     private Task? timerTask;
-
     private readonly PortfolioContext coinContext;
     private readonly IGraphService _graphService;
-
-   // private Graph portfolioGraph;
-    private static ILogger Logger { get; set; }
-    
-    public bool IsPaused { get; set; }
-
     private int progressCounter;
     private int progressInterval;
 
+    private static ILogger Logger { get; set; }
+    public bool IsPaused { get; set; }
 
     public GraphUpdateService(IGraphService graphService, PortfolioContext portfolioContext)
     {
@@ -61,34 +41,6 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
         IsPaused = false;
         _graphService = graphService;
     }
-
-    //private async Task LoadGraphFromJson()
-    //{
-    //    try
-    //    {
-    //        //var PortfolioGraph = Container.GetService<Graph>();
-
-    //        if (!Directory.Exists(App.appDataPath + "\\MarketCharts"))
-    //        {
-    //            Directory.CreateDirectory(App.appDataPath + "\\MarketCharts");
-    //        }
-    //        var fileName = App.appDataPath + "\\MarketCharts\\graph.json";
-    //        if (System.IO.File.Exists(fileName))
-    //        {
-    //            using FileStream openStream = System.IO.File.OpenRead(fileName);
-    //            portfolioGraph = await System.Text.Json.JsonSerializer.DeserializeAsync<Graph>(openStream);
-    //        }
-    //        fileName = App.appDataPath + "\\MarketCharts\\HistoryBuffer.json";
-    //        if (System.IO.File.Exists(fileName))
-    //        {
-    //            using FileStream openStream = System.IO.File.OpenRead(fileName);
-    //            portfolioGraph.HistoricalDataByIdsBufferList = await System.Text.Json.JsonSerializer.DeserializeAsync<List<HistoricalDataById>>(openStream);
-    //        }
-
-    //    }
-    //    catch { }
-
-    //}
 
     public async Task Start()
     {
@@ -100,8 +52,6 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
     {
         try
         {
-            
-            //await CheckForNewGraphData();
             while (await timer.WaitForNextTickAsync(cts.Token))
             {
                 if (!IsPaused)
@@ -145,7 +95,6 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
         IsPaused = false;
         Logger.Information("GraphUpdateService Continued");
     }
-
     private async Task<Result<bool>> CheckForNewGraphData()
     {
         int days;
@@ -173,23 +122,18 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
                 days = await GetDaysBasedOnOldestTransaction();
             }
             assets = await GetAssets();
-            
         }
 
         if (days == 0 || !assets.Any())
         {
             Logger.Information("Historical Data up-to-date");
-
             return false;
         }
-        
         Logger.Information("Historical Data Settings; days {0}, assets {1}", days, assets.Count);
 
         await AddInFlowData(days);
         await AddOutFlowData(days);
         await AddPortfolioValueData(assets, days);
-       
-
         return true;
     }
     private async Task AddInFlowData(int days)
@@ -217,7 +161,6 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
             var dataPoint = new DataPoint();
             dataPoint.Date = DateOnly.FromDateTime(deposit.Date);
             dataPoint.Value = deposit.InFlow;
-
             _graphService.AddDataPointInFlow(dataPoint);
         }
         await _graphService.SaveGraphToJson();
@@ -263,10 +206,8 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
             {
                 return; //break in case GraphUpdateService has been canceled or paused
             }
-            
             //in case of a pre-listing coin the actual Marketvalue is fixed as long as it is not listed yet.
             //This market value is already calculated and obtained in the above assetTotals query
-
             var getDataResult = await GetHistoricalPrices(asset);
             getDataResult.IfSucc(async s => {
                 var historicalData = await CalculateAndPopulateHistoricalDataById(asset, days, s);
@@ -279,17 +220,12 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
             {
                 return;
             }
-
-            // for test: await DelayAndShowProgress(1);
-
             progressCounter++;
             if (GraphicViewModel.Current is not null)
             {
                 GraphicViewModel.Current.ProgressValue = Convert.ToInt16((100 * progressCounter / assets.Count));
-               // Debug.WriteLine("progressValue ** = " + GraphicViewModel.Current.ProgressValue.ToString());
             }
         }
-        
         await CalculateAndStoreDataPoints(_graphService.GetHistoricalDataBuffer());
     }
     private async Task<HistoricalDataById> CalculateAndPopulateHistoricalDataById(AssetTotals asset, int days, MarketChartById chartData)
@@ -344,10 +280,8 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
             {
                 var dataPoint = new DataPoint();
                 var totalValueByDate = dataByIds.Sum(x => x.Quantities[i] * x.Prices[i]);
-
                 dataPoint.Date = dataByIds.First().Dates[i];
                 dataPoint.Value = Math.Round(totalValueByDate, 0);
-
                 _graphService.AddDataPointPortfolio(dataPoint);
                 nrOfPointsAdded++;
             }
@@ -360,12 +294,10 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
         {
             await _graphService.SaveGraphToJson();
             _graphService.ClearHistoricalDataBuffer();
-
             Logger.Information("Historical Data updated and saved");
             //MainPage.Current.IsChartLoaded = portfolioGraph.DataPointsPortfolio.Any();
             if (GraphicViewModel.Current is not null ) GraphicViewModel.Current.IsUpdating = false;
         }
-
         return true;
     }
     private async Task<Result<MarketChartById>> GetHistoricalPrices(AssetTotals asset)
@@ -374,8 +306,6 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
         var daysToGet = 0;
 
         await marketChart.LoadMarketChartJson(asset.Coin.ApiId);
-
-
         if (marketChart is null || marketChart.Prices is null || marketChart.Prices.Length == 0)
         {
             daysToGet = 365;
@@ -429,11 +359,8 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
             {
                 //check/set 'isFinishedLoading' to false to show message
                 GraphicViewModel.Current.IsUpdating = true;
-
                 var newValue = startValue + (stepSize * i);
                 GraphicViewModel.Current.ProgressValue = Convert.ToInt16((double)newValue);
-               // Debug.WriteLine("progressValue = " + GraphicViewModel.Current.ProgressValue.ToString());
-
             }
         }
         
@@ -618,12 +545,5 @@ public class GraphUpdateService : IGraphUpdateService, IDisposable
         return days;
     }
     
-    public void Dispose() // Implement IDisposable
-    {
-        Stop();
-        timer.Dispose();
-        //GC.SuppressFinalize(this);
-    }
-
 }
 

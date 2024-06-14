@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Windows.Input;
+using CryptoPortfolioTracker.Models;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -19,9 +20,6 @@ using Windows.Foundation.Collections;
 using Windows.System;
 using WinUI3Localizer;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CryptoPortfolioTracker.Controls;
 
 public enum SortingOrder
@@ -31,12 +29,24 @@ public enum SortingOrder
     Ascending = 2,
 }
 
-public sealed partial class ColumnHeaderButton : UserControl, IDisposable
+public sealed partial class ColumnHeaderButton : UserControl
 {
     public bool IsEnabled
     {
         get => (bool)GetValue(IsEnabledProperty);
         set => SetValue(IsEnabledProperty, value);
+    }
+    public string Group
+    {
+        get
+        {
+            if (GetValue(GroupProperty).GetType().Name == "Int32")
+            {
+                return string.Empty;
+            }
+            return (string)GetValue(GroupProperty);
+        }
+        set => SetValue(GroupProperty, value);
     }
     public SolidColorBrush PointerHoverColor
     {
@@ -53,6 +63,7 @@ public sealed partial class ColumnHeaderButton : UserControl, IDisposable
         get => (SortingOrder)GetValue(SortingOrderProperty);
         set => SetValue(SortingOrderProperty, value);
     }
+
     public ICommand Command
     {
         get => (ICommand)GetValue(CommandProperty);
@@ -83,7 +94,9 @@ public sealed partial class ColumnHeaderButton : UserControl, IDisposable
     public static readonly DependencyProperty SortingOrderProperty = DependencyProperty.Register("SortingOrder", typeof(SortingOrder), typeof(ColumnHeaderButton), new PropertyMetadata(0, new PropertyChangedCallback(SortingOrderChangedCallBack)));
     public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(ColumnHeaderButton), null);
     public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.Register("CommandParameter", typeof(object), typeof(ColumnHeaderButton), null);
-    public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ColumnHeaderButton), new PropertyMetadata(0, new PropertyChangedCallback(TextChangedCallBack)));
+    public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ColumnHeaderButton), null);
+    public static readonly DependencyProperty GroupProperty = DependencyProperty.Register("Group", typeof(string), typeof(ColumnHeaderButton), null);
+   
 
     private string _text;
     private static List<ColumnHeaderButton> _buttons = new();
@@ -98,8 +111,6 @@ public sealed partial class ColumnHeaderButton : UserControl, IDisposable
         _buttons.Add(this);
     }
 
-
-    
     private static void SortingOrderChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is ColumnHeaderButton btn && btn.SortingOrder is not SortingOrder.None && !btn._isClicked && !btn._disposing)
@@ -120,15 +131,7 @@ public sealed partial class ColumnHeaderButton : UserControl, IDisposable
                         btn.innerText.Foreground = btn.PointerHoverColor;
                         break;
                     }
-                
             }
-        }
-    }
-    private static void TextChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is ColumnHeaderButton btn && !btn._disposing)
-        {
-
         }
     }
 
@@ -145,12 +148,11 @@ public sealed partial class ColumnHeaderButton : UserControl, IDisposable
                         {
                             _originalBrush = innerText.Foreground;
                         }
-                        ResetAllButtons();
+                        ResetAllButtonsInGroup(Group);
                         _text = Text;
                         SortingOrder = SortingOrder.Ascending;
                         Text = _text + $" ↑";
                         innerText.Foreground = PointerHoverColor;
-                        
                         break;
                     }
                 case SortingOrder.Descending:
@@ -158,7 +160,6 @@ public sealed partial class ColumnHeaderButton : UserControl, IDisposable
                         SortingOrder = SortingOrder.Ascending;
                         Text = _text + $" ↑";
                         innerText.Foreground = PointerHoverColor;
-                        
                         break;
                     }
                 case SortingOrder.Ascending:
@@ -166,7 +167,6 @@ public sealed partial class ColumnHeaderButton : UserControl, IDisposable
                         SortingOrder = SortingOrder.Descending;
                         Text = _text + $" ↓";
                         innerText.Foreground = PointerHoverColor;
-                       
                         break;
                     }
             }
@@ -175,24 +175,17 @@ public sealed partial class ColumnHeaderButton : UserControl, IDisposable
 
     }
 
-    private void ResetAllButtons()
+    private void ResetAllButtonsInGroup(string group)
     {
         foreach (ColumnHeaderButton btn in _buttons)
         {
-            if (btn.SortingOrder is not SortingOrder.None)
+            if (btn.IsEnabled && btn.SortingOrder is not SortingOrder.None && btn.Group == group)
             {
                 btn.Text = btn._text ?? btn.Text;
                 btn.SortingOrder = SortingOrder.None;
                 btn.innerText.Foreground = _originalBrush;
             }
-                
         }
     }
 
-    public void Dispose()
-    {
-        _disposing = true;
-
-        Command = null;
-    }
 }

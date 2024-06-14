@@ -15,7 +15,6 @@
     x:Name="Root"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:CoinLibraryViewModel}"
-    Unloaded="Control_Unload"
     mc:Ignorable="d">
 
 
@@ -59,6 +58,7 @@
                 VerticalAlignment="Bottom"
                 HorizontalTextAlignment="Left"
                 PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
                 Command="{Binding SortOnNameCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
@@ -92,6 +92,7 @@
                 VerticalAlignment="Bottom"
                 HorizontalTextAlignment="Right"
                 PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
                 Command="{Binding SortOn24HrChangeCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
@@ -107,6 +108,7 @@
                 VerticalAlignment="Bottom"
                 HorizontalTextAlignment="Right"
                 PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
                 Command="{Binding SortOn52WeekChangeCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
@@ -119,6 +121,7 @@
                 VerticalAlignment="Bottom"
                 HorizontalTextAlignment="Right"
                 PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
                 Command="{Binding SortOn30DayChangeCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
@@ -131,6 +134,7 @@
                 VerticalAlignment="Bottom"
                 HorizontalTextAlignment="Right"
                 PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
                 Command="{Binding SortOnAthCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />      
@@ -146,6 +150,7 @@
                 VerticalAlignment="Bottom"
                 HorizontalTextAlignment="Right"
                 PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
                 Command="{Binding SortOnMarketCapCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
@@ -159,6 +164,7 @@
                 HorizontalTextAlignment="Right"
                 PointerHoverColor="Goldenrod"
                 SortingOrder="Ascending"
+                Group="{Binding SortGroup}"
                 Command="{Binding SortOnRankCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />

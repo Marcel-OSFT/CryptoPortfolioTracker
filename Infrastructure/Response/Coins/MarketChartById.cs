@@ -4,10 +4,6 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Text.Json;
-using CryptoPortfolioTracker.Models;
-using CommunityToolkit.WinUI.Behaviors;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 
@@ -19,7 +15,6 @@ public class MarketChartById
 
     [JsonProperty("prices")]
     public decimal?[][] Prices { get; set; }
-
 
     public DateOnly StartDate()
     {
@@ -51,8 +46,6 @@ public class MarketChartById
 
         var mSecLast = (double)Prices[Prices.Length - 1][0];
         var mSecPrev = (double)Prices[Prices.Length - 2][0];
-
-
         var lastDate = DateTime.UnixEpoch.AddMilliseconds((double)Prices[Prices.Length - 1][0]).Date;
         var prevDate = DateTime.UnixEpoch.AddMilliseconds((double)Prices[Prices.Length - 2][0]).Date;
 

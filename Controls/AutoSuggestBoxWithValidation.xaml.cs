@@ -10,12 +10,9 @@ using Microsoft.UI.Xaml.Media;
 using Windows.System;
 using WinUI3Localizer;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CryptoPortfolioTracker.Controls;
 
-public sealed partial class AutoSuggestBoxWithValidation : UserControl    //, INotifyPropertyChanged
+public sealed partial class AutoSuggestBoxWithValidation : UserControl 
 {
     private static readonly ILocalizer loc = Localizer.Get();
     public bool AnimateBorder { get; set; } = true;
@@ -123,7 +120,6 @@ public sealed partial class AutoSuggestBoxWithValidation : UserControl    //, IN
         {
             thisBox.innerASBox.Visibility = Visibility.Visible;
         }
-
         thisBox.PopulateSuitableItems();
         thisBox.IsEntryMatched = thisBox.DoesEntryMatch();
         thisBox.TextChanged?.Invoke(thisBox, EventArgs.Empty);
@@ -157,7 +153,6 @@ public sealed partial class AutoSuggestBoxWithValidation : UserControl    //, IN
         {
             thisBox.innerASBox.PlaceholderText = thisBox.MyPlaceholderText;
         }
-
         thisBox.innerASBox.IsSuggestionListOpen = false;
     }
 
@@ -246,7 +241,6 @@ public sealed partial class AutoSuggestBoxWithValidation : UserControl    //, IN
             innerASBox.BorderBrush = new SolidColorBrush(Colors.Red);
         }
     }
-
     
 
 }

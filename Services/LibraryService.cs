@@ -16,7 +16,6 @@ using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Polly;
-using WinUI3Localizer;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 using Exception = System.Exception;
 
@@ -26,20 +25,17 @@ public partial class LibraryService : ObservableObject, ILibraryService
 {
     private readonly PortfolioContext context;
     [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
-
     private SortingOrder currentSortingOrder;
     private Func<Coin, object> currentSortFunc;
-
 
     public LibraryService(PortfolioContext portfolioContext)
     {
         context = portfolioContext;
         currentSortFunc = x => x.Rank;
-        currentSortingOrder = SortingOrder.Descending;
-
+        currentSortingOrder = SortingOrder.Ascending;
     }
 
-    public async Task<ObservableCollection<Coin>>  PopulateCoinsList()
+    public async Task<ObservableCollection<Coin>> PopulateCoinsList()
     {
         var getResult = await GetCoinsFromContext();
         getResult.IfSucc(list =>
@@ -52,6 +48,25 @@ public partial class LibraryService : ObservableObject, ILibraryService
             {
                 ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(currentSortFunc));
             }
+        });
+        getResult.IfFail(err => ListCoins = new());
+        return ListCoins;
+    }
+    public async Task<ObservableCollection<Coin>> PopulateCoinsList( SortingOrder sortingOrder, Func<Coin, object> sortFunc )
+    {
+        var getResult = await GetCoinsFromContext();
+        getResult.IfSucc(list =>
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListCoins = new ObservableCollection<Coin>(list.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(sortFunc));
+            }
+            currentSortingOrder = sortingOrder;
+            currentSortFunc = sortFunc;
         });
         getResult.IfFail(err => ListCoins = new());
         return ListCoins;
@@ -84,7 +99,6 @@ public partial class LibraryService : ObservableObject, ILibraryService
     public Task AddToCoinsList(Coin coin)
     {
         if (coin == null) { return Task.FromResult(false); }
-
         try
         {
             ListCoins.Add(coin);
@@ -130,12 +144,6 @@ public partial class LibraryService : ObservableObject, ILibraryService
         }
     }
 
-
-
-
-
-
-
     public async Task<Result<bool>> CreateCoin(Coin? newCoin)
     {
         var _result = false;
@@ -167,9 +175,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
             plCoin.About = newCoin.About;
             plCoin.ImageUri = newCoin.ImageUri;
             plCoin.Price = newCoin.Price;
-            
             context.Coins.Update(plCoin);
-            
             _result = await context.SaveChangesAsync() > 0;
         }
         catch (Exception ex)
@@ -320,7 +326,6 @@ public partial class LibraryService : ObservableObject, ILibraryService
         {
             try
             {
-
                 await strategy.ExecuteAsync(async token =>
                 {
                     coinFullDataById = await coinsClient.Coins[coinId].GetAsync<CoinFullDataById>(token);

@@ -1,6 +1,5 @@
 using System.Linq;
 using CryptoPortfolioTracker.Services;
-using LanguageExt;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using WinUIEx;

@@ -31,15 +31,6 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         }
     }
 
-    private void Control_Unload(object sender, RoutedEventArgs e)
-    {
-        //DataContext = null;
-        //AccountsListView = null;
-        //ColumnHeadersAndListView = null;
-
-        
-
-    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

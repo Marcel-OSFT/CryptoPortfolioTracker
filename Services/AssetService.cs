@@ -18,24 +18,13 @@ public partial class AssetService : ObservableObject, IAssetService
 {
     private readonly PortfolioContext context;
     [ObservableProperty] private static ObservableCollection<AssetTotals>? listAssetTotals;
-
     [ObservableProperty] private double totalAssetsValue;
     [ObservableProperty] private double totalAssetsCostBase;
     [ObservableProperty] private double totalAssetsPnLPerc;
-
     [ObservableProperty] private double inFlow;
     [ObservableProperty] private double outFlow;
-
-
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;
-
-    //[ObservableProperty] public bool isSortingAfterUpdateEnabled;
-    //partial void OnIsSortingAfterUpdateEnabledChanged(bool value)
-    //{
-    //    if (value) SortList(currentSortingOrder, currentSortFunc);
-    //}
-
     [ObservableProperty] public bool isHidingZeroBalances;
 
     partial void OnIsHidingZeroBalancesChanged(bool value)
@@ -61,23 +50,14 @@ public partial class AssetService : ObservableObject, IAssetService
             }
         }
     }
-
-
-
+    
     public AssetService(PortfolioContext portfolioContext)
     {
         context = portfolioContext;
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
-        //IsSortingAfterUpdateEnabled = true;
-
-
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList()
     {
         var getAssetTotalsResult = await GetAssetTotalsFromContext();
@@ -95,7 +75,26 @@ public partial class AssetService : ObservableObject, IAssetService
         getAssetTotalsResult.IfFail(err => ListAssetTotals = new());
         return ListAssetTotals;
     }
+    public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    {
+        var getAssetTotalsResult = await GetAssetTotalsFromContext();
+        getAssetTotalsResult.IfSucc(list =>
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListAssetTotals = new(list.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListAssetTotals = new(list.OrderByDescending(sortFunc));
+            }
+            currentSortFunc = sortFunc;
+            currentSortingOrder = sortingOrder;
 
+        });
+        getAssetTotalsResult.IfFail(err => ListAssetTotals = new());
+        return ListAssetTotals;
+    }
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account)
     {
         var getResult = await GetAssetsByAccountFromContext(account.Id);
@@ -113,7 +112,25 @@ public partial class AssetService : ObservableObject, IAssetService
         getResult.IfFail(err => ListAssetTotals = new());
         return ListAssetTotals;
     }
-
+    public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    {
+        var getResult = await GetAssetsByAccountFromContext(account.Id);
+        getResult.IfSucc(list =>
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListAssetTotals = new(list.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListAssetTotals = new(list.OrderByDescending(sortFunc));
+            }
+            currentSortFunc = sortFunc;
+            currentSortingOrder = sortingOrder;
+        });
+        getResult.IfFail(err => ListAssetTotals = new());
+        return ListAssetTotals;
+    }
     public void ClearAssetTotalsList()
     {
         if (ListAssetTotals is not null)
@@ -121,7 +138,6 @@ public partial class AssetService : ObservableObject, IAssetService
             ListAssetTotals.Clear();
         }
     }
-
     public double GetTotalsAssetsValue()
     {
         if (ListAssetTotals != null && ListAssetTotals.Count > 0)
@@ -162,28 +178,6 @@ public partial class AssetService : ObservableObject, IAssetService
         OutFlow = await CalculateOutFlow();
         return OutFlow;
     }
-
-
-
-
-    //private void CreateListWithDummyAssetTotals()
-    //{
-    //    var dummyCoin = new Coin()
-    //    {
-    //        Name = "EXCEPTIONAL ERROR",
-    //        Symbol = "EXCEPTIONAL ERROR"
-    //    };
-    //    var dummyAssetTotals = new AssetTotals()
-    //    {
-    //        Coin = dummyCoin
-    //    };
-
-    //    ListAssetTotals = new ObservableCollection<AssetTotals>
-    //    {
-    //        dummyAssetTotals
-    //    };
-    //}
-
     public async Task CalculateAssetsTotalValues()
     {
         if (ListAssetTotals != null && ListAssetTotals.Count > 0 && ListAssetTotals[0].Coin.Symbol != "EXCEPTIONAL ERROR")
@@ -195,7 +189,6 @@ public partial class AssetService : ObservableObject, IAssetService
         InFlow = await CalculateInFlow();
         OutFlow = await CalculateOutFlow();
     }
-
     public void UpdatePricesAssetTotals(Coin coin, double oldPrice, double? newPrice)
     {
         var asset = ListAssetTotals?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
@@ -245,8 +238,6 @@ public partial class AssetService : ObservableObject, IAssetService
         }
         return assetsTotals;
     }
-
-    
     public void SortList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
     {
         if (ListAssetTotals is not null)
@@ -260,10 +251,8 @@ public partial class AssetService : ObservableObject, IAssetService
                 ListAssetTotals = new ObservableCollection<AssetTotals>(ListAssetTotals.OrderByDescending(sortFunc));
             }
         }
-
         currentSortingOrder = sortingOrder;
         currentSortFunc = sortFunc;
-
     }
     /// <summary>
     /// this function without parameters will sort the list using the last used settings.
@@ -282,9 +271,6 @@ public partial class AssetService : ObservableObject, IAssetService
             }
         }
     }
-
-
-
     public async Task UpdateListAssetTotals(Transaction transaction)
     {
         if (ListAssetTotals is null)
@@ -331,12 +317,6 @@ public partial class AssetService : ObservableObject, IAssetService
             }
         }
     }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
     private async Task<Result<List<AssetTotals>>> GetAssetTotalsFromContext()
     {
         List<AssetTotals> assetsTotals;
@@ -399,7 +379,6 @@ public partial class AssetService : ObservableObject, IAssetService
 
         return outFlow;
     }
-
     private async Task<Result<AssetTotals>> GetAssetTotalsByCoinFromContext(Coin coin)
     {
         if (coin == null) { return new AssetTotals(); }
@@ -449,94 +428,5 @@ public partial class AssetService : ObservableObject, IAssetService
         }
         return assetTotals;
     }
-
-    //public async Task<Result<List<AssetAccount>>> GetAccountsByAsset(int coinId)
-    //{
-    //    if (coinId <= 0) { return new List<AssetAccount>(); }
-    //    List<AssetAccount> assetAccounts;
-    //    try
-    //    {
-    //        assetAccounts = await context.Assets
-    //            .Include(x => x.Coin)
-    //            .Where(c => c.Coin.Id == coinId)
-    //            .Include(a => a.Account)
-    //            .Select(assets => new AssetAccount
-    //            {
-    //                Qty = assets.Qty,
-    //                Name = assets.Account.Name,
-    //                Symbol = assets.Coin.Symbol,
-    //                AssetId = assets.Id,
-
-    //            }).ToListAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<List<AssetAccount>>(ex);
-    //    }
-    //    assetAccounts ??= new List<AssetAccount>();
-
-    //    return assetAccounts;
-    //}
-
-    //public async Task<Result<AssetAccount>> GetAccountByAsset(int assetId)
-    //{
-    //    if (assetId <= 0) { return new AssetAccount(); }
-    //    AssetAccount? assetAccount;
-    //    try
-    //    {
-    //        assetAccount = await context.Assets
-    //            .Where(c => c.Id == assetId)
-    //            .Include(x => x.Coin)
-    //            .Include(a => a.Account)
-    //            .Select(assets => new AssetAccount
-    //            {
-    //                Qty = assets.Qty,
-    //                Name = assets.Account.Name,
-    //                Symbol = assets.Coin.Symbol,
-    //                AssetId = assets.Id,
-
-    //            }).SingleOrDefaultAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<AssetAccount>(ex);
-    //    }
-
-    //    return assetAccount ?? new AssetAccount();
-    //}
-
-    //public async Task<Result<List<Transaction>>> GetTransactionsByAsset(int assetId)
-    //{
-
-    //    if (assetId <= 0) { return new List<Transaction>(); }
-    //    List<Transaction> assetTransactions = new();
-    //    try
-    //    {
-    //        assetTransactions = await context.Mutations
-    //            .Include(t => t.Transaction)
-    //            .ThenInclude(m => m.Mutations)
-    //            .ThenInclude(a => a.Asset)
-    //            .ThenInclude(ac => ac.Account)
-    //            .Where(c => c.Asset.Id == assetId)
-    //            .GroupBy(g => g.Transaction.Id)
-    //            .Select(grouped => new Transaction
-    //            {
-    //                Id = grouped.Key,
-    //                RequestedAsset = grouped.Select(a => a.Asset).Where(w => w.Id == assetId).SingleOrDefault() ?? new Asset(),
-    //                TimeStamp = grouped.Select(t => t.Transaction.TimeStamp).SingleOrDefault(),
-    //                Note = grouped.Select(t => t.Transaction.Note).SingleOrDefault() ?? string.Empty,
-    //                Mutations = grouped.Select(t => t.Transaction.Mutations).SingleOrDefault() ?? new List<Mutation>(),
-    //            })
-    //            .OrderByDescending(o => o.TimeStamp)
-    //            .ToListAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Result<List<Transaction>>(ex);
-    //    }
-    //    assetTransactions ??= new List<Transaction>();
-
-    //    return assetTransactions;
-    //}
 
 }

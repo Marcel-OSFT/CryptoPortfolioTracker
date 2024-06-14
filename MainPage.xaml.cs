@@ -1,26 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Serilog.Core;
-using SQLitePCL;
 using WinUI3Localizer;
 
 
@@ -32,19 +26,13 @@ public partial class MainPage : Page, INotifyPropertyChanged
     public static MainPage Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private IServiceScope? _currentServiceScope;
-   
     public IGraphUpdateService _graphUpdateService;
     public IPriceUpdateService _priceUpdateService;
     private readonly IPreferencesService _preferencesService;
-
-
     public LogWindow? logWindow;
     private Type lastPageType;
     private NavigationViewItem lastSelectedNavigationItem;
-
     private ILogger Logger { get; set; }
-
-
     private bool isChartLoaded;
     public bool IsChartLoaded
     {
@@ -209,10 +197,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     private void LoadView(Type pageType)
     {
-        //_currentServiceScope?.Dispose();
-        //_currentServiceScope = null;
-        //_currentServiceScope = App.Container.CreateAsyncScope();
-
         if (pageType.Name == "CoinLibraryView" )
         {
             _graphUpdateService.Pause();
@@ -224,8 +208,7 @@ public partial class MainPage : Page, INotifyPropertyChanged
             _priceUpdateService.Continue();
         }
         lastPageType = pageType;
-
-         contentFrame.Content = App.Container.GetService(pageType);
+        contentFrame.Content = App.Container.GetService(pageType);
     }
 
     private void DisplayHelpFile()
@@ -237,7 +220,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
         {
             fileName = "HelpFile_EN.pdf";
         }
-
         try
         {
             Process.Start(new ProcessStartInfo(App.Url + fileName) { UseShellExecute = true });
@@ -252,7 +234,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
                 loc.GetLocalizedString("Common_CloseButton"));
         }
     }
-
 
     public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
     {
@@ -279,7 +260,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
         { 
             await CheckUpdateNow(); 
         }
-
         await _graphUpdateService.Start();
         _priceUpdateService.Start();
     }

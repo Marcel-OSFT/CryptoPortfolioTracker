@@ -17,7 +17,6 @@
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <ContentDialog.Resources>
-
         <!-- Overriding values -->
         <x:Double x:Key="ContentDialogMaxWidth">1200</x:Double>
         <x:Double x:Key="ContentDialogMaxHeight">1200</x:Double>
@@ -30,27 +29,21 @@
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
         <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter"/>
 
-        <Style x:Key="TextBoxRegexStyle"
-               TargetType="TextBox">
+        <Style x:Key="TextBoxRegexStyle" TargetType="TextBox">
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
         <DataTemplate x:Key="HeaderTemplate">
             <StackPanel>
-                <TextBlock Text="{Binding}"
-                           TextWrapping="WrapWholeWords" />
+                <TextBlock Text="{Binding}" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
-
-
     </ContentDialog.Resources>
-
 
     <Grid  Margin="0,0,0,0" Width="700">
         <Grid.Background>
             <SolidColorBrush Color ="#eebc3f" Opacity="0.2"/>
         </Grid.Background>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="130"/>
             <RowDefinition Height="20"/>
@@ -65,10 +58,7 @@
             <ColumnDefinition Width="0.50*" MaxWidth="330"/>
             <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="0.50*" MaxWidth="330"/>
-            
         </Grid.ColumnDefinitions>
-
-
         <StackPanel Name="TypeStackPanel" Orientation= "Horizontal" Grid.ColumnSpan="3" >
             <RelativePanel Name="TypeSelection" HorizontalAlignment="Stretch" Margin="0,0,0,0" >
                 <RadioButtons l:Uids.Uid="TransactionDialog_TransactionType" x:Name="TransactionTypeRadioButtons" TabIndex="0" Style="{StaticResource MK_RButtonsStyle}"  MaxColumns="6" FontWeight="SemiBold" SelectionChanged="TransactionType_SelectionChanged" Margin="20,10,0,0">
@@ -99,8 +89,7 @@
                 SuggestionChosen="ASBoxCoinA_SuggestionChosen"
                 AnimateBorder="True"
                 Width="315"
-                Margin="5,0,0,0"
-                />
+                Margin="5,0,0,0"/>
         </RelativePanel>
         <RelativePanel Name="CoinSelectionB" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,0,0,0" >
             <controls:AutoSuggestBoxWithValidation x:Name ="ASBoxCoinB" 
@@ -111,8 +100,7 @@
                     ElementName=Root, 
                     Mode=TwoWay}"
                     AnimateBorder="True"
-                Width="315"
-                />
+                Width="315" />
         </RelativePanel>
         <RelativePanel Name="AccountSelectionA" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
             <controls:AutoSuggestBoxWithValidation x:Name ="ASBoxAccountFrom" 
@@ -125,9 +113,7 @@
                 TextChanged="ASBoxAccountFrom_TextChanged"
                 SuggestionChosen="ASBoxAccountFrom_SuggestionChosen"
                 AnimateBorder="True"
-                Width="315"
-                />
-
+                Width="315"/>
         </RelativePanel >
         <Grid Grid.Row="3" Grid.Column="1">
             <AppBarButton Label="" Visibility="Visible" VerticalAlignment="Stretch" Click="LinkAccountsButton_Click" 
@@ -148,27 +134,22 @@
                     Mode=TwoWay}"
                 IsEnabled="{Binding IsAccountsLinked, Converter={StaticResource myInvertBoolConverter}}"
                 AnimateBorder="True"
-                Width="315"
-                />
+                Width="315"/>
         </RelativePanel>
         <CheckBox x:Name="Earnings" l:Uids.Uid="TransactionDialog_Earnings"  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
-            
             Margin="0,0,0,5" 
             VerticalContentAlignment="Center"
-                  VerticalAlignment="Bottom"
-                  IsChecked="{Binding IsEarnings, Mode=TwoWay}"
+            VerticalAlignment="Bottom"
+            IsChecked="{Binding IsEarnings, Mode=TwoWay}"
             Visibility="{Binding EarningsCheckBoxVisibility}"/>
         <RelativePanel Name="QtyAndPriceSelectionA" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch" Width="360" Margin="0,0,0,0" >
-            
             <controls:RegExTextBox x:Name ="TBoxQtyA"
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="False"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
                 Text="{Binding QtyA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
                 Header="{Binding MaxQtyA, Converter={StaticResource myMaxQtyAConverter}}" 
-                IsEntryValid="{Binding Validator.EntryCollection[4], 
-                    ElementName=Root, 
-                    Mode=TwoWay}"
+                IsEntryValid="{Binding Validator.EntryCollection[4], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}"
                 PointerPressed="QtyOrPrice_pressed" 
                 Width="160" Margin="5,0,5,0"/>
@@ -178,9 +159,7 @@
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
                         IsEnabled="{Binding Path=IsChecked, ElementName=Earnings, Converter={StaticResource myInvertBoolConverter}, Mode=TwoWay}"           
                 Text="{Binding PriceA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.##################}'}" 
-                IsEntryValid="{Binding Validator.EntryCollection[5], 
-                    ElementName=Root, 
-                    Mode=TwoWay}"
+                IsEntryValid="{Binding Validator.EntryCollection[5], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}" 
                 Width="145"
                 TextChanged="TBoxPriceA_TextChanged" 
@@ -189,22 +168,14 @@
                 RelativePanel.RightOf="TBoxQtyA" 
                 RelativePanel.AlignBottomWith="TBoxQtyA"
                 ToolTipService.ToolTip="The price of the underlying coin"/>
-            
         </RelativePanel>
         <RelativePanel Name="QtyAndPriceSelectionB" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,0,0,0" >
             <controls:RegExTextBox l:Uids.Uid="TransactionDialog_QtyB" x:Name ="TBoxQtyB" 
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="False"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                                   
-                Text="{Binding QtyB, 
-                    ElementName=Root, 
-                    Mode=TwoWay, 
-                    Converter={StaticResource StringFormatConverter}, 
-                    ConverterParameter='{}{0:0.########}'}" 
-                IsEntryValid="{Binding Validator.EntryCollection[6], 
-                    ElementName=Root, 
-                    Mode=TwoWay}"
+                Text="{Binding QtyB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}" 
+                IsEntryValid="{Binding Validator.EntryCollection[6], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}"
                 PointerPressed="QtyOrPrice_pressed"
                 Width="160" 
@@ -213,14 +184,8 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="False" 
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding PriceB, 
-                    ElementName=Root, 
-                    Mode=TwoWay, 
-                    Converter={StaticResource StringFormatConverter}, 
-                    ConverterParameter='{}{0:0.########}'}" 
-                IsEntryValid="{Binding Validator.EntryCollection[7], 
-                    ElementName=Root, 
-                    Mode=TwoWay}"
+                Text="{Binding PriceB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}" 
+                IsEntryValid="{Binding Validator.EntryCollection[7], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}" 
                 Width="145" 
                 IsEnabled="False" 
@@ -237,14 +202,8 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="True" 
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding FeeQty, 
-                    ElementName=Root, 
-                    Mode=TwoWay, 
-                    Converter={StaticResource StringFormatConverter}, 
-                    ConverterParameter='{}{0:0.########}'}" 
-                IsEntryValid="{Binding Validator.EntryCollection[8], 
-                    ElementName=Root, 
-                    Mode=TwoWay}"
+                Text="{Binding FeeQty, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}" 
+                IsEntryValid="{Binding Validator.EntryCollection[8], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}" 
                 PointerPressed="QtyOrPrice_pressed"
                 Width="120" 
@@ -252,9 +211,7 @@
             <controls:AutoSuggestBoxWithValidation l:Uids.Uid="TransactionDialog_FeeCoin" x:Name ="ASBoxFeeCoin" 
                 ItemsSource="{Binding ListFeeCoin, ElementName=Root, Mode=TwoWay}" 
                 MyText="{Binding FeeCoin, ElementName=Root, Mode=TwoWay}" 
-                IsEntryMatched="{Binding Validator.EntryCollection[9], 
-                    ElementName=Root, 
-                    Mode=TwoWay}"
+                IsEntryMatched="{Binding Validator.EntryCollection[9], ElementName=Root, Mode=TwoWay}"
                 AnimateBorder="True"
                 Margin="5,0,0,0"
                 Width="185"
@@ -271,9 +228,7 @@
             ClockIdentifier="24HourClock" 
             Margin="25,0,0,0" 
             RelativePanel.RightOf="DatePicker" />
-
         </RelativePanel>
-
         <StackPanel Name="NotesStackPanel" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" 
             Orientation= "Horizontal" VerticalAlignment="Stretch" Margin="0,0,0,0">
             <TextBox  l:Uids.Uid="TransactionDialog_Note" x:Name ="TBoxNote" 
@@ -288,9 +243,5 @@
                 VerticalAlignment="Top"/>
         </StackPanel>
     </Grid>
-    
-
-    
-
 </ContentDialog>
     

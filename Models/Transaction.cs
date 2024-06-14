@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Helpers;
 
 namespace CryptoPortfolioTracker.Models;
 
@@ -27,12 +25,9 @@ public partial class Transaction : BaseModel
     [ObservableProperty] private int id;
     [ObservableProperty] private DateTime timeStamp;
     [ObservableProperty] private string note = string.Empty;
-
     [ObservableProperty] private ICollection<Mutation> mutations;
-
     [ObservableProperty][NotMapped] private Asset? requestedAsset = null;
     [ObservableProperty][NotMapped] private TransactionDetails details;
-
 
     partial void OnMutationsChanged(ICollection<Mutation> value)
     {

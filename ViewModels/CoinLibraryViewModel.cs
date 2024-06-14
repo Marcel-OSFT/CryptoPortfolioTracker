@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,8 +10,6 @@ using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
-using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
@@ -22,7 +17,7 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
+public partial class CoinLibraryViewModel : BaseViewModel
 {
     public ILibraryService _libraryService { get; private set; }
     private readonly IPreferencesService _preferencesService;
@@ -39,6 +34,9 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
     public static CoinLibraryViewModel Current;
     public List<string> searchListGecko;
     public List<CoinList> coinListGecko;
+    [ObservableProperty] private string sortGroup;
+    private SortingOrder initialSortingOrder;
+    private Func<Coin, object> initialSortFunc;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public CoinLibraryViewModel(ILibraryService libraryService, IPreferencesService preferencesService) : base(preferencesService)
@@ -48,26 +46,16 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
         IsAllCoinDataRetrieved = false;
         _libraryService = libraryService;
         _preferencesService = preferencesService;
+
+        sortGroup = "Library";
+        initialSortFunc = x => x.Rank;
+        initialSortingOrder = SortingOrder.Ascending;
     }
-
-    public void Dispose()
-    {
-        Current = null;
-        searchListGecko = MkOsft.NullList<string>(searchListGecko);
-        coinListGecko = MkOsft.NullList<CoinList>(coinListGecko);
-
-    }
-
-    /// <summary>
-    /// SetDataSource async task is called from the View_Loading event of the associated View
-    /// this to prevent to have it called from the ViewModels constructor
-    /// </summary>
-    /// <returns></returns>
     public async Task Initialize()
     {
         if (_libraryService.IsCoinsListEmpty())
         {
-            await _libraryService.PopulateCoinsList();
+            await _libraryService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
         }
     }
 
@@ -80,11 +68,6 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
        // _libraryService.ClearCoinsList();
     }
 
-    /// <summary>
-    /// RetrieveAllCoinData async task is called from the View_Loading event of the associated View
-    /// this to prevent to have it called from the ViewModels constructor
-    /// </summary>
-    /// <returns></returns>
     public async Task RetrieveAllCoinData()
     {
         Logger.Information("Retrieved Coin List from CoinGecko");
@@ -155,7 +138,6 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
         Func<Coin, object> sortFunc = x => x.Rank;
         _libraryService.SortList(sortingOrder, sortFunc);
     }
-
 
     [RelayCommand(CanExecute = nameof(CanShowAddCoinDialog))]
     public async Task ShowAddCoinDialog()
@@ -249,12 +231,10 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
         App.isBusy = false;
     }
 
-
     private bool CanMergePreListingCoin(Coin coin)
     {
         return coin.Name.Contains("_pre-listing");
     }
-
 
     [RelayCommand]
     public async Task ShowAddPreListingCoinDialog()
@@ -299,7 +279,6 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
 
         App.isBusy = false;
     }
-
 
     [RelayCommand]
     public async Task ShowAddNoteDialog(Coin coin)
@@ -372,7 +351,6 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
         return result;
     }
 
-
     [RelayCommand]
     public async Task ShowDescription(Coin coin)
     {
@@ -388,18 +366,6 @@ public partial class CoinLibraryViewModel : BaseViewModel, IDisposable
         }
         App.isBusy = false;
     }
-
-    //private Task RemoveFromListCoins(Coin coin)
-    //{
-        
-    //}
-    //private Task AddToListCoins(Coin? coin)
-    //{
-    //    if (coin == null) { return Task.FromResult(false); }
-    //    ListCoins.Add(coin);
-
-    //    return Task.FromResult(true);
-    //}
 
     private Task UpdateListCoinsAfterMerge(Coin prelistingCoin, Coin? newCoin)
     {

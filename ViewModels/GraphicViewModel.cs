@@ -10,42 +10,29 @@ using LiveChartsCore.Defaults;
 using WinUI3Localizer;
 using System.Globalization;
 using CryptoPortfolioTracker.Services;
-using System.Xml.Linq;
-using System.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public partial class GraphicViewModel : BaseViewModel, IDisposable
+public partial class GraphicViewModel : BaseViewModel
 {
     //private readonly ILocalizer loc = Localizer.Get();
 
     public static GraphicViewModel Current;
-
     private readonly IGraphService _graphService;
-
     private ObservableCollection<DateTimePoint> valuesPortfolio = new();
     private ObservableCollection<DateTimePoint> valuesInFlow = new();
     private ObservableCollection<DateTimePoint> valuesOutFlow = new();
-
     [ObservableProperty] public ObservableCollection<ISeries> series = new();
-
     public Axis[] XAxes { get; set; }
     public Axis[] YAxes { get; set; }
-
     [ObservableProperty] public int progressValue;
-
     [ObservableProperty] public bool isUpdating;
-
     [ObservableProperty] public bool isLoadingFromJson;
-
     [ObservableProperty] public bool isNotUpdating;
-
     [ObservableProperty] public bool isNotLoadingFromJson;
-
-
-    //private bool _isInitializing;
+    
     partial void OnIsLoadingFromJsonChanged(bool value)
     {
         IsNotLoadingFromJson = !value;
@@ -61,7 +48,6 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
         IsNotUpdating = !value;
     }
 
-
     public GraphicViewModel(IGraphService graphService, IPreferencesService preferencesService) : base(preferencesService) 
     {
         Current = this;
@@ -74,10 +60,8 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
 
     public async Task InitializeGraph()
     {
-        //_isInitializing = true;
         var loc = Localizer.Get();
         var ci = new CultureInfo(loc.GetCurrentLanguage());
-        
         try
         {
             await WaitForJsonToLoad();
@@ -86,8 +70,6 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
                 GetValues();
                 SetSeries();
             }
-
-            //IsFinishedUpdating = _graphService.HasDataPoints();
             // re-set the labels because language settings might have changed
             XAxes[0].Labeler = value => value.AsDate().ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci);
             YAxes[0].Name = loc.GetLocalizedString("GraphicView_PortfolioSeriesTitle");
@@ -96,7 +78,6 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
         {
             Debug.WriteLine(ex);
         }
-       // _isInitializing = false;
     }
 
     private async Task WaitForJsonToLoad()
@@ -107,11 +88,6 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
             await Task.Delay(1000);
         }
         IsLoadingFromJson = false;
-    }
-
-    public void Dispose()
-    {
-        Current = null;
     }
 
     public SolidColorPaint LegendTextPaint { get; set; } =
@@ -169,7 +145,6 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
                 Name = loc.GetLocalizedString("GraphicView_OutFlowSeriesTitle"), //"Outflow",
             }
         };
-        
     }
 
     private void SetXAxes()
@@ -224,11 +199,7 @@ public partial class GraphicViewModel : BaseViewModel, IDisposable
 
                 Labeler = value => string.Format("$ {0:N0}", value)
             }
-
         };
-
     }
-
-
 
 }

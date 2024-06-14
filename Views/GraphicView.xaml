@@ -16,7 +16,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     d:DataContext="{d:DesignInstance Type=viewmodels:GraphicViewModel}"
     Loading="View_Loading"
-    Unloaded="View_Unloaded"
     mc:Ignorable="d">
 
     <UserControl.Resources>

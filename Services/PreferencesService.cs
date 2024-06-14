@@ -57,8 +57,6 @@ public class PreferencesService : IPreferencesService
             frameworkElement.RequestedTheme = theme;
         }
         SaveUserPreferences("AppTheme", theme);
-
-
     }
     public void SetHidingZeroBalances(bool isHiding)
     {
@@ -169,27 +167,6 @@ public class PreferencesService : IPreferencesService
         Logger.Information("IsHidingCapitalFlow set to {0}", userPreferences.IsHidingCapitalFlow);
 
     }
-    private void SetCulture()
-    {
-        //if (App.Localizer == null)
-        //{
-        //    return;
-        //}
-
-        //App.Localizer.SetLanguage(userPreferences.AppCultureLanguage);
-    }
-
-    private static void SetTheme(ElementTheme theme)
-    {
-        //if (App.Window != null && App.Window.Content is FrameworkElement frameworkElement)
-        //{
-        //    frameworkElement.RequestedTheme = theme;
-        //}
-    }
-
-
-
-
 
 }
 

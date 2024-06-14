@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+namespace CryptoPortfolioTracker.Infrastructure.EntityConfigurations;
 class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
 {
     public void Configure(EntityTypeBuilder<Coin> configuration)
@@ -14,7 +15,6 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
             .Property("Id")
             .ValueGeneratedOnAdd()
             .HasColumnName("Id");
-
 
         configuration
            .Property("ApiId")

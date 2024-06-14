@@ -8,7 +8,6 @@ namespace CryptoPortfolioTracker.Converters;
 
 public class ColourConverter : IValueConverter
 {
-    
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         var greenColor = new SolidColorBrush(Colors.ForestGreen);
@@ -16,7 +15,6 @@ public class ColourConverter : IValueConverter
         {
             greenColor = new SolidColorBrush(Colors.LimeGreen);
         }
-
         return (double)value < 0 ? new SolidColorBrush(Colors.Red) : greenColor;
     }
 

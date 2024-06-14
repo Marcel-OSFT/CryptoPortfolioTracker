@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics;
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 

@@ -1,9 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Runtime.CompilerServices;
 
 namespace CryptoPortfolioTracker.Models;
-
 
 public partial class AssetAccount : BaseModel
 {
@@ -14,12 +11,8 @@ public partial class AssetAccount : BaseModel
     }
 
     [ObservableProperty] private string name;
-
     [ObservableProperty] private double qty;
-
     [ObservableProperty] private string symbol;
-
     [ObservableProperty] private int assetId;
-
     
 }

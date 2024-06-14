@@ -107,7 +107,6 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         {
             Title = loc.GetLocalizedString("CoinDialog_MergeTitle");
         }
-        
     }
 
     /// <summary>
@@ -152,12 +151,10 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
             BePatientVisibility = Visibility.Collapsed;
         }
     }
-
     public void ShowBePatienceNotice()
     {
         BePatientVisibility = Visibility.Visible;
     }
-
     private void Button_Click_AddCoin(ContentDialog sender, ContentDialogButtonClickEventArgs e)
     {
         try
@@ -203,7 +200,6 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         }
         finally { Current = null; }
     }
-
     public async Task<CoinFullDataById> GetCoinDetails(string coinId)
     {
         IsPrimaryButtonEnabled = false;
@@ -283,8 +279,6 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         var getCoinResult = await _viewModel._libraryService.GetCoin(coinId);
         return getCoinResult.Match(Succ: s => true, Fail: f => false);
     }
-
-
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? name = null)
     {
@@ -297,7 +291,6 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
             throw new Exception(exception.Message);
         });
     }
-
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
         if (sender.ActualTheme != _preferencesService.GetAppTheme())

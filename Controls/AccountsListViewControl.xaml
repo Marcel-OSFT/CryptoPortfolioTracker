@@ -13,7 +13,6 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
-    Unloaded="Control_Unload"
     mc:Ignorable="d">
 
     <UserControl.Resources>
