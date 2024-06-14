@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Controls;
@@ -65,6 +66,8 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     [ObservableProperty] private string decimalSeparator;
     [ObservableProperty] private Visibility earningsCheckBoxVisibility;
     [ObservableProperty] private bool isEarnings;
+
+
     partial void OnIsEarningsChanged(bool value)
     {
         if (value)
@@ -114,17 +117,11 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
             GetMaxQtyAndPrice();
         }
     }
-    partial void OnQtyAChanging(double value)
-    {
-        if (maxQtyA >= 0 && value > MaxQtyA)
-        {
-            value = MaxQtyA;
-        }
-    }
     partial void OnQtyAChanged(double value)
     {
         CalculatePriceB();
     }
+    
     partial void OnQtyBChanged(double value)
     {
         CalculatePriceB();
@@ -134,6 +131,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         CalculatePriceB();
     }
 
+   
     #region Constructor(s)
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -347,6 +345,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
             return;
         }
         PriceB = QtyA * PriceA / QtyB;
+        OnPropertyChanged(nameof(QtyA));
     }
     private void ConfigureDialogFields(string explainType, string assetTextA, string assetTextB, string accountTextA, string accountTextB, bool isAccountLinkEnabled = true)
     {
@@ -798,5 +797,30 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     {
         PriceA = 0;
     }
+
+    private void TBoxQtyA_TextChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void TBoxQtyA_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox tbox)
+        {
+            if (Convert.ToDouble(tbox.Text) > MaxQtyA  )
+            {
+                tbox.Text = MaxQtyA.ToString();
+            }
+        }
+    }
+
+    //public event PropertyChangedEventHandler? PropertyChanged;
+
+    //protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    //{
+    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    //}
+
+
 }
 
