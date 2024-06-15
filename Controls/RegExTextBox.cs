@@ -140,7 +140,8 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
 
     private void TextEntryChanged(object sender, RoutedEventArgs e)
     {
-        var _text = (sender as TextBox).Text;
+        
+        var _text = Convert.ToDouble((sender as TextBox).Text);
 
         if (invalidKeyEntered)
         {
@@ -161,6 +162,7 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
         }
         else
         {
+            var test = Regex.Match(Text, regExChoosen).Value;
             IsEntryValid = Text == Regex.Match(Text, regExChoosen).Value;
             //IsEntryValid = TextBoxExtensions.GetIsValid(this); //<= this one doesn't work properly... does not allow 1 decimal...
         }
@@ -263,9 +265,13 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
                             || (e.Key != VirtualKey.Subtract
                             && Convert.ToInt32(e.Key) != 189))
                         {
-                            // Finally the reuslt is that A non-numerical keystroke was pressed.
-                            // Set the flag to true and take action in TextChanged event.
-                            invalidKeyEntered = true;
+                            //Determine wheter the keystroke is the Tab key
+                            if (e.Key != VirtualKey.Tab)
+                            {
+                                // Finally the reuslt is that A non-numerical keystroke was pressed.
+                                // Set the flag to true and take action in TextChanged event.
+                                invalidKeyEntered = true;
+                            }
                         }
                     }
                 }

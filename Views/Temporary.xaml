@@ -40,13 +40,13 @@ xmlns:controls="using:CryptoPortfolioTracker.Controls"
                              Foreground="DarkGoldenrod"
                              FontFamily=" "
                              FontSize="40"/>
-                
+
                 <TextBlock   Text="User Manual"
                              FontWeight="Bold"
                              FontSize="80"
                              Margin="0,-20,0,30"/>
 
-                <TextBlock   Text="Crypto Portfolio Tracker, a Windows desktop app for tracking a HODL crypto portfolio."
+                <TextBlock   Text="Crypto Portfolio Tracker, een Windows desktop app voor het bijhouden van een HODL crypto portefeuille."
                              TextWrapping="WrapWholeWords"
                              HorizontalAlignment="Left"
                              HorizontalTextAlignment="Left"
