@@ -20,20 +20,25 @@ public sealed class StringFormatConverter : IValueConverter
             return value;
         }
 
-        CultureInfo ci;
-        if ( App._preferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
-        {
-            ci = new CultureInfo("nl-NL");
-            ci.NumberFormat = App._preferencesService.GetNumberFormat();
-        }
-        else
-        {
-            ci = new CultureInfo("en-US");
-            ci.NumberFormat =   App._preferencesService.GetNumberFormat();
-        }
-       
+        //CultureInfo ci;
+        //if ( App._preferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
+        //{
+        //    ci = new CultureInfo("nl-NL");
+        //    ci.NumberFormat = App._preferencesService.GetNumberFormat();
+        //}
+        //else
+        //{
+        //    ci = new CultureInfo("en-US");
+        //    ci.NumberFormat =   App._preferencesService.GetNumberFormat();
+        //}
+
+        var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
+        ci.NumberFormat = App._preferencesService.GetNumberFormat();
+
         if (value is double)
         {
+            var test = (double)value;
+            var test2 = string.Format(ci, (string)parameter, (double)value);
             return string.Format(ci, (string)parameter, (double)value);
         }
         else if (value is int)
@@ -49,20 +54,24 @@ public sealed class StringFormatConverter : IValueConverter
         double result;
         try
         {
-            CultureInfo ci;
-            if (App._preferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
-            {
-                ci = new CultureInfo("nl-NL");
-                ci.NumberFormat = App._preferencesService.GetNumberFormat();
-            }
-            else
-            {
-                ci = new CultureInfo("en-US");
-                ci.NumberFormat = App._preferencesService.GetNumberFormat();
-            }
+            //CultureInfo ci;
+            //if (App._preferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
+            //{
+            //    ci = new CultureInfo("nl-NL");
+            //    ci.NumberFormat = App._preferencesService.GetNumberFormat();
+            //}
+            //else
+            //{
+            //    ci = new CultureInfo("en-US");
+            //    ci.NumberFormat = App._preferencesService.GetNumberFormat();
+            //}
             
+            var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
+            ci.NumberFormat = App._preferencesService.GetNumberFormat();
+
             if (targetType == typeof(double))
             {
+                var test = System.Convert.ToDouble((string)value, ci);
                 return  System.Convert.ToDouble((string)value, ci);
             }
             else if (targetType == typeof(int))

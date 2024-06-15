@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -807,9 +808,12 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     {
         if (sender is TextBox tbox)
         {
-            if (Convert.ToDouble(tbox.Text) > MaxQtyA  )
+            var ci = new CultureInfo(loc.GetCurrentLanguage());
+            ci.NumberFormat = _preferencesService.GetNumberFormat();    
+            var value = Convert.ToDouble(tbox.Text, ci);
+            if (MaxQtyA > 0 && value > MaxQtyA)
             {
-                tbox.Text = MaxQtyA.ToString();
+                tbox.Text = MaxQtyA.ToString(ci);
             }
         }
     }

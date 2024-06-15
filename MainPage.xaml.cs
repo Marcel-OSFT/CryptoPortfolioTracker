@@ -12,6 +12,7 @@ using CryptoPortfolioTracker.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Serilog.Core;
@@ -142,6 +143,8 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     private async void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
+        //LoadView(Type.GetType("CryptoPortfolioTracker.Views.Temporary"));
+
         var selectedItem = (NavigationViewItem)args.SelectedItem;
         Type? pageType;
         if (args.IsSettingsSelected)
