@@ -60,12 +60,12 @@
 
             <RelativePanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" >
                 <TextBlock x:Name="txtTotalAssetsValue" RelativePanel.AlignRightWithPanel="True"
-                    Text="{Binding TotalAssetsValue, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                    Text="{Binding _assetService.TotalAssetsValue, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
                     Foreground="DarkGoldenrod" 
                     Margin="0,15,20,0" 
                     Style="{StaticResource ValueHeaderTextStyle}" />
                 <TextBlock x:Name="txtProfitLossPerc" 
-                    Text="{Binding TotalAssetsPnLPerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" 
+                    Text="{Binding _assetService.TotalAssetsPnLPerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" 
                     Foreground="DarkGoldenrod" 
                     Margin="36,0,20,0" Style="{StaticResource PercHeaderTextStyle}" 
                     RelativePanel.AlignRightWith="txtTotalAssetsValue" 
@@ -82,7 +82,7 @@
                         Margin="0,0,20,0" Style="{StaticResource InAndOutFlowTextHeaderStyle}" 
                         />
                     <TextBlock 
-                        Text="{Binding InFlow, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                        Text="{Binding _assetService.InFlow, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
                         Foreground="Goldenrod" 
                         Margin="0,0,20,0" Style="{StaticResource InAndOutFlowTextStyle}" 
                             />
@@ -99,7 +99,7 @@
                         Margin="0,0,20,0" Style="{StaticResource InAndOutFlowTextHeaderStyle}" 
                         />
                     <TextBlock
-                        Text="{Binding OutFlow, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                        Text="{Binding _assetService.OutFlow, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
                         Foreground="Goldenrod" 
                         Margin="0,0,20,0" Style="{StaticResource InAndOutFlowTextStyle}" 
                             />

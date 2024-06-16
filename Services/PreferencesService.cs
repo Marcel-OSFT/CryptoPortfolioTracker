@@ -29,7 +29,7 @@ public class PreferencesService : IPreferencesService
     public void SetNumberFormat(NumberFormatInfo nf)
     {
         userPreferences.NumberFormat = nf;
-        SaveUserPreferences("NumberFormat", nf);
+        SaveUserPreferences("NumberFormat - Decimal Separator", nf.NumberDecimalSeparator);
     }
     
     public void SetAppCultureLanguage(string language)
