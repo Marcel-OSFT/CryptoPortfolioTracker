@@ -11,6 +11,7 @@ using CryptoPortfolioTracker.Models;
 using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
+using Windows.Gaming.Input.ForceFeedback;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -142,6 +143,7 @@ public partial class AssetService : ObservableObject, IAssetService
     {
         if (ListAssetTotals != null && ListAssetTotals.Count > 0)
         {
+            TotalAssetsValue = 0; // force view update
             TotalAssetsValue = ListAssetTotals.Sum(x => x.MarketValue);
             TotalAssetsPnLPerc = TotalAssetsCostBase > 0
                 ? 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase
@@ -162,6 +164,7 @@ public partial class AssetService : ObservableObject, IAssetService
     }
     public double GetTotalsAssetsPnLPerc()
     {
+        TotalAssetsPnLPerc = 0; // force view update
         TotalAssetsPnLPerc = TotalAssetsCostBase > 0
             ? 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase
             : 0;
@@ -170,11 +173,13 @@ public partial class AssetService : ObservableObject, IAssetService
     }
     public async Task<double> GetInFlow()
     {
+        InFlow = 0; // force view update
         InFlow = await CalculateInFlow();
         return InFlow;
     }
     public async Task<double> GetOutFlow()
     {
+        OutFlow = 0; // force view update
         OutFlow = await CalculateOutFlow();
         return OutFlow;
     }

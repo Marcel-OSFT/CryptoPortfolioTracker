@@ -5,6 +5,9 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Enums;
+using Microsoft.UI.Xaml.Controls;
+using static System.Net.WebRequestMethods;
+using File = System.IO.File;
 
 namespace CryptoPortfolioTracker.Models;
 
@@ -120,6 +123,7 @@ public class AppUpdater
 
     public async Task<AppUpdaterResult> DownloadSetupFile()
     {
+
         downloadsFolderPath = GetDownloadsPath();
         fileName = ExtractFileName();
 

@@ -811,20 +811,13 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
             var ci = new CultureInfo(loc.GetCurrentLanguage());
             ci.NumberFormat = _preferencesService.GetNumberFormat();    
             var value = Convert.ToDouble(tbox.Text, ci);
-            if (MaxQtyA > 0 && value > MaxQtyA)
+            if (MaxQtyA != -1 && value > MaxQtyA)
             {
                 tbox.Text = MaxQtyA.ToString(ci);
             }
         }
     }
 
-    //public event PropertyChangedEventHandler? PropertyChanged;
-
-    //protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    //{
-    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    //}
-
-
+    
 }
 

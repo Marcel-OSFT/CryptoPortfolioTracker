@@ -34,12 +34,12 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public readonly IGraphService _graphService;
     private readonly IPreferencesService _preferencesService;
 
-    [ObservableProperty] private double totalAssetsValue;
-    [ObservableProperty] private double totalAssetsCostBase;
-    [ObservableProperty] private double totalAssetsPnLPerc;
+   // [ObservableProperty] private double totalAssetsValue;
+   // [ObservableProperty] private double totalAssetsCostBase;
+   // [ObservableProperty] private double totalAssetsPnLPerc;
 
-    [ObservableProperty] private double inFlow;
-    [ObservableProperty] private double outFlow;
+   // [ObservableProperty] private double inFlow;
+   // [ObservableProperty] private double outFlow;
 
     [ObservableProperty] private string sortGroup;
 
@@ -88,12 +88,17 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public async Task Initialize()
     {
         await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
-        TotalAssetsValue = _assetService.GetTotalsAssetsValue();
-        TotalAssetsCostBase = _assetService.GetTotalsAssetsCostBase();
-        TotalAssetsPnLPerc = _assetService.GetTotalsAssetsPnLPerc();
 
-        InFlow = await _assetService.GetInFlow();
-        OutFlow = await _assetService.GetOutFlow();
+        //below setting(s) might have been changed while was moved away from the associated view
+        IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
+
+        //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
+        _assetService.GetTotalsAssetsValue();
+        _assetService.GetTotalsAssetsCostBase();
+        _assetService.GetTotalsAssetsPnLPerc();
+
+        await _assetService.GetInFlow();
+        await _assetService.GetOutFlow();
     }
     /// <summary>
     /// ReleaseDataSource async task is called from the View_UnLoaded event of the associated View
