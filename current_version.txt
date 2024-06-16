@@ -1,1 +1,1 @@
-1.1.0.1=https://marcel-osft.github.io/CryptoPortfolioTracker/CryptoPortfolioTracker_setup_v1-1-0-1.exe
+1.1.0.1=https://onedrive.live.com/download?resid=A56E22F34D5BE226%2127921&authkey=!AB0Qpuk4rmLzyVo
