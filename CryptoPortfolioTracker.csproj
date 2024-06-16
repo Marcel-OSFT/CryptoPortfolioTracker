@@ -343,9 +343,6 @@
     <Page Update="LogWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="HelpFile.rtf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\SettingsView.xaml">
