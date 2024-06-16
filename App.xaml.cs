@@ -33,7 +33,8 @@ public partial class App : Application
     public static string appPath = string.Empty;
     public static string appDataPath = string.Empty;
     public static string ProductVersion = string.Empty;
-    public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
+   // public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
+    public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version_onedrive.txt";
     public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
     public static bool isBusy;
     public static bool isAppInitializing;

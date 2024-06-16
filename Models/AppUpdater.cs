@@ -16,6 +16,7 @@ public class AppUpdater
     private string downloadLink = string.Empty;
     private string downloadsFolderPath = string.Empty;
     private string fileName = string.Empty;
+    private string latestVersion;
 
     /// 2. Declare DownloadsFolder GUI and import SHGetKnownFolderPath method
     private static Guid FolderDownloads = new("374DE290-123F-4565-9164-39C4925E467B");
@@ -29,8 +30,7 @@ public class AppUpdater
     public async Task<AppUpdaterResult> Check(string updateUrl, string appVersion)
     {
         /* Temporary output file to work with (located in AppData)*/
-        //     var temp_version_file = App.appDataPath + "\\current_version.txt";
-             var temp_version_file = App.appDataPath + "\\current_version_new.txt";
+        var temp_version_file = App.appDataPath + "\\current_version.txt";
 
         /* Use the WebClient class to download the file from your server */
         using (var httpClient = new HttpClient())
@@ -66,18 +66,12 @@ public class AppUpdater
 
 
             /* Variable to store the app new version (without the periods)*/
-            int _latestVersion = Convert.ToInt16(string.Concat(version_data[0].Split('.')));
+            latestVersion = version_data[0];
+            int _latestVersion = Convert.ToInt16(string.Concat(latestVersion.Split('.')));
             int _appVersion = Convert.ToInt16(string.Concat(appVersion.Split(".")));
 
             /* Store the download link in the global variable already created */
             downloadLink = version_data[1];
-
-            //test => implement bot next to eachother in case someone is running an older version = ;
-            DownloadSetupFile();
-            //test
-
-
-
 
             /* Compare the app current version with the version from the downloaded file */
             if (_latestVersion > _appVersion)
@@ -135,9 +129,9 @@ public class AppUpdater
 
     public async Task<AppUpdaterResult> DownloadSetupFile()
     {
-
         downloadsFolderPath = GetDownloadsPath();
-        fileName = ExtractFileName();
+        //fileName = ExtractFileName();
+        fileName = "CryptoPortfolioTracker_setup_" + latestVersion + ".exe";
 
         using var httpClient = new HttpClient();
         HttpResponseMessage response;
