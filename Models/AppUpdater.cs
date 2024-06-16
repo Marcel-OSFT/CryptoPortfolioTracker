@@ -29,7 +29,8 @@ public class AppUpdater
     public async Task<AppUpdaterResult> Check(string updateUrl, string appVersion)
     {
         /* Temporary output file to work with (located in AppData)*/
-        var temp_version_file = App.appDataPath + "\\current_version.txt";
+        //     var temp_version_file = App.appDataPath + "\\current_version.txt";
+             var temp_version_file = App.appDataPath + "\\current_version_new.txt";
 
         /* Use the WebClient class to download the file from your server */
         using (var httpClient = new HttpClient())
@@ -58,7 +59,11 @@ public class AppUpdater
         if (File.Exists(temp_version_file))
         {
             /* Get the file content and split it in two */
-            var version_data = File.ReadAllText(temp_version_file).Split('=');
+       //     var version_data = File.ReadAllText(temp_version_file).Split('=');
+            var version_data = File.ReadAllText(temp_version_file).Split(';');
+
+
+
 
             /* Variable to store the app new version (without the periods)*/
             int _latestVersion = Convert.ToInt16(string.Concat(version_data[0].Split('.')));
@@ -66,6 +71,13 @@ public class AppUpdater
 
             /* Store the download link in the global variable already created */
             downloadLink = version_data[1];
+
+            //test => implement bot next to eachother in case someone is running an older version = ;
+            DownloadSetupFile();
+            //test
+
+
+
 
             /* Compare the app current version with the version from the downloaded file */
             if (_latestVersion > _appVersion)
