@@ -107,6 +107,10 @@ public partial class App : Application
                 }
                 File.Copy(dbFilename, appDataPath + "\\sqlCPT_backup_"  + DateTime.Now.Ticks.ToString() + ".db");
             }
+            else
+            {
+                context?.Database.Migrate();
+            }
             //context?.Database.Migrate();
         }
         catch (Exception ex)
