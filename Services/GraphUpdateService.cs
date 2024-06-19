@@ -494,8 +494,8 @@ public class GraphUpdateService : IGraphUpdateService
     }
     private async Task<int> GetDaysBasedOnOldestTransaction()
     {
-        var tx = await coinContext.Transactions.OrderBy(x => x.TimeStamp).FirstAsync();
-        var days = DateTime.UtcNow.Subtract(tx.TimeStamp).Days + 1;
+        var tx = await coinContext.Transactions.OrderBy(x => x.TimeStamp).FirstOrDefaultAsync();
+        var days =  tx is not null ? DateTime.UtcNow.Subtract(tx.TimeStamp).Days + 1 : 0;
 
         return days;
     }

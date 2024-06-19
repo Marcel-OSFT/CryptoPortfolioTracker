@@ -6,6 +6,22 @@ namespace CryptoPortfolioTracker.Infrastructure
 {
     public class PortfolioContext : DbContext
     {
+
+        // for design-time migration
+        //public PortfolioContext() : base()
+        //{
+        //}
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlite("Data Source=C:\\Users\\marce\\source\\repos\\CryptoPortfolioTracker\\sqlCPT.db");
+        //}
+
+        //
+
+
+
+
         public PortfolioContext(DbContextOptions<PortfolioContext> connection) : base(connection) { }
 
         public DbSet<Coin> Coins  { get; set; }

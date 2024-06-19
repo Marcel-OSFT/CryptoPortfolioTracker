@@ -6,7 +6,8 @@
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
     xmlns:l="using:WinUI3Localizer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    Loading="Dialog_Loading"
+    x:Name="Root"
+     Loading="Dialog_Loading"
     DefaultButton="Primary"
     PrimaryButtonClick="Button_Click_AcceptCoin">
     
@@ -49,13 +50,16 @@
             </TextBox>
             <controls:RegExTextBox x:Name ="CoinPrice" 
                 l:Uids.Uid="PreListingCoinDialog_Price"
+                RegEx="RegExPositiveDecimal" 
+                 IsZeroAllowed="True" 
+                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
+               IsEnabled="True"
                 Text="0"
                 IsEntryValid="False"
-                RegEx="RegExPositiveDecimal" 
-                IsZeroAllowed="False" 
-                Style="{StaticResource MK_TextBoxStyle}"
+                 Style="{StaticResource MK_TextBoxStyle}"
                 TextChanged="CoinPrice_Changed" 
                 Width="160" Margin="5,10,0,10"/>
+
         </StackPanel>
 
         <StackPanel Grid.Row="3" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
