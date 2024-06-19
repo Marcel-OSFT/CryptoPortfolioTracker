@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -92,8 +93,26 @@ public partial class App : Application
 
     private void CheckDatabase()
     {
-        var context = App.Container.GetService<PortfolioContext>();
-        context?.Database.EnsureCreated();
+        try
+        {
+            var context = App.Container.GetService<PortfolioContext>();
+            var dbFilename = appDataPath + "\\sqlCPT.db";
+            
+            if (File.Exists(dbFilename))
+            {
+                var backupFiles = Directory.GetFiles(appDataPath, "sqlCPT_backup_*");
+                if (backupFiles.Length > 4)
+                {
+                    File.Delete(backupFiles[0]);
+                }
+                File.Copy(dbFilename, appDataPath + "\\sqlCPT_backup_"  + DateTime.Now.Ticks.ToString() + ".db");
+            }
+            context?.Database.Migrate();
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 
     private void GetAppEnvironmentals()

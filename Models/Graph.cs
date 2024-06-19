@@ -11,7 +11,6 @@ public partial class Graph
 {
     public Graph()
     {
-        Debug.WriteLine("New Instance <Graph>");
         DataPointsPortfolio = new List<DataPoint>();
         DataPointsInFlow = new List<DataPoint>();
         DataPointsOutFlow = new List<DataPoint>();

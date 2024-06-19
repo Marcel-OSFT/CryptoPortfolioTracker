@@ -90,9 +90,9 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     }
     partial void OnListFeeCoinChanged(List<string> value)
     {
-        if (listFeeCoin != null && listFeeCoin.Count > 0)
+        if (ListFeeCoin != null && ListFeeCoin.Count > 0)
         {
-            var result = listFeeCoin.Where(x => x.ToString().ToLower() == "eth ethereum").FirstOrDefault();
+            var result = ListFeeCoin.Where(x => x.ToString().ToLower() == "eth ethereum").FirstOrDefault();
             if (result != null)
             {
                 FeeCoin = (string)result;
@@ -108,7 +108,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         }
         if (FeeCoin is null || FeeCoin == string.Empty)
         {
-            FeeCoin = coinA;
+            FeeCoin = CoinA;
         }
     }
     partial void OnAccountFromChanged(string value)
@@ -184,12 +184,12 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     {
         //in case of a 'Deposit' the MaxQtyA doesn't need to be set....
         //doesn't need to be set as wel for an EDIT transaction
-        if (dialogAction == DialogAction.Add && transactionType != TransactionKind.Deposit)
+        if (dialogAction == DialogAction.Add && TransactionType != TransactionKind.Deposit)
         {
             (await _transactionService.GetMaxQtyAndPrice(CoinA, AccountFrom)).IfSucc(result =>
             {
                 MaxQtyA = result[0];
-                if (transactionType != TransactionKind.Transfer)
+                if (TransactionType != TransactionKind.Transfer)
                 {
                     ActualPriceA = PriceA = result[1];
                 }
@@ -212,27 +212,27 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
 
         Mutation mutationToAdd;
 
-        switch (transactionType.ToString())
+        switch (TransactionType.ToString())
         {
             case "Deposit":
                 //** IN portion
-                mutationToAdd = (await GetMutation(transactionType, MutationDirection.In, CoinA, QtyA, PriceA, AccountFrom))
+                mutationToAdd = (await GetMutation(TransactionType, MutationDirection.In, CoinA, QtyA, PriceA, AccountFrom))
                     .Match(Succ: mutation => mutation, Fail: err => throw err);
                 newMutations.Add(mutationToAdd);
                 break;
             case "Withdraw":
                 //** OUT portion
-                mutationToAdd = (await GetMutation(transactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
+                mutationToAdd = (await GetMutation(TransactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
                     .Match(Succ: mutation => mutation, Fail: err => throw err);
                 newMutations.Add(mutationToAdd);
                 break;
             case "Transfer":
                 //** OUT portion
-                mutationToAdd = (await GetMutation(transactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
+                mutationToAdd = (await GetMutation(TransactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
                     .Match(Succ: mutation => mutation, Fail: err => throw err);
                 newMutations.Add(mutationToAdd);
                 //** IN portion
-                mutationToAdd = (await GetMutation(transactionType, MutationDirection.In, CoinA, QtyA, PriceA, AccountTo))
+                mutationToAdd = (await GetMutation(TransactionType, MutationDirection.In, CoinA, QtyA, PriceA, AccountTo))
                     .Match(Succ: mutation => mutation, Fail: err => throw err);
                 newMutations.Add(mutationToAdd);
 
@@ -251,18 +251,18 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
                 if (AccountFrom == AccountTo) // Not combined with transfer
                 {
                     //** OUT portion
-                    mutationToAdd = (await GetMutation(transactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
+                    mutationToAdd = (await GetMutation(TransactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
                         .Match(Succ: mutation => mutation, Fail: err => throw err);
                     newMutations.Add(mutationToAdd);
                     //** IN portion
-                    mutationToAdd = (await GetMutation(transactionType, MutationDirection.In, CoinB, QtyB, PriceB, AccountFrom))
+                    mutationToAdd = (await GetMutation(TransactionType, MutationDirection.In, CoinB, QtyB, PriceB, AccountFrom))
                         .Match(Succ: mutation => mutation, Fail: err => throw err);
                     newMutations.Add(mutationToAdd);
                 }
                 else // combined with Transfer
                 {
                     //** OUT portion
-                    mutationToAdd = (await GetMutation(transactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
+                    mutationToAdd = (await GetMutation(TransactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
                         .Match(Succ: mutation => mutation, Fail: err => throw err);
                     newMutations.Add(mutationToAdd);
                     //** IN portion
@@ -298,7 +298,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
             PriceB = PriceB,
             QtyA = QtyA,
             QtyB = QtyB,
-            TransactionType = transactionType,
+            TransactionType = TransactionType,
         };
         transactionToAdd.Note = Note;
         transactionToAdd.TimeStamp = DateTime.Parse(TimeStamp.ToString());
@@ -620,7 +620,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     }
     private async Task SetEntriesBasedOnCoinA(string coin)
     {
-        switch (transactionType.ToString())
+        switch (TransactionType.ToString())
         {
             case "Deposit": //->ASBoxCoinA
                 ListAccountFrom = (await _transactionService
@@ -688,7 +688,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     {
         var _list = new List<string>();
 
-        switch (transactionType.ToString())
+        switch (TransactionType.ToString())
         {
             case "Transfer": //->ASBoxAccountFrom
                 _list = ListAccountFrom;
@@ -717,7 +717,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         {
             AccountTo = args.SelectedItem.ToString() ?? string.Empty;
         }
-        switch (transactionType.ToString())
+        switch (TransactionType.ToString())
         {
             case "Transfer":
                 ListAccountTo = (await _transactionService

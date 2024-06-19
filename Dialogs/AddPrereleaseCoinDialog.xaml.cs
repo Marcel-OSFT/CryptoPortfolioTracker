@@ -1,4 +1,5 @@
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
@@ -8,6 +9,7 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
+[ObservableObject]
 public sealed partial class AddPrereleaseCoinDialog : ContentDialog
 {
     public readonly CoinLibraryViewModel _viewModel;
@@ -16,11 +18,16 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
     public Coin newCoin;
     private readonly ILocalizer loc = Localizer.Get();
 
+    [ObservableProperty] private string decimalSeparator;
+    
+
+
     public AddPrereleaseCoinDialog(CoinLibraryViewModel viewModel, IPreferencesService preferencesService)
     {
         InitializeComponent();
         _preferencesService = preferencesService;
         _viewModel = viewModel;
+        DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
         SetDialogTitleAndButtons();
     }
 

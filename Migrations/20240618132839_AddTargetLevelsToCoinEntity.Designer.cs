@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoPortfolioTracker.Migrations
 {
     [DbContext(typeof(PortfolioContext))]
-    [Migration("20240402080656_AddRealizedPnLToAssetsEntity")]
-    partial class AddRealizedPnLToAssetsEntity
+    [Migration("20240618132839_AddTargetLevelsToCoinEntity")]
+    partial class AddTargetLevelsToCoinEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,6 +99,10 @@ namespace CryptoPortfolioTracker.Migrations
                         .HasColumnType("REAL")
                         .HasColumnName("Ath");
 
+                    b.Property<double>("BuyLevel")
+                        .HasColumnType("REAL")
+                        .HasColumnName("BuyLevel");
+
                     b.Property<double>("Change1Month")
                         .HasColumnType("REAL")
                         .HasColumnName("Change1Month");
@@ -142,10 +146,18 @@ namespace CryptoPortfolioTracker.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Rank");
 
+                    b.Property<double>("StopLevel")
+                        .HasColumnType("REAL")
+                        .HasColumnName("StopLevel");
+
                     b.Property<string>("Symbol")
                         .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("Symbol");
+
+                    b.Property<double>("TakeProfitLevel")
+                        .HasColumnType("REAL")
+                        .HasColumnName("TakeProfitLevel");
 
                     b.HasKey("Id");
 

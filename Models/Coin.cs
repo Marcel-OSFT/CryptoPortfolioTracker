@@ -32,5 +32,9 @@ public partial class Coin : BaseModel
     [ObservableProperty] private string note = string.Empty;
     [ObservableProperty] private bool isAsset;
 
-    
+    // added with migration 'AddTargetLevelsToCoinEntity'
+    [ObservableProperty] private double buyLevel;
+    [ObservableProperty] private double takeProfitLevel;
+    [ObservableProperty] private double stopLevel;
+
 }

@@ -226,7 +226,7 @@ namespace CryptoPortfolioTracker.Services
         }
         public bool HasHistoricalDataBuffer()
         {
-            return HistoricalDataByIdsBufferList.Count > 0;
+            return graph is not null ? HistoricalDataByIdsBufferList.Count > 0 : false;
         }
 
         public int GetHistoricalDataBufferDatesCount()

@@ -140,9 +140,6 @@ public class RegExTextBox : TextBox, INotifyPropertyChanged
 
     private void TextEntryChanged(object sender, RoutedEventArgs e)
     {
-        
-        var _text = Convert.ToDouble((sender as TextBox).Text);
-
         if (invalidKeyEntered)
         {
             var cursorPosition = SelectionStart - 1;
