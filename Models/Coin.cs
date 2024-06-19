@@ -33,8 +33,8 @@ public partial class Coin : BaseModel
     [ObservableProperty] private bool isAsset;
 
     // added with migration 'AddTargetLevelsToCoinEntity'
-    [ObservableProperty] private double buyLevel;
-    [ObservableProperty] private double takeProfitLevel;
-    [ObservableProperty] private double stopLevel;
+   // [ObservableProperty] private double buyLevel;
+   // [ObservableProperty] private double takeProfitLevel;
+   // [ObservableProperty] private double stopLevel;
 
 }
