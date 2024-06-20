@@ -14,7 +14,7 @@ namespace CryptoPortfolioTracker.Infrastructure
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
-        //    optionsBuilder.UseSqlite("Data Source=C:\\Users\\marce\\source\\repos\\CryptoPortfolioTracker\\sqlCPT.db");
+        //    optionsBuilder.UseSqlite("Data Source=" + App.appDataPath + "\\sqlCPT.db");
         //}
 
         //

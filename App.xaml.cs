@@ -47,6 +47,8 @@ public partial class App : Application
     public static IServiceProvider Container  { get; private set;  }
     //public Graph PortfolioGraph;
 
+    public static bool initDone;
+
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public App()
@@ -91,7 +93,7 @@ public partial class App : Application
         await Localizer.SetLanguage(_preferencesService.GetAppCultureLanguage());
     }
 
-    private void CheckDatabase()
+    private async void CheckDatabase()
     {
         try
         {
@@ -100,6 +102,7 @@ public partial class App : Application
             
             if (File.Exists(dbFilename))
             {
+                initDone = true;
                 var backupFiles = Directory.GetFiles(appDataPath, "sqlCPT_backup_*");
                 if (backupFiles.Length > 4)
                 {
@@ -107,11 +110,20 @@ public partial class App : Application
                 }
                 File.Copy(dbFilename, appDataPath + "\\sqlCPT_backup_"  + DateTime.Now.Ticks.ToString() + ".db");
             }
-            else
+            
+            var pending = await context.Database.GetPendingMigrationsAsync();
+            foreach (var migration in pending )
             {
-                context?.Database.Migrate();
+               Logger.Information("Pending Migrations {0}", migration.ToString());
             }
-            //context?.Database.Migrate();
+
+            context?.Database.Migrate();
+
+            var applied = await context.Database.GetAppliedMigrationsAsync();
+            foreach (var migration in applied)
+            {
+                Logger.Information("Applied Migrations {0}", migration.ToString());
+            }
         }
         catch (Exception ex)
         {

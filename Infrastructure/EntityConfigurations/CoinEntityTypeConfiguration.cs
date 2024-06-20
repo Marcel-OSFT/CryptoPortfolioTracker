@@ -72,17 +72,17 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
             .Property("Note")
             .HasColumnName("Note");
 
-        //configuration
-        //    .Property("BuyLevel")
-        //    .HasColumnName("BuyLevel");
+        configuration
+            .Property("BuyLevel")
+            .HasColumnName("BuyLevel");
 
-        //configuration
-        //    .Property("TakeProfitLevel")
-        //    .HasColumnName("TakeProfitLevel");
+        configuration
+            .Property("TakeProfitLevel")
+            .HasColumnName("TakeProfitLevel");
 
-        //configuration
-        //    .Property("StopLevel")
-        //    .HasColumnName("StopLevel");
+        configuration
+            .Property("StopLevel")
+            .HasColumnName("StopLevel");
 
         configuration
             .Ignore("TotalValue");
