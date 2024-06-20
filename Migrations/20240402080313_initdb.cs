@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
+using System.Data.Entity.Infrastructure;
+
 
 #nullable disable
 
@@ -11,6 +13,8 @@ namespace CryptoPortfolioTracker.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (App.initDone) { return; }
+
             migrationBuilder.CreateTable(
                 name: "Accounts",
                 columns: table => new

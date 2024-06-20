@@ -90,6 +90,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="LanguageExt.Core" Version="4.4.8" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
@@ -165,8 +166,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Migrations\" />
-    <Folder Include="Migrations\Coin\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -418,14 +417,19 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-	  <Compile Update="Migrations\20240402080313_initdb.cs">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Compile>
+	  <Compile Remove="Migrations\Coin\**" />
+	  <Content Remove="Migrations\Coin\**" />
+	  <EmbeddedResource Remove="Migrations\Coin\**" />
+	  <None Remove="Migrations\Coin\**" />
+	  <Page Remove="Migrations\Coin\**" />
+	  <PRIResource Remove="Migrations\Coin\**" />
+	</ItemGroup>
+	<ItemGroup>
 	  <Compile Update="Migrations\20240618132839_AddTargetLevelsToCoinEntity.cs">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Compile>
 	  <Compile Update="Migrations\PortfolioContextModelSnapshot.cs">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Compile>
 	</ItemGroup>
 </Project>
