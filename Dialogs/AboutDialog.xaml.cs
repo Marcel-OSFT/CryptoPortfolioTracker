@@ -21,15 +21,19 @@ public partial class AboutDialog : ContentDialog
     [ObservableProperty] private string imagePath;
     [ObservableProperty] private string btcImage;
     [ObservableProperty] private string ethImage;
+    [ObservableProperty] private string usdcImage;
     [ObservableProperty] private string version;
     [ObservableProperty] private string btcAddress;
     [ObservableProperty] private string ethAddress;
+    [ObservableProperty] private string usdcArbAddress;
+    [ObservableProperty] private string usdcBscAddress;
 
     public AboutDialog(ElementTheme theme)
     {
         ImagePath = App.appPath + "\\Assets\\CryptoPortfolioTracker.ico";
         BtcImage = App.appPath + "\\Assets\\bitcoin.png";
         EthImage = App.appPath + "\\Assets\\ethereum.png";
+        UsdcImage = App.appPath + "\\Assets\\usdc.png";
         Version = App.ProductVersion;
         InitializeComponent();
         DataContext = this;
@@ -87,6 +91,8 @@ public partial class AboutDialog : ContentDialog
             /* Variable to store the app new version (without the periods)*/
             BtcAddress = address_data[0];
             EthAddress = address_data[1];
+            UsdcArbAddress = address_data[2];
+            UsdcBscAddress = address_data[3];
         }
         /* Delete the temporary file after using it */
         if (File.Exists(temp_file))

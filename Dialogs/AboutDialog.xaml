@@ -12,7 +12,10 @@
     mc:Ignorable="d">
 
     <ContentDialog.Resources>
-
+        <!-- Overriding values -->
+        <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
+        <x:Double x:Key="ContentDialogMaxHeight">1200</x:Double>
+        
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
             <Setter Property="Padding" Value="0"/>
@@ -79,6 +82,14 @@
             <StackPanel Orientation="Horizontal" Margin="50,5,0,0">
                 <Image Source="{Binding EthImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
                 <TextBlock Text="{Binding EthAddress}" FontSize="14" SelectionHighlightColor="Green" IsTextSelectionEnabled="True" Foreground="Goldenrod" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="50,5,0,0">
+                <Image Source="{Binding UsdcImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
+                <TextBlock Text="{Binding UsdcArbAddress}" FontSize="14" SelectionHighlightColor="Green" IsTextSelectionEnabled="True" Foreground="Goldenrod" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="50,5,0,0">
+                <Image Source="{Binding UsdcImage}" Width="20"  Height="20" Margin="0,0,10,0"/>
+                <TextBlock Text="{Binding UsdcBscAddress}" FontSize="14" SelectionHighlightColor="Green" IsTextSelectionEnabled="True" Foreground="Goldenrod" />
             </StackPanel>
 
             <RichTextBlock Name="Support1" Margin="15,10,15,10" IsTextSelectionEnabled="False"  >
