@@ -91,8 +91,8 @@ public partial class AboutDialog : ContentDialog
             /* Variable to store the app new version (without the periods)*/
             BtcAddress = address_data[0];
             EthAddress = address_data[1];
-            UsdcArbAddress = address_data[2];
-            UsdcBscAddress = address_data[3];
+            UsdcBscAddress = address_data[2];
+            //UsdcBscAddress = address_data[3];
         }
         /* Delete the temporary file after using it */
         if (File.Exists(temp_file))
