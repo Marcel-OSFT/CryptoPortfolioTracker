@@ -232,6 +232,8 @@ public class GraphUpdateService : IGraphUpdateService
     {
         var data = new HistoricalDataById();
 
+        if (chartData.Prices is null) { return data; }
+
         data.Id = asset.Coin.ApiId;
 
         chartData.RemoveDuplicateLastDate();

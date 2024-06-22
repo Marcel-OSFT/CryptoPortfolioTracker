@@ -9,6 +9,7 @@ using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -80,9 +81,12 @@ namespace CryptoPortfolioTracker.Services
 
         public async Task SaveHistoricalDataBufferToJson()
         {
-            var fileName = App.appDataPath + "\\MarketCharts\\HistoryBuffer.json";
-            await using FileStream createStream = File.Create(fileName);
-            await JsonSerializer.SerializeAsync(createStream, HistoricalDataByIdsBufferList);
+            if (HistoricalDataByIdsBufferList.Count > 0)
+            {
+                var fileName = App.appDataPath + "\\MarketCharts\\HistoryBuffer.json";
+                await using FileStream createStream = File.Create(fileName);
+                await JsonSerializer.SerializeAsync(createStream, HistoricalDataByIdsBufferList);
+            }
         }
 
         public void ClearHistoricalDataBuffer()
@@ -206,7 +210,10 @@ namespace CryptoPortfolioTracker.Services
 
         public void AddHistoricalDataToBuffer(HistoricalDataById historicalData)
         {
-            HistoricalDataByIdsBufferList.Add(historicalData);
+            if (historicalData.Dates is not null )
+            {
+                HistoricalDataByIdsBufferList.Add(historicalData);
+            }
         }
 
         public List<HistoricalDataById> GetHistoricalDataBuffer()
