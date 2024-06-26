@@ -37,6 +37,7 @@
                 IsTabStop="False">
             
             <NavigationView.MenuItems>
+                
                 <NavigationViewItem l:Uids.Uid="Navigation_Assets" Tag="AssetsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE825;"/>
@@ -58,6 +59,15 @@
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D2;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                
+                
+                <!--<NavigationViewItem l:Uids.Uid="Navigation_DashBoard" Tag="DashBoardView" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>-->
+                
+                
             </NavigationView.MenuItems>
 
             <NavigationView.FooterMenuItems>

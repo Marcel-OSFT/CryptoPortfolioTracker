@@ -701,4 +701,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="AboutDialog_Version.Text" xml:space="preserve">
     <value>Versie</value>
   </data>
+  <data name="Navigation_DashBoard.Content" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
 </root>

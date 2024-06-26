@@ -13,7 +13,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.1.0.3</Version>
+    <Version>1.1.0.4</Version>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -69,9 +69,9 @@
     <None Remove="LogWindow.xaml" />
     <None Remove="MK_Styles.xaml" />
     <None Remove="SplashScreen.xaml" />
+    <None Remove="Views\DashBoardView.xaml" />
     <None Remove="Views\GraphicView.xaml" />
     <None Remove="Views\SettingsView.xaml" />
-    <None Remove="Views\Temporary.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AK.Toolkit.WinUI3.ScrollBarExtensions" Version="1.0.5" />
@@ -321,7 +321,7 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Views\Temporary.xaml">
+    <Page Update="Views\DashBoardView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Dialogs\AboutDialog.xaml">
