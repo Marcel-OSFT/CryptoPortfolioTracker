@@ -156,9 +156,7 @@ public partial class App : Application
         services.AddScoped<MainPage>();
         services.AddScoped<LogWindow>();
         services.AddScoped<MainWindow>();
-       
-        
-        services.AddScoped<Temporary>();
+        services.AddScoped<DashBoardView>();
 
 
         services.AddScoped<AssetsViewModel>();
@@ -166,6 +164,7 @@ public partial class App : Application
         services.AddScoped<CoinLibraryViewModel>();
         services.AddScoped<SettingsViewModel>();
         services.AddScoped<GraphicViewModel>();
+        services.AddScoped<DashBoardViewModel>();
         services.AddScoped<BaseViewModel>();
 
         services.AddDbContext<PortfolioContext>(options =>

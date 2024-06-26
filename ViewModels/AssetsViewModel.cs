@@ -229,7 +229,15 @@ public sealed partial class AssetsViewModel : BaseViewModel
             {
                 Logger.Information("Adding a new Transaction - {0}", dialog.transactionNew.Details.TransactionType);
                 await (await _transactionService.AddTransaction(dialog.transactionNew))
-                    .Match(Succ: newAsset => _assetService.UpdateListAssetTotals(dialog.transactionNew),
+                    .Match(Succ: async newAsset =>
+                    {
+                        await _assetService.UpdateListAssetTotals(dialog.transactionNew);
+                        //check if new transaction is anti-dated
+                        if (dialog.transactionNew.TimeStamp.Date < DateTime.Now.Date)
+                        {
+                            await _graphService.RegisterModification(dialog.transactionNew, null);
+                        }
+                    },
                         Fail: async err =>
                         {
                             await ShowMessageDialog(
