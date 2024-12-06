@@ -14,12 +14,10 @@ namespace CryptoPortfolioTracker.Infrastructure
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
-        //    optionsBuilder.UseSqlite("Data Source=" + App.appDataPath + "\\sqlCPT.db");
+        //    optionsBuilder.UseSqlite("Data Source=" + App.appDataPath + "\\" + App.DbName);
         //}
 
         //
-
-
 
 
         public PortfolioContext(DbContextOptions<PortfolioContext> connection) : base(connection) { }
@@ -30,6 +28,9 @@ namespace CryptoPortfolioTracker.Infrastructure
         public DbSet<Mutation> Mutations { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
 
+        public DbSet<PriceLevel> PriceLevels { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new TransactionEntityTypeConfiguration());
@@ -37,6 +38,8 @@ namespace CryptoPortfolioTracker.Infrastructure
             builder.ApplyConfiguration(new AssetEntityTypeConfiguration());
             builder.ApplyConfiguration(new CoinEntityTypeConfiguration());
             builder.ApplyConfiguration(new MutationEntityTypeConfiguration());
+            builder.ApplyConfiguration(new PriceLevelEntityTypeConfiguration());
+
         }
 
     }

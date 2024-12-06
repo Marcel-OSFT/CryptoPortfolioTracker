@@ -926,7 +926,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Version</source>
           <target state="final">Versie</target>
         </trans-unit>
-        <trans-unit id="Navigation_DashBoard.Content" translate="yes" xml:space="preserve">
+        <trans-unit id="Navigation_Dashboard.Content" translate="yes" xml:space="preserve">
           <source>Dashboard</source>
           <target state="final">Dashboard</target>
         </trans-unit>

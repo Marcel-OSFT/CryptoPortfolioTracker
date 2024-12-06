@@ -27,6 +27,8 @@ public partial class AssetService : ObservableObject, IAssetService
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;
     [ObservableProperty] public bool isHidingZeroBalances;
+    [ObservableProperty] public long visibleAssetsCount;
+    //private long hiddenAssetsCount;
 
     partial void OnIsHidingZeroBalancesChanged(bool value)
     {
@@ -35,6 +37,7 @@ public partial class AssetService : ObservableObject, IAssetService
             return;
         }
 
+        VisibleAssetsCount = ListAssetTotals.Count;
         if (value)
         {
             var itemsToHide = ListAssetTotals.Where(x => x.MarketValue <= 0).ToList();
@@ -42,12 +45,18 @@ public partial class AssetService : ObservableObject, IAssetService
             {
                 item.IsHidden = true; ;
             }
+            if (itemsToHide != null)
+            {
+                VisibleAssetsCount -= itemsToHide.Count;
+                //hiddenAssetsCount = itemsToHide.Count;
+            }
         }
         else
         {
             foreach (var item in ListAssetTotals)
             {
-                item.IsHidden = false; ;
+                item.IsHidden = false;
+               // hiddenAssetsCount = 0;
             }
         }
     }
@@ -57,6 +66,8 @@ public partial class AssetService : ObservableObject, IAssetService
         context = portfolioContext;
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
+
+        IsHidingZeroBalances = false;
     }
 
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList()
@@ -72,6 +83,8 @@ public partial class AssetService : ObservableObject, IAssetService
             {
                 ListAssetTotals = new(list.OrderByDescending(currentSortFunc));
             }
+           
+            VisibleAssetsCount = IsHidingZeroBalances ? ListAssetTotals.Count - ListAssetTotals.Where(x => x.MarketValue <= 0).ToList().Count : ListAssetTotals.Count;
         });
         getAssetTotalsResult.IfFail(err => ListAssetTotals = new());
         return ListAssetTotals;
@@ -91,6 +104,7 @@ public partial class AssetService : ObservableObject, IAssetService
             }
             currentSortFunc = sortFunc;
             currentSortingOrder = sortingOrder;
+            VisibleAssetsCount = IsHidingZeroBalances ? ListAssetTotals.Count - ListAssetTotals.Where(x => x.MarketValue <= 0).ToList().Count : ListAssetTotals.Count;
 
         });
         getAssetTotalsResult.IfFail(err => ListAssetTotals = new());

@@ -5,12 +5,12 @@ using CryptoPortfolioTracker.Controls;
 
 namespace CryptoPortfolioTracker.Views;
 
-public sealed partial class DashBoardView : Page
+public sealed partial class DashboardView : Page
 {
-    private readonly DashBoardViewModel _viewModel;
-    public static DashBoardView Current;
+    private readonly DashboardViewModel _viewModel;
+    public static DashboardView Current;
 
-    public DashBoardView(DashBoardViewModel viewModel)
+    public DashboardView(DashboardViewModel viewModel)
     {
         _viewModel = viewModel;
         Current = this;

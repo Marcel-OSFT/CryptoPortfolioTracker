@@ -3,6 +3,7 @@ using System;
 using CryptoPortfolioTracker.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoPortfolioTracker.Migrations
 {
     [DbContext(typeof(PortfolioContext))]
-    partial class PortfolioContextModelSnapshot : ModelSnapshot
+    [Migration("20241206143922_RemovePriceLevelsFromCoinsEntity")]
+    partial class RemovePriceLevelsFromCoinsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.15");
@@ -189,37 +192,6 @@ namespace CryptoPortfolioTracker.Migrations
                     b.ToTable("Mutations", (string)null);
                 });
 
-            modelBuilder.Entity("CryptoPortfolioTracker.Models.PriceLevel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("Id");
-
-                    b.Property<int>("CoinId")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("CoinId");
-
-                    b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("Note");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("Status");
-
-                    b.Property<double>("Value")
-                        .HasColumnType("REAL")
-                        .HasColumnName("Value");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CoinId");
-
-                    b.ToTable("PriceLevels", (string)null);
-                });
-
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Transaction", b =>
                 {
                     b.Property<int>("Id")
@@ -279,17 +251,6 @@ namespace CryptoPortfolioTracker.Migrations
                     b.Navigation("Transaction");
                 });
 
-            modelBuilder.Entity("CryptoPortfolioTracker.Models.PriceLevel", b =>
-                {
-                    b.HasOne("CryptoPortfolioTracker.Models.Coin", "Coin")
-                        .WithMany("PriceLevels")
-                        .HasForeignKey("CoinId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Coin");
-                });
-
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Account", b =>
                 {
                     b.Navigation("Assets");
@@ -303,8 +264,6 @@ namespace CryptoPortfolioTracker.Migrations
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Coin", b =>
                 {
                     b.Navigation("Assets");
-
-                    b.Navigation("PriceLevels");
                 });
 
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Transaction", b =>

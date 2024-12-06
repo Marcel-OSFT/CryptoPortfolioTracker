@@ -78,7 +78,10 @@ public sealed partial class AssetsViewModel : BaseViewModel
         SortGroup = "Assets";
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
-        
+
+        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+        _assetService.IsHidingZeroBalances = IsHidingZeroBalances;
+
     }
 
     /// <summary>
@@ -87,6 +90,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
     /// </summary>
     public async Task Initialize()
     {
+        
+
         await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
 
         //below setting(s) might have been changed while was moved away from the associated view
