@@ -61,7 +61,7 @@
                 </NavigationViewItem>
 
 
-                <NavigationViewItem l:Uids.Uid="Navigation_DashBoard" Tag="DashBoardView" >
+                <NavigationViewItem l:Uids.Uid="Navigation_Dashboard" Tag="DashboardView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
                     </NavigationViewItem.Icon>

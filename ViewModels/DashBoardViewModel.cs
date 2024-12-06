@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public partial class DashBoardViewModel : BaseViewModel
+public partial class DashboardViewModel : BaseViewModel
 {
     private readonly IPreferencesService _preferencesService;
 
-    public DashBoardViewModel(IPreferencesService preferencesService) : base(preferencesService)
+    public DashboardViewModel(IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         _preferencesService = preferencesService;

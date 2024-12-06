@@ -806,7 +806,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="AboutDialog_Version.Text" xml:space="preserve">
     <value>Version</value>
   </data>
-  <data name="Navigation_DashBoard.Content" xml:space="preserve">
+  <data name="Navigation_Dashboard.Content" xml:space="preserve">
     <value>Dashboard</value>
   </data>
 </root>

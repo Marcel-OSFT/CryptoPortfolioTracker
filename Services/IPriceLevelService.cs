@@ -1,6 +1,6 @@
 ﻿namespace CryptoPortfolioTracker.Services;
 
-internal interface ITargetLevelsService
+internal interface IPriceLevelService
 {
 
 }

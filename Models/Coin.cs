@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Enums;
 
 namespace CryptoPortfolioTracker.Models;
 
@@ -10,10 +12,13 @@ public partial class Coin : BaseModel
         isAsset = false;
         note = string.Empty;
         Assets = new List<Asset>();
+        PriceLevels = new List<PriceLevel>();
     }
 
     //*** Navigation Property
-    public ICollection<Asset> Assets  { get; set; }
+    public ICollection<Asset> Assets { get; set; }
+    public ICollection<PriceLevel> PriceLevels { get; set; }
+
     public int Id { get; set; }
 
     //*** Public Properties
@@ -32,9 +37,9 @@ public partial class Coin : BaseModel
     [ObservableProperty] private string note = string.Empty;
     [ObservableProperty] private bool isAsset;
 
-    // added with migration 'AddTargetLevelsToCoinEntity'
-    [ObservableProperty] private double buyLevel;
-    [ObservableProperty] private double takeProfitLevel;
-    [ObservableProperty] private double stopLevel;
+    
+
+   
+
 
 }

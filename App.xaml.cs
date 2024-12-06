@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
+using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
@@ -48,6 +49,9 @@ public partial class App : Application
     //public Graph PortfolioGraph;
 
     public static bool initDone;
+
+    public const string DbName = "sqlCPT_Dev.db";
+
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
@@ -98,23 +102,25 @@ public partial class App : Application
         try
         {
             var context = App.Container.GetService<PortfolioContext>();
-            var dbFilename = appDataPath + "\\sqlCPT.db";
+            var dbFilename = appDataPath + "\\" + DbName;
             
             if (File.Exists(dbFilename))
             {
                 initDone = true;
-                var backupFiles = Directory.GetFiles(appDataPath, "sqlCPT_backup_*");
+                var backupFiles = Directory.GetFiles(appDataPath, DbName + "_backup_*");
                 if (backupFiles.Length > 4)
                 {
                     File.Delete(backupFiles[0]);
                 }
-                File.Copy(dbFilename, appDataPath + "\\sqlCPT_backup_"  + DateTime.Now.Ticks.ToString() + ".db");
+                File.Copy(dbFilename, appDataPath + "\\" + DbName + "_backup_"  + DateTime.Now.Ticks.ToString() + ".db");
             }
             
             var pending = await context.Database.GetPendingMigrationsAsync();
+            var initPriceLevelsEntity = false;
             foreach (var migration in pending )
             {
-               Logger.Information("Pending Migrations {0}", migration.ToString());
+                Logger.Information("Pending Migrations {0}", migration.ToString());
+                if (initPriceLevelsEntity != true) initPriceLevelsEntity = migration.Contains("AddPriceLevelsEntity") ;
             }
 
             context?.Database.Migrate();
@@ -124,11 +130,48 @@ public partial class App : Application
             {
                 Logger.Information("Applied Migrations {0}", migration.ToString());
             }
+            if (initPriceLevelsEntity)
+            {
+                PopulatePriceLevelsTable(context);
+            }
+
         }
         catch (Exception ex)
         {
             throw;
         }
+    }
+
+    private async void PopulatePriceLevelsTable(PortfolioContext context)
+    {
+        foreach(Coin coin in context.Coins)
+        {
+            var pLevelTp = new PriceLevel();
+            pLevelTp.Coin = coin;
+            pLevelTp.Type = PriceLevelType.TakeProfit;
+            pLevelTp.Value = 0;
+            pLevelTp.Status = PriceLevelStatus.NotWithinRange;
+            pLevelTp.Note = string.Empty;
+            context.PriceLevels.Add(pLevelTp);
+            
+            var pLevelBuy = new PriceLevel();
+            pLevelBuy.Coin = coin;
+            pLevelBuy.Type = PriceLevelType.Buy;
+            pLevelBuy.Value = 0;
+            pLevelBuy.Status = PriceLevelStatus.NotWithinRange;
+            pLevelBuy.Note = string.Empty;
+            context.PriceLevels.Add(pLevelBuy);
+            
+            var pLevelStop = new PriceLevel();
+            pLevelStop.Coin = coin;
+            pLevelStop.Type = PriceLevelType.Stop;
+            pLevelStop.Value = 0;
+            pLevelStop.Status = PriceLevelStatus.NotWithinRange;
+            pLevelStop.Note = string.Empty;
+            context.PriceLevels.Add(pLevelStop);
+
+        }
+        await context.SaveChangesAsync();
     }
 
     private void GetAppEnvironmentals()
@@ -156,7 +199,8 @@ public partial class App : Application
         services.AddScoped<MainPage>();
         services.AddScoped<LogWindow>();
         services.AddScoped<MainWindow>();
-        services.AddScoped<DashBoardView>();
+        services.AddScoped<DashboardView>();
+        services.AddScoped<PriceLevelsView>();
 
 
         services.AddScoped<AssetsViewModel>();
@@ -164,12 +208,13 @@ public partial class App : Application
         services.AddScoped<CoinLibraryViewModel>();
         services.AddScoped<SettingsViewModel>();
         services.AddScoped<GraphicViewModel>();
-        services.AddScoped<DashBoardViewModel>();
+        services.AddScoped<DashboardViewModel>();
+        services.AddScoped<PriceLevelsViewModel>();
         services.AddScoped<BaseViewModel>();
 
         services.AddDbContext<PortfolioContext>(options =>
         {
-            options.UseSqlite("Data Source=|DataDirectory|sqlCPT.db");
+            options.UseSqlite("Data Source=|DataDirectory|" + DbName);
         });
 
         services.AddScoped<ITransactionService, TransactionService>();
@@ -178,9 +223,9 @@ public partial class App : Application
         services.AddScoped<ILibraryService, LibraryService>();
         services.AddScoped<IPriceUpdateService, PriceUpdateService>();
         services.AddScoped<IGraphUpdateService, GraphUpdateService>();
-
         services.AddSingleton<IGraphService, GraphService>();
         services.AddSingleton<IPreferencesService, PreferencesService>();
+        services.AddScoped<IPriceLevelService, PriceLevelService>();
 
 
         return services.BuildServiceProvider();
