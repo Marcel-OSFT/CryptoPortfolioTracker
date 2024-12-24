@@ -11,7 +11,11 @@ public sealed partial class SplashScreen : Window
     {
         InitializeComponent();
         Title = string.Empty;
-        versionTxt.Text = App.ProductVersion;
+        
+        var versionParts = App.ProductVersion.Split('.');
+
+
+        versionTxt.Text = versionParts[0] + "." + versionParts[1]+ "." + versionParts[2];
 
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
         var WndID = Win32Interop.GetWindowIdFromWindow(hwnd);
