@@ -636,7 +636,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Grafiek</value>
   </data>
   <data name="GrahicView_UpdateText.Text" xml:space="preserve">
-    <value>De achtergrondservice werkt historische gegevens bij.</value>
+    <value>Bijwerken...</value>
   </data>
   <data name="GraphicView_InFlowSeriesTitle" xml:space="preserve">
     <value>Instroom</value>
@@ -703,5 +703,167 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="Navigation_Dashboard.Content" xml:space="preserve">
     <value>Dashboard</value>
+  </data>
+  <data name="PriceLevelsLV_BuyLevel.Text" xml:space="preserve">
+    <value>Koopniveau</value>
+  </data>
+  <data name="PriceLevelsLV_DistanceToBuyLevel.Text" xml:space="preserve">
+    <value>Afstand</value>
+  </data>
+  <data name="PriceLevelsLV_DistanceToTpLevel.Text" xml:space="preserve">
+    <value>Afstand</value>
+  </data>
+  <data name="PriceLevelsLV_Name.Text" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="PriceLevelsLV_Price.Text" xml:space="preserve">
+    <value>Huidige Prijs</value>
+  </data>
+  <data name="PriceLevelsLV_StopLevel.Text" xml:space="preserve">
+    <value>Stopniveau</value>
+  </data>
+  <data name="PriceLevelsLV_TpLevel.Text" xml:space="preserve">
+    <value>Winstname niveau</value>
+  </data>
+  <data name="PriceLevelsLV_DistanceToStopLevel.Text" xml:space="preserve">
+    <value>Afstand</value>
+  </data>
+  <data name="PriceLevelsLV_Symbol.Text" xml:space="preserve">
+    <value>Symbool</value>
+  </data>
+  <data name="PriceLevels_Explainer.Text" xml:space="preserve">
+    <value>Dit overzicht geeft een indicatie of de actuele prijs van een munt binnen het bereik van een bepaald niveau ligt. De niveaus die kunnen worden ingesteld zijn een Take Profit, een buy en een Stop-niveau. Als de prijs binnen het bereik van een niveau ligt, wordt dit aangegeven door een kleur.</value>
+  </data>
+  <data name="PriceLevels_Title.Text" xml:space="preserve">
+    <value>Prijsniveaus</value>
+  </data>
+  <data name="PriceLevelsLV_AddEditLevels.Label" xml:space="preserve">
+    <value>Toevoegen/wijzigen Prijsniveaus</value>
+  </data>
+  <data name="PriceLevelsLV_Delete.Label" xml:space="preserve">
+    <value>Verwijder Prijsniveaus</value>
+  </data>
+  <data name="Navigation_PriceLevels.Content" xml:space="preserve">
+    <value>Prijsniveaus</value>
+  </data>
+  <data name="Messages_ResetLevelsFailed_Title" xml:space="preserve">
+    <value>Fout bij het verwijderen van prijsniveaus</value>
+  </data>
+  <data name="Messages_PriceLevelsAddFailed_Title" xml:space="preserve">
+    <value>Fout bij het toevoegen/wijzigen van Prijsniveaus</value>
+  </data>
+  <data name="Messages_PriceLevelsDialogFailed_Title" xml:space="preserve">
+    <value>Fout bij het openen van het Prijsniveaus venster</value>
+  </data>
+  <data name="PriceLevelsDialog_CloseButton" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="PriceLevelsDialog_PrimaryButton" xml:space="preserve">
+    <value>Accepteren</value>
+  </data>
+  <data name="PriceLevelsDialog_Title" xml:space="preserve">
+    <value>Prijsniveaus voor </value>
+  </data>
+  <data name="PriceLevelsDialog_Note.PlaceholderText" xml:space="preserve">
+    <value>Schrijf hier een notitie...</value>
+  </data>
+  <data name="PriceLevelsLV_AvgCost.Text" xml:space="preserve">
+    <value>gem. kostprijs</value>
+  </data>
+  <data name="PriceLevelsDialog_BuyHeader.Text" xml:space="preserve">
+    <value>Koopniveau</value>
+  </data>
+  <data name="PriceLevelsDialog_StopHeader.Text" xml:space="preserve">
+    <value>Stopniveau</value>
+  </data>
+  <data name="PriceLevelsDialog_TpHeader.Text" xml:space="preserve">
+    <value>Winstname-niveau</value>
+  </data>
+  <data name="settingsExpander_AssetView.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Portfolio overzicht' zoals KapitaalStroom verbergen, Nulsaldi verbergen</value>
+  </data>
+  <data name="settingsExpander_AssetView.Header" xml:space="preserve">
+    <value>Instellingen Portfolio-overzicht</value>
+  </data>
+  <data name="settingsExpander_General.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot algemene instellingen zoals getalsnotatie, lettergrootte, taal, donker/licht thema, zichtbaarheid schuifbalken</value>
+  </data>
+  <data name="settingsExpander_General.Header" xml:space="preserve">
+    <value>Algemene instellingen</value>
+  </data>
+  <data name="settingsExpander_PriceLevels.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de functie 'Prijsniveau', 'binnen bereik'- en 'dichtbij'drempelpercentages.</value>
+  </data>
+  <data name="settingsExpander_PriceLevels.Header" xml:space="preserve">
+    <value>Instellingen Prijsniveaus</value>
+  </data>
+  <data name="Settings_PriceLevels1.Description" xml:space="preserve">
+    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs binnen het bereik van het streefniveau ligt.</value>
+  </data>
+  <data name="Settings_PriceLevels1.Header" xml:space="preserve">
+    <value>'Binnen bereik' drempelpercentage</value>
+  </data>
+  <data name="Settings_PriceLevels2.Description" xml:space="preserve">
+    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs zich dicht bij het streefniveau bevindt.</value>
+  </data>
+  <data name="Settings_PriceLevels2.Header" xml:space="preserve">
+    <value>'Dichtbij' drempelpercentage</value>
+  </data>
+  <data name="HeatMapView_YAxisTitle" xml:space="preserve">
+    <value>Afstand tot Winstname-niveau [%]</value>
+  </data>
+  <data name="GraphicView.Text" xml:space="preserve">
+    <value>Portefeuille waarde</value>
+  </data>
+  <data name="settingsExpander_DashBoard.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de Dashboardweergave</value>
+  </data>
+  <data name="settingsExpander_DashBoard.Header" xml:space="preserve">
+    <value>Instellingen Dashboard</value>
+  </data>
+  <data name="Settings_DashBoard1.Description" xml:space="preserve">
+    <value>Het aantal munten dat zichtbaar is in de Portfolio Pie. De resterende munten worden gegroepeerd in 'Overige'</value>
+  </data>
+  <data name="Settings_DashBoard1.Header" xml:space="preserve">
+    <value>Maximaal aantal munten in de portefeuille-cirkeldiagram</value>
+  </data>
+  <data name="Top5View.Text" xml:space="preserve">
+    <value>Top 5 Stijgers &amp; Dalers 24u</value>
+  </data>
+  <data name="ValueGainsView.Text" xml:space="preserve">
+    <value>Waardes &amp; Groei</value>
+  </data>
+  <data name="CapitalFlowView.Text" xml:space="preserve">
+    <value>Kapitaalstroom</value>
+  </data>
+  <data name="ValueGainsView_PortfolioValue.Text" xml:space="preserve">
+    <value>Portefeuillewaarde</value>
+  </data>
+  <data name="ValueGainsView_Day.Text" xml:space="preserve">
+    <value>dag</value>
+  </data>
+  <data name="ValueGainsView_Month.Text" xml:space="preserve">
+    <value>maand</value>
+  </data>
+  <data name="ValueGainsView_Year.Text" xml:space="preserve">
+    <value>jaar</value>
+  </data>
+  <data name="ValueGainsView_CostBaseVersus.Text" xml:space="preserve">
+    <value>vs. kostenbasis</value>
+  </data>
+  <data name="ValueGainsView_CostBase.Text" xml:space="preserve">
+    <value>Kostenbasis</value>
+  </data>
+  <data name="ValueGainsView_NetCapFlow.Text" xml:space="preserve">
+    <value>netto kapitaalstroom</value>
+  </data>
+  <data name="HeatMapView_NoTargets.Text" xml:space="preserve">
+    <value>Ga naar het overzicht 'Prijsniveaus' om streefniveaus in te stellen.</value>
+  </data>
+  <data name="PieChartView_Portfolio.Text" xml:space="preserve">
+    <value>Portefeuille verdeling</value>
+  </data>
+  <data name="PieChartView_Accounts.Text" xml:space="preserve">
+    <value>Accounts verdeling</value>
   </data>
 </root>

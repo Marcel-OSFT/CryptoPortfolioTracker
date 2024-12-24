@@ -16,7 +16,7 @@ public partial class Account : BaseModel
 
     //******* Public Properties
     [Key]
-    public int Id { get; private set; }
+    public int Id { get; set; }
 
     [ObservableProperty] private string name;
     [ObservableProperty] private string about;

@@ -33,6 +33,11 @@ public class UserPreferences
         }
         numberFormat = new NumberFormatInfo();
         numberFormat = CultureInfo.CurrentUICulture.NumberFormat;
+
+        closeToPerc = 5;
+        withinRangePerc = 20;
+        MaxPieCoins = 10;
+        AreValuesMasked = false;
     }
 
     private int refreshIntervalMinutes;
@@ -44,7 +49,6 @@ public class UserPreferences
             if (value != refreshIntervalMinutes)
             {
                 refreshIntervalMinutes = value;
-                //SaveUserPreferences(nameof(RefreshIntervalMinutes), value);
             }
         }
     }
@@ -58,8 +62,6 @@ public class UserPreferences
             if (value != appTheme)
             {
                 appTheme = value;
-                //SetTheme(value);
-                //SaveUserPreferences(nameof(AppTheme), value);
             }
         }
     }
@@ -73,7 +75,6 @@ public class UserPreferences
             if (value != isScrollBarsExpanded)
             {
                 isScrollBarsExpanded = value;
-                //SaveUserPreferences(nameof(IsScrollBarsExpanded), value);
             }
         }
     }
@@ -87,7 +88,6 @@ public class UserPreferences
             if (value != isHidingZeroBalances)
             {
                 isHidingZeroBalances = value;
-                //SaveUserPreferences(nameof(IsHidingZeroBalances), value);
             }
         }
     }
@@ -101,7 +101,6 @@ public class UserPreferences
             if (value != numberFormat)
             {
                 numberFormat = value;
-                //SaveUserPreferences(nameof(NumberFormat), value);
             }
         }
     }
@@ -115,8 +114,6 @@ public class UserPreferences
             if (value != appCultureLanguage)
             {
                 appCultureLanguage = value;
-                //SetCulture();
-                //SaveUserPreferences(nameof(AppCultureLanguage), value);
             }
         }
     }
@@ -130,7 +127,6 @@ public class UserPreferences
             if (value != isCheckForUpdate)
             {
                 isCheckForUpdate = value;
-                //SaveUserPreferences(nameof(IsCheckForUpdate), value);
             }
         }
     }
@@ -144,7 +140,6 @@ public class UserPreferences
             if (value != fontSize)
             {
                 fontSize = value;
-                //SaveUserPreferences(nameof(FontSize), value);
             }
         }
     }
@@ -158,10 +153,65 @@ public class UserPreferences
             if (value != isHidingCapitalFlow)
             {
                 isHidingCapitalFlow = value;
-                //SaveUserPreferences(nameof(IsHidingCapitalFlow), value);
             }
         }
     }
+
+    private int withinRangePerc;
+    public int WithinRangePerc
+    {
+        get => withinRangePerc;
+        set
+        {
+            if (value != withinRangePerc)
+            {
+                withinRangePerc = value;
+
+            }
+        }
+    }
+
+    private int closeToPerc;
+    public int CloseToPerc
+    {
+        get => closeToPerc;
+        set
+        {
+            if (value != closeToPerc)
+            {
+                closeToPerc = value;
+
+            }
+        }
+    }
+
+    //create property for MaxPieCoins
+    private int maxPieCoins;
+    public int MaxPieCoins
+    {
+        get => maxPieCoins;
+        set
+        {
+            if (value != maxPieCoins)
+            {
+                maxPieCoins = value;
+            }
+        }
+    }
+
+    private bool areValuesMasked;
+    public bool AreValuesMasked
+    {
+        get => areValuesMasked;
+        set
+        {
+            if (value != areValuesMasked)
+            {
+                areValuesMasked = value;
+            }
+        }
+    }
+
 
 
 }

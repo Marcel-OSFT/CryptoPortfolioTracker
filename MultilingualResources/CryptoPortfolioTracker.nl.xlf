@@ -839,8 +839,8 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <target state="final">Grafiek</target>
         </trans-unit>
         <trans-unit id="GrahicView_UpdateText.Text" translate="yes" xml:space="preserve">
-          <source>Background service is updating Historical Data.</source>
-          <target state="final">De achtergrondservice werkt historische gegevens bij.</target>
+          <source>Updating...</source>
+          <target state="translated">Bijwerken...</target>
         </trans-unit>
         <trans-unit id="GraphicView_InFlowSeriesTitle" translate="yes" xml:space="preserve">
           <source>Inflow</source>
@@ -929,6 +929,242 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="Navigation_Dashboard.Content" translate="yes" xml:space="preserve">
           <source>Dashboard</source>
           <target state="final">Dashboard</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_BuyLevel.Text" translate="yes" xml:space="preserve">
+          <source>Buy Level</source>
+          <target state="translated">Koopniveau</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_DistanceToBuyLevel.Text" translate="yes" xml:space="preserve">
+          <source>Distance</source>
+          <target state="translated">Afstand</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_DistanceToTpLevel.Text" translate="yes" xml:space="preserve">
+          <source>Distance</source>
+          <target state="translated">Afstand</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_Name.Text" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <target state="translated">Naam</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_Price.Text" translate="yes" xml:space="preserve">
+          <source>Actual Price</source>
+          <target state="translated">Huidige Prijs</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_StopLevel.Text" translate="yes" xml:space="preserve">
+          <source>Stop Level</source>
+          <target state="translated">Stopniveau</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_TpLevel.Text" translate="yes" xml:space="preserve">
+          <source>Take Profit Level</source>
+          <target state="translated">Winstname niveau</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_DistanceToStopLevel.Text" translate="yes" xml:space="preserve">
+          <source>Distance</source>
+          <target state="translated">Afstand</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_Symbol.Text" translate="yes" xml:space="preserve">
+          <source>Symbol</source>
+          <target state="translated">Symbool</target>
+        </trans-unit>
+        <trans-unit id="PriceLevels_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>This overview gives an indication if the actual price of a coin is within range of a specified level. The levels that can be set are, a Take Profit, a buy and a Stop level. If the price is within range of a level it will be indicated by a colour. </source>
+          <target state="translated">Dit overzicht geeft een indicatie of de actuele prijs van een munt binnen het bereik van een bepaald niveau ligt. De niveaus die kunnen worden ingesteld zijn een Take Profit, een buy en een Stop-niveau. Als de prijs binnen het bereik van een niveau ligt, wordt dit aangegeven door een kleur.</target>
+        </trans-unit>
+        <trans-unit id="PriceLevels_Title.Text" translate="yes" xml:space="preserve">
+          <source>Price Levels</source>
+          <target state="translated">Prijsniveaus</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_AddEditLevels.Label" translate="yes" xml:space="preserve">
+          <source>Add/Edit Price Levels</source>
+          <target state="translated">Toevoegen/wijzigen Prijsniveaus</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_Delete.Label" translate="yes" xml:space="preserve">
+          <source>Delete Price Levels</source>
+          <target state="translated">Verwijder Prijsniveaus</target>
+        </trans-unit>
+        <trans-unit id="Navigation_PriceLevels.Content" translate="yes" xml:space="preserve">
+          <source>Price Levels</source>
+          <target state="translated">Prijsniveaus</target>
+        </trans-unit>
+        <trans-unit id="Messages_ResetLevelsFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to reset Price Levels</source>
+          <target state="translated">Fout bij het verwijderen van prijsniveaus</target>
+        </trans-unit>
+        <trans-unit id="Messages_PriceLevelsAddFailed_Title" translate="yes" xml:space="preserve">
+          <source>Adding/Updating Price Levels failed</source>
+          <target state="translated">Fout bij het toevoegen/wijzigen van Prijsniveaus</target>
+        </trans-unit>
+        <trans-unit id="Messages_PriceLevelsDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Price Levels Dialog Failure</source>
+          <target state="translated">Fout bij het openen van het Prijsniveaus venster</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="translated">Annuleren</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_PrimaryButton" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="translated">Accepteren</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_Title" translate="yes" xml:space="preserve">
+          <source>Price Levels for </source>
+          <target state="translated">Prijsniveaus voor </target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Write a note....</source>
+          <target state="translated">Schrijf hier een notitie...</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_AvgCost.Text" translate="yes" xml:space="preserve">
+          <source>Avg. cost price</source>
+          <target state="translated">gem. kostprijs</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_BuyHeader.Text" translate="yes" xml:space="preserve">
+          <source>Buy level</source>
+          <target state="translated">Koopniveau</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_StopHeader.Text" translate="yes" xml:space="preserve">
+          <source>Stop level</source>
+          <target state="translated">Stopniveau</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_TpHeader.Text" translate="yes" xml:space="preserve">
+          <source>Take profit level</source>
+          <target state="translated">Winstname-niveau</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_AssetView.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get access to settings related to the 'Assets View' like HideCapitalFlow, HideZeroBalances</source>
+          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Portfolio overzicht' zoals KapitaalStroom verbergen, Nulsaldi verbergen</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_AssetView.Header" translate="yes" xml:space="preserve">
+          <source>Asset View settings</source>
+          <target state="translated">Instellingen Portfolio-overzicht</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_General.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get access to general settings like NumberFormat, FontSize, Language, Dark/Light theme, ExpandedScrollBars</source>
+          <target state="translated">Vouw dit uit om toegang te krijgen tot algemene instellingen zoals getalsnotatie, lettergrootte, taal, donker/licht thema, zichtbaarheid schuifbalken</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_General.Header" translate="yes" xml:space="preserve">
+          <source>General settings</source>
+          <target state="translated">Algemene instellingen</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_PriceLevels.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get acces to settings related to the 'Price Level' feature like WithinRangePerc and CloseToPerc.</source>
+          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de functie 'Prijsniveau', 'binnen bereik'- en 'dichtbij'drempelpercentages.</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_PriceLevels.Header" translate="yes" xml:space="preserve">
+          <source>Price Level settings</source>
+          <target state="translated">Instellingen Prijsniveaus</target>
+        </trans-unit>
+        <trans-unit id="Settings_PriceLevels1.Description" translate="yes" xml:space="preserve">
+          <source>This threshold is used to provide a visual confirmation of the Actual Price being within the range of it's target level.</source>
+          <target state="translated">Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs binnen het bereik van het streefniveau ligt.</target>
+        </trans-unit>
+        <trans-unit id="Settings_PriceLevels1.Header" translate="yes" xml:space="preserve">
+          <source>'Within Range' Threshold percentage</source>
+          <target state="translated">'Binnen bereik' drempelpercentage</target>
+        </trans-unit>
+        <trans-unit id="Settings_PriceLevels2.Description" translate="yes" xml:space="preserve">
+          <source>This threshold is used to provide a visual confirmation of the Actual Price being within close range of it's target level.</source>
+          <target state="translated">Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs zich dicht bij het streefniveau bevindt.</target>
+        </trans-unit>
+        <trans-unit id="Settings_PriceLevels2.Header" translate="yes" xml:space="preserve">
+          <source>'Close To' Threshold percentage</source>
+          <target state="translated">'Dichtbij' drempelpercentage</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView_YAxisTitle" translate="yes" xml:space="preserve">
+          <source>Distance to Profit Take Level [%]</source>
+          <target state="translated">Afstand tot Winstname-niveau [%]</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView.Text" translate="no" xml:space="preserve">
+          <source>Target Bubbels</source>
+          <target state="final">Target Bubbels</target>
+        </trans-unit>
+        <trans-unit id="GraphicView.Text" translate="yes" xml:space="preserve">
+          <source>Portfolio Value</source>
+          <target state="translated">Portefeuille waarde</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_DashBoard.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get access to settings related to the Dasboard View</source>
+          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de Dashboardweergave</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_DashBoard.Header" translate="yes" xml:space="preserve">
+          <source>Dashboard Settings</source>
+          <target state="translated">Instellingen Dashboard</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard1.Description" translate="yes" xml:space="preserve">
+          <source>The number of coins visible in the Portfolio Pie. The remaining coins will be grouped into 'Others'</source>
+          <target state="translated">Het aantal munten dat zichtbaar is in de Portfolio Pie. De resterende munten worden gegroepeerd in 'Overige'</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard1.Header" translate="yes" xml:space="preserve">
+          <source>Maximum number of coins in the Portfolio Pie Chart</source>
+          <target state="translated">Maximaal aantal munten in de portefeuille-cirkeldiagram</target>
+        </trans-unit>
+        <trans-unit id="Dashboard_Title.Text" translate="no" xml:space="preserve">
+          <source>Dashboard</source>
+          <target state="final">Dashboard</target>
+        </trans-unit>
+        <trans-unit id="Top5View.Text" translate="yes" xml:space="preserve">
+          <source>Top 5 Winners &amp; Losers 24h</source>
+          <target state="translated">Top 5 Stijgers &amp; Dalers 24u</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView.Text" translate="yes" xml:space="preserve">
+          <source>Values &amp; Gains</source>
+          <target state="translated">Waardes &amp; Groei</target>
+        </trans-unit>
+        <trans-unit id="CapitalFlowView_DateFormat" translate="no" xml:space="preserve">
+          <source>yyyy</source>
+          <target state="final">yyyy</target>
+        </trans-unit>
+        <trans-unit id="CapitalFlowView.Text" translate="yes" xml:space="preserve">
+          <source>Capital Flow</source>
+          <target state="translated">Kapitaalstroom</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_PortfolioValue.Text" translate="yes" xml:space="preserve">
+          <source>Portfolio value</source>
+          <target state="translated">Portefeuillewaarde</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_Day.Text" translate="yes" xml:space="preserve">
+          <source>day</source>
+          <target state="translated">dag</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_Month.Text" translate="yes" xml:space="preserve">
+          <source>month</source>
+          <target state="translated">maand</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_Year.Text" translate="yes" xml:space="preserve">
+          <source>year</source>
+          <target state="translated">jaar</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_ytd.Text" translate="no" xml:space="preserve">
+          <source>YTD</source>
+          <target state="final">YTD</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_CostBaseVersus.Text" translate="yes" xml:space="preserve">
+          <source>vs. cost base</source>
+          <target state="translated">vs. kostenbasis</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_CostBase.Text" translate="yes" xml:space="preserve">
+          <source>Cost base</source>
+          <target state="translated">Kostenbasis</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_NetCapFlow.Text" translate="yes" xml:space="preserve">
+          <source>net flow</source>
+          <target state="translated">netto kapitaalstroom</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_Week.Text" translate="no" xml:space="preserve">
+          <source>week</source>
+          <target state="final">week</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView_NoTargets.Text" translate="yes" xml:space="preserve">
+          <source>Go to the 'Price Levels' view to set target levels.</source>
+          <target state="translated">Ga naar het overzicht 'Prijsniveaus' om streefniveaus in te stellen.</target>
+        </trans-unit>
+        <trans-unit id="PieChartView_Portfolio.Text" translate="yes" xml:space="preserve">
+          <source>Portfolio distribution</source>
+          <target state="translated">Portefeuille verdeling</target>
+        </trans-unit>
+        <trans-unit id="PieChartView_Accounts.Text" translate="yes" xml:space="preserve">
+          <source>Accounts distribution</source>
+          <target state="translated">Accounts verdeling</target>
         </trans-unit>
       </group>
     </body>

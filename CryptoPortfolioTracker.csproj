@@ -13,7 +13,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.1.0.4</Version>
+    <Version>1.2.0</Version>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -54,9 +54,13 @@
     <None Remove="Assets\CPT256x256Icon.targetsize-48.png" />
     <None Remove="CoinDescriptionDialog.xaml" />
     <None Remove="Controls\AssetAccountsGridViewControl.xaml" />
+    <None Remove="Controls\AssetStickerControl.xaml" />
+    <None Remove="Controls\AssetStickerControl2.xaml" />
     <None Remove="Controls\AssetTransactionsListViewControl.xaml" />
     <None Remove="Controls\AutoSuggestBoxWithValidation.xaml" />
     <None Remove="Controls\ColumnHeaderButton.xaml" />
+    <None Remove="Controls\GraphControl.xaml" />
+    <None Remove="Controls\HeatMapControl.xaml" />
     <None Remove="Controls\PriceLevelsListViewControl.xaml" />
     <None Remove="Dialogs\AboutDialog.xaml" />
     <None Remove="Dialogs\AccountDialog.xaml" />
@@ -65,13 +69,13 @@
     <None Remove="Controls\CoinLibraryListViewControl.xaml" />
     <None Remove="Dialogs\AddNoteDialog.xaml" />
     <None Remove="Dialogs\AddPrereleaseCoinDialog.xaml" />
+    <None Remove="Dialogs\AddPriceLevelsDialog.xaml" />
     <None Remove="Dialogs\BlankWindow1.xaml" />
     <None Remove="Dialogs\TransactionDialog.xaml" />
     <None Remove="LogWindow.xaml" />
     <None Remove="MK_Styles.xaml" />
     <None Remove="SplashScreen.xaml" />
     <None Remove="Views\DashboardView.xaml" />
-    <None Remove="Views\GraphicView.xaml" />
     <None Remove="Views\PriceLevelsView.xaml" />
     <None Remove="Views\SettingsView.xaml" />
   </ItemGroup>
@@ -94,7 +98,7 @@
     </PackageReference>
     <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="LanguageExt.Core" Version="4.4.8" />
-    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc2.1" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc4.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="7.0.15" />
@@ -137,6 +141,24 @@
     <Page Update="CoinDescriptionDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="Controls\AssetStickerControl2.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\AssetStickerControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\GraphControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\HeatMapControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\ValueGainsControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Dialogs\AccountDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -148,6 +170,10 @@
     </Page>
     <Page Update="Controls\AssetAccountsGridViewControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Dialogs\AddPriceLevelsDialog.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Dialogs\AddNoteDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -333,9 +359,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Dialogs\AboutDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\GraphicView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Dialogs\AddPrereleaseCoinDialog.xaml">

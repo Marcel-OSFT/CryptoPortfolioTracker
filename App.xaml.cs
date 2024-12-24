@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using CryptoPortfolioTracker.Infrastructure;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
@@ -16,11 +10,14 @@ using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Navigation;
+
 using Serilog;
 using Serilog.Core;
 using WinUI3Localizer;
+using Microsoft.UI.Xaml;
+using Windows.ApplicationModel.Store;
+using System.IO.Compression;
+using System.Linq;
 
 namespace CryptoPortfolioTracker;
 
@@ -28,15 +25,16 @@ public partial class App : Application
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public static Window? Window;
+    public static App Current;
+    public static MainWindow? Window { get; private set; }
     public static Window? Splash;
     public const string CoinGeckoApiKey = "";
     public static string ApiPath = "https://api.coingecko.com/api/v3/";
     public static string appPath = string.Empty;
     public static string appDataPath = string.Empty;
     public static string ProductVersion = string.Empty;
-   // public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
-    public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version_onedrive.txt";
+   public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
+    //public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version_onedrive.txt";
     public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
     public static bool isBusy;
     public static bool isAppInitializing;
@@ -50,13 +48,23 @@ public partial class App : Application
 
     public static bool initDone;
 
-    public const string DbName = "sqlCPT_Dev.db";
+    public const string DbName = "sqlCPT.db";
+    public const string PrefFileName = "prefs.xml";
+    public const string ChartsFolder = "MarketCharts";
+    public const string BackupFolder = "Backup";
+    public const string PrefixBackupName = "CPTbackup";
+    public const string ExtentionBackup = "cpt";
+
+
+    //public const string DbRestoreName = "sqlCPT_DevRestore.db";
+    //public const string DbName = "sqlCPT.db";
 
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public App()
     {
+        Current = this;
         InitializeComponent();
        
         GetAppEnvironmentals();
@@ -106,34 +114,38 @@ public partial class App : Application
             
             if (File.Exists(dbFilename))
             {
-                initDone = true;
-                var backupFiles = Directory.GetFiles(appDataPath, DbName + "_backup_*");
-                if (backupFiles.Length > 4)
-                {
-                    File.Delete(backupFiles[0]);
-                }
-                File.Copy(dbFilename, appDataPath + "\\" + DbName + "_backup_"  + DateTime.Now.Ticks.ToString() + ".db");
+                BackupCptFiles(false);
             }
-            
+
+
             var pending = await context.Database.GetPendingMigrationsAsync();
             var initPriceLevelsEntity = false;
-            foreach (var migration in pending )
+
+            if (pending.Count() > 0)
             {
-                Logger.Information("Pending Migrations {0}", migration.ToString());
-                if (initPriceLevelsEntity != true) initPriceLevelsEntity = migration.Contains("AddPriceLevelsEntity") ;
+                foreach (var migration in pending)
+                {
+                    Logger.Information("Pending Migrations {0}", migration.ToString());
+                    if (initPriceLevelsEntity != true) initPriceLevelsEntity = migration.Contains("AddPriceLevelsEntity");
+                }
+
+                if (File.Exists(dbFilename)) BackupCptFiles(true);
             }
 
             context?.Database.Migrate();
+
+            if (initPriceLevelsEntity)
+            {
+                PopulatePriceLevelsTable(context);
+            }
+
 
             var applied = await context.Database.GetAppliedMigrationsAsync();
             foreach (var migration in applied)
             {
                 Logger.Information("Applied Migrations {0}", migration.ToString());
             }
-            if (initPriceLevelsEntity)
-            {
-                PopulatePriceLevelsTable(context);
-            }
+            
 
         }
         catch (Exception ex)
@@ -142,8 +154,68 @@ public partial class App : Application
         }
     }
 
+    private void BackupCptFiles(bool isMigration)
+    {
+        var dbFile = appDataPath + "\\" + DbName;
+        var preferencesFile = appDataPath + "\\" + PrefFileName;
+        var chartsFolder = appDataPath + "\\" + ChartsFolder;
+        var tempFolder = appDataPath + "\\Temp";
+        var backupFolder = appDataPath + "\\" + BackupFolder;
+        string backUpName = string.Empty;
+
+        if (!Directory.Exists(backupFolder))
+        {
+            Directory.CreateDirectory(backupFolder);
+        }
+
+        if (isMigration)
+        {
+            //*** Skip migration backup if backup already exists
+            var file = Directory.GetFiles(backupFolder, "*" + ProductVersion.Replace(".", "-") + "*");
+            if (file.Length > 0)
+            {
+                return;
+            }
+            backUpName = PrefixBackupName + "_m" + ProductVersion.Replace(".", "-") + "_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "." + ExtentionBackup;
+        }
+        else
+        {
+            initDone = true;
+            var backupFiles = Directory.GetFiles(backupFolder, "*_s_*");
+            if (backupFiles.Length > 5)
+            {
+                File.Delete(backupFiles[0]);
+            }
+            backUpName = PrefixBackupName + "_s_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "." + ExtentionBackup;
+
+        }
+
+        if (!Directory.Exists(tempFolder))
+        {
+            Directory.CreateDirectory(tempFolder);
+        }
+        else
+        {
+            Directory.Delete(tempFolder, true);
+            Directory.CreateDirectory(tempFolder);
+        }
+        File.Copy(dbFile, tempFolder + "\\" + DbName);
+        File.Copy(preferencesFile, tempFolder + "\\" + PrefFileName);
+        DirectoryCopy(chartsFolder, tempFolder + "\\" + ChartsFolder, true);
+
+        ZipFile.CreateFromDirectory(tempFolder, backupFolder + "\\" + backUpName);
+
+        Directory.Delete(tempFolder, true);
+
+    }
+
+    
+
+
     private async void PopulatePriceLevelsTable(PortfolioContext context)
     {
+        if (context.Coins.Count() == 0) return;
+
         foreach(Coin coin in context.Coins)
         {
             var pLevelTp = new PriceLevel();
@@ -195,7 +267,6 @@ public partial class App : Application
         services.AddScoped<AccountsView>();
         services.AddScoped<CoinLibraryView>();
         services.AddScoped<SettingsView>();
-        services.AddScoped<GraphicView>();
         services.AddScoped<MainPage>();
         services.AddScoped<LogWindow>();
         services.AddScoped<MainWindow>();
@@ -207,7 +278,6 @@ public partial class App : Application
         services.AddScoped<AccountsViewModel>();
         services.AddScoped<CoinLibraryViewModel>();
         services.AddScoped<SettingsViewModel>();
-        services.AddScoped<GraphicViewModel>();
         services.AddScoped<DashboardViewModel>();
         services.AddScoped<PriceLevelsViewModel>();
         services.AddScoped<BaseViewModel>();
@@ -226,6 +296,7 @@ public partial class App : Application
         services.AddSingleton<IGraphService, GraphService>();
         services.AddSingleton<IPreferencesService, PreferencesService>();
         services.AddScoped<IPriceLevelService, PriceLevelService>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
 
         return services.BuildServiceProvider();
@@ -265,6 +336,44 @@ public partial class App : Application
             Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
         }
     }
+    private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+    {
+        DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+        DirectoryInfo[] dirs = dir.GetDirectories();
+
+        // If the source directory does not exist, throw an exception.
+        if (!dir.Exists)
+        {
+            throw new DirectoryNotFoundException(
+                "Source directory does not exist or could not be found: "
+                + sourceDirName);
+        }
+
+        // If the destination directory does not exist, create it.
+        if (!Directory.Exists(destDirName))
+        {
+            Directory.CreateDirectory(destDirName);
+        }
+
+        // Get the file contents of the directory to copy.
+        FileInfo[] files = dir.GetFiles();
+        foreach (FileInfo file in files)
+        {
+            string temppath = Path.Combine(destDirName, file.Name);
+            file.CopyTo(temppath, false);
+        }
+
+        // If copying subdirectories, copy them and their contents to new location.
+        if (copySubDirs)
+        {
+            foreach (DirectoryInfo subdir in dirs)
+            {
+                string temppath = Path.Combine(destDirName, subdir.Name);
+                DirectoryCopy(subdir.FullName, temppath, copySubDirs);
+            }
+        }
+    }
+    
 
 
 }

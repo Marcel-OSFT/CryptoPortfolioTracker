@@ -56,11 +56,11 @@ public partial class AssetService : ObservableObject, IAssetService
             foreach (var item in ListAssetTotals)
             {
                 item.IsHidden = false;
-               // hiddenAssetsCount = 0;
+                // hiddenAssetsCount = 0;
             }
         }
     }
-    
+
     public AssetService(PortfolioContext portfolioContext)
     {
         context = portfolioContext;
@@ -69,6 +69,18 @@ public partial class AssetService : ObservableObject, IAssetService
 
         IsHidingZeroBalances = false;
     }
+
+    public void ReloadValues()
+    {
+        var copyList = ListAssetTotals;
+        ListAssetTotals = null;
+        ListAssetTotals = copyList;
+       
+        OnPropertyChanged(nameof(TotalAssetsValue));
+        OnPropertyChanged(nameof(InFlow));
+        OnPropertyChanged(nameof(OutFlow));
+    }
+
 
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList()
     {
@@ -84,11 +96,20 @@ public partial class AssetService : ObservableObject, IAssetService
                 ListAssetTotals = new(list.OrderByDescending(currentSortFunc));
             }
            
-            VisibleAssetsCount = IsHidingZeroBalances ? ListAssetTotals.Count - ListAssetTotals.Where(x => x.MarketValue <= 0).ToList().Count : ListAssetTotals.Count;
+            //VisibleAssetsCount = IsHidingZeroBalances ? ListAssetTotals.Count - ListAssetTotals.Where(x => x.MarketValue <= 0).ToList().Count : ListAssetTotals.Count;
         });
         getAssetTotalsResult.IfFail(err => ListAssetTotals = new());
         return ListAssetTotals;
     }
+
+    //public ObservableCollection<AssetTotals> GetAssetTotalsList()
+    //{
+    //    return ListAssetTotals;
+    //}
+
+
+
+
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
     {
         var getAssetTotalsResult = await GetAssetTotalsFromContext();
@@ -104,7 +125,7 @@ public partial class AssetService : ObservableObject, IAssetService
             }
             currentSortFunc = sortFunc;
             currentSortingOrder = sortingOrder;
-            VisibleAssetsCount = IsHidingZeroBalances ? ListAssetTotals.Count - ListAssetTotals.Where(x => x.MarketValue <= 0).ToList().Count : ListAssetTotals.Count;
+           //VisibleAssetsCount = IsHidingZeroBalances ? ListAssetTotals.Count - ListAssetTotals.Where(x => x.MarketValue <= 0).ToList().Count : ListAssetTotals.Count;
 
         });
         getAssetTotalsResult.IfFail(err => ListAssetTotals = new());
@@ -250,6 +271,21 @@ public partial class AssetService : ObservableObject, IAssetService
                 Coin = assetGroup.Key
             })
             .ToListAsync();
+
+            VisibleAssetsCount = assetsTotals is not null ? assetsTotals.Count : 0;
+            if (IsHidingZeroBalances)
+            {
+                var assetsWithZero = assetsTotals.Where(x => x.MarketValue <= 0);
+                if (assetsWithZero is not null)
+                {
+                    foreach (var asset in assetsWithZero)
+                    {
+                        asset.IsHidden = true;
+                    }
+                    VisibleAssetsCount -= assetsWithZero.ToList().Count;
+                }
+                
+            }
         }
         catch (Exception ex)
         {
@@ -343,6 +379,7 @@ public partial class AssetService : ObservableObject, IAssetService
         {
             assetsTotals = await context.Assets
             .Include(x => x.Coin)
+            .ThenInclude(y => y.PriceLevels)
             .GroupBy(asset => asset.Coin)
             .Select(assetGroup => new AssetTotals
             {
@@ -352,7 +389,22 @@ public partial class AssetService : ObservableObject, IAssetService
             })
             .ToListAsync();
 
+            VisibleAssetsCount = assetsTotals is not null ? assetsTotals.Count : 0;
+            if (IsHidingZeroBalances)
+            {
+                var assetsWithZero = assetsTotals.Where(x => x.MarketValue <= 0);
+                if (assetsWithZero is not null)
+                {
+                    foreach (var asset in assetsWithZero)
+                    {
+                        asset.IsHidden = true;
+                    }
+                    VisibleAssetsCount -= assetsWithZero.ToList().Count;
+                }
+
+            }
         }
+       
         catch (Exception ex)
         {
             return new Result<List<AssetTotals>>(ex);

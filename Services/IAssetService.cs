@@ -26,5 +26,7 @@ public interface IAssetService
     void ClearAssetTotalsList();
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
+    void ReloadValues();
+    //ObservableCollection<AssetTotals> GetAssetTotalsList();
 }
 

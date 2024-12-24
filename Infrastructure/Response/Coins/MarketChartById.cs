@@ -62,7 +62,7 @@ public class MarketChartById
         {
             RemoveDuplicateLastDate();
 
-            var fileName = App.appDataPath + "\\MarketCharts\\MarketChart_" + coinId + ".json";
+            var fileName = App.appDataPath + "\\" + App.ChartsFolder + "\\MarketChart_" + coinId + ".json";
             await using FileStream createStream = File.Create(fileName);
             await System.Text.Json.JsonSerializer.SerializeAsync(createStream, Prices);
         }
@@ -70,7 +70,7 @@ public class MarketChartById
 
     public async Task LoadMarketChartJson(string coinId)
     {
-        var fileName = App.appDataPath + "\\MarketCharts\\MarketChart_" + coinId + ".json";
+        var fileName = App.appDataPath + "\\" + App.ChartsFolder + "\\MarketChart_" + coinId + ".json";
 
         if (File.Exists(fileName))
         {

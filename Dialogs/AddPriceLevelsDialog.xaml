@@ -1,0 +1,99 @@
+<ContentDialog
+    x:Class="CryptoPortfolioTracker.Dialogs.AddPriceLevelsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:local="using:CryptoPortfolioTracker" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:controls="using:CryptoPortfolioTracker.Controls"
+    xmlns:converters="using:CryptoPortfolioTracker.Converters"
+    DefaultButton="Primary"
+    xmlns:l="using:WinUI3Localizer"
+    x:Name="Root"
+    Loading="Dialog_Loading"
+    PrimaryButtonClick="Button_Click_Accept">
+
+    <ContentDialog.Resources>
+        <!-- Overriding ContentDialogMaxWidth value -->
+        <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
+        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+
+    </ContentDialog.Resources>
+
+    <Grid  Margin="0,0,0,0" Width="400">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="160"/>
+            <RowDefinition Height="160"/>
+            <RowDefinition Height="160"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" MaxWidth="400"/>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,10,10,0" >
+            <StackPanel.Background>
+                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
+            </StackPanel.Background>
+            <TextBlock l:Uids.Uid="PriceLevelsDialog_TpHeader" x:Name="txtTPSection" 
+                 Text="Take Profit Level" Margin="10,0,0,5" FontSize="16">
+            </TextBlock>
+            <controls:RegExTextBox l:Uids.Uid="PriceLevelsDialog_TpValue" x:Name ="regTpValue"
+                RegEx="RegExPositiveDecimal" 
+                IsZeroAllowed="True"
+                DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
+                Text="{Binding TpValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
+                Style="{StaticResource MK_TextBoxStyle}"
+                Width="160" Margin="10,0,5,5" HorizontalAlignment="Left"/>
+            <TextBox l:Uids.Uid="PriceLevelsDialog_Note" x:Name="txtTPNote" 
+                Text="{Binding TpNote, ElementName=Root, Mode=TwoWay}"
+                PlaceholderForeground="Wheat" Margin="10,0,10,0" 
+                AutomationProperties.Name="multi-line TextBox" 
+                TextWrapping="Wrap" AcceptsReturn="True" MinWidth="400" MinHeight="80">
+            </TextBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="10,10,10,0" >
+            <StackPanel.Background>
+                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
+            </StackPanel.Background>
+            <TextBlock l:Uids.Uid="PriceLevelsDialog_BuyHeader" x:Name="txtBuySection" 
+                    Text="Buy Level" Margin="10,0,0,5" FontSize="16">
+            </TextBlock>
+            <controls:RegExTextBox l:Uids.Uid="PriceLevelsDialog_BuyValue"  x:Name ="regBuyValue"
+                RegEx="RegExPositiveDecimal" 
+                IsZeroAllowed="True"
+                DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
+                Text="{Binding BuyValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
+                Style="{StaticResource MK_TextBoxStyle}"
+                Width="160" Margin="10,0,5,5" HorizontalAlignment="Left"/>
+            <TextBox l:Uids.Uid="PriceLevelsDialog_Note" x:Name="txtBuyNote" 
+                Text="{Binding BuyNote, ElementName=Root, Mode=TwoWay}" 
+                PlaceholderForeground="Wheat" Margin="10,0,10,0" 
+                AutomationProperties.Name="multi-line TextBox" 
+                TextWrapping="Wrap" AcceptsReturn="True" MinWidth="400" MinHeight="80">
+            </TextBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Margin="10,10,10,0" >
+            <StackPanel.Background>
+                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
+            </StackPanel.Background>
+            <TextBlock l:Uids.Uid="PriceLevelsDialog_StopHeader" x:Name="txtStopSection" 
+                    Text="Stop Level" Margin="10,0,0,5" FontSize="16">
+            </TextBlock>
+            <controls:RegExTextBox l:Uids.Uid="PriceLevelsDialog_StopValue"  x:Name ="regStopValue"
+                RegEx="RegExPositiveDecimal" 
+                IsZeroAllowed="True"
+                DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
+                Text="{Binding StopValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
+                Style="{StaticResource MK_TextBoxStyle}"
+                Width="160" Margin="10,0,5,5" HorizontalAlignment="Left"/>
+            <TextBox l:Uids.Uid="PriceLevelsDialog_Note" x:Name="txtStopNote" 
+                Text="{Binding StopNote, ElementName=Root, Mode=TwoWay}" 
+                PlaceholderForeground="Wheat" Margin="10,0,10,0" 
+                AutomationProperties.Name="multi-line TextBox"
+                TextWrapping="Wrap" AcceptsReturn="True" Width="400" Height="80">
+            </TextBox>
+        </StackPanel>
+    </Grid>
+
+</ContentDialog>

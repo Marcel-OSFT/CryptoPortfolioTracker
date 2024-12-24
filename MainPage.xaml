@@ -54,12 +54,12 @@
                         </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItemSeparator  Margin="0,5,0,5"/>
-                <NavigationViewItem l:Uids.Uid="Navigation_Graphic" Tag="GraphicView">
+
+                <NavigationViewItem l:Uids.Uid="Navigation_PriceLevels" Tag="PriceLevelsView" >
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D2;"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-
 
                 <NavigationViewItem l:Uids.Uid="Navigation_Dashboard" Tag="DashboardView" >
                     <NavigationViewItem.Icon>

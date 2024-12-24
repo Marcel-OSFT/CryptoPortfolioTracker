@@ -56,6 +56,26 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
     private bool isHidingCapitalFlow;
     partial void OnIsHidingCapitalFlowChanged(bool value) => _preferencesService.SetHidingCapitalFlow(value);
 
+    [ObservableProperty]
+    private int withinRangePerc;
+    partial void OnWithinRangePercChanged(int value) => _preferencesService.SetWithinRangePerc(value);
+
+    [ObservableProperty]
+    private int closeToPerc;
+    partial void OnCloseToPercChanged(int value) => _preferencesService.SetCloseToPerc(value);
+    
+    [ObservableProperty]
+    private int maxPieCoins;
+    partial void OnMaxPieCoinsChanged(int value) => _preferencesService.SetMaxPieCoins(value);
+
+    [ObservableProperty]
+    private bool areValuesMasked;
+    partial void OnAreValuesMaskedChanged(bool value) => _preferencesService.SetAreValuesMasked(value);
+
+
+
+
+
     public SettingsViewModel(IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
@@ -71,56 +91,49 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
 
     private void InitializeFields()
     {
-        NumberFormatIndex =  _preferencesService.GetNumberFormat().NumberDecimalSeparator == "," ? 0 : 1;
-        AppCultureIndex = _preferencesService.GetAppCultureLanguage()[..2].ToLower() == "nl" ? 0 : 1;
-        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
-        IsCheckForUpdate = _preferencesService.GetCheckingForUpdate();
-        FontSize = (double)_preferencesService.GetFontSize();
-        IsScrollBarsExpanded = _preferencesService.GetExpandingScrollBars();
-        AppTheme = _preferencesService.GetAppTheme();
-        IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
+        var preferences = _preferencesService;
+        var numberFormat = preferences.GetNumberFormat();
+        var appCulture = preferences.GetAppCultureLanguage();
+
+        NumberFormatIndex = numberFormat.NumberDecimalSeparator == "," ? 0 : 1;
+        AppCultureIndex = appCulture[..2].ToLower() == "nl" ? 0 : 1;
+        IsHidingZeroBalances = preferences.GetHidingZeroBalances();
+        IsCheckForUpdate = preferences.GetCheckingForUpdate();
+        FontSize = (double)preferences.GetFontSize();
+        IsScrollBarsExpanded = preferences.GetExpandingScrollBars();
+        AppTheme = preferences.GetAppTheme();
+        IsHidingCapitalFlow = preferences.GetHidingCapitalFlow();
+        WithinRangePerc = preferences.GetWithinRangePerc();
+        CloseToPerc = preferences.GetCloseToPerc();
+        MaxPieCoins = preferences.GetMaxPieCoins();
     }
 
     private void SetNumberSeparators(int index)
     {
-        NumberFormatInfo nf = new();
-        if (index == 0)
+        var nf = new NumberFormatInfo
         {
-            nf.NumberDecimalSeparator = ",";
-            nf.NumberGroupSeparator = ".";
-        }
-        else
-        {
-            nf.NumberDecimalSeparator = ".";
-            nf.NumberGroupSeparator = ",";
-        }
-        _preferencesService.SetNumberFormat(nf); 
+            NumberDecimalSeparator = index == 0 ? "," : ".",
+            NumberGroupSeparator = index == 0 ? "." : ","
+        };
+        _preferencesService.SetNumberFormat(nf);
     }
     private void SetCulturePreference(int index)
     {
-        if (index == 0)
-        {
-            _preferencesService.SetAppCultureLanguage("nl");
-        }
-        else
-        {
-            _preferencesService.SetAppCultureLanguage("en-US");
-        }
+        string culture = index == 0 ? "nl" : "en-US";
+        _preferencesService.SetAppCultureLanguage(culture);
     }
 
     [RelayCommand]
     public async Task CheckUpdateNow()
     {
         Logger.Information("Checking for updates");
-        AppUpdater appUpdater = new();
+        var appUpdater = new AppUpdater();
         var loc = Localizer.Get();
-
         var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
 
         if (result == AppUpdaterResult.NeedUpdate)
         {
             Logger.Information("Update Available");
-
             var dlgResult = await ShowMessageDialog(
                 loc.GetLocalizedString("Messages_UpdateChecker_NewVersionTitle"),
                 loc.GetLocalizedString("Messages_UpdateChecker_NewVersionMsg"),
@@ -130,17 +143,16 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
             if (dlgResult == ContentDialogResult.Primary)
             {
                 Logger.Information("Downloading update");
-
                 var downloadResult = await appUpdater.DownloadSetupFile();
+                
                 if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
                 {
-                    //*** Download is doen, wait till there is no other dialog box open
+                    //*** wait till there is no other dialog box open
                     while (App.isBusy)
                     {
                         await Task.Delay(5000);
                     }
                     Logger.Information("Download Succesfull");
-
                     var installRequest = await ShowMessageDialog(
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesTitle"),
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesMsg"),
@@ -156,7 +168,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
                 else
                 {
                     Logger.Warning("Download failed");
-
                     await ShowMessageDialog(
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedTitle"),
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedMsg"),
@@ -167,7 +178,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
         else
         {
             Logger.Information("Application is up-to-date");
-
             await ShowMessageDialog(
                 loc.GetLocalizedString("Messages_UpdateChecker_UpToDate_Title"),
                 loc.GetLocalizedString("Messages_UpdateChecker_UpToDate_Msg"),

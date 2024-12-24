@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Helpers;
 using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,20 @@ public partial class AccountService : ObservableObject, IAccountService
 
         return ListAccounts;
     }
+
+    public void ReloadValues()
+    {
+        var tempListAccounts = ListAccounts;
+        ListAccounts = null;
+        ListAccounts = tempListAccounts;
+
+       
+
+    }
+
+
+
+
     public async Task<ObservableCollection<AssetAccount>> PopulateAccountsByAssetList(int coinId)
     {
         var getResult = await GetAccountsByAsset(coinId);
@@ -204,7 +219,7 @@ public partial class AccountService : ObservableObject, IAccountService
         }
         return _result;
     }
-    public async Task<Result<List<Account>>> GetAccounts()
+    private async Task<Result<List<Account>>> GetAccounts()
     {
         List<Account> accounts;
         try

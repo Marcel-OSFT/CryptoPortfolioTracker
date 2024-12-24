@@ -177,8 +177,27 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
                     Change24Hr = coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
                     About = coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value,
                     IsAsset = false,
-                    Rank = coinFullDataById.MarketCapRank ?? 99999
+                    Rank = coinFullDataById.MarketCapRank ?? 99999,
+
                 };
+                var level = new PriceLevel
+                {
+                    Type = PriceLevelType.TakeProfit,
+                    Coin = coin
+                };
+                coin.PriceLevels.Add(level);
+                level = new PriceLevel
+                {
+                    Type = PriceLevelType.Buy,
+                    Coin = coin
+                };
+                coin.PriceLevels.Add(level);
+                level = new PriceLevel
+                {
+                    Type = PriceLevelType.Stop,
+                    Coin = coin
+                };
+                coin.PriceLevels.Add(level);
 
                 if (coin.ApiId != string.Empty && coin.Name != string.Empty && coin.Symbol != string.Empty)
                 {

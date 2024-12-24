@@ -2,6 +2,8 @@ using System.Linq;
 using CryptoPortfolioTracker.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using Windows.UI.Core;
+using Microsoft.UI.Xaml.Controls;
 using WinUIEx;
 
 namespace CryptoPortfolioTracker;
@@ -9,12 +11,14 @@ namespace CryptoPortfolioTracker;
 public sealed partial class MainWindow : Window
 {
     private WindowManager _manager;
+    public static MainWindow Current;
     private readonly IPreferencesService _preferencesService;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public MainWindow(IPreferencesService preferencesService)
     {
         InitializeComponent();
+        Current = this;
         _preferencesService = preferencesService;
         ConfigureWindow();
     }
@@ -43,6 +47,8 @@ public sealed partial class MainWindow : Window
 #endif
         _manager.AppWindow.Title = "Crypto Portfolio Tracker";
         _manager.AppWindow.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
+       
+        
         SetTitleBar(null);
         Content =  App.Container.GetService<MainPage>(); ;
 
@@ -52,7 +58,7 @@ public sealed partial class MainWindow : Window
         }
     }
 
-
+    
 
 
 }

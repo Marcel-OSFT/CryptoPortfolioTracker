@@ -78,6 +78,30 @@ public class PreferencesService : IPreferencesService
         userPreferences.IsHidingCapitalFlow = isHiding;
         SaveUserPreferences("IsHidingCapitalFlow", isHiding);
     }
+    public void SetCloseToPerc(int closeToPerc)
+    {
+        userPreferences.CloseToPerc = closeToPerc;
+        SaveUserPreferences("CloseToPerc", closeToPerc);
+    }
+    public void SetWithinRangePerc(int withinRangePerc)
+    {
+        userPreferences.WithinRangePerc = withinRangePerc;
+        SaveUserPreferences("WithinRangePerc", withinRangePerc);
+    }
+
+    public void SetMaxPieCoins(int maxPieCoins)
+    {
+        userPreferences.MaxPieCoins = maxPieCoins;
+        SaveUserPreferences("MaxPieCoins", maxPieCoins);
+    }
+    public void SetAreValuesMasked(bool value)
+    {
+        userPreferences.AreValuesMasked = value;
+        SaveUserPreferences("AreValuesMasked", value);
+    }
+
+
+
 
     public NumberFormatInfo GetNumberFormat()
     {
@@ -114,6 +138,24 @@ public class PreferencesService : IPreferencesService
     public int GetRefreshIntervalMinutes()
     {
         return userPreferences.RefreshIntervalMinutes;
+    }
+    public int GetCloseToPerc()
+    {
+        return userPreferences.CloseToPerc;
+    }
+    public int GetWithinRangePerc()
+    {
+        return userPreferences.WithinRangePerc;
+    }
+
+    public int GetMaxPieCoins()
+    {
+        return userPreferences.MaxPieCoins;
+    }
+
+    public bool GetAreValesMasked()
+    {
+        return userPreferences.AreValuesMasked;
     }
 
     public void LoadUserPreferencesFromXml()

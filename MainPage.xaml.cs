@@ -12,10 +12,10 @@ using CryptoPortfolioTracker.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Serilog.Core;
+using Windows.UI.Core;
 using WinUI3Localizer;
 
 
@@ -266,6 +266,8 @@ public partial class MainPage : Page, INotifyPropertyChanged
         await _graphUpdateService.Start();
         _priceUpdateService.Start();
     }
+
+
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

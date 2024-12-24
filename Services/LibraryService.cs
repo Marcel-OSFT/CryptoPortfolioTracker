@@ -126,6 +126,13 @@ public partial class LibraryService : ObservableObject, ILibraryService
         currentSortFunc = sortFunc;
 
     }
+
+
+
+
+
+
+
     /// <summary>
     /// this function without parameters will sort the list using the last used settings.
     /// </summary>
@@ -191,7 +198,10 @@ public partial class LibraryService : ObservableObject, ILibraryService
         if (coinId == null || coinId == "") { return new Coin(); }
         try
         {
-            coin = await context.Coins.Where(x => x.ApiId.ToLower() == coinId.ToLower()).SingleAsync();
+            coin = await context.Coins
+                .Include (x => x.PriceLevels)
+                .Where(x => x.ApiId.ToLower() == coinId.ToLower())
+                .SingleAsync();
         }
         catch (Exception ex)
         {
@@ -205,7 +215,11 @@ public partial class LibraryService : ObservableObject, ILibraryService
         List<Coin>? coinList = null;
         try
         {
-            coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
+            //coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
+            coinList = await context.Coins
+                .Include(x => x.PriceLevels)
+                .OrderBy(x => x.Rank)
+                .ToListAsync();
         }
         catch (Exception ex)
         {
@@ -220,7 +234,11 @@ public partial class LibraryService : ObservableObject, ILibraryService
         if (coin == null) { return false; }
         try
         {
-            var coinToRemove = await context.Coins.Where(x => x.ApiId == coin.ApiId).SingleAsync();
+            var coinToRemove = await context.Coins
+                .Include(x => x.PriceLevels)
+                .Where(x => x.ApiId == coin.ApiId)
+                .SingleAsync();
+
             context.Coins.Remove(coinToRemove);
             _result = await context.SaveChangesAsync() > 0;
         }

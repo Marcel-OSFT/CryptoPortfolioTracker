@@ -895,4 +895,14 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         return asset;
     }
+
+    public void ReloadValues()
+    {
+        var tempList = ListAssetTransactions;
+        ListAssetTransactions = null;
+        ListAssetTransactions = tempList;
+
+    }
+
+
 }
