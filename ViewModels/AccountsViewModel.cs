@@ -32,12 +32,29 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
 
     [ObservableProperty] private string sortGroup;
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
-    private bool isHidingZeroBalances;
+    
+    //[ObservableProperty]
+    //[NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
+    //private bool isHidingZeroBalances;
 
     private Account? selectedAccount = null;
     private bool _isAssetsListViewInitialized;
+
+    [ObservableProperty] private string glyphPrivacy = "\uE890";
+
+    [ObservableProperty] private bool isPrivacyMode;
+
+    partial void OnIsPrivacyModeChanged(bool value)
+    {
+        GlyphPrivacy = value ? "\uED1A" : "\uE890";
+
+        _preferencesService.SetAreValuesMasked(value);
+
+        _accountService.ReloadValues();
+        _assetService.ReloadValues();
+
+    }
+
 
     public AccountsViewModel(IAccountService accountService, IAssetService assetService, IPreferencesService preferencesService) : base(preferencesService)
     {
@@ -51,7 +68,8 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
 
-        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+        _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+        IsPrivacyMode = _preferencesService.GetAreValesMasked();
     }
 
     [ObservableProperty]
@@ -65,6 +83,8 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     /// <returns></returns>
     public async Task Initialize()
     {
+        IsPrivacyMode = _preferencesService.GetAreValesMasked();
+       // IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
         await _accountService.PopulateAccountsList();
     }
 
@@ -313,6 +333,10 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         await _assetService.PopulateAssetTotalsByAccountList(clickedAccount, currentSortingOrder, currentSortFunc);
     }
 
-
+    [RelayCommand]
+    private void TogglePrivacyMode()
+    {
+        IsPrivacyMode = !IsPrivacyMode;
+    }
 }
 

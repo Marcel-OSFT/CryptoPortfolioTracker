@@ -25,8 +25,17 @@ namespace CryptoPortfolioTracker.Services
         void SetHidingZeroBalances(bool isHiding);
         void SetNumberFormat(NumberFormatInfo nf);
         bool GetHidingCapitalFlow();
+        int GetCloseToPerc();
+        int GetWithinRangePerc();
+        void SetCloseToPerc(int value);
+        void SetWithinRangePerc(int value);
+
         void AttachLogger();
         void LoadUserPreferencesFromXml();
         int GetRefreshIntervalMinutes();
+        void SetMaxPieCoins(int maxPieCoins);
+        public int GetMaxPieCoins();
+        void SetAreValuesMasked(bool value);
+        bool GetAreValesMasked();
     }
 }

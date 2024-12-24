@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -34,13 +35,6 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public readonly IGraphService _graphService;
     private readonly IPreferencesService _preferencesService;
 
-   // [ObservableProperty] private double totalAssetsValue;
-   // [ObservableProperty] private double totalAssetsCostBase;
-   // [ObservableProperty] private double totalAssetsPnLPerc;
-
-   // [ObservableProperty] private double inFlow;
-   // [ObservableProperty] private double outFlow;
-
     [ObservableProperty] private string sortGroup;
 
     private AssetTotals? selectedAsset = null;
@@ -50,9 +44,10 @@ public sealed partial class AssetsViewModel : BaseViewModel
     [NotifyCanExecuteChangedFor(nameof(ShowTransactionDialogToAddCommand))]
     private bool isExtendedView = false;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
-    private bool isHidingZeroBalances;
+    //[ObservableProperty]
+    //[NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
+    //private bool isHidingZeroBalances;
+    
     [ObservableProperty] private bool isHidingCapitalFlow;
 
     public static List<CoinList>? coinListGecko;
@@ -60,6 +55,21 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;
+
+    [ObservableProperty] private string glyphPrivacy = "\uE890";
+
+    [ObservableProperty] private bool isPrivacyMode;
+
+    partial void OnIsPrivacyModeChanged(bool value)
+    {
+        GlyphPrivacy = value ? "\uED1A" : "\uE890";
+
+        _preferencesService.SetAreValuesMasked(value);
+
+        _assetService.ReloadValues();
+        _transactionService.ReloadValues();
+    }
+
 
     public AssetsViewModel(IGraphService graphService, 
             IAssetService assetService, 
@@ -79,8 +89,9 @@ public sealed partial class AssetsViewModel : BaseViewModel
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
 
-        IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
-        _assetService.IsHidingZeroBalances = IsHidingZeroBalances;
+        _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+        //_assetService.IsHidingZeroBalances = IsHidingZeroBalances;
+        IsPrivacyMode = _preferencesService.GetAreValesMasked();
 
     }
 
@@ -90,12 +101,15 @@ public sealed partial class AssetsViewModel : BaseViewModel
     /// </summary>
     public async Task Initialize()
     {
-        
+        IsPrivacyMode = _preferencesService.GetAreValesMasked();
+
+        IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
+       // IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+
 
         await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
 
         //below setting(s) might have been changed while was moved away from the associated view
-        IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
 
         //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
         _assetService.GetTotalsAssetsValue();
@@ -417,6 +431,14 @@ public sealed partial class AssetsViewModel : BaseViewModel
     {
         _assetService.IsHidingZeroBalances = param;
     }
+
+    [RelayCommand]
+    private void TogglePrivacyMode()
+    {
+        IsPrivacyMode = !IsPrivacyMode;
+    }
+
+
 
 }
 

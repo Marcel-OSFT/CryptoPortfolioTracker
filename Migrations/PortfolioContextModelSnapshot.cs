@@ -96,6 +96,10 @@ namespace CryptoPortfolioTracker.Migrations
                         .HasColumnType("REAL")
                         .HasColumnName("Ath");
 
+                    b.Property<double>("BuyLevel")
+                        .HasColumnType("REAL")
+                        .HasColumnName("BuyLevel");
+
                     b.Property<double>("Change1Month")
                         .HasColumnType("REAL")
                         .HasColumnName("Change1Month");
@@ -138,11 +142,6 @@ namespace CryptoPortfolioTracker.Migrations
                     b.Property<long>("Rank")
                         .HasColumnType("INTEGER")
                         .HasColumnName("Rank");
-
-                    b.Property<string>("Symbol")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("Symbol");
 
                     b.HasKey("Id");
 
@@ -208,6 +207,10 @@ namespace CryptoPortfolioTracker.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER")
                         .HasColumnName("Status");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Type");
 
                     b.Property<double>("Value")
                         .HasColumnType("REAL")

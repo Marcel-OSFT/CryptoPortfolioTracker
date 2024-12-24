@@ -59,8 +59,8 @@ public class AppUpdater
         if (File.Exists(temp_version_file))
         {
             /* Get the file content and split it in two */
-       //     var version_data = File.ReadAllText(temp_version_file).Split('=');
-            var version_data = File.ReadAllText(temp_version_file).Split(';');
+            var version_data = File.ReadAllText(temp_version_file).Split('=');
+            //var version_data = File.ReadAllText(temp_version_file).Split(';');
 
 
 

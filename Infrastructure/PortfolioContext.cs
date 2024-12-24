@@ -1,9 +1,11 @@
 ﻿using CryptoPortfolioTracker.Infrastructure.EntityConfigurations;
 using CryptoPortfolioTracker.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace CryptoPortfolioTracker.Infrastructure
 {
+  
     public class PortfolioContext : DbContext
     {
 
@@ -17,10 +19,10 @@ namespace CryptoPortfolioTracker.Infrastructure
         //    optionsBuilder.UseSqlite("Data Source=" + App.appDataPath + "\\" + App.DbName);
         //}
 
-        //
-
 
         public PortfolioContext(DbContextOptions<PortfolioContext> connection) : base(connection) { }
+
+
 
         public DbSet<Coin> Coins  { get; set; }
         public DbSet<Asset> Assets { get; set; }

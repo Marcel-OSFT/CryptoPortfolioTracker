@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl    
+    x:Class="CryptoPortfolioTracker.Controls.GraphControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CryptoPortfolioTracker.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
+    xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"
+    xmlns:converters="using:CryptoPortfolioTracker.Converters"
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"
+    xmlns:enums="using:CryptoPortfolioTracker.Enums"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    x:Name="Root"
+    xmlns:l="using:WinUI3Localizer"
+    xmlns:toolkit="using:AK.Toolkit.WinUI3"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
+    Loaded="Control_Loaded"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <RelativePanel Grid.Row="0">
+            <TextBlock x:Name="txtTitle"
+                l:Uids.Uid="GraphicView" 
+                FontSize="16" 
+                Margin="0,10,10,0"
+                RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignTopWithPanel="True"/>
+
+            <helpers:CustomBtn  HorizontalAlignment="Right" VerticalAlignment="Top" RelativePanel.RightOf="txtTitle" RelativePanel.AlignBottomWith="txtTitle"
+                Style="{StaticResource MK_ButtonStyle}" BorderThickness="0" Width="30" Padding="2,2,2,2" Margin="0,0,10,0"
+                Command="{Binding ToggleFullScreenModeCommand}">
+                <helpers:CustomBtn.CommandParameter>
+                    <enums:FullScreenMode>Graph</enums:FullScreenMode>
+                </helpers:CustomBtn.CommandParameter>
+                <FontIcon Glyph="{Binding Glyph}" FontWeight="Normal" Width="20"/>
+            </helpers:CustomBtn>
+        </RelativePanel>
+        <lvc:CartesianChart Grid.Row="1" SizeChanged="Graph_SizeChanged"
+            x:Name="thisChart"
+            
+            Series="{Binding SeriesGraph}" 
+            ZoomMode="Both"
+            XAxes="{Binding XAxesGraph}"
+            YAxes="{Binding YAxesGraph}"
+            LegendPosition="Bottom"
+            LegendTextPaint="{Binding LegendTextPaintGraph}"
+            LegendTextSize="{Binding LegendTextSizeGraph}"  
+            TooltipTextSize="12"
+            >
+        </lvc:CartesianChart>
+
+        <ProgressRing Grid.Row="1"
+                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                      IsActive="{Binding IsLoadingFromJsonGraph}" 
+                      Visibility="{Binding IsNotLoadingFromJsonGraph, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+        <!--<StackPanel Grid.Row="1" x:Name="layoutRoot" Background="black" Opacity="0.5" 
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            Margin="50,60,0,0"
+            Visibility="{Binding IsNotUpdatingGraph, Converter={StaticResource BoolToVisibilityConverter }}">
+            <StackPanel BorderBrush="PaleGoldenrod"  BorderThickness="2" Padding="12">
+                <TextBlock  l:Uids.Uid="GrahicView_UpdateText" />
+                <StackPanel Orientation="Vertical">
+                    <ProgressBar x:Name="progressBar2" 
+                    Value="{Binding ProgressValueGraph}" 
+                    Maximum="100" 
+                    Margin="0,12"/>
+                    <TextBlock Text="{Binding ProgressValueGraph, 
+                        Converter={StaticResource StringFormatConverter}, 
+                        ConverterParameter='{}{0:0} %'}"/>
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>-->
+    </Grid>
+
+
+</UserControl>
+

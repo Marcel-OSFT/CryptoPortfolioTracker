@@ -741,7 +741,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>Chart</value>
   </data>
   <data name="GrahicView_UpdateText.Text" xml:space="preserve">
-    <value>Background service is updating Historical Data.</value>
+    <value>Updating...</value>
   </data>
   <data name="GraphicView_InFlowSeriesTitle" xml:space="preserve">
     <value>Inflow</value>
@@ -808,5 +808,182 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   </data>
   <data name="Navigation_Dashboard.Content" xml:space="preserve">
     <value>Dashboard</value>
+  </data>
+  <data name="PriceLevelsLV_BuyLevel.Text" xml:space="preserve">
+    <value>Buy Level</value>
+  </data>
+  <data name="PriceLevelsLV_DistanceToBuyLevel.Text" xml:space="preserve">
+    <value>Distance</value>
+  </data>
+  <data name="PriceLevelsLV_DistanceToTpLevel.Text" xml:space="preserve">
+    <value>Distance</value>
+  </data>
+  <data name="PriceLevelsLV_Name.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="PriceLevelsLV_Price.Text" xml:space="preserve">
+    <value>Actual Price</value>
+  </data>
+  <data name="PriceLevelsLV_StopLevel.Text" xml:space="preserve">
+    <value>Stop Level</value>
+  </data>
+  <data name="PriceLevelsLV_TpLevel.Text" xml:space="preserve">
+    <value>Take Profit Level</value>
+  </data>
+  <data name="PriceLevelsLV_DistanceToStopLevel.Text" xml:space="preserve">
+    <value>Distance</value>
+  </data>
+  <data name="PriceLevelsLV_Symbol.Text" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="PriceLevels_Explainer.Text" xml:space="preserve">
+    <value>This overview gives an indication if the actual price of a coin is within range of a specified level. The levels that can be set are, a Take Profit, a buy and a Stop level. If the price is within range of a level it will be indicated by a colour. </value>
+  </data>
+  <data name="PriceLevels_Title.Text" xml:space="preserve">
+    <value>Price Levels</value>
+  </data>
+  <data name="PriceLevelsLV_AddEditLevels.Label" xml:space="preserve">
+    <value>Add/Edit Price Levels</value>
+  </data>
+  <data name="PriceLevelsLV_Delete.Label" xml:space="preserve">
+    <value>Delete Price Levels</value>
+  </data>
+  <data name="Navigation_PriceLevels.Content" xml:space="preserve">
+    <value>Price Levels</value>
+  </data>
+  <data name="Messages_ResetLevelsFailed_Title" xml:space="preserve">
+    <value>Failed to reset Price Levels</value>
+  </data>
+  <data name="Messages_PriceLevelsAddFailed_Title" xml:space="preserve">
+    <value>Adding/Updating Price Levels failed</value>
+  </data>
+  <data name="Messages_PriceLevelsDialogFailed_Title" xml:space="preserve">
+    <value>Price Levels Dialog Failure</value>
+  </data>
+  <data name="PriceLevelsDialog_BuyHeader.Text" xml:space="preserve">
+    <value>Buy level</value>
+  </data>
+  <data name="PriceLevelsDialog_CloseButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="PriceLevelsDialog_PrimaryButton" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="PriceLevelsDialog_StopHeader.Text" xml:space="preserve">
+    <value>Stop level</value>
+  </data>
+  <data name="PriceLevelsDialog_Title" xml:space="preserve">
+    <value>Price Levels for </value>
+  </data>
+  <data name="PriceLevelsDialog_TpHeader.Text" xml:space="preserve">
+    <value>Take profit level</value>
+  </data>
+  <data name="PriceLevelsDialog_Note.PlaceholderText" xml:space="preserve">
+    <value>Write a note....</value>
+  </data>
+  <data name="PriceLevelsLV_AvgCost.Text" xml:space="preserve">
+    <value>Avg. cost price</value>
+  </data>
+  <data name="settingsExpander_AssetView.Description" xml:space="preserve">
+    <value>Expand this to get access to settings related to the 'Assets View' like HideCapitalFlow, HideZeroBalances</value>
+  </data>
+  <data name="settingsExpander_AssetView.Header" xml:space="preserve">
+    <value>Asset View settings</value>
+  </data>
+  <data name="settingsExpander_General.Description" xml:space="preserve">
+    <value>Expand this to get access to general settings like NumberFormat, FontSize, Language, Dark/Light theme, ExpandedScrollBars</value>
+  </data>
+  <data name="settingsExpander_General.Header" xml:space="preserve">
+    <value>General settings</value>
+  </data>
+  <data name="settingsExpander_PriceLevels.Description" xml:space="preserve">
+    <value>Expand this to get acces to settings related to the 'Price Level' feature like WithinRangePerc and CloseToPerc.</value>
+  </data>
+  <data name="settingsExpander_PriceLevels.Header" xml:space="preserve">
+    <value>Price Level settings</value>
+  </data>
+  <data name="Settings_PriceLevels1.Description" xml:space="preserve">
+    <value>This threshold is used to provide a visual confirmation of the Actual Price being within the range of it's target level.</value>
+  </data>
+  <data name="Settings_PriceLevels1.Header" xml:space="preserve">
+    <value>'Within Range' Threshold percentage</value>
+  </data>
+  <data name="Settings_PriceLevels2.Description" xml:space="preserve">
+    <value>This threshold is used to provide a visual confirmation of the Actual Price being within close range of it's target level.</value>
+  </data>
+  <data name="Settings_PriceLevels2.Header" xml:space="preserve">
+    <value>'Close To' Threshold percentage</value>
+  </data>
+  <data name="HeatMapView_YAxisTitle" xml:space="preserve">
+    <value>Distance to Profit Take Level [%]</value>
+  </data>
+  <data name="HeatMapView.Text" xml:space="preserve">
+    <value>Target Bubbels</value>
+  </data>
+  <data name="GraphicView.Text" xml:space="preserve">
+    <value>Portfolio Value</value>
+  </data>
+  <data name="settingsExpander_DashBoard.Description" xml:space="preserve">
+    <value>Expand this to get access to settings related to the Dasboard View</value>
+  </data>
+  <data name="settingsExpander_DashBoard.Header" xml:space="preserve">
+    <value>Dashboard Settings</value>
+  </data>
+  <data name="Settings_DashBoard1.Description" xml:space="preserve">
+    <value>The number of coins visible in the Portfolio Pie. The remaining coins will be grouped into 'Others'</value>
+  </data>
+  <data name="Settings_DashBoard1.Header" xml:space="preserve">
+    <value>Maximum number of coins in the Portfolio Pie Chart</value>
+  </data>
+  <data name="Dashboard_Title.Text" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Top5View.Text" xml:space="preserve">
+    <value>Top 5 Winners &amp; Losers 24h</value>
+  </data>
+  <data name="ValueGainsView.Text" xml:space="preserve">
+    <value>Values &amp; Gains</value>
+  </data>
+  <data name="CapitalFlowView_DateFormat" xml:space="preserve">
+    <value>yyyy</value>
+  </data>
+  <data name="CapitalFlowView.Text" xml:space="preserve">
+    <value>Capital Flow</value>
+  </data>
+  <data name="ValueGainsView_PortfolioValue.Text" xml:space="preserve">
+    <value>Portfolio value</value>
+  </data>
+  <data name="ValueGainsView_Day.Text" xml:space="preserve">
+    <value>day</value>
+  </data>
+  <data name="ValueGainsView_Week.Text" xml:space="preserve">
+    <value>week</value>
+  </data>
+  <data name="ValueGainsView_Month.Text" xml:space="preserve">
+    <value>month</value>
+  </data>
+  <data name="ValueGainsView_Year.Text" xml:space="preserve">
+    <value>year</value>
+  </data>
+  <data name="ValueGainsView_ytd.Text" xml:space="preserve">
+    <value>YTD</value>
+  </data>
+  <data name="ValueGainsView_CostBaseVersus.Text" xml:space="preserve">
+    <value>vs. cost base</value>
+  </data>
+  <data name="ValueGainsView_CostBase.Text" xml:space="preserve">
+    <value>Cost base</value>
+  </data>
+  <data name="ValueGainsView_NetCapFlow.Text" xml:space="preserve">
+    <value>net flow</value>
+  </data>
+  <data name="HeatMapView_NoTargets.Text" xml:space="preserve">
+    <value>Go to the 'Price Levels' view to set target levels.</value>
+  </data>
+  <data name="PieChartView_Portfolio.Text" xml:space="preserve">
+    <value>Portfolio distribution</value>
+  </data>
+  <data name="PieChartView_Accounts.Text" xml:space="preserve">
+    <value>Accounts distribution</value>
   </data>
 </root>

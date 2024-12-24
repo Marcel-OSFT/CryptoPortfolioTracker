@@ -221,9 +221,9 @@ public class GraphUpdateService : IGraphUpdateService
                 return;
             }
             progressCounter++;
-            if (GraphicViewModel.Current is not null)
+            if (DashboardViewModel.Current is not null)
             {
-                GraphicViewModel.Current.ProgressValue = Convert.ToInt16((100 * progressCounter / assets.Count));
+                DashboardViewModel.Current.ProgressValueGraph = Convert.ToInt16((100 * progressCounter / assets.Count));
             }
         }
         await CalculateAndStoreDataPoints(_graphService.GetHistoricalDataBuffer());
@@ -298,7 +298,7 @@ public class GraphUpdateService : IGraphUpdateService
             _graphService.ClearHistoricalDataBuffer();
             Logger.Information("Historical Data updated and saved");
             //MainPage.Current.IsChartLoaded = portfolioGraph.DataPointsPortfolio.Any();
-            if (GraphicViewModel.Current is not null ) GraphicViewModel.Current.IsUpdating = false;
+            if (DashboardViewModel.Current is not null ) DashboardViewModel.Current.IsUpdatingGraph = false;
         }
         return true;
     }
@@ -357,12 +357,12 @@ public class GraphUpdateService : IGraphUpdateService
         for (int i = 0; i < delayInSeconds; i++)
         {
             await Task.Delay(1000);
-            if (GraphicViewModel.Current is not null)
+            if (DashboardViewModel.Current is not null)
             {
                 //check/set 'isFinishedLoading' to false to show message
-                GraphicViewModel.Current.IsUpdating = true;
+                DashboardViewModel.Current.IsUpdatingGraph = true;
                 var newValue = startValue + (stepSize * i);
-                GraphicViewModel.Current.ProgressValue = Convert.ToInt16((double)newValue);
+                DashboardViewModel.Current.ProgressValueGraph = Convert.ToInt16((double)newValue);
             }
         }
         

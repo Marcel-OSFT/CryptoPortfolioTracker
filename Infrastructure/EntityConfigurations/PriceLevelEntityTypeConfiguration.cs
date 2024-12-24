@@ -43,6 +43,11 @@ namespace CryptoPortfolioTracker.Infrastructure.EntityConfigurations
                 .HasForeignKey("CoinId");
 
             configuration.Navigation("Coin");
+
+            configuration
+                .Ignore("DistanceToValuePerc");
+
+
         }
     }
 }

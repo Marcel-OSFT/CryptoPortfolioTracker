@@ -20,6 +20,7 @@
 
         <converters:DoubleToVisibilityConverter x:Key="DoubleToVisibilityConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        <converters:ValueFormatConverter x:Key="ValueFormatConverter"/>
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
         <converters:TransactionDirectionToImageConverter x:Key="TransactionDirectionConverter"/>
         <converters:TransactionTypeToStringConverter x:Key="TransactionTypeConverter"/>
@@ -118,7 +119,7 @@
                                             <RelativePanel HorizontalAlignment="Right">
                                                 <TextBlock Name="txtQtyA"  
                                                     Text="{Binding Details.QtyA, 
-                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        Converter={StaticResource ValueFormatConverter}, 
                                                         ConverterParameter='{}{0:0.########}'}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"
                                                     RelativePanel.LeftOf="txtCoinA"/>
@@ -136,7 +137,7 @@
                                             <RelativePanel x:Name="PanelFrom" HorizontalAlignment="Right">
                                                 <TextBlock Name="txtValueA"  
                                                     Text="{Binding Details.ValueA, 
-                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        Converter={StaticResource ValueFormatConverter}, 
                                                         ConverterParameter='{}$ {0:N0}'}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" Margin="0,-2,0,0"
                                                      RelativePanel.AlignRightWithPanel="True"/>
@@ -168,7 +169,7 @@
                                             <RelativePanel Visibility="{Binding Details.TransactionType, Converter={StaticResource TransactionTypeToVisibilityConverter}}" HorizontalAlignment="Right">
                                                 <TextBlock Name="txtQtyB"  
                                                     Text="{Binding Details.QtyB, 
-                                                        Converter={StaticResource StringFormatConverter}, 
+                                                        Converter={StaticResource ValueFormatConverter}, 
                                                         ConverterParameter='{}{0:0.########}'}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
                                                     RelativePanel.LeftOf="txtCoinB"/>
@@ -186,7 +187,7 @@
                                                 <RelativePanel x:Name="PanelTo" Visibility="{Binding Details.TransactionType, Converter={StaticResource TransactionTypeToVisibilityConverter}}" HorizontalAlignment="Right" >
                                                     <TextBlock Name="txtValueB"  
                                                         Text="{Binding Details.ValueB, 
-                                                            Converter={StaticResource StringFormatConverter}, 
+                                                            Converter={StaticResource ValueFormatConverter}, 
                                                             ConverterParameter='{}$ {0:N0}'}" 
                                                         FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" Margin="0,-2,0,0"
                                                         RelativePanel.AlignRightWithPanel="True"/>

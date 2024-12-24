@@ -31,4 +31,5 @@ public interface ITransactionService
     Task UpdateListAssetTransactions(Transaction transactionNew, Transaction transactionToEdit);
     Task<bool> RemoveFromListAssetTransactions(Transaction deletedTransaction);
     void ClearAssetTransactionsList();
+    void ReloadValues();
 }

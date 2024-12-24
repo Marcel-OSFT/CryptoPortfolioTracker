@@ -27,18 +27,21 @@ public class PriceUpdateService : IPriceUpdateService
     private Task? timerTask;
     private readonly PortfolioContext coinContext;
     private readonly IPreferencesService _preferencesService;
+    private readonly IPriceLevelService _priceLevelService;
     private readonly IAssetService _assetService;
     private static ILogger Logger
     {
         get; set;
     }
     public bool IsPaused { get; set; }
+    private bool IsInit;
 
-    public PriceUpdateService(PortfolioContext portfolioContext, IAssetService assetService, IPreferencesService preferencesService)
+    public PriceUpdateService(PortfolioContext portfolioContext, IAssetService assetService, IPriceLevelService priceLevelService, IPreferencesService preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceUpdateService).Name.PadRight(22));
         coinContext = portfolioContext;
         _preferencesService = preferencesService;
+        _priceLevelService = priceLevelService;
         _assetService = assetService;
         timer = new (System.TimeSpan.FromMinutes(_preferencesService.GetRefreshIntervalMinutes()));
     }
@@ -52,7 +55,9 @@ public class PriceUpdateService : IPriceUpdateService
     {
         try
         {
+            IsInit = true;
             await UpdatePricesAllCoins(); // get them right away...
+            IsInit = false;
             while (await timer.WaitForNextTickAsync(cts.Token))
             {
                 if (!IsPaused)
@@ -100,7 +105,10 @@ public class PriceUpdateService : IPriceUpdateService
 
     private async Task UpdatePricesAllCoins()
     {
-        var coinIdsTemp = await coinContext.Coins.Where(x => x.Name.Length<=12 || (x.Name.Length>12 && x.Name.Substring(x.Name.Length-12) != "_pre-listing") ).Select(c => c.ApiId).ToListAsync();
+        var coinIdsTemp = await coinContext.Coins
+            .Include(x => x.PriceLevels)
+            .Where(x => x.Name.Length<=12 || (x.Name.Length>12 && x.Name.Substring(x.Name.Length-12) != "_pre-listing") ).Select(c => c.ApiId).ToListAsync();
+        
         if (!coinIdsTemp.Any())
         {
             return;
@@ -134,7 +142,9 @@ public class PriceUpdateService : IPriceUpdateService
             await coinContext.SaveChangesAsync();
             _assetService.SortList();
             await _assetService.CalculateAssetsTotalValues();
+            
         }
+        _priceLevelService.UpdateHeatMap();
         return;
     }
     private static List<string> ShiftCoinIdsRandom(List<string> _coinIds)
@@ -270,10 +280,14 @@ public class PriceUpdateService : IPriceUpdateService
         Coin coin;
         try
         {
-            coin = await coinContext.Coins.Where(c => c.ApiId.ToLower() == coinData.Id.ToLower()).SingleAsync();
+            coin = await coinContext.Coins
+                .Include(x => x.PriceLevels)
+                .Where(c => c.ApiId.ToLower() == coinData.Id.ToLower()).SingleAsync();
             var oldPrice = coin.Price;
             var newPrice = coinData.CurrentPrice;
 
+            //Force price change for proper initialisation of PriceLevel.DistanceToValuePerc
+            if (IsInit) coin.Price = 0;
             coin.Price = coinData.CurrentPrice ?? 0;
             coin.MarketCap = coinData.MarketCap ?? 0;
             coin.ImageUri = coinData.Image.AbsoluteUri ?? string.Empty;

@@ -45,6 +45,7 @@
             <Border Grid.Row="2"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,0,0">
                 <ScrollViewer HorizontalAlignment="Stretch" Margin="0,0,0,0" Padding="0,0,20,0" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
                     <StackPanel Spacing="4" >
+
                         <ct:SettingsCard l:Uids.Uid="Settings_CheckUpdate" x:Name="SettingsCU"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
                             IsEnabled="True">
@@ -56,60 +57,124 @@
                             </StackPanel>
                         </ct:SettingsCard>
 
-                        <ct:SettingsCard l:Uids.Uid="Settings_NumberFormat" Margin="0,0,0,0"
-                               HeaderIcon="{ui:FontIcon Glyph=&#xF110;}"
-                               IsEnabled="true">
-                            <ComboBox x:Name="comboBoxNF"  SelectedIndex="{Binding NumberFormatIndex, Mode=TwoWay}">
-                                <ComboBoxItem Tag="nl" FontSize="20">1.234,56</ComboBoxItem>
-                                <ComboBoxItem Tag="en" FontSize="20">1,234.56</ComboBoxItem>
-                            </ComboBox>
-                        </ct:SettingsCard>
+                        <ct:SettingsExpander l:Uids.Uid="settingsExpander_General" x:Name="settingsExpander_General"
+                            VerticalAlignment="Top"
+                            HeaderIcon="{ui:FontIcon Glyph=}"
+                            IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
+                            IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
+                            <ct:SettingsExpander.Items>
+                                <ct:SettingsCard l:Uids.Uid="Settings_NumberFormat" Margin="0,0,0,0"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xF110;}"
+                                       IsEnabled="true">
+                                    <ComboBox x:Name="comboBoxNF"  SelectedIndex="{Binding NumberFormatIndex, Mode=TwoWay}">
+                                        <ComboBoxItem Tag="nl" FontSize="20">1.234,56</ComboBoxItem>
+                                        <ComboBoxItem Tag="en" FontSize="20">1,234.56</ComboBoxItem>
+                                    </ComboBox>
+                                </ct:SettingsCard>
 
-                        <ct:SettingsCard l:Uids.Uid="Settings_AppCulture"
-                                HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}"
-                                IsEnabled="true">
-                            <ComboBox x:Name="comboBoxAC"  SelectedIndex="{Binding AppCultureIndex, Mode=TwoWay}">
-                                <ComboBoxItem Tag="nl" Content="Nederlands" />
-                                <ComboBoxItem Tag="en" Content="English"/>
-                            </ComboBox>
-                        </ct:SettingsCard>
-                        <ct:SettingsCard l:Uids.Uid="Settings_FontSize"
-                               HeaderIcon="{ui:FontIcon Glyph=&#xE8D2;}"
-                               IsEnabled="true">
-                             <ComboBox x:Name="comboBoxFS" SelectedIndex="{Binding FontSize, Mode=TwoWay}">
-                                <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item1" FontSize="12"/>
-                                <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item2" FontSize="14"/>
-                                <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item3" FontSize="16"/>
-                            </ComboBox>
-                        </ct:SettingsCard>
+                                <ct:SettingsCard l:Uids.Uid="Settings_AppCulture"
+                                        HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}"
+                                        IsEnabled="true">
+                                    <ComboBox x:Name="comboBoxAC"  SelectedIndex="{Binding AppCultureIndex, Mode=TwoWay}">
+                                        <ComboBoxItem Tag="nl" Content="Nederlands" />
+                                        <ComboBoxItem Tag="en" Content="English"/>
+                                    </ComboBox>
+                                </ct:SettingsCard>
+                                <ct:SettingsCard l:Uids.Uid="Settings_FontSize"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8D2;}"
+                                       IsEnabled="true">
+                                     <ComboBox x:Name="comboBoxFS" SelectedIndex="{Binding FontSize, Mode=TwoWay}">
+                                        <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item1" FontSize="12"/>
+                                        <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item2" FontSize="14"/>
+                                        <ComboBoxItem l:Uids.Uid="Settings_FontSize_Item3" FontSize="16"/>
+                                    </ComboBox>
+                                </ct:SettingsCard>
 
-                        <ct:SettingsCard l:Uids.Uid="Settings_AppTheme"
-                            HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
-                            IsEnabled="True">
-                            <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{Binding AppTheme, Mode=TwoWay, Converter={StaticResource ThemeToBoolConverter}}" />
-                        </ct:SettingsCard>
-
-                        <ct:SettingsCard l:Uids.Uid="Settings_HideCapitalFlow"
-                             HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
-                             IsEnabled="True">
-                            <ToggleSwitch l:Uids.Uid="Settings_HideCapitalFlow_Toggle" IsOn="{Binding IsHidingCapitalFlow, Mode=TwoWay}" />
-                        </ct:SettingsCard>
-
-                        <ct:SettingsCard l:Uids.Uid="Settings_HideZeroBalances"
-                            HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
-                            IsEnabled="True">
-                            <ToggleSwitch l:Uids.Uid="Settings_HideZeroBalances_Toggle" IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
-                        </ct:SettingsCard>
-                       
+                                <ct:SettingsCard l:Uids.Uid="Settings_AppTheme"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
+                                    IsEnabled="True">
+                                    <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{Binding AppTheme, Mode=TwoWay, Converter={StaticResource ThemeToBoolConverter}}" />
+                                </ct:SettingsCard>
                         
-                        <ct:SettingsCard l:Uids.Uid="Settings_KeepScrollBarsExpanded"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xECE7;}"
-                           IsEnabled="True">
-                            <ToggleSwitch l:Uids.Uid="Settings_KeepScrollBarsExpanded_Toggle" IsOn="{Binding IsScrollBarsExpanded, Mode=TwoWay}" />
-                        </ct:SettingsCard>
+                                <ct:SettingsCard l:Uids.Uid="Settings_KeepScrollBarsExpanded"
+                                   HeaderIcon="{ui:FontIcon Glyph=&#xECE7;}"
+                                   IsEnabled="True">
+                                    <ToggleSwitch l:Uids.Uid="Settings_KeepScrollBarsExpanded_Toggle" IsOn="{Binding IsScrollBarsExpanded, Mode=TwoWay}" />
+                                </ct:SettingsCard>
+
+                            </ct:SettingsExpander.Items>
+                        </ct:SettingsExpander>
+
+                        <ct:SettingsExpander l:Uids.Uid="settingsExpander_AssetView" x:Name="settingsExpander_AssetView"
+                            VerticalAlignment="Top"
+                            HeaderIcon="{ui:FontIcon Glyph=}"
+                            IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
+                            IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
+                            <ct:SettingsExpander.Items>
+                                <ct:SettingsCard l:Uids.Uid="Settings_HideCapitalFlow"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
+                                    IsEnabled="True">
+                                    <ToggleSwitch l:Uids.Uid="Settings_HideCapitalFlow_Toggle" IsOn="{Binding IsHidingCapitalFlow, Mode=TwoWay}" />
+                                </ct:SettingsCard>
+
+                                <ct:SettingsCard l:Uids.Uid="Settings_HideZeroBalances"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xE75C;}"
+                                    IsEnabled="True">
+                                   <ToggleSwitch l:Uids.Uid="Settings_HideZeroBalances_Toggle" IsOn="{Binding IsHidingZeroBalances, Mode=TwoWay}" />
+                                </ct:SettingsCard>
+                            </ct:SettingsExpander.Items>
+                        </ct:SettingsExpander>
 
 
-                        </StackPanel>
+                        <ct:SettingsExpander l:Uids.Uid="settingsExpander_PriceLevels" x:Name="settingsExpander_PriceLevels"
+                            VerticalAlignment="Top"
+                            HeaderIcon="{ui:FontIcon Glyph=}"
+                            IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
+                            IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
+                            <ct:SettingsExpander.Items>
+                                <ct:SettingsCard l:Uids.Uid="Settings_PriceLevels1" x:Name="SettingsPL1"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                                    IsEnabled="True">
+                                    <StackPanel Orientation="Horizontal">
+                                        <NumberBox x:Name="NbPerc" Value="{Binding WithinRangePerc, Mode=TwoWay}" Maximum="99" Minimum="{Binding CloseToPerc}" Margin="30,0,5,0" />
+                                        <TextBlock Text="%" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </ct:SettingsCard>
+
+                                <ct:SettingsCard l:Uids.Uid="Settings_PriceLevels2" x:Name="SettingsPL2"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                                    IsEnabled="True">
+                                    <StackPanel Orientation="Horizontal">
+                                        <NumberBox Value="{Binding CloseToPerc, Mode=TwoWay}" Maximum="{Binding WithinRangePerc}" Minimum="1" Margin="30,0,5,0" />
+                                        <TextBlock Text="%" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </ct:SettingsCard>
+                            </ct:SettingsExpander.Items>
+                        </ct:SettingsExpander>
+
+                        <ct:SettingsExpander l:Uids.Uid="settingsExpander_DashBoard" x:Name="settingsExpander_DashBoard"
+                            VerticalAlignment="Top"
+                            HeaderIcon="{ui:FontIcon Glyph=}"
+                            IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
+                            IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
+                            <ct:SettingsExpander.Items>
+                                <ct:SettingsCard l:Uids.Uid="Settings_DashBoard1" x:Name="SettingsDB1"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                                    IsEnabled="True">
+                                    <StackPanel Orientation="Horizontal">
+                                        <NumberBox x:Name="NbMaxCoins" Value="{Binding MaxPieCoins, Mode=TwoWay}" Maximum="50" Minimum="2" Margin="30,0,5,0" />
+                                        
+                                    </StackPanel>
+                                </ct:SettingsCard>
+
+                                
+                            </ct:SettingsExpander.Items>
+                        </ct:SettingsExpander>
+
+
+
+
+                    </StackPanel>
                 </ScrollViewer>
             </Border>
         </Grid>
