@@ -35,6 +35,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public readonly IGraphService _graphService;
     private readonly IPreferencesService _preferencesService;
 
+    public bool IsHidingNetInvestment { get; set; } = false;
+
     [ObservableProperty] private string sortGroup;
 
     private AssetTotals? selectedAsset = null;
@@ -166,6 +168,14 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public void SortOnCostBase(SortingOrder sortingOrder)
     {
         Func<AssetTotals, object> sortFunc = x => x.CostBase;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
+        _assetService.SortList(sortingOrder, sortFunc);
+    }
+    [RelayCommand]
+    public void SortOnNetInvestment(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.NetInvestment;
         currentSortFunc = sortFunc;
         currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);

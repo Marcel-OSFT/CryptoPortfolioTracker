@@ -40,7 +40,8 @@ public partial class PriceLevelsViewModel : BaseViewModel
 
         sortGroup = "Library";
         initialSortFunc = x => x.PriceLevels.Where(t => t.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
-        initialSortingOrder = SortingOrder.Ascending;
+        //initialSortFunc = x => x.Name;
+        initialSortingOrder = SortingOrder.Descending;
     }
     public async Task Initialize()
     {

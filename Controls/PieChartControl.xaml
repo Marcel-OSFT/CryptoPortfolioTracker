@@ -32,9 +32,10 @@
 
             <helpers:CustomBtn  HorizontalAlignment="Right" Width="30" VerticalAlignment="Top" RelativePanel.RightOf="pieHeader" RelativePanel.AlignBottomWith="pieHeader"
                       Padding="2,2,2,2" Margin="0,0,0,0" Style="{StaticResource MK_ButtonStyle}" BorderThickness="0" 
-                     Command="{Binding PieToggleFullScreenModeCommand}" CommandParameter="{x:Bind}">
+                     Command="{Binding PieToggleFullScreenModeCommand}" CommandParameter="{x:Bind}"
+                     Background="Transparent"           >
 
-                <FontIcon Glyph="{Binding Glyph}" FontWeight="Normal" Width="20"/>
+                <FontIcon Glyph="{Binding Glyph}" FontFamily="Segoe Fluent Icons" FontWeight="Normal" Width="20"/>
 
             </helpers:CustomBtn>
 

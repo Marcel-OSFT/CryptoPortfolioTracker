@@ -29,6 +29,7 @@
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="-5"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -109,7 +110,7 @@
             />      
             <local:ColumnHeaderButton 
                 l:Uids.Uid="PriceLevelsLV_DistanceToTpLevel" 
-                IsEnabled="True" 
+                IsEnabled="True"
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -117,7 +118,7 @@
                 HorizontalTextAlignment="Right"
                 PointerHoverColor="Goldenrod"
                 Group="{Binding SortGroup}"
-                SortingOrder="Ascending"
+                SortingOrder="Descending"
                 Command="{Binding SortOnDistanceToTpLevelCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
         />

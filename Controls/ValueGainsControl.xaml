@@ -138,7 +138,7 @@
                         FontSize="16"
                         RelativePanel.Below="txt1year"
                         RelativePanel.AlignLeftWithPanel="True" />
-                    <TextBlock Name="txtYearToDatePerc"
+                    <TextBlock x:Name="txtYearToDatePerc"
                         Text="{Binding YearToDatePerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.00} %'}" 
                         Foreground="{Binding YearToDatePerc, Converter={StaticResource myColourConverter}}"
                         FontWeight="Normal"
@@ -147,6 +147,7 @@
                         RelativePanel.Below="txt1yearPerc"
                         RelativePanel.RightOf="txtYearToDate"
                         RelativePanel.AlignRightWithPanel="True"/>
+                    
                     <!--Cost base value-->
                     <TextBlock x:Name="txtCostBase2" l:Uids.Uid="ValueGainsView_CostBase"
                         

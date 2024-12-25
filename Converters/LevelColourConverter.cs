@@ -15,6 +15,7 @@ public class LevelColourConverter : IValueConverter
         var grayedOutColor = new SolidColorBrush(Colors.Gray);
         SolidColorBrush withinRangeColor;
         SolidColorBrush closeToColor;
+        SolidColorBrush beyondColor;
 
         bool isDarkTheme = App._preferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark;
 
@@ -37,11 +38,11 @@ public class LevelColourConverter : IValueConverter
             {
                 return grayedOutColor;
             }
-            if (val <= CloseToLevelPerc)
+            if (val >= (-1 * CloseToLevelPerc))
             {
                 return closeToColor;
             }
-            if (val <= WithinRangePerc)
+            if (val >= (-1 * WithinRangePerc))
             {
                 return withinRangeColor;
             }

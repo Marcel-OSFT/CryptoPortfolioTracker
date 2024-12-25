@@ -219,6 +219,23 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
         return dataPoints;
     }
+
+
+    //public double GetTotalNetInvestments()
+    //{
+    //    var sumIn = coinContext.Mutations
+    //        .Where(m => m.Direction == MutationDirection.In)
+    //        .Sum(s => s.Qty * s.Price);
+
+    //    var sumOut = coinContext.Mutations
+    //        .Where(m => m.Direction == MutationDirection.Out)
+    //        .Sum(s => s.Qty * s.Price);
+
+    //    return sumIn - sumOut;
+
+    //}
+
+
 }
 
 

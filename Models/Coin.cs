@@ -48,47 +48,56 @@ public partial class Coin : BaseModel
             return;
         }
 
-         foreach (var level in PriceLevels)
-        {
+        var withinRangePerc = App._preferencesService.GetWithinRangePerc();
+        var closeToPerc = App._preferencesService.GetCloseToPerc();
 
+        foreach (var level in PriceLevels)
+        {
             //var dist = Math.Abs(100 * (level.Value - newValue) / level.Value);
             var dist = (100 * (newValue - level.Value) / level.Value);
             level.DistanceToValuePerc = dist;
 
             if (level.Value != 0)
             {
-                var justTagged = false;
+                //var justTagged = false;
 
-                if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
-                    (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
-                    (level.Type == PriceLevelType.Stop && newValue <= level.Value))
-                {
-                    level.Status = PriceLevelStatus.TaggedPrice;
-                    justTagged = true;
-                }
+                //if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
+                //    (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
+                //    (level.Type == PriceLevelType.Stop && newValue <= level.Value))
+                //{
+                //    level.Status = PriceLevelStatus.TaggedPrice;
+                //    justTagged = true;
+                //}
 
-                if (!justTagged)
-                {
+                //if (!justTagged)
+                //{
                     // Check if the price is within the range
-                    var withinRangePerc = App._preferencesService.GetWithinRangePerc();
-                    var closeToPerc = App._preferencesService.GetCloseToPerc();
 
-                    if (dist <= withinRangePerc)
+                    if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
+                        (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
+                        (level.Type == PriceLevelType.Stop && newValue <= level.Value))
                     {
-                        level.Status = PriceLevelStatus.WithinRange;
+                        level.Status = PriceLevelStatus.TaggedPrice;
+                        continue;  
+                    // justTagged = true;
                     }
-                    else if (dist <= closeToPerc)
+
+                    if (dist >= -1 * closeToPerc)
                     {
                         level.Status = PriceLevelStatus.CloseToPrice;
+                        continue;
                     }
-                    else
+                    if (dist >= -1*withinRangePerc)
                     {
-                        level.Status = PriceLevelStatus.NotWithinRange;
+                        level.Status = PriceLevelStatus.WithinRange;
+                        continue;
                     }
-                }
+                    level.Status = PriceLevelStatus.NotWithinRange;
+                //}
             }
            
         }
+        OnPropertyChanged(nameof(PriceLevels));
     }
 
 

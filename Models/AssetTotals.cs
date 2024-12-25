@@ -19,6 +19,10 @@ public partial class AssetTotals : BaseModel
     [ObservableProperty] private Coin coin = new();
     [ObservableProperty] private bool isHidden = false;
 
+    [ObservableProperty] private double netInvestment;
+
+
+
     partial void OnQtyChanged(double value)
     {
         if (Coin != null && Coin.Name != string.Empty) MarketValue = value * Coin.Price;
@@ -41,5 +45,7 @@ public partial class AssetTotals : BaseModel
         MarketValue = Qty * value.Price;
     }
 
+
     
+
 }
