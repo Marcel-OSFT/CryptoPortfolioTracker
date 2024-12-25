@@ -38,11 +38,11 @@
 
             <helpers:CustomBtn  HorizontalAlignment="Right" VerticalAlignment="Top" RelativePanel.RightOf="txtTitle" RelativePanel.AlignBottomWith="txtTitle"
                 Style="{StaticResource MK_ButtonStyle}" BorderThickness="0" Width="30" Padding="2,2,2,2" Margin="0,0,10,0"
-                Command="{Binding ToggleFullScreenModeCommand}">
+                Command="{Binding ToggleFullScreenModeCommand}" Background="Transparent">
                 <helpers:CustomBtn.CommandParameter>
                     <enums:FullScreenMode>HeatMap</enums:FullScreenMode>
                 </helpers:CustomBtn.CommandParameter>
-                <FontIcon Glyph="{Binding Glyph}" FontWeight="Normal" Width="20"/>
+                <FontIcon Glyph="{Binding Glyph}" FontFamily="Segoe Fluent Icons" FontWeight="Normal" Width="20"/>
             </helpers:CustomBtn>
         </RelativePanel>
         <TextBlock Grid.Row="1" l:Uids.Uid="HeatMapView_NoTargets" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"

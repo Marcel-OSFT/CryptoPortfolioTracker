@@ -986,4 +986,10 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="PieChartView_Accounts.Text" xml:space="preserve">
     <value>Accounts distribution</value>
   </data>
+  <data name="AssetsLV_NetInvestment.Text" xml:space="preserve">
+    <value>Net Investment</value>
+  </data>
+  <data name="ValueGainsView_NetInvestment.Text" xml:space="preserve">
+    <value>Net Investment</value>
+  </data>
 </root>

@@ -45,19 +45,22 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     {
         if (ListCoins is not null)
         {
+            //*** extract the Infinity values from the collection
+            //*** so that they appended at the end of the sorted collection
+            var infinityValues = ListCoins.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
+            var sortedList = ListCoins.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
+
             if (sortingOrder == SortingOrder.Ascending)
             {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(sortFunc));
+                ListCoins = new ObservableCollection<Coin>(sortedList.OrderBy(sortFunc).Concat(infinityValues));
             }
             else
             {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(sortFunc));
+                ListCoins = new ObservableCollection<Coin>(sortedList.OrderByDescending(sortFunc).Concat(infinityValues));
             }
         }
-
         currentSortingOrder = sortingOrder;
         currentSortFunc = sortFunc;
-
     }
    
     public void SortListTest(SortingOrder sortingOrder)
@@ -106,14 +109,27 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         var getResult = await GetCoinsFromContext();
         getResult.IfSucc(list =>
         {
+            //*** extract the Infinity values from the collection
+            //*** so that they appended at the end of the sorted collection
+            var infinityValues = list.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
+            var sortedList = list.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
+
             if (sortingOrder == SortingOrder.Ascending)
             {
-                ListCoins = new ObservableCollection<Coin>(list.OrderBy(sortFunc));
+                ListCoins = new ObservableCollection<Coin>(sortedList.OrderBy(sortFunc).Concat(infinityValues));
             }
             else
             {
-                ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(sortFunc));
+                ListCoins = new ObservableCollection<Coin>(sortedList.OrderByDescending(sortFunc).Concat(infinityValues));
             }
+            //if (sortingOrder == SortingOrder.Ascending)
+            //{
+            //    ListCoins = new ObservableCollection<Coin>(list.OrderBy(sortFunc));
+            //}
+            //else
+            //{
+            //    ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(sortFunc));
+            //}
             currentSortingOrder = sortingOrder;
             currentSortFunc = sortFunc;
         });

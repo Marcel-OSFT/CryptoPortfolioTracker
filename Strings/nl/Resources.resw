@@ -812,6 +812,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="HeatMapView_YAxisTitle" xml:space="preserve">
     <value>Afstand tot Winstname-niveau [%]</value>
   </data>
+  <data name="HeatMapView.Text" xml:space="preserve">
+    <value>Target Bubbels</value>
+  </data>
   <data name="GraphicView.Text" xml:space="preserve">
     <value>Portefeuille waarde</value>
   </data>
@@ -826,6 +829,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="Settings_DashBoard1.Header" xml:space="preserve">
     <value>Maximaal aantal munten in de portefeuille-cirkeldiagram</value>
+  </data>
+  <data name="Dashboard_Title.Text" xml:space="preserve">
+    <value>Dashboard</value>
   </data>
   <data name="Top5View.Text" xml:space="preserve">
     <value>Top 5 Stijgers &amp; Dalers 24u</value>
@@ -848,6 +854,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="ValueGainsView_Year.Text" xml:space="preserve">
     <value>jaar</value>
   </data>
+  <data name="ValueGainsView_ytd.Text" xml:space="preserve">
+    <value>YTD</value>
+  </data>
   <data name="ValueGainsView_CostBaseVersus.Text" xml:space="preserve">
     <value>vs. kostenbasis</value>
   </data>
@@ -857,6 +866,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="ValueGainsView_NetCapFlow.Text" xml:space="preserve">
     <value>netto kapitaalstroom</value>
   </data>
+  <data name="ValueGainsView_Week.Text" xml:space="preserve">
+    <value>week</value>
+  </data>
   <data name="HeatMapView_NoTargets.Text" xml:space="preserve">
     <value>Ga naar het overzicht 'Prijsniveaus' om streefniveaus in te stellen.</value>
   </data>
@@ -865,5 +877,11 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="PieChartView_Accounts.Text" xml:space="preserve">
     <value>Accounts verdeling</value>
+  </data>
+  <data name="AssetsLV_NetInvestment.Text" xml:space="preserve">
+    <value>Netto Investering</value>
+  </data>
+  <data name="ValueGainsView_NetInvestment.Text" xml:space="preserve">
+    <value>Netto investering</value>
   </data>
 </root>

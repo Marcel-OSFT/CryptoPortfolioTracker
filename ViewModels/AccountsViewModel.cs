@@ -26,6 +26,9 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     public IAccountService _accountService {  get; private set; }
     public IAssetService _assetService { get; private set; }
 
+    public bool IsHidingNetInvestment { get; set; } = true;
+
+
     private readonly IPreferencesService _preferencesService;
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;

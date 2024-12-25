@@ -1074,7 +1074,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Distance to Profit Take Level [%]</source>
           <target state="translated">Afstand tot Winstname-niveau [%]</target>
         </trans-unit>
-        <trans-unit id="HeatMapView.Text" translate="no" xml:space="preserve">
+        <trans-unit id="HeatMapView.Text" translate="yes" xml:space="preserve">
           <source>Target Bubbels</source>
           <target state="final">Target Bubbels</target>
         </trans-unit>
@@ -1098,7 +1098,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Maximum number of coins in the Portfolio Pie Chart</source>
           <target state="translated">Maximaal aantal munten in de portefeuille-cirkeldiagram</target>
         </trans-unit>
-        <trans-unit id="Dashboard_Title.Text" translate="no" xml:space="preserve">
+        <trans-unit id="Dashboard_Title.Text" translate="yes" xml:space="preserve">
           <source>Dashboard</source>
           <target state="final">Dashboard</target>
         </trans-unit>
@@ -1134,7 +1134,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>year</source>
           <target state="translated">jaar</target>
         </trans-unit>
-        <trans-unit id="ValueGainsView_ytd.Text" translate="no" xml:space="preserve">
+        <trans-unit id="ValueGainsView_ytd.Text" translate="yes" xml:space="preserve">
           <source>YTD</source>
           <target state="final">YTD</target>
         </trans-unit>
@@ -1150,7 +1150,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>net flow</source>
           <target state="translated">netto kapitaalstroom</target>
         </trans-unit>
-        <trans-unit id="ValueGainsView_Week.Text" translate="no" xml:space="preserve">
+        <trans-unit id="ValueGainsView_Week.Text" translate="yes" xml:space="preserve">
           <source>week</source>
           <target state="final">week</target>
         </trans-unit>
@@ -1165,6 +1165,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="PieChartView_Accounts.Text" translate="yes" xml:space="preserve">
           <source>Accounts distribution</source>
           <target state="translated">Accounts verdeling</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_NetInvestment.Text" translate="yes" xml:space="preserve">
+          <source>Net Investment</source>
+          <target state="translated">Netto Investering</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_NetInvestment.Text" translate="yes" xml:space="preserve">
+          <source>Net Investment</source>
+          <target state="translated">Netto investering</target>
         </trans-unit>
       </group>
     </body>

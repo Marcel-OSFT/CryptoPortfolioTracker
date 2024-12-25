@@ -29,7 +29,7 @@
         <converters:FormatUriConverter x:Key="FormatUriConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-            <Setter Property="MinHeight" Value="0"/>
+            <Setter Property="MinHeight" Value="10"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -185,6 +185,21 @@
                 VerticalAlignment="Bottom"
                 HorizontalTextAlignment="Right"
                 />
+            <local:ColumnHeaderButton x:Name="BtnNetInvestment"
+                Visibility="{Binding IsHidingNetInvestment, Converter={StaticResource BoolToVisibilityConverter}}"
+                l:Uids.Uid="AssetsLV_NetInvestment" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
+                Command="{Binding SortOnNetInvestmentCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+
+                />
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="6" Margin="0,0,0,5" VerticalAlignment="Bottom">
 
@@ -237,7 +252,7 @@
                     <Grid >
                             <SwipeControl x:Name="AssetsListHoverSwipeContainer" Visibility="{Binding IsHidden, Converter={StaticResource BoolToVisibilityConverter}}" >
                                 <Grid >
-                                    <Grid Name="theGrid"  x:FieldModifier="public"  VerticalAlignment="Center" Margin="2,3,0,0" HorizontalAlignment="Stretch">
+                                    <Grid Name="theGrid"  x:FieldModifier="public"  VerticalAlignment="Center" Margin="2,3,0,5" HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
@@ -319,7 +334,14 @@
                                                         Converter={StaticResource StringFormatConverter}, 
                                                         ConverterParameter='{}$ {0:0.########}'}" 
                                                     RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtCostBase" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
-                                        </RelativePanel>
+                                                <TextBlock Name="txtNetInvestment" 
+                                                    Text="{Binding NetInvestment, 
+                                                        Converter={StaticResource ValueFormatConverter}, 
+                                                        ConverterParameter='{}$ {0:N0}'}"
+                                                    Foreground="{Binding NetInvestment, Converter={StaticResource myColourConverter}, ConverterParameter='NetInvestment'}"
+                                                    Visibility="{Binding DataContext.DataContext.IsHidingNetInvestment, ElementName=proxy, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                    RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtAverageCostPrice" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
+                                            </RelativePanel>
                                     </Border>
                                         <Border Grid.Column="6"  Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"  >
                                         <RelativePanel HorizontalAlignment="Right">

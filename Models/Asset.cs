@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Enums;
 
 namespace CryptoPortfolioTracker.Models;
 

@@ -18,6 +18,7 @@ using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.Store;
 using System.IO.Compression;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace CryptoPortfolioTracker;
 
@@ -33,7 +34,8 @@ public partial class App : Application
     public static string appPath = string.Empty;
     public static string appDataPath = string.Empty;
     public static string ProductVersion = string.Empty;
-   public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
+    public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
+    
     //public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version_onedrive.txt";
     public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
     public static bool isBusy;
@@ -48,7 +50,7 @@ public partial class App : Application
 
     public static bool initDone;
 
-    public const string DbName = "sqlCPT.db";
+    public const string DbName = "sqlCPT_Dev.db";
     public const string PrefFileName = "prefs.xml";
     public const string ChartsFolder = "MarketCharts";
     public const string BackupFolder = "Backup";
@@ -218,29 +220,40 @@ public partial class App : Application
 
         foreach(Coin coin in context.Coins)
         {
+            List<PriceLevel> levels = new();
+
             var pLevelTp = new PriceLevel();
             pLevelTp.Coin = coin;
             pLevelTp.Type = PriceLevelType.TakeProfit;
             pLevelTp.Value = 0;
             pLevelTp.Status = PriceLevelStatus.NotWithinRange;
             pLevelTp.Note = string.Empty;
-            context.PriceLevels.Add(pLevelTp);
-            
+            //context.PriceLevels.Add(pLevelTp);
+            levels.Add(pLevelTp);
+
+
             var pLevelBuy = new PriceLevel();
             pLevelBuy.Coin = coin;
             pLevelBuy.Type = PriceLevelType.Buy;
             pLevelBuy.Value = 0;
             pLevelBuy.Status = PriceLevelStatus.NotWithinRange;
             pLevelBuy.Note = string.Empty;
-            context.PriceLevels.Add(pLevelBuy);
-            
+            //context.PriceLevels.Add(pLevelBuy);
+            levels.Add(pLevelBuy);
+
+
+
             var pLevelStop = new PriceLevel();
             pLevelStop.Coin = coin;
             pLevelStop.Type = PriceLevelType.Stop;
             pLevelStop.Value = 0;
             pLevelStop.Status = PriceLevelStatus.NotWithinRange;
             pLevelStop.Note = string.Empty;
-            context.PriceLevels.Add(pLevelStop);
+            //context.PriceLevels.Add(pLevelStop);
+            levels.Add(pLevelStop);
+
+            context.PriceLevels.AddRange(levels);
+           // coin.PriceLevels = levels;
 
         }
         await context.SaveChangesAsync();

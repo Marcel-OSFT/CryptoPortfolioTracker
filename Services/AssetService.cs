@@ -272,6 +272,8 @@ public partial class AssetService : ObservableObject, IAssetService
             })
             .ToListAsync();
 
+            GetNetInvestmentsByAccount(assetsTotals, accountId);
+
             VisibleAssetsCount = assetsTotals is not null ? assetsTotals.Count : 0;
             if (IsHidingZeroBalances)
             {
@@ -389,6 +391,9 @@ public partial class AssetService : ObservableObject, IAssetService
             })
             .ToListAsync();
 
+            GetNetInvestments(assetsTotals);
+
+
             VisibleAssetsCount = assetsTotals is not null ? assetsTotals.Count : 0;
             if (IsHidingZeroBalances)
             {
@@ -453,10 +458,10 @@ public partial class AssetService : ObservableObject, IAssetService
     private async Task<Result<AssetTotals>> GetAssetTotalsByCoinFromContext(Coin coin)
     {
         if (coin == null) { return new AssetTotals(); }
-        AssetTotals assetTotals;
+        AssetTotals assetTotal;
         try
         {
-            assetTotals = await context.Assets
+            assetTotal = await context.Assets
            .Where(c => c.Coin.Id == coin.Id)
            .Include(x => x.Coin)
            .GroupBy(asset => asset.Coin)
@@ -467,12 +472,14 @@ public partial class AssetService : ObservableObject, IAssetService
                Coin = assetGroup.Key
            })
            .SingleAsync();
+
+            GetNetInvestment(assetTotal);
         }
         catch (Exception ex)
         {
             return new Result<AssetTotals>(ex);
         }
-        return assetTotals;
+        return assetTotal;
     }
     public async Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccountFromContext(Coin coin, Account account)
     {
@@ -492,6 +499,9 @@ public partial class AssetService : ObservableObject, IAssetService
                Coin = assetGroup.Key
            })
            .SingleAsync();
+
+            GetNetInvestmentByAccount(assetTotals, account.Id);
+
         }
         catch (Exception ex)
         {
@@ -499,5 +509,83 @@ public partial class AssetService : ObservableObject, IAssetService
         }
         return assetTotals;
     }
+
+    private void GetNetInvestment(AssetTotals assetTotal)
+    {
+        var sumBuy = context.Mutations
+            .Where(m => m.Direction == MutationDirection.In
+                && m.Asset.Coin.Id == assetTotal.Coin.Id)
+            .Sum(s => s.Qty * s.Price);
+
+        var sumSell = context.Mutations
+            .Where(m => m.Direction == MutationDirection.Out
+                && m.Asset.Coin.Id == assetTotal.Coin.Id)
+            .Sum(s => s.Qty * s.Price);
+
+        assetTotal.NetInvestment = sumBuy - sumSell;
+
+    }
+
+    private void GetNetInvestmentByAccount(AssetTotals assetTotal, int accountId)
+    {
+        var sumBuy = context.Mutations
+            .Where(m => m.Direction == MutationDirection.In
+                && m.Asset.Coin.Id == assetTotal.Coin.Id
+                && m.Asset.Account.Id == accountId)
+            .Sum(s => s.Qty * s.Price);
+
+        var sumSell = context.Mutations
+            .Where(m => m.Direction == MutationDirection.Out
+                && m.Asset.Coin.Id == assetTotal.Coin.Id
+                && m.Asset.Account.Id == accountId)
+            .Sum(s => s.Qty * s.Price);
+
+        assetTotal.NetInvestment = sumBuy - sumSell;
+
+    }
+
+    private void GetNetInvestments(List<AssetTotals> assetsTotals)
+    {
+
+        foreach (var assetTotal in assetsTotals)
+        {
+            var sumBuy = context.Mutations
+            .Where(m => m.Direction == MutationDirection.In
+                && m.Asset.Coin.Id == assetTotal.Coin.Id)
+            .Sum(s => s.Qty * s.Price);
+
+            var sumSell = context.Mutations
+                .Where(m => m.Direction == MutationDirection.Out
+                    && m.Asset.Coin.Id == assetTotal.Coin.Id)
+                .Sum(s => s.Qty * s.Price);
+
+            assetTotal.NetInvestment = sumBuy - sumSell;
+        }
+    }
+
+    private void GetNetInvestmentsByAccount(List<AssetTotals> assetsTotals, int accountId)
+    {
+
+        foreach (var assetTotal in assetsTotals)
+        {
+            var sumBuy = context.Mutations
+            .Where(m => m.Direction == MutationDirection.In
+                && m.Asset.Coin.Id == assetTotal.Coin.Id
+                && m.Asset.Account.Id == accountId)
+            .Sum(s => s.Qty * s.Price);
+
+            var sumSell = context.Mutations
+                .Where(m => m.Direction == MutationDirection.Out
+                    && m.Asset.Coin.Id == assetTotal.Coin.Id
+                    && m.Asset.Account.Id == accountId)
+                .Sum(s => s.Qty * s.Price);
+
+            assetTotal.NetInvestment = sumBuy - sumSell;
+        }
+
+    }
+
+    
+
 
 }
