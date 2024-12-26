@@ -50,7 +50,7 @@ public partial class App : Application
 
     public static bool initDone;
 
-    public const string DbName = "sqlCPT_Dev.db";
+    public const string DbName = "sqlCPT.db";
     public const string PrefFileName = "prefs.xml";
     public const string ChartsFolder = "MarketCharts";
     public const string BackupFolder = "Backup";
