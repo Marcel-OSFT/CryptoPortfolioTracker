@@ -34,7 +34,12 @@ public class MarketChartById
             var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = (double)Prices[i][1] };
             list.Add(dataPoint);
         }
-        return list;
+
+        //remove faulty duplicate enties
+
+        var cleanList = list.GroupBy(x => x.Date).Select(g => g.First()).OrderBy(t => t.Date).ToList();
+
+        return cleanList;
     }
 
     public decimal?[][] FillPricesArray(List<DataPoint> list)
