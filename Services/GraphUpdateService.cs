@@ -227,7 +227,7 @@ public class GraphUpdateService : IGraphUpdateService
 
         var deposits = await coinContext.Mutations
             .Include(t => t.Transaction)
-            .Where(x => x.Transaction.TimeStamp.Date > startDate
+            .Where(x => x.Transaction.TimeStamp.Date >= startDate
                 //&& x.Transaction.TimeStamp.Date <= endDate
                 && x.Type == Enums.TransactionKind.Deposit)
             .GroupBy(g => g.Transaction.TimeStamp.Date)
@@ -270,7 +270,7 @@ public class GraphUpdateService : IGraphUpdateService
 
         var withdraws = await coinContext.Mutations
             .Include(t => t.Transaction)
-            .Where(x => x.Transaction.TimeStamp.Date > startDate
+            .Where(x => x.Transaction.TimeStamp.Date >= startDate
                // && x.Transaction.TimeStamp.Date <= endDate
                 && x.Type == Enums.TransactionKind.Withdraw)
             .GroupBy(g => g.Transaction.TimeStamp.Date)
