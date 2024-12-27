@@ -22,7 +22,7 @@ public partial class GraphService : IGraphService
 {
     private Graph graph;
     private static ILogger Logger { get; set; }
-    private List<HistoricalDataById> HistoricalDataByIdsBufferList { get; set; }
+    private List<HistoricalDataByIdRev> HistoricalDataByIdsBufferList { get; set; }
     [ObservableProperty] bool isLoadingFromJson;
     
     string chartsFolder = App.appDataPath + "\\" + App.ChartsFolder;
@@ -56,14 +56,34 @@ public partial class GraphService : IGraphService
             fileName = chartsFolder + "\\HistoryBuffer.json";
             if (File.Exists(fileName))
             {
-                using FileStream openStream = File.OpenRead(fileName);
-                HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataById>>(openStream);
+                try
+                {
+                    using FileStream openStream = File.OpenRead(fileName);
+                    HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(openStream);
+                
+                    if (HistoricalDataByIdsBufferList is not null && HistoricalDataByIdsBufferList.Count > 0)
+                    {
+                        CheckValidityHistoricalDataBuffer();
+                    }
+                
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Failed to de-serialize HistoricalDataByIdRev data");
+                }
             }
 
             if (graph is null)
             {
                 graph = new();
+
             }
+            else //**** check existing graph for 'voorloper nullen' and correct
+            {
+                await CleanUpGraph();
+                
+            }
+
         }
         catch (Exception ex)
         {
@@ -76,80 +96,67 @@ public partial class GraphService : IGraphService
 
     }
 
-    public async Task LoadGraphFromJsonPW()
+    private void CheckValidityHistoricalDataBuffer()
     {
-        try
+        if (HistoricalDataByIdsBufferList is not null && graph?.DataPointsPortfolio?.Count > 0)
         {
-            IsLoadingFromJson = true;
-
-            if (!Directory.Exists(chartsFolder))
+            if (GetHistoricalDataBufferOldestDate() != GetLatestDataPointDate().AddDays(1))
             {
-                Directory.CreateDirectory(chartsFolder);
-            }
-            var fileName = chartsFolder + "\\graph_PW_rev.json";
-            if (File.Exists(fileName))
-            {
-                using FileStream openStream = File.OpenRead(fileName);
-                graph = await JsonSerializer.DeserializeAsync<Graph>(openStream);
-                Logger.Information("Graph data de-serialized succesfully ({0} data points)", graph.DataPointsPortfolio.Count);
-            }
-
-            fileName = chartsFolder + "\\HistoryBuffer.json";
-            if (File.Exists(fileName))
-            {
-                using FileStream openStream = File.OpenRead(fileName);
-                HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataById>>(openStream);
-            }
-
-            if (graph is null)
-            {
-                graph = new();
+                ClearHistoricalDataBuffer();
             }
         }
-        catch (Exception ex)
-        {
-            Logger.Error(ex, "Failed to de-serialize HGraph data");
-        }
-        finally
-        {
-            IsLoadingFromJson = false;
-        }
-
     }
 
-    public async Task SaveGraphToJsonPW()
-    {
 
-        var fileName = chartsFolder + "\\graph_PW_repaired.json";
-        await using FileStream createStream = File.Create(fileName);
-        await JsonSerializer.SerializeAsync(createStream, graph);
-    }
-
-    public void CleanUpGraph()
+    private async Task CleanUpGraph()
     {
-        graph.DataPointsInFlow = graph.DataPointsInFlow
+        //*** First remove (possible) duplicate entries
+        var inFlow = graph.DataPointsInFlow = graph.DataPointsInFlow
             .GroupBy(x => new { x.Date, x.Value })
             .Select(g => g.First())
             .ToList();
 
-        graph.DataPointsOutFlow = graph.DataPointsOutFlow
+        var outFlow = graph.DataPointsOutFlow = graph.DataPointsOutFlow
             .GroupBy(x => new { x.Date, x.Value })
             .Select(g => g.First())
             .ToList();
 
-        graph.DataPointsPortfolio = graph.DataPointsPortfolio
+        var portfolio = graph.DataPointsPortfolio = graph.DataPointsPortfolio
             .GroupBy(x => new { x.Date, x.Value })
             .Select(g => g.First())
             .ToList();
 
+
+        //*** Second, remove possible leading zeros
+
+        var firstValuePoint = portfolio.Where(x => x.Value > 0).OrderBy(x => x.Date).FirstOrDefault();
+
+        if (firstValuePoint != null)
+        {
+            var date = firstValuePoint.Date;
+            var sumInFlow = inFlow.Where(x => x.Date < firstValuePoint.Date).Sum(x => x.Value);
+            var sumOutFlow = outFlow.Where(x => x.Date < firstValuePoint.Date).Sum(x => x.Value);
+
+            portfolio = portfolio.Where(x => x.Date >= date).ToList();
+            inFlow = inFlow.Where(x => x.Date >= date).ToList();
+            outFlow = outFlow.Where(x => x.Date >= date).ToList();
+
+            var point = new DataPoint() { Date = date.AddDays(-1), Value = sumInFlow - sumOutFlow };
+            portfolio.Add(point);
+
+            point = new DataPoint() { Date = date.AddDays(-1), Value = sumInFlow };
+            inFlow.Add(point);
+
+            point = new DataPoint() { Date = date.AddDays(-1), Value = sumOutFlow };
+            outFlow.Add(point);
+
+            graph.DataPointsPortfolio = portfolio.OrderBy(x => x.Date).ToList();
+            graph.DataPointsInFlow = inFlow.OrderBy(x => x.Date).ToList();
+            graph.DataPointsOutFlow = outFlow.OrderBy(x => x.Date).ToList();
+
+            await SaveGraphToJson();
+        }
     }
-
-
-
-
-
-
-
 
     public async Task SaveGraphToJson()
     {
@@ -288,15 +295,15 @@ public partial class GraphService : IGraphService
         graph.DataPointsPortfolio.Add(dataPoint);
     }
 
-    public void AddHistoricalDataToBuffer(HistoricalDataById historicalData)
+    public void AddHistoricalDataToBuffer(HistoricalDataByIdRev historicalData)
     {
-        if (historicalData.Dates is not null )
+        if (historicalData.DataPoints is not null )
         {
             HistoricalDataByIdsBufferList.Add(historicalData);
         }
     }
 
-    public List<HistoricalDataById> GetHistoricalDataBuffer()
+    public List<HistoricalDataByIdRev> GetHistoricalDataBuffer()
     {
         return HistoricalDataByIdsBufferList;
     }
@@ -308,11 +315,11 @@ public partial class GraphService : IGraphService
 
     public DataPoint GetLatestDataPointInFlow()
     {
-        return graph.DataPointsInFlow.OrderByDescending(x => x.Date).First();
+        return graph.DataPointsInFlow.OrderByDescending(x => x.Date).FirstOrDefault();
     }
     public DataPoint GetLatestDataPointOutFlow()
     {
-        return graph.DataPointsOutFlow.OrderByDescending(x => x.Date).First();
+        return graph.DataPointsOutFlow.OrderByDescending(x => x.Date).FirstOrDefault();
     }
     public bool HasDataPoints()
     {
@@ -326,12 +333,23 @@ public partial class GraphService : IGraphService
 
     public int GetHistoricalDataBufferDatesCount()
     {
-        return HistoricalDataByIdsBufferList.First().Dates.Count;
+        return HistoricalDataByIdsBufferList.First().DataPoints.Count;
     }
 
     public DateOnly GetHistoricalDataBufferLatestDate()
     {
-        return HistoricalDataByIdsBufferList.First().Dates.LastOrDefault();
+        var latestDataPoint = HistoricalDataByIdsBufferList.First().DataPoints.OrderByDescending(x => x.Date).FirstOrDefault();
+    
+        return latestDataPoint is not null ? latestDataPoint.Date : DateOnly.MinValue;
+
+    }
+
+    public DateOnly GetHistoricalDataBufferOldestDate()
+    {
+        var oldestDataPoint = HistoricalDataByIdsBufferList.First().DataPoints.OrderByDescending(x => x.Date).LastOrDefault();
+
+        return oldestDataPoint is not null ? oldestDataPoint.Date : DateOnly.MinValue;
+
     }
 
     public Graph GetGraph()
@@ -370,7 +388,7 @@ public partial class GraphService : IGraphService
             if (File.Exists(fileName))
             {
                 using FileStream openStream = File.OpenRead(fileName);
-                HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataById>>(openStream);
+                HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(openStream);
             }
 
         }
