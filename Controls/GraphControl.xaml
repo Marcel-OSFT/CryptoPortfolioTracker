@@ -66,9 +66,9 @@
                       IsActive="{Binding IsLoadingFromJsonGraph}" 
                       Visibility="{Binding IsNotLoadingFromJsonGraph, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-        <!--<StackPanel Grid.Row="1" x:Name="layoutRoot" Background="black" Opacity="0.5" 
+        <StackPanel Grid.Row="1" x:Name="layoutRoot" Background="black" Opacity="0.5" 
             HorizontalAlignment="Center" VerticalAlignment="Center"
-            Margin="50,60,0,0"
+            Margin="0,0,0,0"
             Visibility="{Binding IsNotUpdatingGraph, Converter={StaticResource BoolToVisibilityConverter }}">
             <StackPanel BorderBrush="PaleGoldenrod"  BorderThickness="2" Padding="12">
                 <TextBlock  l:Uids.Uid="GrahicView_UpdateText" />
@@ -83,7 +83,7 @@
                 </StackPanel>
             </StackPanel>
 
-        </StackPanel>-->
+        </StackPanel>
     </Grid>
 
 

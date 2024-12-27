@@ -26,8 +26,8 @@ namespace CryptoPortfolioTracker.Services
         public void AddDataPointInFlow(DataPoint dataPoint);
         public void AddDataPointPortfolio(DataPoint dataPoint);
         public void AddDataPointOutFlow(DataPoint dataPoint);
-        public void AddHistoricalDataToBuffer(HistoricalDataById historicalData);
-        List<HistoricalDataById> GetHistoricalDataBuffer();
+        public void AddHistoricalDataToBuffer(HistoricalDataByIdRev historicalData);
+        List<HistoricalDataByIdRev> GetHistoricalDataBuffer();
         DateOnly GetLatestDataPointDate();
         bool HasDataPoints();
         int GetHistoricalDataBufferDatesCount();
@@ -36,9 +36,6 @@ namespace CryptoPortfolioTracker.Services
         Graph GetGraph();
         Task<Graph> GetGraphFromJson();
         Task SetGraph(Graph graph);
-        Task LoadGraphFromJsonPW();
-        Task SaveGraphToJsonPW();
-        void CleanUpGraph();
         DataPoint GetLatestDataPointInFlow();
         DataPoint GetLatestDataPointOutFlow();
     }

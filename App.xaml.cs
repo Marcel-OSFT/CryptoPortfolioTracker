@@ -203,6 +203,12 @@ public partial class App : Application
         }
         File.Copy(dbFile, tempFolder + "\\" + DbName);
         File.Copy(preferencesFile, tempFolder + "\\" + PrefFileName);
+        
+        if (!Directory.Exists(chartsFolder))
+        {
+            Directory.CreateDirectory(chartsFolder);
+        }
+
         DirectoryCopy(chartsFolder, tempFolder + "\\" + ChartsFolder, true);
 
         ZipFile.CreateFromDirectory(tempFolder, backupFolder + "\\" + backUpName);

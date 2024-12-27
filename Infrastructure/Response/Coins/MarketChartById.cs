@@ -20,12 +20,12 @@ public class MarketChartById
     [JsonProperty("prices")]
     public decimal?[][] Prices { get; set; }
 
-   
-
-
 
     public List<DataPoint> GetPriceList()
     {
+
+        if (Prices == null || Prices.Length == 0) return new List<DataPoint>();
+
         var list = new List<DataPoint>();
 
         for (int i = 0; i < Prices.Length; i++)
