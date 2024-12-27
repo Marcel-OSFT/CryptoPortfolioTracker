@@ -8,6 +8,7 @@ using System.Linq;
 using System.Collections.Generic;
 using CryptoPortfolioTracker.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
+using System.Diagnostics;
 
 
 namespace CryptoPortfolioTracker.Infrastructure.Response.Coins;
@@ -116,6 +117,9 @@ public class MarketChartById
             {
                 await using FileStream openStream = File.OpenRead(fileName);
                 Prices = await System.Text.Json.JsonSerializer.DeserializeAsync<decimal?[][]>(openStream);
+
+                CheckAndFixPrices(this);
+
             }
             catch(Exception ex )
             {
@@ -125,4 +129,46 @@ public class MarketChartById
         }
 
     }
+
+
+    private decimal?[][] CheckAndFixPrices(MarketChartById Chart)
+    {
+        var priceList = this.GetPriceList();
+        var checkedChart = new MarketChartById();
+
+        var startDate = this.StartDate().ToDateTime(TimeOnly.Parse("01:00 AM")).Date;
+        var endDate = this.EndDate().ToDateTime(TimeOnly.Parse("01:00 AM")).Date;
+
+        for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+        {
+            var dataPointToCheck = priceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.Date).FirstOrDefault();
+
+            if (dataPointToCheck is not null)
+            {
+                continue; //and check next
+            }
+            else
+            {
+                var value = 0.0;
+                var adjacent = priceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.AddDays(-1).Date).FirstOrDefault();
+
+                if (adjacent is not null)
+                {
+                    value = adjacent.Value;
+                }
+                
+                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = value };
+                priceList.Add(dataPoint);
+            }
+        }
+
+        checkedChart.FillPricesArray(priceList);
+
+        return checkedChart.Prices;
+
+    }
+
+
+
+
 }
