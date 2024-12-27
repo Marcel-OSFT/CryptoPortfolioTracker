@@ -5,6 +5,9 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Linq;
+using System.Collections.Generic;
+using CryptoPortfolioTracker.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
 
 namespace CryptoPortfolioTracker.Infrastructure.Response.Coins;
@@ -15,6 +18,41 @@ public class MarketChartById
 
     [JsonProperty("prices")]
     public decimal?[][] Prices { get; set; }
+
+   
+
+
+
+    public List<DataPoint> GetPriceList()
+    {
+        var list = new List<DataPoint>();
+
+        for (int i = 0; i < Prices.Length; i++)
+        {
+            var date = DateTime.UnixEpoch.AddMilliseconds((double)Prices[i][0]).Date;
+            var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = (double)Prices[i][1] };
+            list.Add(dataPoint);
+        }
+        return list;
+    }
+
+    public decimal?[][] FillPricesArray(List<DataPoint> list)
+    {
+        var sortedList = list.OrderBy(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM"))).ToList();
+
+        Prices = null;
+
+        foreach (var dataPoint in sortedList)
+        {
+            var date = dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date;
+            var price = dataPoint.Value;
+            Prices = Prices is not null 
+                ? Prices.Append(new decimal?[] { (decimal)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds, (decimal)price }).ToArray() 
+                : new decimal?[][] { new decimal?[] { (decimal)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds, (decimal)price } };
+        }
+        return Prices;
+    }
+
 
     public DateOnly StartDate()
     {
@@ -74,8 +112,16 @@ public class MarketChartById
 
         if (File.Exists(fileName))
         {
-            await using FileStream openStream = File.OpenRead(fileName);
-            Prices = await System.Text.Json.JsonSerializer.DeserializeAsync<decimal?[][]>(openStream);
+            try
+            {
+                await using FileStream openStream = File.OpenRead(fileName);
+                Prices = await System.Text.Json.JsonSerializer.DeserializeAsync<decimal?[][]>(openStream);
+            }
+            catch(Exception ex )
+            {
+                Logger.LogMessage("Error loading MarketChart for {0}: " + ex.Message, coinId);
+            }
+            
         }
 
     }

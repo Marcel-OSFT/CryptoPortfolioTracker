@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,9 +44,56 @@ public class GraphUpdateService : IGraphUpdateService
         _graphService = graphService;
     }
 
+
+    private MarketChartById CheckAndFixMarketChart(MarketChartById additionalChart, MarketChartById fullChart, DateTime startDate)
+    {
+        var additionalPriceList = additionalChart.GetPriceList();
+        var fullPriceList = fullChart.GetPriceList();
+        var checkedChart = new MarketChartById();
+
+        for (DateTime date = startDate; date <= DateTime.UtcNow; date = date.AddDays(1))
+        {
+            var dataPointToCheck = additionalPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.Date).FirstOrDefault();
+
+            if (dataPointToCheck is not null)
+            {
+                continue; //and check next
+            }
+            else
+            {
+                var value = 0.0;
+                var adjacent = additionalPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.AddDays(-1).Date).FirstOrDefault();
+
+                if (adjacent is null)
+                {
+                    adjacent = fullPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.AddDays(-1).Date).FirstOrDefault();
+
+                }
+
+                if (adjacent is not null )
+                {
+                    value = adjacent.Value; 
+                }
+                Logger.Information("Missing DataPoint for {0} => added with value {1}", date.Date, value);
+                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = value };
+                additionalPriceList.Add(dataPoint);
+            }
+        }
+
+        checkedChart.FillPricesArray(additionalPriceList);
+
+        return checkedChart;
+
+    }
+
+
+
+
     public async Task Start()
     {
+
         await _graphService.LoadGraphFromJson();
+
         Logger.Information("GraphUpdateService started");
         timerTask = DoWorkAsync();
     }
@@ -120,6 +169,16 @@ public class GraphUpdateService : IGraphUpdateService
             else
             {
                 days = await GetDaysBasedOnOldestTransaction();
+
+                //*** CoinGecko provides data for 'only' the last 365 days. If oldest Transaction is beyond 365 days 
+                //*** an initial starting Point needs to be set as first portfolio value
+                if (days>365)
+                {
+                    ObtainFirstPortfolioValue();
+                    days = 365;
+                }
+
+
             }
             assets = await GetAssets();
         }
@@ -140,12 +199,22 @@ public class GraphUpdateService : IGraphUpdateService
     {
         if (days == 0) { return; }
         var startDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days)).Date;
-        var endDate = DateTime.UtcNow.Date;
+
+        //*** In case adding new values to PortfolioValues has failed during a previous loop, then
+        //*** it might be that InflowData already has been added in the previous loop and
+        //*** will be out-of-sync 
+        //*** so, check also latest date and add starting from that date instead of the expected 'startdate' 
+
+        var lastEntryDate = _graphService.GetLatestDataPointInFlow().Date;
+
+        startDate = lastEntryDate > DateOnly.FromDateTime(startDate.Date) ? lastEntryDate.ToDateTime(new TimeOnly(1,0)).Date : startDate;
+
+        // var endDate = DateTime.UtcNow.Date;
 
         var deposits = await coinContext.Mutations
             .Include(t => t.Transaction)
-            .Where(x => x.Transaction.TimeStamp.Date >= startDate
-                && x.Transaction.TimeStamp.Date <= endDate
+            .Where(x => x.Transaction.TimeStamp.Date > startDate
+                //&& x.Transaction.TimeStamp.Date <= endDate
                 && x.Type == Enums.TransactionKind.Deposit)
             .GroupBy(g => g.Transaction.TimeStamp.Date)
             .Select(grouped => new
@@ -163,18 +232,27 @@ public class GraphUpdateService : IGraphUpdateService
             dataPoint.Value = deposit.InFlow;
             _graphService.AddDataPointInFlow(dataPoint);
         }
-        await _graphService.SaveGraphToJson();
+        //await _graphService.SaveGraphToJson();
     }
     private async Task AddOutFlowData(int days)
     {
         if (days == 0) { return; }
         var startDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days)).Date;
-        var endDate = DateTime.UtcNow.Date;
+        // var endDate = DateTime.UtcNow.Date;
+
+        //*** In case adding new values to PortfolioValues has failed during a previous loop, then
+        //*** it might be that InflowData already has been added in the previous loop and
+        //*** will be out-of-sync 
+        //*** so, check also latest date and add starting from that date instead of the expected 'startdate' 
+
+        var lastEntryDate = _graphService.GetLatestDataPointOutFlow().Date;
+
+        startDate = lastEntryDate > DateOnly.FromDateTime(startDate.Date) ? lastEntryDate.ToDateTime(new TimeOnly(1, 0)).Date : startDate;
 
         var withdraws = await coinContext.Mutations
             .Include(t => t.Transaction)
-            .Where(x => x.Transaction.TimeStamp.Date >= startDate
-                && x.Transaction.TimeStamp.Date <= endDate
+            .Where(x => x.Transaction.TimeStamp.Date > startDate
+               // && x.Transaction.TimeStamp.Date <= endDate
                 && x.Type == Enums.TransactionKind.Withdraw)
             .GroupBy(g => g.Transaction.TimeStamp.Date)
             .Select(grouped => new
@@ -193,7 +271,7 @@ public class GraphUpdateService : IGraphUpdateService
 
             _graphService.AddDataPointOutFlow(dataPoint);
         }
-        await _graphService.SaveGraphToJson();
+        //await _graphService.SaveGraphToJson();
     }
     private async Task AddPortfolioValueData(List<AssetTotals> assets, int days)
     {
@@ -238,7 +316,18 @@ public class GraphUpdateService : IGraphUpdateService
 
         chartData.RemoveDuplicateLastDate();
 
-        var dataSetChart = chartData.Prices.Skip(chartData.Prices.Length - days).ToArray();
+        //var dataSetChart = chartData.Prices.Skip(chartData.Prices.Length - days).ToArray();
+
+        var firstDate = DateOnly.FromDateTime(DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
+        //var dataSetChart = chartData.Prices.Where( x );
+
+        var dataSetChart = chartData.Prices.Where(x => DateOnly.FromDateTime(DateTime.UnixEpoch.AddMilliseconds(Convert.ToDouble(x[0]))).CompareTo(firstDate) >= 0).ToArray();
+
+
+
+
+
+
 
 
         //for (var i = 0; i < chartData.Prices.Length; i++)
@@ -264,7 +353,7 @@ public class GraphUpdateService : IGraphUpdateService
                 var historicalQty = await GetHistoricalQtyByDate(date, asset);
                 data.Quantities.Add(historicalQty);
             }
-            else // incorrect data => first date is older then expected date
+            else // incorrect data => missing datapoint
             {
                 break;
             }
@@ -308,6 +397,7 @@ public class GraphUpdateService : IGraphUpdateService
         var daysToGet = 0;
 
         await marketChart.LoadMarketChartJson(asset.Coin.ApiId);
+
         if (marketChart is null || marketChart.Prices is null || marketChart.Prices.Length == 0)
         {
             daysToGet = 365;
@@ -315,6 +405,7 @@ public class GraphUpdateService : IGraphUpdateService
         }
         else
         {
+
             var lastChartDate = marketChart.EndDate().ToDateTime(TimeOnly.Parse("01:00 AM"));
             daysToGet = DateTime.UtcNow.Subtract(lastChartDate).Days;
             if (daysToGet > 0)
@@ -333,7 +424,7 @@ public class GraphUpdateService : IGraphUpdateService
             //No data yet, so get/save History for 365 days and set marketChart.Prices for requested amount of days
             await DelayAndShowProgress(12);
 
-            var result = await GetHistoricalPricesFromGecko(asset, daysToGet);
+            var result = await GetHistoricalPricesFromGecko(asset, daysToGet, marketChart);
             result.IfSucc(s => marketChart.AddPrices(s.Prices));
             result.IfFail(err => marketChart = null);
         }
@@ -389,7 +480,7 @@ public class GraphUpdateService : IGraphUpdateService
 
         return marketChart ?? new MarketChartById();
     }
-    private async Task<Result<MarketChartById>> GetHistoricalPricesFromGecko(AssetTotals asset, int days)
+    private async Task<Result<MarketChartById>> GetHistoricalPricesFromGecko(AssetTotals asset, int days, MarketChartById fullChart)
     {
         var Retries = 0;
         var TotalRequests = 0;
@@ -419,7 +510,7 @@ public class GraphUpdateService : IGraphUpdateService
         var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
 
         System.Exception? error = null;
-        MarketChartById? marketChart = null;
+        MarketChartById? additionalMarketChart = null;
 
         while (!cancellationToken.IsCancellationRequested && !IsPaused)
         {
@@ -429,7 +520,7 @@ public class GraphUpdateService : IGraphUpdateService
                 await strategy.ExecuteAsync(async token =>
                 {
                     Logger.Debug("Getting Historical Data; (Retries: {0})", Retries.ToString());
-                    marketChart = await coinsClient.Coins[asset.Coin.ApiId].MarketChart
+                    additionalMarketChart = await coinsClient.Coins[asset.Coin.ApiId].MarketChart
                         .Interval("daily")
                         .Precision("full")
                         .Days(days.ToString())
@@ -455,7 +546,11 @@ public class GraphUpdateService : IGraphUpdateService
             return new Result<MarketChartById>(error);
         }
 
-        return marketChart ?? new Result<MarketChartById>(new NullReferenceException());
+        Logger.Information("Checking MarketChart for {0}", asset.Coin.ApiId);
+        var checkedMarketChart = CheckAndFixMarketChart(additionalMarketChart, fullChart, DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)) );
+
+
+        return checkedMarketChart ?? new Result<MarketChartById>(new NullReferenceException());
     }
     private async Task<double> GetHistoricalQtyByDate(DateOnly _date, AssetTotals asset)
     {
@@ -547,5 +642,28 @@ public class GraphUpdateService : IGraphUpdateService
         return days;
     }
     
+    private void ObtainFirstPortfolioValue()
+    {
+        var beforeDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(365)).Date;
+
+        var sumDeposits = coinContext.Mutations
+            .Include(t => t.Transaction)
+            .Where(x => x.Type == Enums.TransactionKind.Deposit && x.Transaction.TimeStamp.Date < beforeDate)
+            .Sum(x => x.Qty * x.Price);
+
+        var sumWithDraws = coinContext.Mutations
+                    .Include(t => t.Transaction)
+                    .Where(x => x.Type == Enums.TransactionKind.Withdraw && x.Transaction.TimeStamp.Date < beforeDate)
+                    .Sum(x => x.Qty * x.Price);
+
+        _graphService.AddDataPointInFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits });
+        _graphService.AddDataPointOutFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumWithDraws });
+        _graphService.AddDataPointPortfolio(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits - sumWithDraws });
+
+    }
+
+
+
+
 }
 

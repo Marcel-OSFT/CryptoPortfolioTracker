@@ -36,5 +36,10 @@ namespace CryptoPortfolioTracker.Services
         Graph GetGraph();
         Task<Graph> GetGraphFromJson();
         Task SetGraph(Graph graph);
+        Task LoadGraphFromJsonPW();
+        Task SaveGraphToJsonPW();
+        void CleanUpGraph();
+        DataPoint GetLatestDataPointInFlow();
+        DataPoint GetLatestDataPointOutFlow();
     }
 }
