@@ -76,6 +76,81 @@ public partial class GraphService : IGraphService
 
     }
 
+    public async Task LoadGraphFromJsonPW()
+    {
+        try
+        {
+            IsLoadingFromJson = true;
+
+            if (!Directory.Exists(chartsFolder))
+            {
+                Directory.CreateDirectory(chartsFolder);
+            }
+            var fileName = chartsFolder + "\\graph_PW_rev.json";
+            if (File.Exists(fileName))
+            {
+                using FileStream openStream = File.OpenRead(fileName);
+                graph = await JsonSerializer.DeserializeAsync<Graph>(openStream);
+                Logger.Information("Graph data de-serialized succesfully ({0} data points)", graph.DataPointsPortfolio.Count);
+            }
+
+            fileName = chartsFolder + "\\HistoryBuffer.json";
+            if (File.Exists(fileName))
+            {
+                using FileStream openStream = File.OpenRead(fileName);
+                HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataById>>(openStream);
+            }
+
+            if (graph is null)
+            {
+                graph = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to de-serialize HGraph data");
+        }
+        finally
+        {
+            IsLoadingFromJson = false;
+        }
+
+    }
+
+    public async Task SaveGraphToJsonPW()
+    {
+
+        var fileName = chartsFolder + "\\graph_PW_repaired.json";
+        await using FileStream createStream = File.Create(fileName);
+        await JsonSerializer.SerializeAsync(createStream, graph);
+    }
+
+    public void CleanUpGraph()
+    {
+        graph.DataPointsInFlow = graph.DataPointsInFlow
+            .GroupBy(x => new { x.Date, x.Value })
+            .Select(g => g.First())
+            .ToList();
+
+        graph.DataPointsOutFlow = graph.DataPointsOutFlow
+            .GroupBy(x => new { x.Date, x.Value })
+            .Select(g => g.First())
+            .ToList();
+
+        graph.DataPointsPortfolio = graph.DataPointsPortfolio
+            .GroupBy(x => new { x.Date, x.Value })
+            .Select(g => g.First())
+            .ToList();
+
+    }
+
+
+
+
+
+
+
+
     public async Task SaveGraphToJson()
     {
         
@@ -231,6 +306,14 @@ public partial class GraphService : IGraphService
         return graph.DataPointsPortfolio.OrderByDescending(x => x.Date).First().Date;
     }
 
+    public DataPoint GetLatestDataPointInFlow()
+    {
+        return graph.DataPointsInFlow.OrderByDescending(x => x.Date).First();
+    }
+    public DataPoint GetLatestDataPointOutFlow()
+    {
+        return graph.DataPointsOutFlow.OrderByDescending(x => x.Date).First();
+    }
     public bool HasDataPoints()
     {
 
