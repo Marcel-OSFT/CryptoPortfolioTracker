@@ -59,18 +59,6 @@ public partial class Coin : BaseModel
 
             if (level.Value != 0)
             {
-                //var justTagged = false;
-
-                //if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
-                //    (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
-                //    (level.Type == PriceLevelType.Stop && newValue <= level.Value))
-                //{
-                //    level.Status = PriceLevelStatus.TaggedPrice;
-                //    justTagged = true;
-                //}
-
-                //if (!justTagged)
-                //{
                     // Check if the price is within the range
 
                     if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
