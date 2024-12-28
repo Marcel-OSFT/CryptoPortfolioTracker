@@ -60,7 +60,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
     private void SortOnName(SortingOrder sortingOrder)
     {
         Func<Coin, string> sortFunc = x => x.Name;
-        _priceLevelService.SortList(sortingOrder, sortFunc);
+        _priceLevelService.SortListString(sortingOrder, sortFunc);
     }
 
     [RelayCommand]

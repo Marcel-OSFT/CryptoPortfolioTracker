@@ -154,7 +154,14 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
-
+    [RelayCommand]
+    public void SortOnNetInvestment(SortingOrder sortingOrder)
+    {
+        Func<AssetTotals, object> sortFunc = x => x.NetInvestment;
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
+        _assetService.SortList(sortingOrder, sortFunc);
+    }
     [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
     public async Task ShowAccountDialogToAdd()
     {

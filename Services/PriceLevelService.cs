@@ -62,7 +62,25 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         currentSortingOrder = sortingOrder;
         currentSortFunc = sortFunc;
     }
-   
+    public void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
+    {
+        if (ListCoins is not null)
+        {
+            //*** extract the Infinity values from the collection
+            //*** so that they appended at the end of the sorted collection
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(sortFunc));
+            }
+        }
+        currentSortingOrder = sortingOrder;
+        currentSortFunc = sortFunc;
+    }
+
     public void SortListTest(SortingOrder sortingOrder)
     {
         if (ListCoins is not null)
