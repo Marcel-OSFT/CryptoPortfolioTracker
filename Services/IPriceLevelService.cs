@@ -31,4 +31,5 @@ public interface IPriceLevelService
     public Task<Result<bool>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels);
     Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints();
     void UpdateHeatMap();
+    void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
 }

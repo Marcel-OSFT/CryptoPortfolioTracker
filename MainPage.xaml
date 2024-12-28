@@ -57,7 +57,7 @@
 
                 <NavigationViewItem l:Uids.Uid="Navigation_PriceLevels" Tag="PriceLevelsView" >
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF272;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
