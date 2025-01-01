@@ -24,4 +24,5 @@ public interface IAccountService
     Task AddToListAccounts(Account? newAccount);
     AssetAccount GetAffectedAccount(Transaction transaction);
     void ReloadValues();
+    bool DoesAccountNameExist(string name);
 }

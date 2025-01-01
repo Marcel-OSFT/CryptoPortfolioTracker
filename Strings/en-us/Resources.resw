@@ -189,6 +189,9 @@
   <data name="Navigation_Accounts.Content" xml:space="preserve">
     <value>Accounts</value>
   </data>
+  <data name="Navigation_Narratives.Content" xml:space="preserve">
+    <value>Narratives</value>
+  </data>
   <data name="Navigation_Assets.Content" xml:space="preserve">
     <value>Assets</value>
   </data>
@@ -248,25 +251,49 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="AccountsLV_Edit.Label" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="NarrativesLV_Edit.Label" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="NarrativesLV_MarketValue.Text" xml:space="preserve">
+    <value>Market Value</value>
+  </data>
   <data name="AccountsLV_MarketValue.Text" xml:space="preserve">
     <value>Market Value</value>
   </data>
   <data name="AccountsLV_Name.Text" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="NarrativesLV_Name.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="AccountsLV_Note.Text" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="NarrativesLV_Note.Text" xml:space="preserve">
     <value>Note</value>
   </data>
   <data name="Accounts_AddAccount.Content" xml:space="preserve">
     <value>Add Account</value>
   </data>
+  <data name="Narratives_AddNarrative.Content" xml:space="preserve">
+    <value>Add Narrative</value>
+  </data>
   <data name="Accounts_Explainer.Text" xml:space="preserve">
     <value>The Accounts list gives you an overview of locations where you have your crypto assets in custody.</value>
+  </data>
+  <data name="Narratives_Explainer.Text" xml:space="preserve">
+    <value>The Narratives view gives you an overview of your crypto assets in relation to their narrative. Go to the Library View to assign a Narrative to a coin that is already in the Library. When you add e new coin then a narrative can be assigned right away. The app comes with an initial Narrative List that can be modified. The Name and Description can be changed and also new Narratives can be added.</value>
   </data>
   <data name="Accounts_Title.Text" xml:space="preserve">
     <value>Accounts</value>
   </data>
+  <data name="Narratives_Title.Text" xml:space="preserve">
+    <value>Narratives</value>
+  </data>
   <data name="AccountsLV_Delete.Label" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="NarrativesLV_Delete.Label" xml:space="preserve">
     <value>Delete</value>
   </data>
   <data name="LibraryLV_24HrChange.Text" xml:space="preserve">
@@ -437,32 +464,59 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="TransactionDialog_PriceB.Header" xml:space="preserve">
     <value>Price</value>
   </data>
+  <data name="NarrativeDialog_Description.Header" xml:space="preserve">
+    <value>Narrative Description</value>
+  </data>
   <data name="AccountDialog_Description.Header" xml:space="preserve">
     <value>Account Description</value>
   </data>
   <data name="AccountDialog_Description.PlaceholderText" xml:space="preserve">
     <value>Description goes here....</value>
   </data>
+  <data name="NarrativeDialog_Description.PlaceholderText" xml:space="preserve">
+    <value>Description goes here....</value>
+  </data>
   <data name="AccountDialog_Name.Header" xml:space="preserve">
     <value>Account Name</value>
+  </data>
+  <data name="NarrativeDialog_Name.Header" xml:space="preserve">
+    <value>Narrative Name</value>
   </data>
   <data name="AccountDialog_Name.PlaceholderText" xml:space="preserve">
     <value>e.g. Bybit Funding...</value>
   </data>
+  <data name="NarrativeDialog_Name.PlaceholderText" xml:space="preserve">
+    <value>e.g. Layer 1...</value>
+  </data>
   <data name="AccountDialog_CloseButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="NarrativeDialog_CloseButton" xml:space="preserve">
     <value>Cancel</value>
   </data>
   <data name="AccountDialog_PrimaryButton_Add" xml:space="preserve">
     <value>Accept Account</value>
   </data>
+  <data name="NarrativeDialog_PrimaryButton_Add" xml:space="preserve">
+    <value>Accept Narrative</value>
+  </data>
   <data name="AccountDialog_PrimaryButton_Edit" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="NarrativeDialog_PrimaryButton_Edit" xml:space="preserve">
     <value>Accept</value>
   </data>
   <data name="AccountDialog_Title_Add" xml:space="preserve">
     <value>Add Account</value>
   </data>
+  <data name="NarrativeDialog_Title_Add" xml:space="preserve">
+    <value>Add Narrative</value>
+  </data>
   <data name="AccountDialog_Title_Edit" xml:space="preserve">
     <value>Edit Account</value>
+  </data>
+  <data name="NarrativeDialog_Title_Edit" xml:space="preserve">
+    <value>Edit Narrative</value>
   </data>
   <data name="CoinDialog_BePatient.Text" xml:space="preserve">
     <value>* Be patient - busy at CoinGecko API at the moment.</value>
@@ -539,17 +593,32 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Messages_AccountAddFailed_Title" xml:space="preserve">
     <value>Adding account failed</value>
   </data>
+  <data name="Messages_NarrativeAddFailed_Title" xml:space="preserve">
+    <value>Adding Narrative failed</value>
+  </data>
+  <data name="Messages_NarrativeDeleteFailed_Msg" xml:space="preserve">
+    <value>Narrative may have assets assigned.</value>
+  </data>
   <data name="Messages_AccountDeleteFailed_Msg" xml:space="preserve">
     <value>Account may have assets assigned.</value>
   </data>
   <data name="Messages_AccountDeleteFailed_Title" xml:space="preserve">
     <value>Failed to delete Account</value>
   </data>
+  <data name="Messages_NarrativeDeleteFailed_Title" xml:space="preserve">
+    <value>Failed to delete Narrative</value>
+  </data>
   <data name="Messages_AccountDialogFailed_Title" xml:space="preserve">
     <value>Account Dialog Failure</value>
   </data>
+  <data name="Messages_NarrativeDialogFailed_Title" xml:space="preserve">
+    <value>Narrative Dialog Failure</value>
+  </data>
   <data name="Messages_AccountUpdateFailed_Title" xml:space="preserve">
     <value>Updating account failed</value>
+  </data>
+  <data name="Messages_NarrativetUpdateFailed_Title" xml:space="preserve">
+    <value>Updating narrative failed</value>
   </data>
   <data name="Messages_CoinAddFailed_Title" xml:space="preserve">
     <value>Adding Coin Failed</value>
@@ -614,8 +683,14 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Messages_AccountDeleteNotAllowd_Title" xml:space="preserve">
     <value>Deleting not allowed!</value>
   </data>
+  <data name="Messages_NarrativeDeleteNotAllowd_Title" xml:space="preserve">
+    <value>Deleting not allowed!</value>
+  </data>
   <data name="Messages_AccountDeleteNotAllowed_Msg" xml:space="preserve">
     <value>The Account is holding assets.</value>
+  </data>
+  <data name="Messages_NarrativeDeleteNotAllowed_Msg" xml:space="preserve">
+    <value>The Narrative is assigned to one or more assets.</value>
   </data>
   <data name="Settings_AppTheme_Toggle.OffContent" xml:space="preserve">
     <value>Light</value>
@@ -986,10 +1061,97 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="PieChartView_Accounts.Text" xml:space="preserve">
     <value>Accounts distribution</value>
   </data>
+  <data name="PieChartView_Narratives.Text" xml:space="preserve">
+    <value>Narratives distribution</value>
+  </data>
   <data name="AssetsLV_NetInvestment.Text" xml:space="preserve">
     <value>Net Investment</value>
   </data>
   <data name="ValueGainsView_NetInvestment.Text" xml:space="preserve">
     <value>Net Investment</value>
+  </data>
+  <data name="dummy" xml:space="preserve">
+    <value>dummy</value>
+  </data>
+  <data name="CoinDialog_Narrative.Header" xml:space="preserve">
+    <value>Narrative</value>
+  </data>
+  <data name="LibraryLV_AssignNarrative.Label" xml:space="preserve">
+    <value>Assign/Change Narrative</value>
+  </data>
+  <data name="Messages_AssignNarrativeFailed_Title" xml:space="preserve">
+    <value>Assigning Narrative failed</value>
+  </data>
+  <data name="Messages_AssignNarrativeDialogFailed_Title" xml:space="preserve">
+    <value>Assign Narrative dialog failure</value>
+  </data>
+  <data name="AssignNarrativeDialog_AboutHeader.Text" xml:space="preserve">
+    <value>Description/Note</value>
+  </data>
+  <data name="AssignNarrativeDialog_ComboHeader.Header" xml:space="preserve">
+    <value>Narrative</value>
+  </data>
+  <data name="AssignNarrativeDialog_Title_Edit" xml:space="preserve">
+    <value>Assign/Edit Narrative for</value>
+  </data>
+  <data name="AssignNarrativeDialog_PrimaryButton_Edit" xml:space="preserve">
+    <value>Assign Narrative</value>
+  </data>
+  <data name="LibraryLV_Narrative.Text" xml:space="preserve">
+    <value>Narrative</value>
+  </data>
+  <data name="NarrativeDialog_NarrativeNameExists" xml:space="preserve">
+    <value>a Narrative with this name already exists</value>
+  </data>
+  <data name="AccountDialog_AccountNameExists" xml:space="preserve">
+    <value>an Account with this name already exists</value>
+  </data>
+  <data name="Navigation_TeachNarrative.Title" xml:space="preserve">
+    <value>New Feature! The Narrative View</value>
+  </data>
+  <data name="Navigation_TeachNarrative.Subtitle" xml:space="preserve">
+    <value>Assign a main Narrative to each of your coins to get a Narrative View. Assigning can be done at the Library for already existing coins or when adding a new coin.</value>
+  </data>
+  <data name="Navigation_TeachAssets.Title" xml:space="preserve">
+    <value>How to Start! (3 of 3)</value>
+  </data>
+  <data name="Navigation_TeachAssets.Subtitle" xml:space="preserve">
+    <value>Step 3: Build up your Portfolio by adding Transactions in the Assets View</value>
+  </data>
+  <data name="Navigation_TeachAccounts.Title" xml:space="preserve">
+    <value>How to Start! (2 of 3)</value>
+  </data>
+  <data name="Navigation_TeachAccounts.Subtitle" xml:space="preserve">
+    <value>Step 2: Add Accounts. An Account is a location where you hold your coins, like Bybit, MEXC, Ledger, Trezor or any other exchange or wallet</value>
+  </data>
+  <data name="Navigation_TeachLibrary.Title" xml:space="preserve">
+    <value>How to Start! (1 of 3)</value>
+  </data>
+  <data name="Navigation_TeachLibrary.Subtitle" xml:space="preserve">
+    <value>Step 1: Add coins to your Library.</value>
+  </data>
+  <data name="Dashboard_TeachNarrative.Title" xml:space="preserve">
+    <value>New Feature! (2 of 2)</value>
+  </data>
+  <data name="Dashboard_TeachNarrative.Subtitle" xml:space="preserve">
+    <value>Assign a main Narrative to each of your coins to get a Narrative Distribution. Assigning can be done at the Library for already existing coins or when adding a new coin</value>
+  </data>
+  <data name="Dashboard_TeachPortfolio.Title" xml:space="preserve">
+    <value>New Feature! (1 of 2)</value>
+  </data>
+  <data name="Dashboard_TeachPortfolio.Subtitle" xml:space="preserve">
+    <value>Set Maximum Number of visible coins in 'Settings -&gt; Dashboard Settings'. The remaining coins will be grouped into 'Others'</value>
+  </data>
+  <data name="Narrative_TeachGeneral.Title" xml:space="preserve">
+    <value>Click on a Narrative in the list to expand and show the related coins</value>
+  </data>
+  <data name="Narrative_TeachGeneral.Subtitle" xml:space="preserve">
+    <value>First you have to assign a Narrative to each of the coins. You can do that in the Library</value>
+  </data>
+  <data name="Library_TeachNarrative.Title" xml:space="preserve">
+    <value>Narrative Column Added!</value>
+  </data>
+  <data name="Library_TeachNarrative.Subtitle" xml:space="preserve">
+    <value>Assigning Narratives can be done for existing coins by selecting the action dots ... on the right of each coin</value>
   </data>
 </root>

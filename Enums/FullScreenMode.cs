@@ -7,5 +7,6 @@ public enum FullScreenMode
     Graph = 2,
     PiePortfolio = 3,
     PieAccounts = 4,
+    PieNarratives = 5,
     
 }

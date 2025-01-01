@@ -3,6 +3,7 @@ using System;
 using CryptoPortfolioTracker.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoPortfolioTracker.Migrations
 {
     [DbContext(typeof(PortfolioContext))]
-    partial class PortfolioContextModelSnapshot : ModelSnapshot
+    [Migration("20241228225250_AddNarrativesEntity")]
+    partial class AddNarrativesEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.15");
@@ -126,7 +129,7 @@ namespace CryptoPortfolioTracker.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
-                    b.Property<int>("NarrativeId")
+                    b.Property<int?>("NarrativeId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Note")
@@ -293,13 +296,9 @@ namespace CryptoPortfolioTracker.Migrations
 
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Coin", b =>
                 {
-                    b.HasOne("CryptoPortfolioTracker.Models.Narrative", "Narrative")
+                    b.HasOne("CryptoPortfolioTracker.Models.Narrative", null)
                         .WithMany("Coins")
-                        .HasForeignKey("NarrativeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Narrative");
+                        .HasForeignKey("NarrativeId");
                 });
 
             modelBuilder.Entity("CryptoPortfolioTracker.Models.Mutation", b =>

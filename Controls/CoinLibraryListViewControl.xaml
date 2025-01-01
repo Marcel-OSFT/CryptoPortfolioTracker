@@ -13,6 +13,7 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
     x:Name="Root"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     d:DataContext="{d:DesignInstance Type=viewmodels:CoinLibraryViewModel}"
     mc:Ignorable="d">
@@ -22,6 +23,8 @@
         <converters:ColourConverter x:Key="myColourConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        <converters:NarrativeConverter x:Key="NarrativeConverter"/>
+        <converters:StringFormatLargeNumberConverter x:Key="StringFormatLargeNumberConverter"/>
         <converters:FontSizeToImageSizeConverter x:Key="FontSizeToImageSizeConverter"/>
         
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
@@ -43,8 +46,9 @@
                 <ColumnDefinition Width="70"/>
                 <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="0.3*"/>
-                <ColumnDefinition Width="0.23*"/>
-                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="0.27*"/>
+                <ColumnDefinition Width="0.25*"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
 
@@ -73,7 +77,24 @@
                 />
         </StackPanel>
 
-        <StackPanel Grid.Row="0" Grid.Column="2" Margin="5" VerticalAlignment="Center" >
+        <StackPanel Grid.Row="0" Grid.Column="2" VerticalAlignment="Center">
+            <local:ColumnHeaderButton x:Name="btnNarrative"
+                l:Uids.Uid="LibraryLV_Narrative" 
+                IsEnabled="True" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
+                Command="{Binding SortOnNarrativeCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
+            
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="3" Margin="5" VerticalAlignment="Center" >
             <local:ColumnHeaderButton 
                 l:Uids.Uid="LibraryLV_Price" 
                 IsEnabled="False" 
@@ -98,7 +119,7 @@
                 />
         </StackPanel>
 
-        <StackPanel Grid.Row="0" Grid.Column="3" Margin="5" VerticalAlignment="Center" >
+        <StackPanel Grid.Row="0" Grid.Column="4" Margin="5" VerticalAlignment="Center" >
             <local:ColumnHeaderButton 
                 l:Uids.Uid="LibraryLV_52WeekChange" 
                 IsEnabled="True" 
@@ -140,7 +161,7 @@
                 />      
         </StackPanel>
 
-        <StackPanel Grid.Row="0" Grid.Column="4" Margin="5" VerticalAlignment="Center" >
+        <StackPanel Grid.Row="0" Grid.Column="5" Margin="5" VerticalAlignment="Center" >
             <local:ColumnHeaderButton 
                 l:Uids.Uid="LibraryLV_MarketCap" 
                 IsEnabled="True" 
@@ -169,9 +190,17 @@
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
         </StackPanel>
-       
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="6" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
-        <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="6" x:FieldModifier="public" ItemsSource="{Binding _libraryService.ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
+
+        <muxc:TeachingTip x:Name="MyTeachingTipNarr" l:Uids.Uid="Library_TeachNarrative" Target="{x:Bind btnNarrative}"
+            PreferredPlacement="RightBottom"  Background="DarkGoldenrod">
+            <muxc:TeachingTip.ActionButtonContent>
+                <Button Content="Get it" Click="OnGetItClickedNarr"/>
+            </muxc:TeachingTip.ActionButtonContent>
+
+        </muxc:TeachingTip>
+
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="7" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
+        <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="7" x:FieldModifier="public" ItemsSource="{Binding _libraryService.ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
                             IsItemClickEnabled="True" SelectionMode="None" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                             ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                             CanReorderItems="False" AllowDrop="false" Margin="10,0,0,0" >
@@ -189,8 +218,9 @@
                                             <ColumnDefinition Width="Auto" MinWidth="42"/>
                                             <ColumnDefinition Width="0.3*"/>
                                             <ColumnDefinition Width="0.3*"/>
-                                            <ColumnDefinition Width="0.2*"/>
-                                            <ColumnDefinition Width="0.3*"/>
+                                            <ColumnDefinition Width="0.25*"/>
+                                            <ColumnDefinition Width="0.25*"/>
+                                            <ColumnDefinition Width="0.25*"/>
                                             <ColumnDefinition Width="100"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed" />
@@ -209,7 +239,13 @@
                                                 <TextBlock Name="txtNote" Text="{Binding Note}" TextWrapping="Wrap" RelativePanel.Below="txtName" RelativePanel.RightOf="txtSymbol" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0"/>
                                             </RelativePanel>
                                         </Border>
-                                        <Border Grid.Column="2" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
+
+                                        <Border Grid.Column="2" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                <TextBlock Name="txtNarrative" Text="{Binding Narrative.Name, Converter={StaticResource NarrativeConverter}}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextWrapping="Wrap" />
+                                        </Border>
+
+
+                                        <Border Grid.Column="3" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
                                                 <TextBlock Name="txtPrice" 
                                                     Text="{Binding Price, 
@@ -225,7 +261,7 @@
                                                 </TextBlock>
                                             </RelativePanel>
                                         </Border>
-                                        <Border Grid.Column="3" Margin="0,2,0,2"  VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <Border Grid.Column="4" Margin="0,2,0,2"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
                                                 <TextBlock Name="txtChange52Week" 
                                                    Text="{Binding Change52Week, 
@@ -244,14 +280,15 @@
                                                     TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange1Month" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>
-                                        <Border Grid.Column="4" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <Border Grid.Column="5" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel  >
-                                                <TextBlock Name="txtMarketCap" 
+                                                <TextBlock Name="txtMarketCap"
                                                     Text="{Binding MarketCap, 
-                                                        Converter={StaticResource StringFormatConverter}, 
-                                                        ConverterParameter='{}$ {0:N0}'}" 
+                                                        Converter={StaticResource StringFormatLargeNumberConverter}, 
+                                                        ConverterParameter='{}$ {0:0.# }'}" 
                                                     TextWrapping="Wrap" />
-                                                <TextBlock Name="txtRank" Text="{Binding Rank}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketCap" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"/>
+                                                <TextBlock Name="txtRank" Text="{Binding Rank}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketCap" 
+                                                           FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>
                                     </Grid>
@@ -268,6 +305,10 @@
 
                                                 <AppBarButton l:Uids.Uid="LibraryLV_Merge" Visibility="Visible" x:Name="HoverButtonMerge" Command="{Binding DataContext.DataContext.MergePreListingCoinCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                     <FontIcon  Glyph="&#xEA3C;" FontWeight="Normal"  />
+                                                </AppBarButton>
+                                                
+                                                <AppBarButton l:Uids.Uid="LibraryLV_AssignNarrative" Visibility="Visible" x:Name="HoverButtonNarrative" Command="{Binding DataContext.DataContext.AssignNarrativeToCoinCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
+                                                    <FontIcon  Glyph="&#xED0E;" FontWeight="Normal"  />
                                                 </AppBarButton>
 
                                                 <AppBarButton l:Uids.Uid="LibraryLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeleteCoinCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>

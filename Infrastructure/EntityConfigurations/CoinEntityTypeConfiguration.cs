@@ -77,9 +77,15 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
         //configuration
         //    .Ignore("IsHoldingAsset");
 
+        configuration.HasIndex("NarrativeId");
+
+        configuration.HasOne("CryptoPortfolioTracker.Models.Narrative", "Narrative")
+            .WithMany("Coins")
+            .HasForeignKey("NarrativeId");
+
         configuration.Navigation("Assets");
         configuration.Navigation("PriceLevels");
-
+        configuration.Navigation("Narrative");
 
     }
 }

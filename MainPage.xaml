@@ -7,6 +7,7 @@
     xmlns:converters="using:CryptoPortfolioTracker.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:l="using:WinUI3Localizer"
     x:Name="Root"
     
@@ -38,28 +39,38 @@
             
             <NavigationView.MenuItems>
                 
-                <NavigationViewItem l:Uids.Uid="Navigation_Assets" Tag="AssetsView" >
+                <NavigationViewItem x:Name="AssetsView" l:Uids.Uid="Navigation_Assets" Tag="AssetsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE825;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem l:Uids.Uid="Navigation_Accounts" Tag="AccountsView" >
+                <NavigationViewItem x:Name="AccountsView" l:Uids.Uid="Navigation_Accounts" Tag="AccountsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE910;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem l:Uids.Uid="Navigation_CoinLibrary" Tag="CoinLibraryView" >
+                <NavigationViewItem x:Name="NarrativeView" l:Uids.Uid="Navigation_Narratives" Tag="NarrativesView" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED0E;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
+
+
+                <NavigationViewItem x:Name="CoinLibraryView" l:Uids.Uid="Navigation_CoinLibrary" Tag="CoinLibraryView" >
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F1;"/>
                         </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
 
                 <NavigationViewItem l:Uids.Uid="Navigation_PriceLevels" Tag="PriceLevelsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF272;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+
+                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
 
                 <NavigationViewItem l:Uids.Uid="Navigation_Dashboard" Tag="DashboardView" >
                     <NavigationViewItem.Icon>
@@ -94,6 +105,42 @@
 
             <Frame x:Name="contentFrame" Margin="0"/>
         </NavigationView>
+
+        <muxc:TeachingTip x:Name="MyTeachingTipBlank1" l:Uids.Uid="Navigation_TeachLibrary" Target="{x:Bind CoinLibraryView}"
+            PreferredPlacement="Left" PlacementMargin="-30" Background="DarkGoldenrod">
+            <muxc:TeachingTip.ActionButtonContent>
+                <Button Content="Get it" Click="OnGetItClickedBlank1"/>
+            </muxc:TeachingTip.ActionButtonContent>
+            <muxc:TeachingTip.CloseButtonContent>
+                <Button Content="Dismiss" Click="OnDismisslickedBlank1"/>
+            </muxc:TeachingTip.CloseButtonContent>
+        </muxc:TeachingTip>
+
+        <muxc:TeachingTip x:Name="MyTeachingTipBlank2" l:Uids.Uid="Navigation_TeachAccounts" Target="{x:Bind AccountsView}"
+            PreferredPlacement="Left" PlacementMargin="-30" Background="DarkGoldenrod">
+            <muxc:TeachingTip.ActionButtonContent>
+                <Button Content="Get it" Click="OnGetItClickedBlank2"/>
+            </muxc:TeachingTip.ActionButtonContent>
+            <muxc:TeachingTip.CloseButtonContent>
+                <Button Content="Dismiss" Click="OnDismisslickedBlank2"/>
+            </muxc:TeachingTip.CloseButtonContent>
+        </muxc:TeachingTip>
+
+        <muxc:TeachingTip x:Name="MyTeachingTipBlank3" l:Uids.Uid="Navigation_TeachAssets" Target="{x:Bind AssetsView}"
+            PreferredPlacement="Left" PlacementMargin="-30" Background="DarkGoldenrod">
+            <muxc:TeachingTip.ActionButtonContent>
+                <Button Content="Get it" Click="OnGetItClickedBlank3"/>
+            </muxc:TeachingTip.ActionButtonContent>
+        </muxc:TeachingTip>
+
+        <muxc:TeachingTip x:Name="MyTeachingTipNarr" l:Uids.Uid="Navigation_TeachNarrative" Target="{x:Bind NarrativeView}"
+                PreferredPlacement="Left" PlacementMargin="-30" Background="DarkGoldenrod">
+            <muxc:TeachingTip.ActionButtonContent>
+                <Button Content="Get it" Click="OnGetItClickedNarr"/>
+            </muxc:TeachingTip.ActionButtonContent>
+        </muxc:TeachingTip>
+
+
     </Grid>
         
    

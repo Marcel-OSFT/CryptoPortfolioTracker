@@ -60,7 +60,10 @@ public partial class GraphService : IGraphService
                 {
                     using FileStream openStream = File.OpenRead(fileName);
                     HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(openStream);
-                
+
+                    openStream.Close();
+
+
                     if (HistoricalDataByIdsBufferList is not null && HistoricalDataByIdsBufferList.Count > 0)
                     {
                         CheckValidityHistoricalDataBuffer();

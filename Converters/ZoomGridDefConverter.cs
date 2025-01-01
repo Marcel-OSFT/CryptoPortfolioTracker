@@ -80,6 +80,18 @@ public class ZoomGridDefConverter : IValueConverter
                     }
                     break;
                 }
+            case FullScreenMode.PieNarratives:
+                {
+                    if (view == "PieNarratives")
+                    {
+                        return "1*";
+                    }
+                    else
+                    {
+                        return "0";
+                    }
+                    break;
+                }
             default:
                 {
                     return defaultHeight;

@@ -24,7 +24,7 @@
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate.Description" translate="yes" xml:space="preserve">
           <source>Enables automatic checking for available updates.</source>
-          <target state="final">Maakt automatisch controleren op updates mogelijk.</target>
+          <target state="translated">Hoe wilt u dat cijfers worden weergegeven?</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate.Header" translate="yes" xml:space="preserve">
           <source>Check for Update</source>
@@ -1173,6 +1173,222 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="ValueGainsView_NetInvestment.Text" translate="yes" xml:space="preserve">
           <source>Net Investment</source>
           <target state="translated">Netto investering</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Narratives.Content" translate="yes" xml:space="preserve">
+          <source>Narratives</source>
+          <target state="translated">Narratief</target>
+        </trans-unit>
+        <trans-unit id="NarrativesLV_Edit.Label" translate="yes" xml:space="preserve">
+          <source>Edit</source>
+          <target state="translated">Wijzigen</target>
+        </trans-unit>
+        <trans-unit id="NarrativesLV_MarketValue.Text" translate="yes" xml:space="preserve">
+          <source>Market Value</source>
+          <target state="translated">Marktwaarde</target>
+        </trans-unit>
+        <trans-unit id="NarrativesLV_Name.Text" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <target state="translated">Naam</target>
+        </trans-unit>
+        <trans-unit id="NarrativesLV_Note.Text" translate="yes" xml:space="preserve">
+          <source>Note</source>
+          <target state="translated">Notitie</target>
+        </trans-unit>
+        <trans-unit id="Narratives_AddNarrative.Content" translate="yes" xml:space="preserve">
+          <source>Add Narrative</source>
+          <target state="translated">Narratief toevoegen</target>
+        </trans-unit>
+        <trans-unit id="Narratives_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>The Narratives view gives you an overview of your crypto assets in relation to their narrative. Go to the Library View to assign a Narrative to a coin that is already in the Library. When you add e new coin then a narrative can be assigned right away. The app comes with an initial Narrative List that can be modified. The Name and Description can be changed and also new Narratives can be added.</source>
+          <target state="translated">Het Narratieven overzicht geeft u een lijst van uw crypto-activa in relatie tot hun narratief. Ga naar het Bibliotheek overzicht om een ​​Narrative toe te wijzen aan een munt die al in uw Bibliotheek zit. Indien u een nieuwe munt gaat toevoegen kunt u daar gelijk een Narratief toekennen. De app wordt geleverd met een initiële  narratievenList die kan worden aangepast. De naam en beschrijving kunnen worden gewijzigd en er kunnen ook nieuwe narratieven worden toegevoegd.</target>
+        </trans-unit>
+        <trans-unit id="Narratives_Title.Text" translate="yes" xml:space="preserve">
+          <source>Narratives</source>
+          <target state="translated">Narratieven</target>
+        </trans-unit>
+        <trans-unit id="NarrativesLV_Delete.Label" translate="yes" xml:space="preserve">
+          <source>Delete</source>
+          <target state="translated">Verwijderen</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_Description.Header" translate="yes" xml:space="preserve">
+          <source>Narrative Description</source>
+          <target state="translated">Narratief omschrijving</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_Description.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Description goes here....</source>
+          <target state="translated">Omschrijving komt hier...</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_Name.Header" translate="yes" xml:space="preserve">
+          <source>Narrative Name</source>
+          <target state="translated">Narratief naam</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. Layer 1...</source>
+          <target state="translated">bijv. Layer 1...</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="translated">Annuleren</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_PrimaryButton_Add" translate="yes" xml:space="preserve">
+          <source>Accept Narrative</source>
+          <target state="translated">Accepteer narratief</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="translated">Accepteren</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_Title_Add" translate="yes" xml:space="preserve">
+          <source>Add Narrative</source>
+          <target state="translated">Narratief toevoegen</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_Title_Edit" translate="yes" xml:space="preserve">
+          <source>Edit Narrative</source>
+          <target state="translated">Narratief wijzigen</target>
+        </trans-unit>
+        <trans-unit id="Messages_NarrativeAddFailed_Title" translate="yes" xml:space="preserve">
+          <source>Adding Narrative failed</source>
+          <target state="translated">Fout bij het toevoegen van een narratief</target>
+        </trans-unit>
+        <trans-unit id="Messages_NarrativeDeleteFailed_Msg" translate="yes" xml:space="preserve">
+          <source>Narrative may have assets assigned.</source>
+          <target state="translated">Aan het narratief zijn al munten gekoppeld</target>
+        </trans-unit>
+        <trans-unit id="Messages_NarrativeDeleteFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to delete Narrative</source>
+          <target state="translated">Fout bij het verwijderen van een narratief</target>
+        </trans-unit>
+        <trans-unit id="Messages_NarrativeDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Narrative Dialog Failure</source>
+          <target state="translated">Fout bij het openen van het Narratief dialoogvenster</target>
+        </trans-unit>
+        <trans-unit id="Messages_NarrativetUpdateFailed_Title" translate="yes" xml:space="preserve">
+          <source>Updating narrative failed</source>
+          <target state="translated">Fout bij het updaten van het narratief</target>
+        </trans-unit>
+        <trans-unit id="Messages_NarrativeDeleteNotAllowd_Title" translate="yes" xml:space="preserve">
+          <source>Deleting not allowed!</source>
+          <target state="translated">Verwijderen niet toegestaan!</target>
+        </trans-unit>
+        <trans-unit id="Messages_NarrativeDeleteNotAllowed_Msg" translate="yes" xml:space="preserve">
+          <source>The Narrative is assigned to one or more assets.</source>
+          <target state="translated">Het narratief is aan één of meer munten gekoppeld</target>
+        </trans-unit>
+        <trans-unit id="PieChartView_Narratives.Text" translate="yes" xml:space="preserve">
+          <source>Narratives distribution</source>
+          <target state="translated">Narratief verdeling</target>
+        </trans-unit>
+        <trans-unit id="dummy" translate="yes" xml:space="preserve">
+          <source>dummy</source>
+          <target state="new">dummy</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_Narrative.Header" translate="yes" xml:space="preserve">
+          <source>Narrative</source>
+          <target state="translated">Narratief</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_AssignNarrative.Label" translate="yes" xml:space="preserve">
+          <source>Assign/Change Narrative</source>
+          <target state="translated">Narratief toekennen/wijzigen</target>
+        </trans-unit>
+        <trans-unit id="Messages_AssignNarrativeFailed_Title" translate="yes" xml:space="preserve">
+          <source>Assigning Narrative failed</source>
+          <target state="translated">Fout bij het toekennen van een narratief</target>
+        </trans-unit>
+        <trans-unit id="Messages_AssignNarrativeDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Assign Narrative dialog failure</source>
+          <target state="translated">Fout bij het openen van het dialoogvenster</target>
+        </trans-unit>
+        <trans-unit id="AssignNarrativeDialog_Title_Edit" translate="yes" xml:space="preserve">
+          <source>Assign/Edit Narrative for</source>
+          <target state="translated">Toekennen/wijzigen narratief voor</target>
+        </trans-unit>
+        <trans-unit id="AssignNarrativeDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
+          <source>Assign Narrative</source>
+          <target state="translated">Narratief toekennen</target>
+        </trans-unit>
+        <trans-unit id="AssignNarrativeDialog_AboutHeader.Text" translate="yes" xml:space="preserve">
+          <source>Description/Note</source>
+          <target state="translated">Omschrijving/notitie</target>
+        </trans-unit>
+        <trans-unit id="AssignNarrativeDialog_ComboHeader.Header" translate="yes" xml:space="preserve">
+          <source>Narrative</source>
+          <target state="translated">Narratief</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Narrative.Text" translate="yes" xml:space="preserve">
+          <source>Narrative</source>
+          <target state="translated">Narratief</target>
+        </trans-unit>
+        <trans-unit id="NarrativeDialog_NarrativeNameExists" translate="yes" xml:space="preserve">
+          <source>a Narrative with this name already exists</source>
+          <target state="translated">er bestaat al een narratief met deze naam</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_AccountNameExists" translate="yes" xml:space="preserve">
+          <source>an Account with this name already exists</source>
+          <target state="translated">er bestaat al een account met deze naam</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachNarrative.Title" translate="yes" xml:space="preserve">
+          <source>New Feature! The Narrative View</source>
+          <target state="translated">Nieuwe functie! Het narratieven overzicht</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachAssets.Title" translate="yes" xml:space="preserve">
+          <source>How to Start! (3 of 3)</source>
+          <target state="translated">Hoe starten! (3 van 3)</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachAccounts.Title" translate="yes" xml:space="preserve">
+          <source>How to Start! (2 of 3)</source>
+          <target state="translated">Hoe starten! (2 van 3)</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachLibrary.Title" translate="yes" xml:space="preserve">
+          <source>How to Start! (1 of 3)</source>
+          <target state="translated">Hoe starten! (1 van 3)</target>
+        </trans-unit>
+        <trans-unit id="Dashboard_TeachNarrative.Title" translate="yes" xml:space="preserve">
+          <source>New Feature! (2 of 2)</source>
+          <target state="translated">Nieuwe functie! (2 van 2)</target>
+        </trans-unit>
+        <trans-unit id="Dashboard_TeachPortfolio.Title" translate="yes" xml:space="preserve">
+          <source>New Feature! (1 of 2)</source>
+          <target state="translated">Nieuwe functie! (1 van 2)</target>
+        </trans-unit>
+        <trans-unit id="Narrative_TeachGeneral.Title" translate="yes" xml:space="preserve">
+          <source>Click on a Narrative in the list to expand and show the related coins</source>
+          <target state="translated">Klik op een narratief in de lijst om deze uit te vouwen en de bijbehorende munten te tonen</target>
+        </trans-unit>
+        <trans-unit id="Library_TeachNarrative.Title" translate="yes" xml:space="preserve">
+          <source>Narrative Column Added!</source>
+          <target state="translated">Narratief kolom toegevoegd!</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
+          <source>Assign a main Narrative to each of your coins to get a Narrative View. Assigning can be done at the Library for already existing coins or when adding a new coin.</source>
+          <target state="translated">Wijs een narratief toe aan elk van uw munten om een ​​narratief overzicht te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt.</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachAssets.Subtitle" translate="yes" xml:space="preserve">
+          <source>Step 3: Build up your Portfolio by adding Transactions in the Assets View</source>
+          <target state="translated">Stap 3: Bouw uw portefeuille op door transacties toe te voegen in de portefeuilleweergave</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachAccounts.Subtitle" translate="yes" xml:space="preserve">
+          <source>Step 2: Add Accounts. An Account is a location where you hold your coins, like Bybit, MEXC, Ledger, Trezor or any other exchange or wallet</source>
+          <target state="translated">Stap 2: Accounts toevoegen. Een account is een locatie waar u uw munten bewaart, zoals Bybit, MEXC, Ledger, Trezor of een andere exchange of wallet</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachLibrary.Subtitle" translate="yes" xml:space="preserve">
+          <source>Step 1: Add coins to your Library.</source>
+          <target state="translated">Stap 1: Voeg munten toe aan uw bibliotheek.</target>
+        </trans-unit>
+        <trans-unit id="Dashboard_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
+          <source>Assign a main Narrative to each of your coins to get a Narrative Distribution. Assigning can be done at the Library for already existing coins or when adding a new coin</source>
+          <target state="translated">Wijs een narratief toe aan elk van uw munten om een ​​narrtief verdeling te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt</target>
+        </trans-unit>
+        <trans-unit id="Dashboard_TeachPortfolio.Subtitle" translate="yes" xml:space="preserve">
+          <source>Set Maximum Number of visible coins in 'Settings -&gt; Dashboard Settings'. The remaining coins will be grouped into 'Others'</source>
+          <target state="translated">Stel het maximale aantal zichtbare munten in 'Instellingen -&gt; Dashboardinstellingen' in. De resterende munten worden gegroepeerd in 'Others'</target>
+        </trans-unit>
+        <trans-unit id="Narrative_TeachGeneral.Subtitle" translate="yes" xml:space="preserve">
+          <source>First you have to assign a Narrative to each of the coins. You can do that in the Library</source>
+          <target state="translated">Eerst moet je een Narratief toewijzen aan elk van de munten. Dat kun je doen in de bibliotheek</target>
+        </trans-unit>
+        <trans-unit id="Library_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
+          <source>Assigning Narratives can be done for existing coins by selecting the action dots ... on the right of each coin</source>
+          <target state="translated">Het toewijzen van een narratief kan worden gedaan voor bestaande munten door de 'actie'-punten te selecteren, helemaal rechts naast elke munt.</target>
         </trans-unit>
       </group>
     </body>

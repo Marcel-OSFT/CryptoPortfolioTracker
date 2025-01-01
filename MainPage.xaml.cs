@@ -59,9 +59,24 @@ public partial class MainPage : Page, INotifyPropertyChanged
         _preferencesService = preferencesService;
         _graphUpdateService = graphUpdateService;
         _priceUpdateService = priceUpdateService;
+        SetupTeachingTips();
 
-        
+    }
 
+    private void SetupTeachingTips()
+    {
+        var teachingTipInitial = _preferencesService.GetTeachingTip("TeachingTipBlank");
+        var teachingTipNarr = _preferencesService.GetTeachingTip("TeachingTipNarrNavi");
+
+        if (teachingTipInitial == null || !teachingTipInitial.IsShown)
+        {
+            _preferencesService.SetTeachingTipAsShown("TeachingTipNarrNavi");
+            MyTeachingTipBlank1.IsOpen = true;
+        }
+        else if (teachingTipNarr != null && !teachingTipNarr.IsShown)
+        {
+            MyTeachingTipNarr.IsOpen = true;
+        }
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
@@ -267,7 +282,34 @@ public partial class MainPage : Page, INotifyPropertyChanged
         _priceUpdateService.Start();
     }
 
-
+    private void OnGetItClickedNarr(object sender, RoutedEventArgs e)
+    {
+        // Handle the 'Get it' button click
+        MyTeachingTipNarr.IsOpen = false;
+        _preferencesService.SetTeachingTipAsShown("TeachingTipNarrNavi");
+        // Navigate to the new feature or provide additional information
+    }
+    private void OnGetItClickedBlank1(object sender, RoutedEventArgs e)
+    {
+        // Handle the 'Get it' button click
+        MyTeachingTipBlank1.IsOpen = false;
+        MyTeachingTipBlank2.IsOpen = true;
+        // Navigate to the new feature or provide additional information
+    }
+    private void OnGetItClickedBlank2(object sender, RoutedEventArgs e)
+    {
+        // Handle the 'Get it' button click
+        MyTeachingTipBlank2.IsOpen = false;
+        MyTeachingTipBlank3.IsOpen = true;
+        // Navigate to the new feature or provide additional information
+    }
+    private void OnGetItClickedBlank3(object sender, RoutedEventArgs e)
+    {
+        // Handle the 'Get it' button click
+        MyTeachingTipBlank3.IsOpen = false;
+        _preferencesService.SetTeachingTipAsShown("TeachingTipBlank");
+        // Navigate to the new feature or provide additional information
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -275,6 +317,16 @@ public partial class MainPage : Page, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-
+    private void OnDismisslickedBlank1(object sender, RoutedEventArgs e)
+    {
+        MyTeachingTipBlank1.IsOpen = false;
+        _preferencesService.SetTeachingTipAsShown("TeachingTipBlank");
+    }
+    private void OnDismisslickedBlank2(object sender, RoutedEventArgs e)
+    {
+        MyTeachingTipBlank2.IsOpen = false;
+        _preferencesService.SetTeachingTipAsShown("TeachingTipBlank");
+    }
+    
 }
 

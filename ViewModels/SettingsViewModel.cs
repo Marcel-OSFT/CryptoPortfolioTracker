@@ -73,9 +73,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
     partial void OnAreValuesMaskedChanged(bool value) => _preferencesService.SetAreValuesMasked(value);
 
 
-
-
-
     public SettingsViewModel(IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));

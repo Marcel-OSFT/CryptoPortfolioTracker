@@ -16,11 +16,13 @@ public partial class Coin : BaseModel
         note = string.Empty;
         Assets = new List<Asset>();
         PriceLevels = new List<PriceLevel>();
-
+        Narrative = new();
     }
 
     //*** Navigation Property
     [ObservableProperty] public ICollection<Asset> assets;
+    [ObservableProperty] public Narrative narrative;
+
     public ICollection<PriceLevel> PriceLevels { get; set; }
 
     public int Id { get; set; }

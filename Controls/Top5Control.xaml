@@ -41,8 +41,8 @@
             <GridView x:Name="TopWinnersView" x:FieldModifier="public" 
                 ItemsSource="{Binding TopWinners, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
                 IsItemClickEnabled="False" SelectionMode="None" 
-                toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
-                ScrollViewer.VerticalScrollBarVisibility="Visible"
+                
+                ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollMode="Auto"
                 CanReorderItems="false" AllowDrop="false" Margin="10,0,0,0">
                 <GridView.ItemContainerStyle>
                     <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
@@ -107,7 +107,7 @@
             <GridView x:Name="TopLosersView" x:FieldModifier="public" 
                 ItemsSource="{Binding TopLosers, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
                 IsItemClickEnabled="False" SelectionMode="None" ScrollViewer.HorizontalScrollMode="Enabled"
-                toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
+               
                 ScrollViewer.VerticalScrollBarVisibility="Visible"
                 CanReorderItems="false" AllowDrop="false" Margin="10,0,0,0">
                 <GridView.ItemContainerStyle>
