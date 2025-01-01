@@ -25,7 +25,7 @@
     <value>Getalsnotatie</value>
   </data>
   <data name="Settings_CheckUpdate.Description" xml:space="preserve">
-    <value>Maakt automatisch controleren op updates mogelijk.</value>
+    <value>Hoe wilt u dat cijfers worden weergegeven?</value>
   </data>
   <data name="Settings_CheckUpdate.Header" xml:space="preserve">
     <value>Controleer op Updates.</value>
@@ -883,5 +883,164 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="ValueGainsView_NetInvestment.Text" xml:space="preserve">
     <value>Netto investering</value>
+  </data>
+  <data name="Navigation_Narratives.Content" xml:space="preserve">
+    <value>Narratief</value>
+  </data>
+  <data name="NarrativesLV_Edit.Label" xml:space="preserve">
+    <value>Wijzigen</value>
+  </data>
+  <data name="NarrativesLV_MarketValue.Text" xml:space="preserve">
+    <value>Marktwaarde</value>
+  </data>
+  <data name="NarrativesLV_Name.Text" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="NarrativesLV_Note.Text" xml:space="preserve">
+    <value>Notitie</value>
+  </data>
+  <data name="Narratives_AddNarrative.Content" xml:space="preserve">
+    <value>Narratief toevoegen</value>
+  </data>
+  <data name="Narratives_Explainer.Text" xml:space="preserve">
+    <value>Het Narratieven overzicht geeft u een lijst van uw crypto-activa in relatie tot hun narratief. Ga naar het Bibliotheek overzicht om een ​​Narrative toe te wijzen aan een munt die al in uw Bibliotheek zit. Indien u een nieuwe munt gaat toevoegen kunt u daar gelijk een Narratief toekennen. De app wordt geleverd met een initiële  narratievenList die kan worden aangepast. De naam en beschrijving kunnen worden gewijzigd en er kunnen ook nieuwe narratieven worden toegevoegd.</value>
+  </data>
+  <data name="Narratives_Title.Text" xml:space="preserve">
+    <value>Narratieven</value>
+  </data>
+  <data name="NarrativesLV_Delete.Label" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="NarrativeDialog_Description.Header" xml:space="preserve">
+    <value>Narratief omschrijving</value>
+  </data>
+  <data name="NarrativeDialog_Description.PlaceholderText" xml:space="preserve">
+    <value>Omschrijving komt hier...</value>
+  </data>
+  <data name="NarrativeDialog_Name.Header" xml:space="preserve">
+    <value>Narratief naam</value>
+  </data>
+  <data name="NarrativeDialog_Name.PlaceholderText" xml:space="preserve">
+    <value>bijv. Layer 1...</value>
+  </data>
+  <data name="NarrativeDialog_CloseButton" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="NarrativeDialog_PrimaryButton_Add" xml:space="preserve">
+    <value>Accepteer narratief</value>
+  </data>
+  <data name="NarrativeDialog_PrimaryButton_Edit" xml:space="preserve">
+    <value>Accepteren</value>
+  </data>
+  <data name="NarrativeDialog_Title_Add" xml:space="preserve">
+    <value>Narratief toevoegen</value>
+  </data>
+  <data name="NarrativeDialog_Title_Edit" xml:space="preserve">
+    <value>Narratief wijzigen</value>
+  </data>
+  <data name="Messages_NarrativeAddFailed_Title" xml:space="preserve">
+    <value>Fout bij het toevoegen van een narratief</value>
+  </data>
+  <data name="Messages_NarrativeDeleteFailed_Msg" xml:space="preserve">
+    <value>Aan het narratief zijn al munten gekoppeld</value>
+  </data>
+  <data name="Messages_NarrativeDeleteFailed_Title" xml:space="preserve">
+    <value>Fout bij het verwijderen van een narratief</value>
+  </data>
+  <data name="Messages_NarrativeDialogFailed_Title" xml:space="preserve">
+    <value>Fout bij het openen van het Narratief dialoogvenster</value>
+  </data>
+  <data name="Messages_NarrativetUpdateFailed_Title" xml:space="preserve">
+    <value>Fout bij het updaten van het narratief</value>
+  </data>
+  <data name="Messages_NarrativeDeleteNotAllowd_Title" xml:space="preserve">
+    <value>Verwijderen niet toegestaan!</value>
+  </data>
+  <data name="Messages_NarrativeDeleteNotAllowed_Msg" xml:space="preserve">
+    <value>Het narratief is aan één of meer munten gekoppeld</value>
+  </data>
+  <data name="PieChartView_Narratives.Text" xml:space="preserve">
+    <value>Narratief verdeling</value>
+  </data>
+  <data name="CoinDialog_Narrative.Header" xml:space="preserve">
+    <value>Narratief</value>
+  </data>
+  <data name="LibraryLV_AssignNarrative.Label" xml:space="preserve">
+    <value>Narratief toekennen/wijzigen</value>
+  </data>
+  <data name="Messages_AssignNarrativeFailed_Title" xml:space="preserve">
+    <value>Fout bij het toekennen van een narratief</value>
+  </data>
+  <data name="Messages_AssignNarrativeDialogFailed_Title" xml:space="preserve">
+    <value>Fout bij het openen van het dialoogvenster</value>
+  </data>
+  <data name="AssignNarrativeDialog_Title_Edit" xml:space="preserve">
+    <value>Toekennen/wijzigen narratief voor</value>
+  </data>
+  <data name="AssignNarrativeDialog_PrimaryButton_Edit" xml:space="preserve">
+    <value>Narratief toekennen</value>
+  </data>
+  <data name="AssignNarrativeDialog_AboutHeader.Text" xml:space="preserve">
+    <value>Omschrijving/notitie</value>
+  </data>
+  <data name="AssignNarrativeDialog_ComboHeader.Header" xml:space="preserve">
+    <value>Narratief</value>
+  </data>
+  <data name="LibraryLV_Narrative.Text" xml:space="preserve">
+    <value>Narratief</value>
+  </data>
+  <data name="NarrativeDialog_NarrativeNameExists" xml:space="preserve">
+    <value>er bestaat al een narratief met deze naam</value>
+  </data>
+  <data name="AccountDialog_AccountNameExists" xml:space="preserve">
+    <value>er bestaat al een account met deze naam</value>
+  </data>
+  <data name="Navigation_TeachNarrative.Title" xml:space="preserve">
+    <value>Nieuwe functie! Het narratieven overzicht</value>
+  </data>
+  <data name="Navigation_TeachAssets.Title" xml:space="preserve">
+    <value>Hoe starten! (3 van 3)</value>
+  </data>
+  <data name="Navigation_TeachAccounts.Title" xml:space="preserve">
+    <value>Hoe starten! (2 van 3)</value>
+  </data>
+  <data name="Navigation_TeachLibrary.Title" xml:space="preserve">
+    <value>Hoe starten! (1 van 3)</value>
+  </data>
+  <data name="Dashboard_TeachNarrative.Title" xml:space="preserve">
+    <value>Nieuwe functie! (2 van 2)</value>
+  </data>
+  <data name="Dashboard_TeachPortfolio.Title" xml:space="preserve">
+    <value>Nieuwe functie! (1 van 2)</value>
+  </data>
+  <data name="Narrative_TeachGeneral.Title" xml:space="preserve">
+    <value>Klik op een narratief in de lijst om deze uit te vouwen en de bijbehorende munten te tonen</value>
+  </data>
+  <data name="Library_TeachNarrative.Title" xml:space="preserve">
+    <value>Narratief kolom toegevoegd!</value>
+  </data>
+  <data name="Navigation_TeachNarrative.Subtitle" xml:space="preserve">
+    <value>Wijs een narratief toe aan elk van uw munten om een ​​narratief overzicht te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt.</value>
+  </data>
+  <data name="Navigation_TeachAssets.Subtitle" xml:space="preserve">
+    <value>Stap 3: Bouw uw portefeuille op door transacties toe te voegen in de portefeuilleweergave</value>
+  </data>
+  <data name="Navigation_TeachAccounts.Subtitle" xml:space="preserve">
+    <value>Stap 2: Accounts toevoegen. Een account is een locatie waar u uw munten bewaart, zoals Bybit, MEXC, Ledger, Trezor of een andere exchange of wallet</value>
+  </data>
+  <data name="Navigation_TeachLibrary.Subtitle" xml:space="preserve">
+    <value>Stap 1: Voeg munten toe aan uw bibliotheek.</value>
+  </data>
+  <data name="Dashboard_TeachNarrative.Subtitle" xml:space="preserve">
+    <value>Wijs een narratief toe aan elk van uw munten om een ​​narrtief verdeling te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt</value>
+  </data>
+  <data name="Dashboard_TeachPortfolio.Subtitle" xml:space="preserve">
+    <value>Stel het maximale aantal zichtbare munten in 'Instellingen -&gt; Dashboardinstellingen' in. De resterende munten worden gegroepeerd in 'Others'</value>
+  </data>
+  <data name="Narrative_TeachGeneral.Subtitle" xml:space="preserve">
+    <value>Eerst moet je een Narratief toewijzen aan elk van de munten. Dat kun je doen in de bibliotheek</value>
+  </data>
+  <data name="Library_TeachNarrative.Subtitle" xml:space="preserve">
+    <value>Het toewijzen van een narratief kan worden gedaan voor bestaande munten door de 'actie'-punten te selecteren, helemaal rechts naast elke munt.</value>
   </data>
 </root>

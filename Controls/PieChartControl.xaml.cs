@@ -21,11 +21,6 @@ using WinUIEx;
 
 namespace CryptoPortfolioTracker.Controls;
 
-
-
-
-
-
 public partial class PieChartControl : UserControl, INotifyPropertyChanged
 {
     public readonly DashboardViewModel _viewModel;
@@ -64,7 +59,7 @@ public partial class PieChartControl : UserControl, INotifyPropertyChanged
     private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
        _viewModel.InitializePie(this);
-       
+
     }
 
     private void Pie_UpdateStarted(IChartView<SkiaSharpDrawingContext> chart)

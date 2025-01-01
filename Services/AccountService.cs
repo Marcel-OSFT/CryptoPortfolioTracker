@@ -308,5 +308,19 @@ public partial class AccountService : ObservableObject, IAccountService
         return assetAccounts;
     }
 
+
+    public bool DoesAccountNameExist(string name)
+    {
+        Account account;
+        try
+        {
+            account = context.Accounts.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefault();
+        }
+        catch (Exception)
+        {
+            account = new Account();
+        }
+        return account != null;
+    }
 }
 

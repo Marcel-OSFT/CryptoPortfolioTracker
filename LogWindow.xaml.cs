@@ -1,4 +1,5 @@
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Helpers;
 using CryptoPortfolioTracker.Services;
 using Microsoft.UI;
@@ -8,16 +9,20 @@ using Microsoft.UI.Xaml.Media;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Sinks.MemorySink;
+using Serilog.Extensions.Logging;
 using Serilog.Sinks.WinUi3;
+
 using Serilog.Sinks.WinUi3.LogViewModels;
 using Serilog.Templates;
 
 namespace CryptoPortfolioTracker;
 
+[ObservableObject]
 public sealed partial class LogWindow : Window
 {
-    private LoggingLevelSwitch _levelSwitch;
-    private ItemsRepeaterLogBroker _logBroker;
+    [ObservableProperty] private LoggingLevelSwitch _levelSwitch;
+    [ObservableProperty] private ItemsRepeaterLogBroker _logBroker;
     private readonly IPreferencesService _preferencesService;
     private ILogger Logger  { get; set; }
 
@@ -33,7 +38,7 @@ public sealed partial class LogWindow : Window
 
     private void ConfigureLogger()
     {
-        _levelSwitch = new LoggingLevelSwitch
+        LevelSwitch = new LoggingLevelSwitch
         {
             MinimumLevel = LogEventLevel.Verbose
         };
@@ -51,16 +56,17 @@ public sealed partial class LogWindow : Window
             if (sender is ComboBox comboBox &&
                 Enum.TryParse<LogEventLevel>(comboBox.SelectedItem.ToString(), out var level) is true)
             {
-                _levelSwitch.MinimumLevel = level;
+                LevelSwitch.MinimumLevel = level;
+                
             }
         };
 
         App.Current.Resources.TryGetValue("DefaultTextForegroundThemeBrush", out var defaultTextForegroundBrush);
 
-        _logBroker = new ItemsRepeaterLogBroker(
+        LogBroker = new ItemsRepeaterLogBroker(
             LogViewer,
             LogScrollViewer,
-            new EmojiLogViewModelBuilder((defaultTextForegroundBrush as SolidColorBrush)?.Color)
+            new  EmojiLogViewModelBuilder((defaultTextForegroundBrush as SolidColorBrush)?.Color)
 
                 .SetTimestampFormat(new ExpressionTemplate("[{@t:yyyy-MM-dd HH:mm:ss.fff}]"))
                 .SetLevelsFormat(new ExpressionTemplate("{@l:u3}"))
@@ -81,8 +87,9 @@ public sealed partial class LogWindow : Window
                 );
 
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.ControlledBy(_levelSwitch)
-            .WriteTo.WinUi3Control(_logBroker)
+            .MinimumLevel.ControlledBy(LevelSwitch)
+            .WriteTo.WinUi3Control(LogBroker)
+
             .WriteTo.File(App.appDataPath + "\\log.txt",
                        rollingInterval: RollingInterval.Day,
                        retainedFileCountLimit: 3,
@@ -93,21 +100,21 @@ public sealed partial class LogWindow : Window
 
         _preferencesService.AttachLogger();
 
-        _logBroker.IsAutoScrollOn = true;
+        LogBroker.IsAutoScrollOn = true;
     }
 
-    
+   
     private void AutoScrollToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (sender is ToggleSwitch toggleSwitch && _logBroker is not null)
+        if (sender is ToggleSwitch toggleSwitch && LogBroker is not null)
         {
-            _logBroker.IsAutoScrollOn = toggleSwitch.IsOn;
+            LogBroker.IsAutoScrollOn = toggleSwitch.IsOn;
         }
     }
 
     private void UpdateToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (sender is ToggleSwitch toggleSwitch && _logBroker is not null)
+        if (sender is ToggleSwitch toggleSwitch && LogBroker is not null)
         {
             LogViewer.Visibility = toggleSwitch.IsOn ? Visibility.Visible : Visibility.Collapsed;
         }

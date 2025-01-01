@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Windows.System;
 using WinUI3Localizer;
+using static WinUI3Localizer.LanguageDictionary;
 
 namespace CryptoPortfolioTracker.Controls;
 
@@ -190,30 +191,43 @@ public sealed partial class AutoSuggestBoxWithValidation : UserControl
     private void PopulateSuitableItems()
     {
         var suitableItems = new List<string>();
-        //var splitText = innerASBox.Text.ToLower().Split(" ");
-        var splitText = MyText.ToLower().Split(" ");
-        foreach (var item in ItemsSource.ToList())
+
+        //*** first check for exact match
+        var exactMatch = ItemsSource.Where(x => x.ToLower() == MyText.ToLower()).FirstOrDefault();
+
+        if (exactMatch != null)
         {
-            var found = splitText.All((key) =>
+            suitableItems.Add(exactMatch);
+            MyText = exactMatch;
+        }
+        else
+        {
+            //*** check for partial matches
+            var splitText = MyText.ToLower().Split(" ");
+            foreach (var item in ItemsSource.ToList())
             {
-                if (item.ToLower().Contains(key))
+                var found = splitText.All((key) =>
                 {
-                    return true;
-                }
-                else
+                    if (item.ToLower().Contains(key))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                });
+                if (found)
                 {
-                    return false;
-                }
-            });
-            if (found)
-            {
-                suitableItems.Add(item);
-                if (MyText.ToLower() == item.ToLower() && MyText != item)
-                {
-                    MyText = item;
+                    suitableItems.Add(item);
+                    if (MyText.ToLower() == item.ToLower() && MyText != item)
+                    {
+                        MyText = item;
+                    }
                 }
             }
         }
+        
         if (suitableItems.Count == 0)
         {
             suitableItems.Add(loc.GetLocalizedString("ASBox_NoSuitableItems_Msg"));

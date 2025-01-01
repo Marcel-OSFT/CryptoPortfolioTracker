@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using CryptoPortfolioTracker.Enums;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoPortfolioTracker.Models;
 
@@ -38,6 +40,9 @@ public class UserPreferences
         withinRangePerc = 20;
         MaxPieCoins = 10;
         AreValuesMasked = false;
+
+        TeachingTips = new List<TeachingTipCPT>();
+        
     }
 
     private int refreshIntervalMinutes;
@@ -211,6 +216,13 @@ public class UserPreferences
             }
         }
     }
+
+    /// <summary>
+    /// Teaching Tips
+    /// 
+
+    public List<TeachingTipCPT> TeachingTips { get; set; }
+
 
 
 

@@ -127,12 +127,6 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     }
 
-
-
-
-
-
-
     /// <summary>
     /// this function without parameters will sort the list using the last used settings.
     /// </summary>
@@ -163,6 +157,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
         }
         catch (Exception ex)
         {
+            RejectChanges();
             return new Result<bool>(ex);
         }
         return _result;
@@ -187,6 +182,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
         }
         catch (Exception ex)
         {
+            RejectChanges();
             return new Result<bool>(ex);
         }
         return _result;
@@ -218,6 +214,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
             //coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
             coinList = await context.Coins
                 .Include(x => x.PriceLevels)
+                .Include(x => x.Narrative)
                 .OrderBy(x => x.Rank)
                 .ToListAsync();
         }
@@ -244,6 +241,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
         }
         catch (Exception ex)
         {
+            RejectChanges();
             return new Result<bool>(ex);
         }
         return _result;
@@ -402,7 +400,14 @@ public partial class LibraryService : ObservableObject, ILibraryService
         return !assets.Any();
     }
 
-    public void RejectChanges()
+    
+
+    
+
+    
+
+
+    private void RejectChanges()
     {
         foreach (var entry in context.ChangeTracker.Entries())
         {

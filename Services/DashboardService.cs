@@ -30,19 +30,21 @@ public partial class DashboardService : ObservableObject, IDashboardService
     private static ILogger Logger { get; set; }
     public readonly PortfolioContext coinContext;
     private readonly IAssetService _assetService;
+    private readonly INarrativeService _narrativeService;
     private readonly IPreferencesService _preferencesService;
     private readonly IAccountService _accountService;
 
 
 
 
-    public DashboardService(PortfolioContext portfolioContext, IAssetService assetService, IAccountService accountService, IPreferencesService preferencesService)
+    public DashboardService(PortfolioContext portfolioContext, IAssetService assetService, INarrativeService narrativeService, IAccountService accountService, IPreferencesService preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
         coinContext = portfolioContext;
         _assetService = assetService;
         _preferencesService = preferencesService;
         _accountService = accountService;
+        _narrativeService = narrativeService;
     }
 
     public ObservableCollection<Coin> GetTopWinners()
@@ -152,9 +154,8 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
 
             }
-            else if (pieChartName == "Accounts")
+            if (pieChartName == "Accounts")
             {
-                // first get TOP 10 coins based on Rank
                 var accounts = (await _accountService.PopulateAccountsList())
                     .Where(x => x.TotalValue > 0)
                     .OrderBy(x => x.TotalValue)
@@ -172,6 +173,32 @@ public partial class DashboardService : ObservableObject, IDashboardService
                         {
                             Value = perc,
                             Label = account.Name
+                        };
+                        piePoints.Add(piePoint);
+                        index += 1;
+                    }
+
+                }
+            }
+            if (pieChartName == "Narratives")
+            {
+                var narratives = (await _narrativeService.PopulateNarrativesList())
+                    .Where(x => x.TotalValue > 0)
+                    .OrderBy(x => x.TotalValue)
+                    .ToList();
+
+                foreach (var narrative in narratives)
+                {
+                    if (narrative is null || portfolioValue == 0) { continue; }
+
+                    var perc = 100 * narrative.TotalValue / portfolioValue;
+
+                    if (!double.IsInfinity(perc))
+                    {
+                        var piePoint = new PiePoint
+                        {
+                            Value = perc,
+                            Label = narrative.Name
                         };
                         piePoints.Add(piePoint);
                         index += 1;
@@ -219,22 +246,6 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
         return dataPoints;
     }
-
-
-    //public double GetTotalNetInvestments()
-    //{
-    //    var sumIn = coinContext.Mutations
-    //        .Where(m => m.Direction == MutationDirection.In)
-    //        .Sum(s => s.Qty * s.Price);
-
-    //    var sumOut = coinContext.Mutations
-    //        .Where(m => m.Direction == MutationDirection.Out)
-    //        .Sum(s => s.Qty * s.Price);
-
-    //    return sumIn - sumOut;
-
-    //}
-
 
 }
 

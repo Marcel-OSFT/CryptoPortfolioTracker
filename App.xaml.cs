@@ -19,6 +19,7 @@ using Windows.ApplicationModel.Store;
 using System.IO.Compression;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CryptoPortfolioTracker;
 
@@ -86,14 +87,33 @@ public partial class App : Application
         await Task.Delay(1000);
 
         _preferencesService.LoadUserPreferencesFromXml();
+
+        AddNewTeachingTips();
+
+
        //await LoadPortfolioValueGraph();
         InitializeLogger();
         await InitializeLocalizer();
-        CheckDatabase();
+        await CheckDatabase();
 
         Window = Container.GetService<MainWindow>(); 
         Window.Activate();
     }
+
+    private void AddNewTeachingTips()
+    {
+        var newTip1 = new TeachingTipCPT(){ Name = "TeachingTipNarrLibr", IsShown = false };
+        var newTip2 = new TeachingTipCPT(){ Name = "TeachingTipNarrDash", IsShown = false };
+        var newTip3 = new TeachingTipCPT(){ Name = "TeachingTipNarrNarr", IsShown = false };
+        var newTip4 = new TeachingTipCPT(){ Name = "TeachingTipPortDash", IsShown = false };
+        var newTip5 = new TeachingTipCPT(){ Name = "TeachingTipNarrNavi", IsShown = false };
+
+        List<TeachingTipCPT> tips = new() { newTip1, newTip2, newTip3, newTip4, newTip5};
+
+        _preferencesService.AddTeachingTips(tips);
+
+    }
+
     private async Task InitializeLocalizer()
     {
         // Initialize a "Strings" folder in the executables folder.
@@ -103,11 +123,11 @@ public partial class App : Application
             .AddStringResourcesFolderForLanguageDictionaries(StringsFolderPath)
             .Build();
 
-         Logger.Information("Setting Language to {0}", _preferencesService.GetAppCultureLanguage());
+        if (Logger != null) { Logger.Information("Setting Language to {0}", _preferencesService.GetAppCultureLanguage()); }
         await Localizer.SetLanguage(_preferencesService.GetAppCultureLanguage());
     }
 
-    private async void CheckDatabase()
+    private async Task CheckDatabase()
     {
         try
         {
@@ -119,16 +139,17 @@ public partial class App : Application
                 BackupCptFiles(false);
             }
 
-
             var pending = await context.Database.GetPendingMigrationsAsync();
             var initPriceLevelsEntity = false;
+            var initNarrativesEntity = false;
 
             if (pending.Count() > 0)
             {
                 foreach (var migration in pending)
                 {
-                    Logger.Information("Pending Migrations {0}", migration.ToString());
+                    if (Logger != null) { Logger.Information("Pending Migrations {0}", migration.ToString()); }
                     if (initPriceLevelsEntity != true) initPriceLevelsEntity = migration.Contains("AddPriceLevelsEntity");
+                    if (initNarrativesEntity != true) initNarrativesEntity = migration.Contains("AddNarrativesEntity");
                 }
 
                 if (File.Exists(dbFilename)) BackupCptFiles(true);
@@ -136,23 +157,21 @@ public partial class App : Application
 
             context?.Database.Migrate();
 
-            if (initPriceLevelsEntity)
-            {
-                PopulatePriceLevelsTable(context);
-            }
-
+            if (initPriceLevelsEntity) { PopulatePriceLevelsTable(context); }
+            if (initNarrativesEntity) 
+            { 
+                PopulateNarrativesTable(context); 
+            } 
 
             var applied = await context.Database.GetAppliedMigrationsAsync();
             foreach (var migration in applied)
             {
-                Logger.Information("Applied Migrations {0}", migration.ToString());
+                if (Logger != null) { Logger.Information("Applied Migrations {0}", migration.ToString()); }
             }
-            
-
         }
         catch (Exception ex)
         {
-            throw;
+            if (Logger != null) { Logger.Error(ex.Message, "Checking Database failed!"); }
         }
     }
 
@@ -165,60 +184,59 @@ public partial class App : Application
         var backupFolder = appDataPath + "\\" + BackupFolder;
         string backUpName = string.Empty;
 
-        if (!Directory.Exists(backupFolder))
+        try
         {
-            Directory.CreateDirectory(backupFolder);
-        }
-
-        if (isMigration)
-        {
-            //*** Skip migration backup if backup already exists
-            var file = Directory.GetFiles(backupFolder, "*" + ProductVersion.Replace(".", "-") + "*");
-            if (file.Length > 0)
+            if (!Directory.Exists(backupFolder))
             {
-                return;
+                Directory.CreateDirectory(backupFolder);
             }
-            backUpName = PrefixBackupName + "_m" + ProductVersion.Replace(".", "-") + "_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "." + ExtentionBackup;
-        }
-        else
-        {
-            initDone = true;
-            var backupFiles = Directory.GetFiles(backupFolder, "*_s_*");
-            if (backupFiles.Length > 5)
+
+            if (isMigration)
             {
-                File.Delete(backupFiles[0]);
+                //*** Skip migration backup if backup already exists
+                var file = Directory.GetFiles(backupFolder, "*" + ProductVersion.Replace(".", "-") + "*");
+                if (file.Length > 0)
+                {
+                    return;
+                }
+                backUpName = PrefixBackupName + "_m" + ProductVersion.Replace(".", "-") + "_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "." + ExtentionBackup;
             }
-            backUpName = PrefixBackupName + "_s_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "." + ExtentionBackup;
+            else
+            {
+                initDone = true;
+                var backupFiles = Directory.GetFiles(backupFolder, "*_s_*");
+                if (backupFiles.Length > 5)
+                {
+                    File.Delete(backupFiles[0]);
+                }
+                backUpName = PrefixBackupName + "_s_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "." + ExtentionBackup;
+            }
 
-        }
+            if (!Directory.Exists(tempFolder))
+            {
+                Directory.CreateDirectory(tempFolder);
+            }
+            else
+            {
+                Directory.Delete(tempFolder, true);
+                Directory.CreateDirectory(tempFolder);
+            }
+            File.Copy(dbFile, tempFolder + "\\" + DbName);
+            File.Copy(preferencesFile, tempFolder + "\\" + PrefFileName);
 
-        if (!Directory.Exists(tempFolder))
-        {
-            Directory.CreateDirectory(tempFolder);
-        }
-        else
-        {
+            if (!Directory.Exists(chartsFolder))
+            {
+                Directory.CreateDirectory(chartsFolder);
+            }
+            DirectoryCopy(chartsFolder, tempFolder + "\\" + ChartsFolder, true);
+            ZipFile.CreateFromDirectory(tempFolder, backupFolder + "\\" + backUpName);
             Directory.Delete(tempFolder, true);
-            Directory.CreateDirectory(tempFolder);
         }
-        File.Copy(dbFile, tempFolder + "\\" + DbName);
-        File.Copy(preferencesFile, tempFolder + "\\" + PrefFileName);
-        
-        if (!Directory.Exists(chartsFolder))
+        catch (Exception ex)
         {
-            Directory.CreateDirectory(chartsFolder);
+            if (Logger != null) { Logger.Error(ex.Message, "BackUp CPT files failed!"); }
         }
-
-        DirectoryCopy(chartsFolder, tempFolder + "\\" + ChartsFolder, true);
-
-        ZipFile.CreateFromDirectory(tempFolder, backupFolder + "\\" + backUpName);
-
-        Directory.Delete(tempFolder, true);
-
     }
-
-    
-
 
     private async void PopulatePriceLevelsTable(PortfolioContext context)
     {
@@ -234,9 +252,7 @@ public partial class App : Application
             pLevelTp.Value = 0;
             pLevelTp.Status = PriceLevelStatus.NotWithinRange;
             pLevelTp.Note = string.Empty;
-            //context.PriceLevels.Add(pLevelTp);
             levels.Add(pLevelTp);
-
 
             var pLevelBuy = new PriceLevel();
             pLevelBuy.Coin = coin;
@@ -244,10 +260,7 @@ public partial class App : Application
             pLevelBuy.Value = 0;
             pLevelBuy.Status = PriceLevelStatus.NotWithinRange;
             pLevelBuy.Note = string.Empty;
-            //context.PriceLevels.Add(pLevelBuy);
             levels.Add(pLevelBuy);
-
-
 
             var pLevelStop = new PriceLevel();
             pLevelStop.Coin = coin;
@@ -255,15 +268,62 @@ public partial class App : Application
             pLevelStop.Value = 0;
             pLevelStop.Status = PriceLevelStatus.NotWithinRange;
             pLevelStop.Note = string.Empty;
-            //context.PriceLevels.Add(pLevelStop);
             levels.Add(pLevelStop);
 
             context.PriceLevels.AddRange(levels);
-           // coin.PriceLevels = levels;
 
         }
         await context.SaveChangesAsync();
     }
+
+    private async void PopulateNarrativesTable(PortfolioContext context)
+    {
+        if (context.Narratives.Count() != 0) return;
+
+        // Create a list of Narrative items with descriptions
+        var narratives = new List<Narrative>
+        {
+            new Narrative { Id = 1, Name = "- Not Assigned -", About = "Default setting in case you don't want to assign narratives" },
+            new Narrative { Id = 2, Name = "AI", About = "AI in crypto refers to the use of artificial intelligence to optimize trading, provide market insights, and enhance security." },
+            new Narrative { Id = 3, Name = "Appchain", About = "Appchains are application-specific blockchains designed to optimize performance for particular decentralized applications (DApps)." },
+            new Narrative { Id = 4,  Name = "DeFI", About = "DeFi (Decentralized Finance) aims to recreate traditional financial systems using decentralized technologies like blockchain." },
+            new Narrative { Id = 5, Name = "DEX", About = "DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly without an intermediary, leveraging smart contracts." },
+            new Narrative { Id = 6, Name = "DePin", About = "DePin (Decentralized Physical Infrastructure Networks) combines blockchain with physical infrastructures like IoT to create decentralized networks." },
+            new Narrative { Id = 7, Name = "Domains", About = "Blockchain domains offer decentralized, censorship-resistant alternatives to traditional domain names, enhancing ownership and control." },
+            new Narrative { Id = 8, Name = "Gamble-Fi", About = "Gamble-Fi integrates decentralized finance principles with online gambling, providing transparent and secure gaming experiences." },
+            new Narrative { Id = 9, Name = "Game-Fi", About = "Game-Fi combines gaming and decentralized finance, allowing players to earn cryptocurrency and trade in-game assets." },
+            new Narrative { Id = 10, Name = "Social-Fi", About = "Social-Fi integrates social media with decentralized finance, enabling monetization and decentralized governance of social platforms." },
+            new Narrative { Id = 11, Name = "Interoperability", About = "Interoperability focuses on enabling different blockchain networks to communicate and interact, facilitating seamless asset transfers and data exchange." },
+            new Narrative { Id = 12, Name = "Layer 1s", About = "Layer 1s are the base layer blockchains like Bitcoin and Ethereum that provide the foundational security and consensus mechanisms." },
+            new Narrative { Id = 13, Name = "Layer 2s", About = "Layer 2s are scaling solutions built on top of Layer 1 blockchains to improve transaction speed and reduce fees." },
+            new Narrative { Id = 14, Name = "LSD", About = "LSD (Liquid Staking Derivatives) allow users to stake assets and receive liquid tokens that can be used in DeFi activities." },
+            new Narrative { Id = 15, Name = "Meme", About = "Meme coins are cryptocurrencies inspired by internet memes, often characterized by high volatility and community-driven value." },
+            new Narrative { Id = 16, Name = "NFT", About = "NFTs (Non-Fungible Tokens) are unique digital assets representing ownership of items like art, music, and virtual real estate." },
+            new Narrative { Id = 17, Name = "Privacy", About = "Privacy coins and technologies aim to enhance transaction anonymity and data protection on the blockchain." },
+            new Narrative { Id = 18, Name = "Real Yield", About = "Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing." },
+            new Narrative { Id = 19, Name = "RWA", About = "RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment." },
+            new Narrative { Id = 20, Name = "CEX", About = "CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity." },
+            new Narrative { Id = 21, Name = "Stablecoins", About = "Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility." },
+            new Narrative { Id = 22, Name = "Others", About = "Narrative for coins that you don't want to assign a specific Narrative" }
+        };
+
+        context.Narratives.AddRange(narratives);
+
+        await context.SaveChangesAsync();
+
+        if (context.Coins is not null && context.Coins.Count() > 0)
+        {
+            var coins = await context.Coins.ToListAsync();
+            var initialNarrative = context.Narratives.Where(x => x.Id == 1).First();
+            foreach (var coin in coins)
+            {
+               coin.Narrative = initialNarrative;
+            }
+            context.Coins.UpdateRange(coins);
+        }
+        await context.SaveChangesAsync();
+    }
+
 
     private void GetAppEnvironmentals()
     {
@@ -291,6 +351,7 @@ public partial class App : Application
         services.AddScoped<MainWindow>();
         services.AddScoped<DashboardView>();
         services.AddScoped<PriceLevelsView>();
+        services.AddScoped<NarrativesView>();
 
 
         services.AddScoped<AssetsViewModel>();
@@ -300,6 +361,7 @@ public partial class App : Application
         services.AddScoped<DashboardViewModel>();
         services.AddScoped<PriceLevelsViewModel>();
         services.AddScoped<BaseViewModel>();
+        services.AddScoped<NarrativesViewModel>();
 
         services.AddDbContext<PortfolioContext>(options =>
         {
@@ -316,6 +378,7 @@ public partial class App : Application
         services.AddSingleton<IPreferencesService, PreferencesService>();
         services.AddScoped<IPriceLevelService, PriceLevelService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<INarrativeService, NarrativeService>();
 
 
         return services.BuildServiceProvider();

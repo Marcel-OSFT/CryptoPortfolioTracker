@@ -16,7 +16,7 @@
     <StackPanel VerticalAlignment="Stretch">
         <RelativePanel>
             <controls:AutoSuggestBoxWithValidation x:Name ="ASBox" l:Uids.Uid="CoinDialog_SearchBox"
-                                ItemsSource="{Binding CoinCollection, ElementName=Root, Mode=TwoWay}" 
+                                ItemsSource="{Binding CoinList, ElementName=Root, Mode=TwoWay}"
                                 MyText="{Binding CoinName, ElementName=Root, Mode=TwoWay}" 
                                 SuggestionChosen="AutoSuggestBox_SuggestionChosen"
                                 KeyDown="AutoSuggestBox_KeyDown"
@@ -35,14 +35,14 @@
                 <ColumnDefinition Width="200"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Name="DetailsStack1" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"  HorizontalAlignment="Center">
+            <StackPanel Name="DetailsStack1" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"  HorizontalAlignment="Center">
                 <Image Name="CoinImage"  Height="80" Margin="0,0,0,0"/>
             </StackPanel>
 
-            <ProgressRing x:Name="TheProgressRing" IsActive="False" Grid.Row="1" Margin="0,0,0,0"/>
-            <TextBlock l:Uids.Uid="CoinDialog_BePatient" x:Name="bePatientText" Grid.Row="1" Grid.ColumnSpan="2" TextWrapping="WrapWholeWords" x:FieldModifier="public" 
+            <ProgressRing x:Name="TheProgressRing" IsActive="False" Grid.Row="0" Margin="0,0,0,0"/>
+            <TextBlock l:Uids.Uid="CoinDialog_BePatient" x:Name="bePatientText" Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWholeWords" x:FieldModifier="public" 
                        Visibility="{Binding BePatientVisibility, ElementName=Root}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,0" />
-            <StackPanel Name="DetailsStack2" Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Left">
+            <StackPanel Name="DetailsStack2" Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Left">
                 <RichTextBlock SelectionHighlightColor="Green" Width="200" >
                     <Paragraph TextAlignment="Right">
                         <Run l:Uids.Uid="CoinDialog_Id" FontSize="12" FontStyle="Italic" TextDecorations="Underline"/>
@@ -66,6 +66,9 @@
                     <Paragraph x:Name="parPrice" TextAlignment="Right" FontSize="20" Margin="0,0,0,10"></Paragraph>
                 </RichTextBlock>
             </StackPanel>
+            <ComboBox x:Name="cbNarratives" l:Uids.Uid="CoinDialog_Narrative" Grid.Row="1" Grid.ColumnSpan="2" 
+                      ItemsSource="{Binding Narratives, ElementName=Root}"  DisplayMemberPath="Name" SelectedItem="{Binding InitialNarrative}" 
+                      Header="Narrative"/>
         </Grid>
     </StackPanel>
 </ContentDialog>

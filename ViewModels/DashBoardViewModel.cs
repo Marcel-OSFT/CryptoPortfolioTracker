@@ -87,6 +87,8 @@ public partial class DashboardViewModel : BaseViewModel
 
         ConstructValueGains();
 
+        
+        
     }
 
     public void Initialize()
@@ -128,6 +130,11 @@ public partial class DashboardViewModel : BaseViewModel
             case "Accounts":
                 {
                     requestedMode = FullScreenMode.PieAccounts;
+                    break;
+                }
+            case "Narratives":
+                {
+                    requestedMode = FullScreenMode.PieNarratives;
                     break;
                 }
             default: break;

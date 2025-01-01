@@ -734,8 +734,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         IsAccountsLinked = !IsAccountsLinked;
         if (IsAccountsLinked)
         {
-            //TODO what should be the list 
-            
             AccountTo = AccountFrom;
         }
         else

@@ -19,8 +19,11 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class CoinLibraryViewModel : BaseViewModel
 {
+    private readonly CoinLibraryViewModel _viewModel;
+    
     public ILibraryService _libraryService { get; private set; }
     private readonly IPreferencesService _preferencesService;
+    public readonly INarrativeService _narrativeService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
@@ -37,15 +40,19 @@ public partial class CoinLibraryViewModel : BaseViewModel
     [ObservableProperty] private string sortGroup;
     private SortingOrder initialSortingOrder;
     private Func<Coin, object> initialSortFunc;
+    public List<Narrative> narratives;
+
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public CoinLibraryViewModel(ILibraryService libraryService, IPreferencesService preferencesService) : base(preferencesService)
+    public CoinLibraryViewModel(ILibraryService libraryService, INarrativeService narrativeService ,IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(CoinLibraryViewModel).Name.PadRight(22));
         Current = this;
         IsAllCoinDataRetrieved = false;
         _libraryService = libraryService;
         _preferencesService = preferencesService;
+        _narrativeService = narrativeService;
+        _viewModel = this;
 
         sortGroup = "Library";
         initialSortFunc = x => x.Rank;
@@ -56,6 +63,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         if (_libraryService.IsCoinsListEmpty())
         {
             await _libraryService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
+
         }
     }
 
@@ -94,6 +102,12 @@ public partial class CoinLibraryViewModel : BaseViewModel
     private void SortOnName(SortingOrder sortingOrder)
     {
         Func<Coin, string> sortFunc = x => x.Name;
+        _libraryService.SortList(sortingOrder, sortFunc);
+    }
+    [RelayCommand]
+    private void SortOnNarrative(SortingOrder sortingOrder)
+    {
+        Func<Coin, string> sortFunc = x => x.Narrative.Name;
         _libraryService.SortList(sortingOrder, sortFunc);
     }
 
@@ -142,12 +156,16 @@ public partial class CoinLibraryViewModel : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanShowAddCoinDialog))]
     public async Task ShowAddCoinDialog()
     {
+        (await _narrativeService.GetNarratives())
+            .IfSucc(list => narratives = list);
+
+
         Logger.Information("Showing Coin Dialog");
         App.isBusy = true;
         var loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(searchListGecko, Current, Enums.DialogAction.Add, _preferencesService)
+            dialog = new AddCoinDialog(Current, Enums.DialogAction.Add, _preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -195,7 +213,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         var loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(searchListGecko, Current, Enums.DialogAction.Merge, _preferencesService)
+            dialog = new AddCoinDialog(Current, Enums.DialogAction.Merge, _preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -314,6 +332,48 @@ public partial class CoinLibraryViewModel : BaseViewModel
 
             await ShowMessageDialog(
                 loc.GetLocalizedString("Messages_NoteDialogFailed_Title"),
+                ex.Message,
+                loc.GetLocalizedString("Common_CloseButton"));
+        }
+        finally { App.isBusy = false; }
+    }
+    [RelayCommand]
+    public async Task AssignNarrativeToCoin(Coin coin)
+    {
+        App.isBusy = true;
+        var loc = Localizer.Get();
+        Logger.Information("Showing AssignNarrative Dialog");
+        try
+        {
+            (await _narrativeService.GetNarratives())
+            .IfSucc(list => narratives = list);
+
+            var dialog = new AssignNarrativeDialog(coin, _viewModel ,_preferencesService)
+            {
+                XamlRoot = CoinLibraryView.Current.XamlRoot
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                Logger.Information("Assigning Narrative {0} to {1}", dialog.selectedNarrative.Name, coin.Name);
+                (await _narrativeService.AssignNarrative(coin, dialog.selectedNarrative))
+                    .IfFail(async err =>
+                    {
+                        await ShowMessageDialog(
+                        loc.GetLocalizedString("Messages_AssignNarrativeFailed_Title"),
+                        err.Message,
+                        loc.GetLocalizedString("Common_CloseButton"));
+
+                        Logger.Error(err, "Assigning Narrative failed");
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Showing AssignNarrative Dialog failed");
+
+            await ShowMessageDialog(
+                loc.GetLocalizedString("Messages_AssignNarrativeDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }

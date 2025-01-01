@@ -118,11 +118,13 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Polly.Core" Version="8.3.0" />
-    <PackageReference Include="Serilog" Version="4.0.0-dev-02149" />
-    <PackageReference Include="Serilog.Expressions" Version="4.0.1-dev-00154" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.1.0-dev-00943" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00972" />
+    <PackageReference Include="Serilog" Version="4.2.1-dev-02337" />
+    <PackageReference Include="Serilog.Expressions" Version="5.1.0-dev-00186" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1-dev-02308" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.MemorySink" Version="0.1.1-alpha" />
     <PackageReference Include="Serilog.Sinks.WinUi3" Version="0.2.1-alpha" />
     <PackageReference Include="Serilog.Sinks.WinUi3.LogViewModels" Version="0.2.1-alpha" />
     <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
@@ -159,6 +161,14 @@
     <Page Update="Controls\ValueGainsControl.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Dialogs\AssignNarrativeDialog.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Dialogs\NarrativeDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Dialogs\AccountDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -183,6 +193,9 @@
     </Page>
     <Page Update="MK_Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\NarrativesView.xaml">
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Templates\CoinLibraryListView.xaml">
       <Generator>MSBuild:Compile</Generator>

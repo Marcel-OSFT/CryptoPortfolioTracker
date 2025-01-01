@@ -2,6 +2,7 @@
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Xaml;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace CryptoPortfolioTracker.Services
@@ -37,5 +38,8 @@ namespace CryptoPortfolioTracker.Services
         public int GetMaxPieCoins();
         void SetAreValuesMasked(bool value);
         bool GetAreValesMasked();
+        void AddTeachingTips(List<TeachingTipCPT> list);
+        TeachingTipCPT GetTeachingTip(string name);
+        void SetTeachingTipAsShown(string name);
     }
 }

@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI.Animations.Expressions;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Extensions;
@@ -23,7 +25,8 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
-public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
+[ObservableObject]
+public partial class AddCoinDialog : ContentDialog
 {
     private readonly DispatcherQueue dispatcherQueue;
     public readonly CoinLibraryViewModel _viewModel;
@@ -33,61 +36,31 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private CoinFullDataById? coinFullDataById;
     public Coin? selectedCoin;
+    
     private DialogAction _dialogAction;
     private readonly ILocalizer loc = Localizer.Get();
+    
+    [ObservableProperty] private Visibility bePatientVisibility;
+    [ObservableProperty] private List<string> coinList;
+    [ObservableProperty] private List<Narrative> narratives;
+    [ObservableProperty] private string coinName;
+    //[ObservableProperty] private string selectedNarrative;
+    [ObservableProperty] private Narrative initialNarrative = new();
 
-    private List<string> coinCollection;
-    public List<string> CoinCollection
-    {
-        get => coinCollection;
-        set
-        {
-            if (value != coinCollection)
-            {
-                coinCollection = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-    private string coinName;
-    public string CoinName
-    {
-        get => coinName;
-        set
-        {
-            if (value != coinName)
-            {
-                coinName = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    private Visibility bePatientVisibility;
-    public Visibility BePatientVisibility
-    {
-        get => bePatientVisibility;
-        set
-        {
-            if (value != bePatientVisibility)
-            {
-                bePatientVisibility = value;
-                OnPropertyChanged();
-            }
-        }
-    }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public AddCoinDialog(List<string> coinList, CoinLibraryViewModel viewModel, DialogAction dialogAction, IPreferencesService preferencesService)
+    public AddCoinDialog(CoinLibraryViewModel viewModel, DialogAction dialogAction, IPreferencesService preferencesService)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
+        _viewModel = viewModel;
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         CoinName = "";
         Current = this;
         _dialogAction = dialogAction;
-        CoinCollection = coinList ?? new List<string>();
+        CoinList = _viewModel.searchListGecko ?? new List<string>();
+        Narratives = _viewModel.narratives ?? new List<Narrative>();
+        initialNarrative = Narratives.Where(x => x.Name == "- Not Assigned -").FirstOrDefault();
         InitializeComponent();
-        _viewModel = viewModel;
         _preferencesService = preferencesService;
         BePatientVisibility = Visibility.Collapsed;
         SetDialogTitleAndButtons();
@@ -131,7 +104,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         if (e.Key == Windows.System.VirtualKey.Enter && (sender is AutoSuggestBoxWithValidation asBox) && asBox.IsEntryMatched)
         {
             VisualStateRequestBusy(true);
-            coinFullDataById = await GetCoinDetails(asBox.MyText);
+            coinFullDataById = await GetCoinDetails(asBox.MyText.Split(",")[2].Trim());
             VisualStateRequestBusy(false);
         }
     }
@@ -198,6 +171,9 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
                     Coin = coin
                 };
                 coin.PriceLevels.Add(level);
+
+                Narrative selectedNarrative = cbNarratives.SelectedItem as Narrative;
+                selectedNarrative.Coins.Add(coin);
 
                 if (coin.ApiId != string.Empty && coin.Name != string.Empty && coin.Symbol != string.Empty)
                 {
@@ -298,18 +274,7 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
         var getCoinResult = await _viewModel._libraryService.GetCoin(coinId);
         return getCoinResult.Match(Succ: s => true, Fail: f => false);
     }
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string? name = null)
-    {
-        dispatcherQueue.TryEnqueue(() =>
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        },
-        exception =>
-        {
-            throw new Exception(exception.Message);
-        });
-    }
+
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
         if (sender.ActualTheme != _preferencesService.GetAppTheme())
@@ -317,5 +282,19 @@ public partial class AddCoinDialog : ContentDialog, INotifyPropertyChanged
             sender.RequestedTheme = _preferencesService.GetAppTheme();
         }
     }
+
+    //public event PropertyChangedEventHandler? PropertyChanged;
+    //protected void OnPropertyChanged([CallerMemberName] string? name = null)
+    //{
+    //    dispatcherQueue.TryEnqueue(() =>
+    //    {
+    //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    //    },
+    //    exception =>
+    //    {
+    //        throw new Exception(exception.Message);
+    //    });
+    //}
+
 }
 

@@ -16,6 +16,8 @@ public sealed partial class AccountDialog : ContentDialog
 
     private readonly ILocalizer loc = Localizer.Get();
 
+    private readonly DialogAction _dialogAction;
+
     public AccountDialog(IPreferencesService preferencesService, AccountsViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Account? accountToEdit = null)
     {
         InitializeComponent();
@@ -23,25 +25,27 @@ public sealed partial class AccountDialog : ContentDialog
         _accountToEdit = accountToEdit;
         _preferencesService = preferencesService;
         SetDialogTitleAndButtons(dialogAction);
+        _dialogAction = dialogAction;
+        
     }
 
     private void SetDialogTitleAndButtons(DialogAction dialogAction)
     {
         if (dialogAction == DialogAction.Edit)
         {
-            AccountNameText.Text = _accountToEdit is not null ? _accountToEdit.Name : string.Empty;
+            txtAccountName.Text = _accountToEdit is not null ? _accountToEdit.Name : string.Empty;
             DescriptionText.Text = _accountToEdit is not null ? _accountToEdit.About : string.Empty;
             Title = loc.GetLocalizedString("AccountDialog_Title_Edit");
             PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Edit");
             CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
-            IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0;
+            IsPrimaryButtonEnabled = txtAccountName.Text.Length > 0;
         }
         else
         {
             Title = loc.GetLocalizedString("AccountDialog_Title_Add");
             PrimaryButtonText = loc.GetLocalizedString("AccountDialog_PrimaryButton_Add");
             CloseButtonText = loc.GetLocalizedString("AccountDialog_CloseButton");
-            IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0;
+            IsPrimaryButtonEnabled = txtAccountName.Text.Length > 0;
         }
     }
 
@@ -49,7 +53,7 @@ public sealed partial class AccountDialog : ContentDialog
     {
         var account = new Account
         {
-            Name = AccountNameText.Text,
+            Name = txtAccountName.Text,
             About = DescriptionText.Text,
         };
         newAccount = account;
@@ -57,7 +61,7 @@ public sealed partial class AccountDialog : ContentDialog
 
     private void AccountName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
     {
-        IsPrimaryButtonEnabled = AccountNameText.Text.Length > 0;
+        IsPrimaryButtonEnabled = txtAccountName.Text.Length > 0;
     }
     
 
@@ -69,6 +73,30 @@ public sealed partial class AccountDialog : ContentDialog
         }
     }
 
-    
+    private void AccountName_LosingFocus(Microsoft.UI.Xaml.UIElement sender, Microsoft.UI.Xaml.Input.LosingFocusEventArgs args)
+    {
+        var doesExist = _viewModel._accountService.DoesAccountNameExist(txtAccountName.Text);
+
+        if (doesExist && _dialogAction == DialogAction.Edit)
+        {
+            if (_accountToEdit?.Name.ToLower() != txtAccountName.Text.ToLower())
+            {
+                txtAccountName.Text = string.Empty;
+                txtAccountName.PlaceholderText = loc.GetLocalizedString("AccountDialog_AccountNameExists");
+            }
+            
+        }
+        else if(doesExist && _dialogAction == DialogAction.Add)
+        {
+            txtAccountName.Text = string.Empty;
+            txtAccountName.PlaceholderText = loc.GetLocalizedString("AccountDialog_AccountNameExists");
+        }
+
+
+
+        
+
+    }
+
 }
 

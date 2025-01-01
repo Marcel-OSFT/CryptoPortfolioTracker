@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using Serilog.Core;
 using System.Globalization;
 using CryptoPortfolioTracker.Enums;
+using System.Collections.Generic;
 
 
 namespace CryptoPortfolioTracker.Services;
@@ -100,9 +101,6 @@ public class PreferencesService : IPreferencesService
         SaveUserPreferences("AreValuesMasked", value);
     }
 
-
-
-
     public NumberFormatInfo GetNumberFormat()
     {
         return userPreferences.NumberFormat;
@@ -169,6 +167,20 @@ public class PreferencesService : IPreferencesService
                 using var myFileStream = new FileStream(App.appDataPath + "\\prefs.xml", FileMode.Open);
 
                 userPreferences = (mySerializer.Deserialize(myFileStream) as UserPreferences) ?? new UserPreferences();
+
+                //*** Add the Initial TeachingTip and set IsShow = true.
+                //This situation can occur at existing users (so File exitst)  
+                var tip = userPreferences.TeachingTips.Find(x => x.Name == "TeachingTipBlank");
+                if (tip == null)
+                {
+                    var newTip = new TeachingTipCPT()
+                    {
+                        Name = "TeachingTipBlank",
+                        IsShown = true
+                    };
+                    userPreferences.TeachingTips.Add(newTip);
+                }
+
             }
         }
         catch { }
@@ -177,9 +189,6 @@ public class PreferencesService : IPreferencesService
             App.isAppInitializing = false;
         }
     }
-
-
-
 
     public void SaveUserPreferences(string propertyName, object value)
     {
@@ -208,6 +217,33 @@ public class PreferencesService : IPreferencesService
         Logger.Information("IsCheckForUpdate set to {0}", userPreferences.IsCheckForUpdate);
         Logger.Information("IsHidingCapitalFlow set to {0}", userPreferences.IsHidingCapitalFlow);
 
+    }
+
+    public void AddTeachingTips(List<TeachingTipCPT> list)
+    {
+        foreach (var item in list)
+        {
+            var tip = userPreferences.TeachingTips.Find(x => x.Name == item.Name);
+            if (tip == null)
+            {
+                userPreferences.TeachingTips.Add(item);
+            }
+        }
+    }
+
+    public TeachingTipCPT? GetTeachingTip(string name)
+    {
+        return userPreferences.TeachingTips.Find(x => x.Name == name);
+    }
+
+    public void SetTeachingTipAsShown(string name)
+    {
+        var tip = userPreferences.TeachingTips.Find(x => x.Name == name);
+        if (tip != null)
+        {
+            tip.IsShown = true;
+            SaveUserPreferences("TeachingTips", userPreferences.TeachingTips);
+        }   
     }
 
 }

@@ -148,6 +148,23 @@ public partial class AssetService : ObservableObject, IAssetService
         getResult.IfFail(err => ListAssetTotals = new());
         return ListAssetTotals;
     }
+    public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative)
+    {
+        var getResult = await GetAssetsByNarrativeFromContext(narrative.Id);
+        getResult.IfSucc(list =>
+        {
+            if (currentSortingOrder == SortingOrder.Ascending)
+            {
+                ListAssetTotals = new(list.OrderBy(currentSortFunc));
+            }
+            else
+            {
+                ListAssetTotals = new(list.OrderByDescending(currentSortFunc));
+            }
+        });
+        getResult.IfFail(err => ListAssetTotals = new());
+        return ListAssetTotals;
+    }
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
     {
         var getResult = await GetAssetsByAccountFromContext(account.Id);
@@ -167,6 +184,26 @@ public partial class AssetService : ObservableObject, IAssetService
         getResult.IfFail(err => ListAssetTotals = new());
         return ListAssetTotals;
     }
+    public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    {
+        var getResult = await GetAssetsByNarrativeFromContext(narrative.Id);
+        getResult.IfSucc(list =>
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListAssetTotals = new(list.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListAssetTotals = new(list.OrderByDescending(sortFunc));
+            }
+            currentSortFunc = sortFunc;
+            currentSortingOrder = sortingOrder;
+        });
+        getResult.IfFail(err => ListAssetTotals = new());
+        return ListAssetTotals;
+    }
+
     public void ClearAssetTotalsList()
     {
         if (ListAssetTotals is not null)
@@ -295,6 +332,46 @@ public partial class AssetService : ObservableObject, IAssetService
         }
         return assetsTotals;
     }
+
+    private async Task<Result<List<AssetTotals>>> GetAssetsByNarrativeFromContext(int narrativeId)
+    {
+        List<AssetTotals> assetsTotals = null;
+        if (narrativeId <= 0) { return new List<AssetTotals>(); }
+        try
+        {
+            assetsTotals = await context.Narratives
+                .Where(n => n.Id == narrativeId)
+                .SelectMany(n => n.Coins)
+                .Where(c => c.IsAsset)
+                .Select(c => new AssetTotals
+                {
+                    Coin = c,
+                    Qty = c.Assets.Sum(a => a.Qty),
+                    CostBase = c.Assets.Sum(a => a.AverageCostPrice * a.Qty)
+                })
+                .ToListAsync();
+
+            VisibleAssetsCount = assetsTotals is not null ? assetsTotals.Count : 0;
+            if (IsHidingZeroBalances)
+            {
+                var assetsWithZero = assetsTotals.Where(x => x.MarketValue <= 0);
+                if (assetsWithZero is not null)
+                {
+                    foreach (var asset in assetsWithZero)
+                    {
+                        asset.IsHidden = true;
+                    }
+                    VisibleAssetsCount -= assetsWithZero.ToList().Count;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return new Result<List<AssetTotals>>(ex);
+        }
+        return assetsTotals;
+    }
+
     public void SortList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
     {
         if (ListAssetTotals is not null)
