@@ -219,7 +219,7 @@ public class PreferencesService : IPreferencesService
 
     }
 
-    public void AddTeachingTips(List<TeachingTipCPT> list)
+    public void AddTeachingTipsIfNotExist(List<TeachingTipCPT> list)
     {
         foreach (var item in list)
         {

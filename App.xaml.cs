@@ -110,7 +110,7 @@ public partial class App : Application
 
         List<TeachingTipCPT> tips = new() { newTip1, newTip2, newTip3, newTip4, newTip5};
 
-        _preferencesService.AddTeachingTips(tips);
+        _preferencesService.AddTeachingTipsIfNotExist(tips);
 
     }
 
@@ -157,9 +157,12 @@ public partial class App : Application
 
             context?.Database.Migrate();
 
-            if (initPriceLevelsEntity) { PopulatePriceLevelsTable(context); }
-            if (initNarrativesEntity) 
+            if (initPriceLevelsEntity) 
             { 
+                PopulatePriceLevelsTable(context); 
+            }
+            if (initNarrativesEntity) 
+            {
                 PopulateNarrativesTable(context); 
             } 
 

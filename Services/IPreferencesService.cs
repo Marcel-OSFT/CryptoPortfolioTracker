@@ -38,7 +38,7 @@ namespace CryptoPortfolioTracker.Services
         public int GetMaxPieCoins();
         void SetAreValuesMasked(bool value);
         bool GetAreValesMasked();
-        void AddTeachingTips(List<TeachingTipCPT> list);
+        void AddTeachingTipsIfNotExist(List<TeachingTipCPT> list);
         TeachingTipCPT GetTeachingTip(string name);
         void SetTeachingTipAsShown(string name);
     }
