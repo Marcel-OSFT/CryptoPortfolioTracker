@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoPortfolioTracker.Migrations
 {
     [DbContext(typeof(PortfolioContext))]
-    [Migration("20241230220118_AddOneToManyToCoinEntity")]
-    partial class AddOneToManyToCoinEntity
+    [Migration("20250102111507_AddNarrativesEntity")]
+    partial class AddNarrativesEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

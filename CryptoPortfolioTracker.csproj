@@ -479,7 +479,7 @@
 	  <Compile Update="Migrations\20240618132839_AddTargetLevelsToCoinEntity.cs">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Compile>
-	  <Compile Update="Migrations\PortfolioContextModelSnapshot.cs">
+	  <Compile Update="Migrations\snapshot after.cs">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Compile>
 	</ItemGroup>

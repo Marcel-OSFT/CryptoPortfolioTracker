@@ -26,7 +26,9 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         var getNarrativesResult = await GetNarratives();
         getNarrativesResult.IfSucc(s =>
         {
-            ListNarratives = new ObservableCollection<Narrative>(s.OrderByDescending(x => x.TotalValue));
+            ListNarratives = new ObservableCollection<Narrative>(s
+                .OrderByDescending(x => x.TotalValue)
+                .ThenByDescending(x => x.Coins.Count));
         });
 
         return ListNarratives;

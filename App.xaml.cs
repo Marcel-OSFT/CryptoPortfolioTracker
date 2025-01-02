@@ -159,11 +159,11 @@ public partial class App : Application
 
             if (initPriceLevelsEntity) 
             { 
-                PopulatePriceLevelsTable(context); 
+                SeedPriceLevelsTable(context); 
             }
             if (initNarrativesEntity) 
             {
-                PopulateNarrativesTable(context); 
+                SeedNarrativesTable(context); 
             } 
 
             var applied = await context.Database.GetAppliedMigrationsAsync();
@@ -241,7 +241,7 @@ public partial class App : Application
         }
     }
 
-    private async void PopulatePriceLevelsTable(PortfolioContext context)
+    private async void SeedPriceLevelsTable(PortfolioContext context)
     {
         if (context.Coins.Count() == 0) return;
 
@@ -279,52 +279,52 @@ public partial class App : Application
         await context.SaveChangesAsync();
     }
 
-    private async void PopulateNarrativesTable(PortfolioContext context)
+    private async void SeedNarrativesTable(PortfolioContext context)
     {
-        if (context.Narratives.Count() != 0) return;
+        if (context.Narratives.Count() > 1) return;
 
         // Create a list of Narrative items with descriptions
         var narratives = new List<Narrative>
         {
-            new Narrative { Id = 1, Name = "- Not Assigned -", About = "Default setting in case you don't want to assign narratives" },
-            new Narrative { Id = 2, Name = "AI", About = "AI in crypto refers to the use of artificial intelligence to optimize trading, provide market insights, and enhance security." },
-            new Narrative { Id = 3, Name = "Appchain", About = "Appchains are application-specific blockchains designed to optimize performance for particular decentralized applications (DApps)." },
-            new Narrative { Id = 4,  Name = "DeFI", About = "DeFi (Decentralized Finance) aims to recreate traditional financial systems using decentralized technologies like blockchain." },
-            new Narrative { Id = 5, Name = "DEX", About = "DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly without an intermediary, leveraging smart contracts." },
-            new Narrative { Id = 6, Name = "DePin", About = "DePin (Decentralized Physical Infrastructure Networks) combines blockchain with physical infrastructures like IoT to create decentralized networks." },
-            new Narrative { Id = 7, Name = "Domains", About = "Blockchain domains offer decentralized, censorship-resistant alternatives to traditional domain names, enhancing ownership and control." },
-            new Narrative { Id = 8, Name = "Gamble-Fi", About = "Gamble-Fi integrates decentralized finance principles with online gambling, providing transparent and secure gaming experiences." },
-            new Narrative { Id = 9, Name = "Game-Fi", About = "Game-Fi combines gaming and decentralized finance, allowing players to earn cryptocurrency and trade in-game assets." },
-            new Narrative { Id = 10, Name = "Social-Fi", About = "Social-Fi integrates social media with decentralized finance, enabling monetization and decentralized governance of social platforms." },
-            new Narrative { Id = 11, Name = "Interoperability", About = "Interoperability focuses on enabling different blockchain networks to communicate and interact, facilitating seamless asset transfers and data exchange." },
-            new Narrative { Id = 12, Name = "Layer 1s", About = "Layer 1s are the base layer blockchains like Bitcoin and Ethereum that provide the foundational security and consensus mechanisms." },
-            new Narrative { Id = 13, Name = "Layer 2s", About = "Layer 2s are scaling solutions built on top of Layer 1 blockchains to improve transaction speed and reduce fees." },
-            new Narrative { Id = 14, Name = "LSD", About = "LSD (Liquid Staking Derivatives) allow users to stake assets and receive liquid tokens that can be used in DeFi activities." },
-            new Narrative { Id = 15, Name = "Meme", About = "Meme coins are cryptocurrencies inspired by internet memes, often characterized by high volatility and community-driven value." },
-            new Narrative { Id = 16, Name = "NFT", About = "NFTs (Non-Fungible Tokens) are unique digital assets representing ownership of items like art, music, and virtual real estate." },
-            new Narrative { Id = 17, Name = "Privacy", About = "Privacy coins and technologies aim to enhance transaction anonymity and data protection on the blockchain." },
-            new Narrative { Id = 18, Name = "Real Yield", About = "Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing." },
-            new Narrative { Id = 19, Name = "RWA", About = "RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment." },
-            new Narrative { Id = 20, Name = "CEX", About = "CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity." },
-            new Narrative { Id = 21, Name = "Stablecoins", About = "Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility." },
-            new Narrative { Id = 22, Name = "Others", About = "Narrative for coins that you don't want to assign a specific Narrative" }
+            //new Narrative { Id = 1, Name = "- Not Assigned -", About = "Default setting in case you don't want to assign narratives" },
+            new Narrative { Name = "AI", About = "AI in crypto refers to the use of artificial intelligence to optimize trading, provide market insights, and enhance security." },
+            new Narrative { Name = "Appchain", About = "Appchains are application-specific blockchains designed to optimize performance for particular decentralized applications (DApps)." },
+            new Narrative { Name = "DeFI", About = "DeFi (Decentralized Finance) aims to recreate traditional financial systems using decentralized technologies like blockchain." },
+            new Narrative { Name = "DEX", About = "DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly without an intermediary, leveraging smart contracts." },
+            new Narrative { Name = "DePin", About = "DePin (Decentralized Physical Infrastructure Networks) combines blockchain with physical infrastructures like IoT to create decentralized networks." },
+            new Narrative { Name = "Domains", About = "Blockchain domains offer decentralized, censorship-resistant alternatives to traditional domain names, enhancing ownership and control." },
+            new Narrative { Name = "Gamble-Fi", About = "Gamble-Fi integrates decentralized finance principles with online gambling, providing transparent and secure gaming experiences." },
+            new Narrative { Name = "Game-Fi", About = "Game-Fi combines gaming and decentralized finance, allowing players to earn cryptocurrency and trade in-game assets." },
+            new Narrative { Name = "Social-Fi", About = "Social-Fi integrates social media with decentralized finance, enabling monetization and decentralized governance of social platforms." },
+            new Narrative { Name = "Interoperability", About = "Interoperability focuses on enabling different blockchain networks to communicate and interact, facilitating seamless asset transfers and data exchange." },
+            new Narrative { Name = "Layer 1s", About = "Layer 1s are the base layer blockchains like Bitcoin and Ethereum that provide the foundational security and consensus mechanisms." },
+            new Narrative { Name = "Layer 2s", About = "Layer 2s are scaling solutions built on top of Layer 1 blockchains to improve transaction speed and reduce fees." },
+            new Narrative { Name = "LSD", About = "LSD (Liquid Staking Derivatives) allow users to stake assets and receive liquid tokens that can be used in DeFi activities." },
+            new Narrative { Name = "Meme", About = "Meme coins are cryptocurrencies inspired by internet memes, often characterized by high volatility and community-driven value." },
+            new Narrative { Name = "NFT", About = "NFTs (Non-Fungible Tokens) are unique digital assets representing ownership of items like art, music, and virtual real estate." },
+            new Narrative { Name = "Privacy", About = "Privacy coins and technologies aim to enhance transaction anonymity and data protection on the blockchain." },
+            new Narrative { Name = "Real Yield", About = "Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing." },
+            new Narrative { Name = "RWA", About = "RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment." },
+            new Narrative { Name = "CEX", About = "CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity." },
+            new Narrative { Name = "Stablecoins", About = "Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility." },
+            new Narrative { Name = "Others", About = "Narrative for coins that you don't want to assign a specific Narrative" }
         };
 
         context.Narratives.AddRange(narratives);
 
         await context.SaveChangesAsync();
 
-        if (context.Coins is not null && context.Coins.Count() > 0)
-        {
-            var coins = await context.Coins.ToListAsync();
-            var initialNarrative = context.Narratives.Where(x => x.Id == 1).First();
-            foreach (var coin in coins)
-            {
-               coin.Narrative = initialNarrative;
-            }
-            context.Coins.UpdateRange(coins);
-        }
-        await context.SaveChangesAsync();
+        //if (context.Coins is not null && context.Coins.Count() > 0)
+        //{
+        //    var coins = await context.Coins.ToListAsync();
+        //    var initialNarrative = context.Narratives.Where(x => x.Id == 1).First();
+        //    foreach (var coin in coins)
+        //    {
+        //       coin.Narrative = initialNarrative;
+        //    }
+        //    context.Coins.UpdateRange(coins);
+        //}
+        //await context.SaveChangesAsync();
     }
 
 
