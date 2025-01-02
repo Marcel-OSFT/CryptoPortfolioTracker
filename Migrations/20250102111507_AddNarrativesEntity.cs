@@ -10,12 +10,6 @@ namespace CryptoPortfolioTracker.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "NarrativeId",
-                table: "Coins",
-                type: "INTEGER",
-                nullable: true);
-
             migrationBuilder.CreateTable(
                 name: "Narratives",
                 columns: table => new
@@ -30,6 +24,16 @@ namespace CryptoPortfolioTracker.Migrations
                     table.PrimaryKey("PK_Narratives", x => x.Id);
                 });
 
+            // Insert initial data into the Narratives table
+            migrationBuilder.Sql("INSERT INTO Narratives (Name, About) VALUES ('- Not Assigned -', 'Default setting in case you do not want to assign narratives');");
+
+            migrationBuilder.AddColumn<int>(
+                name: "NarrativeId",
+                table: "Coins",
+                type: "INTEGER",
+                nullable: true,
+                defaultValue: 1);
+
             migrationBuilder.CreateIndex(
                 name: "IX_Coins_NarrativeId",
                 table: "Coins",
@@ -40,7 +44,8 @@ namespace CryptoPortfolioTracker.Migrations
                 table: "Coins",
                 column: "NarrativeId",
                 principalTable: "Narratives",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
@@ -50,9 +55,6 @@ namespace CryptoPortfolioTracker.Migrations
                 name: "FK_Coins_Narratives_NarrativeId",
                 table: "Coins");
 
-            migrationBuilder.DropTable(
-                name: "Narratives");
-
             migrationBuilder.DropIndex(
                 name: "IX_Coins_NarrativeId",
                 table: "Coins");
@@ -60,6 +62,15 @@ namespace CryptoPortfolioTracker.Migrations
             migrationBuilder.DropColumn(
                 name: "NarrativeId",
                 table: "Coins");
+
+            // Delete the initial data from the Narratives table
+            migrationBuilder.Sql("DELETE FROM Narratives WHERE Name IN ('- Not Assigned -');");
+
+
+            migrationBuilder.DropTable(
+                name: "Narratives");
+
+            
         }
     }
 }

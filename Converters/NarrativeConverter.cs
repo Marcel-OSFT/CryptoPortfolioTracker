@@ -10,7 +10,7 @@ public sealed class NarrativeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        if (value == null || value == "- Not Assigned -")
+        if (value == null || (string)value == "- Not Assigned -")
         {
             return string.Empty;
         }
