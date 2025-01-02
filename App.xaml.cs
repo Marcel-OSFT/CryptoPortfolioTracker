@@ -20,6 +20,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using LanguageExt;
 
 namespace CryptoPortfolioTracker;
 
@@ -41,6 +42,7 @@ public partial class App : Application
     public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
     public static bool isBusy;
     public static bool isAppInitializing;
+    public bool needFixFaultyMigration = false;
 
     public static bool isLogWindowEnabled;
     private static ILogger? Logger;
@@ -155,6 +157,13 @@ public partial class App : Application
                 if (File.Exists(dbFilename)) BackupCptFiles(true);
             }
 
+
+            var appliedMigrations = await context.Database.GetAppliedMigrationsAsync();
+
+            //*** check if the faulty Narrative Migration has been ran
+            //*** if so, then reverse when correct migration will be applied.
+            needFixFaultyMigration = appliedMigrations.Contains("20241228225250_AddNarrativesEntity");
+
             context?.Database.Migrate();
 
             if (initPriceLevelsEntity) 
@@ -164,7 +173,7 @@ public partial class App : Application
             if (initNarrativesEntity) 
             {
                 SeedNarrativesTable(context); 
-            } 
+            }
 
             var applied = await context.Database.GetAppliedMigrationsAsync();
             foreach (var migration in applied)
@@ -177,6 +186,7 @@ public partial class App : Application
             if (Logger != null) { Logger.Error(ex.Message, "Checking Database failed!"); }
         }
     }
+
 
     private void BackupCptFiles(bool isMigration)
     {
