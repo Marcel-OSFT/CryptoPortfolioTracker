@@ -1,9 +1,13 @@
 using CryptoPortfolioTracker.ViewModels;
+using CryptoPortfolioTracker.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 
@@ -12,7 +16,8 @@ namespace CryptoPortfolioTracker.Controls;
 public partial class AccountsListViewControl : UserControl, INotifyPropertyChanged
 {
     public readonly AccountsViewModel _viewModel;
-
+    //private ScrollViewer gridViewScrollViewer;
+    private List<ScrollViewer> gridViewScrollViewers = new List<ScrollViewer>();
     //***********************************************//
     //** All databound fields are in the viewModel**//
     //*********************************************//
@@ -32,39 +37,50 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         }
     }
 
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void IconGridView_Loaded(object sender, RoutedEventArgs e)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    private void IconGrid_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-        GridView gridView = sender as GridView;
+        var gridView = sender as GridView;
         if (gridView != null)
         {
-            ScrollViewer scrollViewer = GetScrollViewerFromGridView(gridView);
+            var scrollViewer = GetScrollViewerFromGridView(gridView);
             if (scrollViewer != null)
             {
+                gridViewScrollViewers.Add(scrollViewer);
+            }
+        }
+    }
+    
+    private void IconGrid_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        //// use the chached ScrollViewer to set the HorizontalScrollBarVisibility
+        foreach (var scrollViewer in gridViewScrollViewers)
+        {
+            var pointerPosition = e.GetCurrentPoint(scrollViewer).Position;
+
+            // Define a threshold for the sensitive area
+            double threshold = 50;
+
+            // Check if the pointer is within the threshold distance to the right edge (where the scrollbar is)
+            if (pointerPosition.Y >= 0 && pointerPosition.Y < threshold)
+            {
                 scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+            }
+            else
+            {
+                scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
             }
         }
     }
 
     private void IconGrid_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
-        GridView gridView = sender as GridView;
-        if (gridView != null)
+        // use the chached ScrollViewer to set the HorizontalScrollBarVisibility
+        foreach (var scrollViewer in gridViewScrollViewers)
         {
-            ScrollViewer scrollViewer = GetScrollViewerFromGridView(gridView);
-            if (scrollViewer != null)
-            {
-                scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
-            }
+             scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
         }
     }
+
 
     private ScrollViewer GetScrollViewerFromGridView(GridView gridView)
     {
@@ -106,6 +122,13 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
             }
         }
         return null;
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
 }

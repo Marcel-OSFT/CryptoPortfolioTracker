@@ -24,8 +24,8 @@
         <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-            <Setter Property="MinHeight" Value="10"/>
-            <Setter Property="Padding" Value="0"/>
+            <Setter Property="MinHeight" Value="20"/>
+            <Setter Property="Padding" Value="0,0,0,0"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -88,47 +88,46 @@
                                         <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed" />
                                         <Border Grid.Column="0"  Margin="10,0,0,0" VerticalAlignment="Center" >
                                             <RelativePanel>
-                                                <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" Margin="0,5,0,0"/>
-                                                <TextBlock Name="txtAbout" Text="{Binding About}" TextWrapping="Wrap" RelativePanel.Below="txtName" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="0,0,0,5"/>
+                                                <TextBlock Height="30" Name="txtName" Text="{Binding Name}" 
+                                                           FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
+                                                           TextWrapping="Wrap" Margin="0,5,0,0"/>
+                                                <TextBlock Name="txtAbout" Text="{Binding About}" TextWrapping="Wrap" 
+                                                           RelativePanel.Below="txtName" 
+                                                           FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" 
+                                                           Margin="0,0,0,5"/>
 
-                                                <Border RelativePanel.RightOf="txtName" RelativePanel.AlignVerticalCenterWith="txtName" Height="{Binding Path=Height, ElementName=NarrativeName}" >
-                                                    <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Assets}" Margin="0,0,0,0" IsItemClickEnabled="False" SelectionMode="None" 
-                                                           PointerEntered="IconGrid_PointerEntered"  PointerExited="IconGrid_PointerExited" 
-                                                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                                        ScrollViewer.HorizontalScrollMode="Enabled" >
-                                                        <!--toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}">-->
+                                                
+                                                <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Assets}"
+                                                            RelativePanel.RightOf="txtName" RelativePanel.AlignTopWithPanel="True" VerticalAlignment="Stretch"
+                                                            Margin="0,0,0,0" IsItemClickEnabled="False" SelectionMode="None" 
+                                                            PointerEntered="IconGrid_PointerEntered"  PointerExited="IconGrid_PointerExited" 
+                                                        Loaded="IconGridView_Loaded"  ScrollViewer.HorizontalScrollMode="Enabled" >
+                                                    <!--toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}">-->
 
-                                                        <GridView.ItemContainerStyle>
-                                                            <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
-                                                                <Setter Property="Margin" Value="0,0,0,0" />
-                                                                <Setter Property="MinHeight" Value="20" />
-                                                            </Style>
-                                                        </GridView.ItemContainerStyle>
+                                                    <GridView.ItemContainerStyle>
+                                                        <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                                                            <Setter Property="Margin" Value="0,0,0,0" />
+                                                            <Setter Property="MinHeight" Value="20" />
+                                                        </Style>
+                                                    </GridView.ItemContainerStyle>
 
-                                                        <GridView.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <ItemsWrapGrid x:Name="MaxItemsWrapGrid"  MaximumRowsOrColumns="1" Orientation="Vertical"
-                                                                           ItemWidth="32" ItemHeight="20" Margin="0,0,0,0" GroupPadding="0,5,0,0"
-                                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                           />
-                                                            </ItemsPanelTemplate>
-                                                        </GridView.ItemsPanel>
-                                                        <GridView.ItemTemplate>
-                                                            <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Asset">
-                                                                <!--<TextBlock Text="{Binding Coin.Symbol }"  />-->
-
-
-                                                                <Image Name="Image" Source="{Binding Coin.ImageUri, Converter={StaticResource ImageConverter}}"/>
-                                                            </DataTemplate>
-                                                        </GridView.ItemTemplate>
-                                                    </GridView>
-
-                                                </Border>
+                                                    <GridView.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"  MaximumRowsOrColumns="1" Orientation="Vertical"
+                                                                        ItemWidth="32" ItemHeight="34" Margin="0,0,0,0" GroupPadding="0,0,0,0"
+                                                                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                        />
+                                                        </ItemsPanelTemplate>
+                                                    </GridView.ItemsPanel>
+                                                    <GridView.ItemTemplate>
+                                                        <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Asset">
+                                                            <!--<TextBlock Text="{Binding Coin.Symbol }"  />-->
 
 
-
-
-
+                                                            <Image Name="Image" Height="21" Source="{Binding Coin.ImageUri, Converter={StaticResource ImageConverter}}"/>
+                                                        </DataTemplate>
+                                                    </GridView.ItemTemplate>
+                                                </GridView>
 
                                             </RelativePanel>
                                         </Border>
