@@ -10,7 +10,66 @@ namespace CryptoPortfolioTracker.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+
+            if (App.Current.needFixFaultyMigration)
+            {
+                // Insert initial data into the Narratives table
+                migrationBuilder.Sql("INSERT INTO Narratives (Name, About) VALUES ('- Not Assigned -', 'Default setting in case you do not want to assign narratives');");
+
+                // Get the ID of the inserted default narrative
+                migrationBuilder.Sql("UPDATE Coins SET NarrativeId = (SELECT Id FROM Narratives WHERE Name = '- Not Assigned -') WHERE NarrativeId IS NULL");
+
+
+                //migrationBuilder.DropForeignKey(
+                //name: "FK_Coins_Narratives_NarrativeId",
+                //table: "Coins");
+
+                //migrationBuilder.AlterColumn<int>(
+                //    name: "NarrativeId",
+                //    table: "Coins",
+                //    type: "INTEGER",
+                //    nullable: true,
+                //    oldClrType: typeof(int),
+                //    oldType: "INTEGER");
+
+                //migrationBuilder.DropIndex(
+                //    name: "IX_Coins_NarrativeId",
+                //    table: "Coins");
+
+
+                //migrationBuilder.DropColumn(
+                //    name: "NarrativeId",
+                //    table: "Coins");
+
+
+                //migrationBuilder.AlterColumn<int>(
+                //    name: "NarrativeId",
+                //    table: "Coins",
+                //    type: "INTEGER",
+                //    nullable: true,
+                //    oldClrType: typeof(int),
+                //    oldType: "INTEGER");
+
+                //migrationBuilder.AddForeignKey(
+                //    name: "FK_Coins_Narratives_NarrativeId",
+                //    table: "Coins",
+                //    column: "NarrativeId",
+                //    principalTable: "Narratives",
+                //    principalColumn: "Id");
+
+                //***
+
+                //migrationBuilder.DropForeignKey(
+                //name: "FK_Coins_Narratives_NarrativeId",
+                //table: "Coins");
+
+                //migrationBuilder.DropTable(
+                //    name: "Narratives");
+                
+            }
+            else
+            {
+                migrationBuilder.CreateTable(
                 name: "Narratives",
                 columns: table => new
                 {
@@ -24,28 +83,31 @@ namespace CryptoPortfolioTracker.Migrations
                     table.PrimaryKey("PK_Narratives", x => x.Id);
                 });
 
-            // Insert initial data into the Narratives table
-            migrationBuilder.Sql("INSERT INTO Narratives (Name, About) VALUES ('- Not Assigned -', 'Default setting in case you do not want to assign narratives');");
+                // Insert initial data into the Narratives table
+                migrationBuilder.Sql("INSERT INTO Narratives (Name, About) VALUES ('- Not Assigned -', 'Default setting in case you do not want to assign narratives');");
 
-            migrationBuilder.AddColumn<int>(
-                name: "NarrativeId",
-                table: "Coins",
-                type: "INTEGER",
-                nullable: true,
-                defaultValue: 1);
+                migrationBuilder.AddColumn<int>(
+                    name: "NarrativeId",
+                    table: "Coins",
+                    type: "INTEGER",
+                    nullable: true,
+                    defaultValue: 1);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Coins_NarrativeId",
-                table: "Coins",
-                column: "NarrativeId");
+                migrationBuilder.CreateIndex(
+                    name: "IX_Coins_NarrativeId",
+                    table: "Coins",
+                    column: "NarrativeId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Coins_Narratives_NarrativeId",
-                table: "Coins",
-                column: "NarrativeId",
-                principalTable: "Narratives",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                migrationBuilder.AddForeignKey(
+                    name: "FK_Coins_Narratives_NarrativeId",
+                    table: "Coins",
+                    column: "NarrativeId",
+                    principalTable: "Narratives",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+
+            }
+
         }
 
         /// <inheritdoc />
