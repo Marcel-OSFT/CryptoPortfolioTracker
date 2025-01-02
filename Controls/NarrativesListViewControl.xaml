@@ -87,17 +87,16 @@
                                     </Grid.ColumnDefinitions>
                                         
                                         <TextBlock x:Name="proxy" Text="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed" />
-                                        <RelativePanel VerticalAlignment="Stretch">
-                                            <Border x:Name="NarrativeName"  Grid.Column="0"  Margin="15,0,0,0" >
-                                                <TextBlock Name="txtName" Text="{Binding Name}" ToolTipService.ToolTip="{Binding About}" 
+                                        <Border Grid.Column="0"  Margin="10,0,0,0" VerticalAlignment="Center">    
+                                            <RelativePanel>
+                                                <TextBlock Name="txtName" Height="30"  Text="{Binding Name}" ToolTipService.ToolTip="{Binding About}" 
                                                             FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
-                                                            TextWrapping="Wrap" Margin="0,0,0,0" VerticalAlignment="Top"/>
-                                            </Border>
-                                            <Border RelativePanel.RightOf="NarrativeName" RelativePanel.AlignVerticalCenterWith="NarrativeName" Height="{Binding Path=Height, ElementName=NarrativeName}" >
-                                                <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Coins}" Margin="0,0,0,0" IsItemClickEnabled="False" SelectionMode="None" 
-                                                           PointerEntered="IconGrid_PointerEntered"  PointerExited="IconGrid_PointerExited" 
-                                                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                                        ScrollViewer.HorizontalScrollMode="Enabled" >
+                                                            TextWrapping="Wrap" Margin="10,5,0,0"/>
+                                                <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Coins}"
+                                                            RelativePanel.RightOf="txtName" RelativePanel.AlignTopWithPanel="True" VerticalAlignment="Stretch"
+                                                            Margin="0,0,0,0" IsItemClickEnabled="False" SelectionMode="None" 
+                                                            PointerEntered="IconGrid_PointerEntered"  PointerExited="IconGrid_PointerExited" 
+                                                         Loaded="IconGridView_Loaded"  ScrollViewer.HorizontalScrollMode="Enabled">
                                                     <GridView.ItemContainerStyle>
                                                         <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
                                                             <Setter Property="Margin" Value="0,0,0,0" />
@@ -108,23 +107,22 @@
                                                     <GridView.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <ItemsWrapGrid x:Name="MaxItemsWrapGrid"  MaximumRowsOrColumns="1" Orientation="Vertical"
-                                                                           ItemWidth="32" ItemHeight="20" Margin="0,0,0,0" GroupPadding="0,2,0,0"
-                                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                           />
+                                                                            ItemWidth="32" ItemHeight="34" Margin="0,0,0,0" GroupPadding="0,0,0,0"
+                                                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                            />
                                                         </ItemsPanelTemplate>
                                                     </GridView.ItemsPanel>
                                                     <GridView.ItemTemplate>
                                                         <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Coin">
-                                                            <Image Name="Image" Source="{Binding ImageUri, Converter={StaticResource ImageConverter}}"/>
+                                                            <Image Name="Image" Height="21" Source="{Binding ImageUri, Converter={StaticResource ImageConverter}}"/>
                                                         </DataTemplate>
                                                     </GridView.ItemTemplate>
                                                 </GridView>
 
-                                            </Border>
-                                        </RelativePanel>
-                                    
-                                    
-                                    
+                                            </RelativePanel>
+                                        </Border>
+
+
                                         <Border Grid.Column="1"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right" >
                                             <RelativePanel>
                                                 <TextBlock Name="txtValue" 
