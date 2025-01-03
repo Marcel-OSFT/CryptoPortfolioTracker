@@ -4,12 +4,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.WinUI;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using WinRT;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Controls;
@@ -18,6 +21,7 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
 {
     private int selectedItemIndex;
     private bool isSettingIndex;
+
 
     //***********************************************//
     //** All databound fields are in the viewModel**//
@@ -34,20 +38,10 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
     
     private void AssetsListView_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-
-        if (sender is ListView listView)
-        {
-            listView.ScrollIntoView(listView.SelectedItem);
-        }
+        KeepIntoView(sender as ListView);
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
+   
     private async void View_ItemClick(object sender, ItemClickEventArgs e)
     {
        //dummy
@@ -70,7 +64,7 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
 
                 if (isSettingIndex)
                 {
-                    listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
+                    KeepIntoView(listView);
                     isSettingIndex = false;
                 }
             }
@@ -82,5 +76,27 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
         }
     }
 
-    
+    private void KeepIntoView(ListView listView)
+    {
+        var viewModel = DataContext as AssetsViewModel;
+
+        if (listView != null && viewModel != null && viewModel.IsAssetsExtendedView)
+        {
+            if (viewModel.selectedAsset != null && listView.SelectedItem != viewModel.selectedAsset)
+            {
+                listView.SelectedItem = viewModel.selectedAsset;
+
+            }
+            listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+
 }

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using LanguageExt;
@@ -17,22 +18,63 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     private readonly PortfolioContext context;
     [ObservableProperty] private static ObservableCollection<Narrative>? listNarratives;
 
+    private SortingOrder currentSortingOrder;
+    private Func<Narrative, object> currentSortFunc;
+
+
     public NarrativeService(PortfolioContext portfolioContext)
     {
         context = portfolioContext;
+
+        currentSortFunc = x => x.TotalValue;
+        currentSortingOrder = SortingOrder.Descending;
+
     }
     public async Task<ObservableCollection<Narrative>> PopulateNarrativesList()
     {
         var getNarrativesResult = await GetNarratives();
-        getNarrativesResult.IfSucc(s =>
+        getNarrativesResult.IfSucc(list =>
         {
-            ListNarratives = new ObservableCollection<Narrative>(s
-                .OrderByDescending(x => x.TotalValue)
-                .ThenByDescending(x => x.Coins.Count));
-        });
+            if (currentSortingOrder == SortingOrder.Ascending)
+            {
+                ListNarratives = new(list.OrderBy(currentSortFunc).ThenByDescending(x => x.Coins.Count));
+            }
+            else
+            {
+                ListNarratives = new(list.OrderByDescending(currentSortFunc).ThenByDescending(x => x.Coins.Count));
+            }
 
+            //ListNarratives = new ObservableCollection<Narrative>(s
+            //    .OrderByDescending(x => x.TotalValue)
+            //    .ThenByDescending(x => x.Coins.Count));
+        });
+        getNarrativesResult.IfFail(err => ListNarratives = new());
         return ListNarratives;
     }
+
+    public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc)
+    {
+        var getNarrativesResult = await GetNarratives();
+        getNarrativesResult.IfSucc(list =>
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListNarratives = new(list.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListNarratives = new(list.OrderByDescending(sortFunc));
+            }
+            currentSortFunc = sortFunc;
+            currentSortingOrder = sortingOrder;
+
+        });
+        getNarrativesResult.IfFail(err => ListNarratives = new());
+        return ListNarratives;
+    }
+
+
+
 
     public void ReloadValues()
     {
@@ -147,7 +189,9 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
             foreach (var narrative in Narratives)
             {
-                narrative.TotalValue = await CalculateTotalValue(narrative); ;
+                narrative.TotalValue = await CalculateTotalValue(narrative);
+                narrative.CostBase = await CalculateCostBase(narrative);
+
                 narrative.IsHoldingCoins = narrative.Coins != null && narrative.Coins.Count > 0;
             }
         }
@@ -198,18 +242,27 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     {
         if (narrative == null || narrative.Coins == null || !narrative.Coins.Any()) return 0.0;
 
-        var test = await context.Assets
+        var sum = await context.Assets
             .Include(x => x.Coin)
             .Where(asset => narrative.Coins.Contains(asset.Coin))
             
             .SumAsync(asset => asset.Qty * asset.Coin.Price);
 
-        return test;
-
-
-
+        return sum;
     }
 
+    public async Task<double> CalculateCostBase(Narrative narrative)
+    {
+        if (narrative == null || narrative.Coins == null || !narrative.Coins.Any()) return 0.0;
+
+        var sum = await context.Assets
+            .Include(x => x.Coin)
+            .Where(asset => narrative.Coins.Contains(asset.Coin))
+
+            .SumAsync(asset => asset.Qty * asset.AverageCostPrice);
+
+        return sum;
+    }
 
     public Narrative GetNarrativeByCoin(Coin coin)
     {
@@ -287,5 +340,44 @@ public partial class NarrativeService : ObservableObject, INarrativeService
             }
         }
     }
+
+
+    public void SortList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc)
+    {
+        if (ListNarratives is not null)
+        {
+            if (sortingOrder == SortingOrder.Ascending)
+            {
+                ListNarratives = new ObservableCollection<Narrative>(ListNarratives.OrderBy(sortFunc));
+            }
+            else
+            {
+                ListNarratives = new ObservableCollection<Narrative>(ListNarratives.OrderByDescending(sortFunc));
+            }
+        }
+        currentSortingOrder = sortingOrder;
+        currentSortFunc = sortFunc;
+    }
+    /// <summary>
+    /// this function without parameters will sort the list using the last used settings.
+    /// </summary>
+    public void SortList()
+    {
+        if (ListNarratives is not null)
+        {
+            if (currentSortingOrder == SortingOrder.Ascending)
+            {
+                ListNarratives = new ObservableCollection<Narrative>(ListNarratives.OrderBy(currentSortFunc));
+            }
+            else
+            {
+                ListNarratives = new ObservableCollection<Narrative>(ListNarratives.OrderByDescending(currentSortFunc));
+            }
+        }
+    }
+
+
+
+
 }
 

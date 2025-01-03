@@ -328,82 +328,78 @@ public class GraphUpdateService : IGraphUpdateService
     }
     private async Task<HistoricalDataByIdRev> CalculateAndPopulateHistoricalDataById(AssetTotals asset, int days, MarketChartById chartData)
     {
+        var indexPos = 0;
+        
         var data = new HistoricalDataByIdRev();
-
         if (chartData.Prices is null) { return data; }
 
         data.Id = asset.Coin.ApiId;
 
         chartData.RemoveDuplicateLastDate();
-
-        //var dataSetChart = chartData.Prices.Skip(chartData.Prices.Length - days).ToArray();
-
         var firstDate = DateOnly.FromDateTime(DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
-        //var dataSetChart = chartData.Prices.Where( x );
 
         var dataSetChart = chartData.Prices.Where(x => DateOnly.FromDateTime(DateTime.UnixEpoch.AddMilliseconds(Convert.ToDouble(x[0]))).CompareTo(firstDate) >= 0).ToArray();
 
-        //for (var i = 0; i < chartData.Prices.Length; i++)
         var dateShift = 0;
-        for (var i = 0; i < days; i++)
+
+        try
         {
-            var expectedDate = DateOnly.FromDateTime(DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1 - i)));
-            var date = DateOnly.FromDateTime(DateTime.UnixEpoch.AddMilliseconds(Convert.ToDouble(dataSetChart[i - dateShift][0])));
-
-            if (date.Equals(expectedDate))
+            for (var i = 0; i < days; i++)
             {
-                //var price = (double)dataSetChart[i - dateShift][1];
-                //data.Dates.Add(date);
-                //data.Prices.Add(price);
-                //var historicalQty = await GetHistoricalQtyByDate(date, asset);
-                //data.Quantities.Add(historicalQty);
+                indexPos = i - dateShift;
 
-                var point = new DataPoint();
-                var price = (double)dataSetChart[i - dateShift][1];
-                var historicalQty = await GetHistoricalQtyByDate(date, asset);
-                point.Date = date;
-                point.Value = price * historicalQty ;
+                var expectedDate = DateOnly.FromDateTime(DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1 - i)));
+                var date = DateOnly.FromDateTime(DateTime.UnixEpoch.AddMilliseconds(Convert.ToDouble(dataSetChart[i - dateShift][0])));
 
-                //*** if GraphUpdate has been postponed into one of the next days, then it could be that a certain 
-                //*** datapoint has already been entered into the list
-                //*** so, check to prevent duplicated
-                var entryIn = data.DataPoints.Where(x => x.Date == point.Date).FirstOrDefault();
-
-                if (entryIn is null)
+                if (date.Equals(expectedDate))
                 {
-                    data.DataPoints.Add(point);
+                    var point = new DataPoint();
+                    var price = (double)dataSetChart[i - dateShift][1];
+                    var historicalQty = await GetHistoricalQtyByDate(date, asset);
+                    point.Date = date;
+                    point.Value = price * historicalQty;
+
+                    //*** if GraphUpdate has been postponed into one of the next days, then it could be that a certain 
+                    //*** datapoint has already been entered into the list
+                    //*** so, check to prevent duplicated
+                    var entryIn = data.DataPoints.Where(x => x.Date == point.Date).FirstOrDefault();
+
+                    if (entryIn is null)
+                    {
+                        data.DataPoints.Add(point);
+                    }
                 }
-            }
-            else if (expectedDate.CompareTo(date) < 0)// No Data for this date
-            {
-                //dateShift++;
-                //data.Dates.Add(expectedDate);
-                //data.Prices.Add(0);
-                //var historicalQty = await GetHistoricalQtyByDate(date, asset);
-                //data.Quantities.Add(historicalQty);
-
-                var point = new DataPoint();
-                point.Date = expectedDate;
-                point.Value = 0;
-
-                //*** if GraphUpdate has been postponed into one of the next days, then it could be that a certain 
-                //*** datapoint has already been entered into the list
-                //*** so, check to prevent duplicated
-                var entryIn = data.DataPoints.Where(x => x.Date == point.Date).FirstOrDefault();
-
-                if (entryIn is null)
+                else if (expectedDate.CompareTo(date) < 0)// No Data for this date
                 {
-                    data.DataPoints.Add(point);
+                    var point = new DataPoint();
+                    point.Date = expectedDate;
+                    point.Value = 0;
+                    dateShift++;
+                    //*** if GraphUpdate has been postponed into one of the next days, then it could be that a certain 
+                    //*** datapoint has already been entered into the list
+                    //*** so, check to prevent duplicated
+                    var entryIn = data.DataPoints.Where(x => x.Date == point.Date).FirstOrDefault();
+
+                    if (entryIn is null)
+                    {
+                        data.DataPoints.Add(point);
+                    }
                 }
+                else // incorrect data => missing datapoint which now should be fixed by the CheckAndFixMarketChart method
+                {
+                    break;
+                }
+                //calculate the asset qty on each day taking the Transactions/mutations done into account
+                //then add this qty to the data-array
             }
-            else // incorrect data => missing datapoint which now should be fixed by the CheckAndFixMarketChart method
-            {
-                break;
-            }
-            //calculate the asset qty on each day taking the Transactions/mutations done into account
-            //then add this qty to the data-array
+            return data;  
         }
-        return data;
+        catch (Exception ex)
+        {
+            Logger.Error(ex, $"CalculateAndPopulateHistoricalDataById failed for " + asset.Coin.Name + " at index " + indexPos.ToString() + " date-shift = " + dateShift.ToString()    );
+            return new HistoricalDataByIdRev();
+        }
+        
     }
     private async Task<bool> CalculateAndStoreDataPoints(List<HistoricalDataByIdRev> dataByIds)
     {

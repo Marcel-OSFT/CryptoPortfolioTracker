@@ -48,12 +48,23 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
 
     private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        if (sender is ListView listView)
-        {
-            listView.ScrollIntoView(listView.SelectedItem);
-        }
+        KeepIntoView(sender as ListView);
     }
 
+    private void KeepIntoView(ListView listView)
+    {
+        var viewModel = DataContext as NarrativesViewModel;
+
+        if (listView != null && viewModel != null && viewModel.IsExtendedView)
+        {
+            if (viewModel.selectedNarrative != null && listView.SelectedItem != viewModel.selectedNarrative)
+            {
+                listView.SelectedItem = viewModel.selectedNarrative;
+
+            }
+            listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
+        }
+    }
     private void IconGridView_Loaded(object sender, RoutedEventArgs e)
     {
         var gridView = sender as GridView;

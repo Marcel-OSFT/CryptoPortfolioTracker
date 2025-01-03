@@ -30,9 +30,24 @@ public partial class Narrative : BaseModel
     [ObservableProperty] [NotMapped] private bool isHoldingCoins;
     //*** Set To NotMapped in EntityTypeBuilder
     [ObservableProperty] private double totalValue;
+    //*** Set To NotMapped in EntityTypeBuilder
+    [ObservableProperty] private double costBase;
+    //*** Set To NotMapped in EntityTypeBuilder
+    [ObservableProperty] private double profitLoss;
+    //*** Set To NotMapped in EntityTypeBuilder
+    [ObservableProperty] private double profitLossPerc;
 
-    
 
+    partial void OnCostBaseChanged(double value)
+    {
+        ProfitLoss = TotalValue - value;
+        ProfitLossPerc = 100 * ((TotalValue - value) / value);
+    }
+    partial void OnTotalValueChanged(double value)
+    {
+        ProfitLoss = value - CostBase;
+        ProfitLossPerc = 100 * ((value - CostBase) / CostBase);
+    }
 
 
 }

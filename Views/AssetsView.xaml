@@ -126,16 +126,16 @@
             <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch">
                 <Grid Name="AssetsContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding IsExtendedView, 
-                            Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=122|1*}"/>
+                        <RowDefinition Height="{Binding IsAssetsExtendedView, 
+                            Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=132|1*}"/>
 
-                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=75|0}"/>
-                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=0.7*|0}"/>
+                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=75|0}"/>
+                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=0.7*|0}"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="0"  />
                     <controls:AssetAccountsGridViewControl x:Name="MyAssetAccountsGridViewControl" x:FieldModifier="public" Margin="0,-7,0,0" Grid.Row="1" />
-                    <controls:AssetTransactionsListViewControl x:Name="MyAssetTransactionsListViewControl" x:FieldModifier="public"  Margin="0,-5,0,0" Grid.Row="2" />
+                    <controls:AssetTransactionsListViewControl x:Name="MyAssetTransactionsListViewControl" x:FieldModifier="public"  Margin="0,-15,0,0" Grid.Row="2" />
                     <Button 
                         x:Name="AddTransactionButton"
                         l:Uids.Uid="Assets_TransactionButton" 

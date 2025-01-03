@@ -40,7 +40,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     //[NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
     //private bool isHidingZeroBalances;
 
-    private Account? selectedAccount = null;
+    public Account? selectedAccount = null;
     private bool _isAssetsListViewInitialized;
 
     [ObservableProperty] private string glyphPrivacy = "\uE890";
@@ -78,6 +78,8 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAccountDialogToAddCommand))]
     private bool isExtendedView = false;
+
+    [ObservableProperty] private bool isAssetsExtendedView = false;
 
     /// <summary>
     /// Initialize async task is called from the View_Loading event of the associated View

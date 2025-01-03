@@ -68,7 +68,7 @@ public partial class GraphService : IGraphService
                     {
                         CheckValidityHistoricalDataBuffer();
                     }
-                
+
                 }
                 catch (Exception ex)
                 {
@@ -84,19 +84,26 @@ public partial class GraphService : IGraphService
             else //**** check existing graph for 'voorloper nullen' and correct
             {
                 await CleanUpGraph();
-                
+
             }
 
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Failed to de-serialize HGraph data");
+            Logger.Error(ex, "Failed to de-serialize Graph data");
+
+            //*** check if backup file exists and restore it
+            var backupFileName = chartsFolder + "\\graph.json.bak";
+            if (File.Exists(backupFileName))
+            {
+                File.Copy(backupFileName, chartsFolder + "\\graph.json", true);
+                Logger.Information("Restored backup graph.json file");
+            }
         }
         finally
         {
             IsLoadingFromJson = false;
         }
-
     }
 
     private void CheckValidityHistoricalDataBuffer()
@@ -163,10 +170,35 @@ public partial class GraphService : IGraphService
 
     public async Task SaveGraphToJson()
     {
+        try
+        {
+            //*** make a backup of the current graph json
+            var backupFileName = chartsFolder + "\\graph.json.bak";
+            if (File.Exists(backupFileName))
+            {
+                File.Delete(backupFileName);
+            }
+            if (File.Exists(chartsFolder + "\\graph.json"))
+            {
+                File.Copy(chartsFolder + "\\graph.json", backupFileName);
+            }
+
+            //*** store/overwrite the new graph json file
+            var fileName = chartsFolder + "\\graph.json";
+            await using FileStream createStream = File.Create(fileName);
+            await JsonSerializer.SerializeAsync(createStream, graph);
+
+            //*** we leave the backup file for now, in case we need to revert to it
+
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to serialize Graph data");
+        }
+
+
         
-        var fileName = chartsFolder + "\\graph.json";
-        await using FileStream createStream = File.Create(fileName);
-        await JsonSerializer.SerializeAsync(createStream, graph);
+        
     }
 
     public async Task SaveHistoricalDataBufferToJson()
@@ -191,49 +223,62 @@ public partial class GraphService : IGraphService
 
     public async Task RegisterModification(Transaction transactionA, Transaction? transactionB = null)
     {
-        DateOnly modDate = graph.ModifyFromDate;
-
-        while (graph.GraphStatus == GraphStatus.Modifying)
+        try
         {
-            await Task.Delay(1000);
-        }
+            DateOnly modDate = graph.ModifyFromDate;
 
-        var dateB = transactionB is not null
-            ? DateOnly.FromDateTime(transactionB.TimeStamp)
-            : DateOnly.FromDateTime(DateTime.Now);
-        var dateA = DateOnly.FromDateTime(transactionA.TimeStamp);
+            while (graph.GraphStatus == GraphStatus.Modifying)
+            {
+                await Task.Delay(1000);
+            }
 
-        if (modDate.Equals(DateOnly.MinValue))
-        {
-            //assign the earliest date
-            modDate = dateB.CompareTo(dateA) <= 0 ? dateB : dateA;
+            var dateB = transactionB is not null
+                ? DateOnly.FromDateTime(transactionB.TimeStamp)
+                : DateOnly.FromDateTime(DateTime.Now);
+            var dateA = DateOnly.FromDateTime(transactionA.TimeStamp);
+
+            if (modDate.Equals(DateOnly.MinValue))
+            {
+                //assign the earliest date
+                modDate = dateB.CompareTo(dateA) <= 0 ? dateB : dateA;
+            }
+            else
+            {
+                //assign the earliest date
+                var oldestTxDate = dateB.CompareTo(dateA) <= 0 ? dateB : dateA;
+                modDate = oldestTxDate.CompareTo(modDate) <= 0 ? oldestTxDate : modDate;
+            }
+            graph.ModifyFromDate = modDate;
         }
-        else
+        catch (Exception ex)
         {
-            //assign the earliest date
-            var oldestTxDate = dateB.CompareTo(dateA) <= 0 ? dateB : dateA;
-            modDate = oldestTxDate.CompareTo(modDate) <= 0 ? oldestTxDate : modDate;
+            Logger.Error(ex, "Failed to register modification");
         }
-        graph.ModifyFromDate = modDate;
     }
 
     public async Task ApplyModification()
     {
-        graph.GraphStatus = GraphStatus.Modifying;
-        var modDate = graph.ModifyFromDate;
+        try
+        {
+            graph.GraphStatus = GraphStatus.Modifying;
+            var modDate = graph.ModifyFromDate;
 
-        var dataCountBefore = graph.DataPointsPortfolio.Count;
+            graph.DataPointsPortfolio.RemoveAll(x => x.Date >= modDate);
+            graph.DataPointsInFlow.RemoveAll(x => x.Date >= modDate);
+            graph.DataPointsOutFlow.RemoveAll(x => x.Date >= modDate);
 
-        graph.DataPointsPortfolio.RemoveAll(x => x.Date >= modDate);
-        graph.DataPointsInFlow.RemoveAll(x => x.Date >= modDate);
-        graph.DataPointsOutFlow.RemoveAll(x => x.Date >= modDate);
+            //*** might be a good idea to Save the modified Graph here
+            //*** In case of a crash or when the application is shutdown before the New Graph has been recalculated and saved
+            await SaveGraphToJson();
 
-        var dataCountAfter = graph.DataPointsPortfolio.Count;
-
-        graph.ModifyFromDate = DateOnly.MinValue;
-        graph.IsModificationRequested = false;
-        graph.GraphStatus = GraphStatus.Idle;
-
+            graph.ModifyFromDate = DateOnly.MinValue;
+            graph.IsModificationRequested = false;
+            graph.GraphStatus = GraphStatus.Idle;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to apply modification");
+        }
     }
 
     public ObservableCollection<DateTimePoint> GetPortfolioValues()

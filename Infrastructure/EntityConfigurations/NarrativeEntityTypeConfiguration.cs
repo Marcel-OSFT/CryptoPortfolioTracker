@@ -31,9 +31,15 @@ class NarrativeEntityTypeConfiguration : IEntityTypeConfiguration<Narrative>
 
         configuration
             .Ignore("IsHoldingCoins");
-        
+
         configuration
-                   .Ignore("TotalValue");
+            .Ignore("TotalValue");
+        configuration
+            .Ignore("CostBase");
+        configuration
+            .Ignore("ProfitLoss");
+        configuration
+            .Ignore("ProfitLossPerc");
 
     }
 }

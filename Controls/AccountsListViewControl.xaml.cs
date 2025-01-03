@@ -31,9 +31,21 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
 
     private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        if (sender is ListView listView)
+        KeepIntoView(sender as ListView);
+    }
+
+    private void KeepIntoView(ListView listView)
+    {
+        var viewModel = DataContext as AccountsViewModel;
+
+        if (listView != null && viewModel != null && viewModel.IsExtendedView)
         {
-            listView.ScrollIntoView(listView.SelectedItem);
+            if (viewModel.selectedAccount != null && listView.SelectedItem != viewModel.selectedAccount)
+            {
+                listView.SelectedItem = viewModel.selectedAccount;
+
+            }
+            listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
         }
     }
 

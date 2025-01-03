@@ -23,7 +23,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     public static NarrativesViewModel Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public INarrativeService _NarrativeService {  get; private set; }
+    public INarrativeService _narrativeService {  get; private set; }
     public IAssetService _assetService { get; private set; }
 
     public bool IsHidingNetInvestment { get; set; } = true;
@@ -32,11 +32,13 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     private readonly IPreferencesService _preferencesService;
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;
+    private SortingOrder currentSortingOrderNarr;
+    private Func<Narrative, object> currentSortFuncNarr;
 
 
     [ObservableProperty] private string sortGroup;
     
-    private Narrative? selectedNarrative = null;
+    public Narrative? selectedNarrative = null;
     private bool _isAssetsListViewInitialized;
 
     [ObservableProperty] private string glyphPrivacy = "\uE890";
@@ -49,7 +51,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
 
         _preferencesService.SetAreValuesMasked(value);
 
-        _NarrativeService.ReloadValues();
+        _narrativeService.ReloadValues();
         _assetService.ReloadValues();
 
     }
@@ -59,13 +61,15 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(NarrativesViewModel).Name.PadRight(22));
         Current = this;
-        _NarrativeService = NarrativeService;
+        _narrativeService = NarrativeService;
         _preferencesService =  preferencesService;
         _assetService = assetService;
 
         SortGroup = "Narratives";
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
+        currentSortFuncNarr = x => x.TotalValue;
+        currentSortingOrderNarr = SortingOrder.Descending;
 
         _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
@@ -75,6 +79,8 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     [NotifyCanExecuteChangedFor(nameof(ShowNarrativeDialogToAddCommand))]
     private bool isExtendedView = false;
 
+    [ObservableProperty] private bool isAssetsExtendedView = false;
+
     /// <summary>
     /// Initialize async task is called from the View_Loading event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
@@ -83,13 +89,54 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     public async Task Initialize()
     {
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
-        await _NarrativeService.PopulateNarrativesList();
+        await _narrativeService.PopulateNarrativesList(currentSortingOrderNarr, currentSortFuncNarr);
     }
 
     public void Terminate()
     {
         selectedNarrative = null;
         IsExtendedView = false;
+    }
+
+    [RelayCommand]
+    public void SortOnNameNarr(SortingOrder sortingOrder)
+    {
+        Func<Narrative, object> sortFunc = x => x.Name;
+        currentSortFuncNarr = sortFunc;
+        currentSortingOrderNarr = sortingOrder;
+        _narrativeService.SortList(sortingOrder, sortFunc);
+    }
+    [RelayCommand]
+    public void SortOnMarketValueNarr(SortingOrder sortingOrder)
+    {
+        Func<Narrative, object> sortFunc = x => x.TotalValue;
+        currentSortFuncNarr = sortFunc;
+        currentSortingOrderNarr = sortingOrder;
+        _narrativeService.SortList(sortingOrder, sortFunc);
+    }
+    [RelayCommand]
+    public void SortOnCostBaseNarr(SortingOrder sortingOrder)
+    {
+        Func<Narrative, object> sortFunc = x => x.CostBase;
+        currentSortFuncNarr = sortFunc;
+        currentSortingOrderNarr = sortingOrder;
+        _narrativeService.SortList(sortingOrder, sortFunc);
+    }
+    [RelayCommand]
+    public void SortOnPnLNarr(SortingOrder sortingOrder)
+    {
+        Func<Narrative, object> sortFunc = x => x.ProfitLoss;
+        currentSortFuncNarr = sortFunc;
+        currentSortingOrderNarr = sortingOrder;
+        _narrativeService.SortList(sortingOrder, sortFunc);
+    }
+    [RelayCommand]
+    public void SortOnPnLPercNarr(SortingOrder sortingOrder)
+    {
+        Func<Narrative, object> sortFunc = x => x.ProfitLossPerc;
+        currentSortFuncNarr = sortFunc;
+        currentSortingOrderNarr = sortingOrder;
+        _narrativeService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand]
@@ -116,6 +163,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
+
     [RelayCommand]
     public void SortOnMarketValue(SortingOrder sortingOrder)
     {
@@ -148,14 +196,14 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
-    [RelayCommand]
-    public void SortOnNetInvestment(SortingOrder sortingOrder)
-    {
-        Func<AssetTotals, object> sortFunc = x => x.NetInvestment;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
-    }
+
+
+
+
+
+
+
+
     [RelayCommand(CanExecute = nameof(CanShowNarrativeDialogToAdd))]
     public async Task ShowNarrativeDialogToAdd()
     {
@@ -174,8 +222,8 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
             {
                 var NarrativeName = dialog.newNarrative is not null ? dialog.newNarrative.Name : string.Empty;
                 Logger.Information("Adding Narrative ({0})", NarrativeName);
-                await (await _NarrativeService.CreateNarrative(dialog.newNarrative))
-                    .Match(Succ: succ => _NarrativeService.AddToListNarratives(dialog.newNarrative),
+                await (await _narrativeService.CreateNarrative(dialog.newNarrative))
+                    .Match(Succ: succ => _narrativeService.AddToListNarratives(dialog.newNarrative),
                         Fail: async err =>
                         {
                             await ShowMessageDialog(
@@ -218,7 +266,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
             if (result == ContentDialogResult.Primary && dialog.newNarrative is not null)
             {
                 Logger.Information("Editing Narrative ({0})", Narrative.Name);
-                (await _NarrativeService.EditNarrative(dialog.newNarrative, Narrative))
+                (await _narrativeService.EditNarrative(dialog.newNarrative, Narrative))
                     .IfFail(async err =>
                     {
                         await ShowMessageDialog(
@@ -255,14 +303,14 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         try
         {
             Logger.Information("Deletion request for Narrative ({0})", Narrative.Name);
-            var IsDeleteAllowed = (await _NarrativeService.NarrativeHasNoCoins(Narrative.Id))
+            var IsDeleteAllowed = (await _narrativeService.NarrativeHasNoCoins(Narrative.Id))
             .Match(Succ: succ => succ, Fail: err => { return false; });
 
             if (IsDeleteAllowed)
             {
                 Logger.Information("Deleting Narrative");
-                await (await _NarrativeService.RemoveNarrative(Narrative.Id))
-                    .Match(Succ: s => _NarrativeService.RemoveFromListNarratives(Narrative.Id),
+                await (await _narrativeService.RemoveNarrative(Narrative.Id))
+                    .Match(Succ: s => _narrativeService.RemoveFromListNarratives(Narrative.Id),
                         Fail: async err =>
                         {
                             await ShowMessageDialog(
@@ -295,7 +343,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     private bool CanDeleteNarrative(Narrative narrative)
     {
         if (narrative == null || narrative.Name == "- Not Assigned -") return false;
-        return !_NarrativeService.IsNarrativeHoldingCoins(narrative);   
+        return !_narrativeService.IsNarrativeHoldingCoins(narrative);   
     }
 
     [RelayCommand]

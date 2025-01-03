@@ -81,6 +81,7 @@
             Click="btn_Click"
             Command="{Binding Command, ElementName=Root, Mode=OneWay}"
             CommandParameter="{Binding CommandParameter, ElementName=Root, Mode=OneWay}"
+            IsEnabled="{Binding IsEnabled, ElementName=Root, Mode=TwoWay}"
             />
     </Grid>
 </UserControl>
