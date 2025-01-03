@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Models;
 using LanguageExt.Common;
 
@@ -22,4 +24,7 @@ public interface INarrativeService
     Task<Result<List<Narrative>>> GetNarratives();
     Task<Result<bool>> AssignNarrative(Coin coin, Narrative newNarrative);
     bool DoesNarrativeNameExist(string name);
+    void SortList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc);
+    void SortList();
+    Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc);
 }

@@ -39,17 +39,17 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
     [ObservableProperty] private string sortGroup;
 
-    private AssetTotals? selectedAsset = null;
+    public AssetTotals? selectedAsset = null;
     private AssetAccount? selectedAccount = null;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowTransactionDialogToAddCommand))]
-    private bool isExtendedView = false;
+    private bool isAssetsExtendedView = false;
 
     //[ObservableProperty]
     //[NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
     //private bool isHidingZeroBalances;
-    
+
     [ObservableProperty] private bool isHidingCapitalFlow;
 
     public static List<CoinList>? coinListGecko;
@@ -128,7 +128,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
     {
         selectedAccount = null;
         selectedAsset = null;
-        IsExtendedView = false;
+        IsAssetsExtendedView = false;
         _assetService.ClearAssetTotalsList();
     }
 
@@ -200,27 +200,31 @@ public sealed partial class AssetsViewModel : BaseViewModel
     [RelayCommand]
     public async Task AssetItemClicked(AssetTotals clickedAsset)
     {
+        
         //new item clicked and selected ?
         if (selectedAsset == null || selectedAsset != clickedAsset)
         {
             await ShowAccountsAndTransactions(clickedAsset);
-            IsExtendedView = true;
+            
+            IsAssetsExtendedView = true;
         }
         //clicked already selected item
-        if (selectedAsset != null && selectedAsset == clickedAsset)
+        else if (selectedAsset != null && selectedAsset == clickedAsset)
         {
-            if (!IsExtendedView)
+            if (!IsAssetsExtendedView)
             {
                 await ShowAccountsAndTransactions(clickedAsset);
-                IsExtendedView = true;
+                
+                IsAssetsExtendedView = true;
             }
             else
             {
                 await ShowAccountsAndTransactions();
-                IsExtendedView = false;
+               
+                IsAssetsExtendedView = false;
             }
         }
-       selectedAsset = clickedAsset;
+        selectedAsset = clickedAsset;
     }
 
     [RelayCommand]
@@ -290,7 +294,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
     }
     private bool CanShowTransactionDialogToAdd()
     {
-        return !IsExtendedView;
+        return !IsAssetsExtendedView;
     }
 
     [RelayCommand]

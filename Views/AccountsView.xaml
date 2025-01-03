@@ -48,7 +48,7 @@
             <Border Grid.Row="2" VerticalAlignment="Stretch" Margin="10,0,0,0">
                 <Grid Name="AccountsContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=95|1*}"/>
+                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=100|1*}"/>
                         <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=1*|0}"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
