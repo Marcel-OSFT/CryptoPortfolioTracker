@@ -11,7 +11,7 @@ namespace CryptoPortfolioTracker.Views;
 public sealed partial class DashboardView : Page
 {
    private readonly DashboardViewModel _viewModel;
-    public static DashboardView Current;
+    public static DashboardView? Current;
    
 
     public DashboardView(DashboardViewModel dashboardVm)

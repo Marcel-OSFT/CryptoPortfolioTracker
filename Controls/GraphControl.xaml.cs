@@ -19,10 +19,9 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
 
     public GraphControl()
     {
-        _viewModel = DashboardViewModel.Current;
+        _viewModel = DashboardViewModel.Current ?? throw new InvalidOperationException("DashboardViewModel.Current is null");
         DataContext = _viewModel;
         InitializeComponent();
-        
     }
 
     // ... other code ...
@@ -30,7 +29,6 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
     private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         await _viewModel.InitializeGraph();
-        
     }
 
     private void Graph_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -44,12 +42,4 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-
-    
-
-
-
-
-
 }

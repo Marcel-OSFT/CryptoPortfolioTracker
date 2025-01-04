@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class TransactionTypeToStringConverter : IValueConverter
+public partial class TransactionTypeToStringConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

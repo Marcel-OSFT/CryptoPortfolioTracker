@@ -30,13 +30,12 @@ public class PriceUpdateService : IPriceUpdateService
     private readonly IPreferencesService _preferencesService;
     private readonly IPriceLevelService _priceLevelService;
     private readonly IAssetService _assetService;
-    private static ILogger Logger { get; set; }
+    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphUpdateService).Name.PadRight(22));
     public bool IsPaused { get; set; }
     private bool IsInit;
 
     public PriceUpdateService(PortfolioContext portfolioContext, IAssetService assetService, IPriceLevelService priceLevelService, IPreferencesService preferencesService)
     {
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceUpdateService).Name.PadRight(22));
         coinContext = portfolioContext;
         _preferencesService = preferencesService;
         _priceLevelService = priceLevelService;

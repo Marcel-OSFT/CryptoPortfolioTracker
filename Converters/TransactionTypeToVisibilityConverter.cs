@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class TransactionTypeToVisibilityConverter : IValueConverter
+public partial class TransactionTypeToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

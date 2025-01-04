@@ -25,7 +25,7 @@
   </Dependencies>
 
   <Resources>
-    <Resource Language="en-US"/>
+    <Resource Language="en-us"/>
     <Resource Language="nl-NL"/>
   </Resources>
 

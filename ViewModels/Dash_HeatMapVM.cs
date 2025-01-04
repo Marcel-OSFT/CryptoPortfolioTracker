@@ -157,11 +157,12 @@ public partial class DashboardViewModel : BaseViewModel
         YAxesHeatMap.First().MaxLimit = maxYValuePoint is not null && maxYValuePoint.Y > 10 ? maxYValuePoint.Y + 10 : 10;
 
         //*** Normalize the value to a multiple of 10
-        YAxesHeatMap.First().MaxLimit = (double)Math.Floor((decimal)YAxesHeatMap.First().MaxLimit / 10) * 10;
+        YAxesHeatMap.First().MaxLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) * 10;
 
         var seperators = YAxesHeatMap.First().CustomSeparators.ToArray();
 
-        seperators[seperators.Length - 1] = (double)YAxesHeatMap.First().MaxLimit;
+        var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
+        seperators[seperators.Length - 1] = (double)maxLimit;
         YAxesHeatMap.First().CustomSeparators = seperators;
 
 
@@ -170,7 +171,6 @@ public partial class DashboardViewModel : BaseViewModel
         if (SeriesHeatMap is not null) 
         {
             SeriesHeatMap.Clear();
-            SeriesHeatMap = null;
         }
 
         SeriesHeatMap = new ObservableCollection<ISeries>

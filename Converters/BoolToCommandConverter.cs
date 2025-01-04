@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class BoolToCommandConverter : IValueConverter
+public partial class BoolToCommandConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

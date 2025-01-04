@@ -11,7 +11,7 @@ namespace CryptoPortfolioTracker;
 public sealed partial class MainWindow : Window
 {
     private WindowManager _manager;
-    public static MainWindow Current;
+    public static MainWindow? Current;
     private readonly IPreferencesService _preferencesService;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

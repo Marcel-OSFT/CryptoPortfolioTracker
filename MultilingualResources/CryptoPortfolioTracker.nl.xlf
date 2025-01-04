@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en-US" target-language="nl" original="CRYPTOPORTFOLIOTRACKER/STRINGS/EN-US/RESOURCES.RESW" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+  <file datatype="xml" source-language="en-US" target-language="nl" original="CRYPTOPORTFOLIOTRACKER/STRINGS/en-us/RESOURCES.RESW" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
     <header>
       <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="1.0.0.0" tool-company="Microsoft" />
     </header>
@@ -8,1275 +8,1275 @@
       <group id="CRYPTOPORTFOLIOTRACKER/STRINGS/EN-US/RESOURCES.RESW" datatype="resx">
         <trans-unit id="AppDisplayName" translate="yes" xml:space="preserve">
           <source>Crypto Portfolio Tracker</source>
-          <target state="translated">Crypto Portfolio Tracker</target>
+          <target state="new">Crypto Portfolio Tracker</target>
         </trans-unit>
         <trans-unit id="AppDescription" translate="yes" xml:space="preserve">
           <source>Crypto Portfolio Tracker</source>
-          <target state="final">Crypto Portfolio Tracker</target>
+          <target state="new">Crypto Portfolio Tracker</target>
         </trans-unit>
         <trans-unit id="Settings_NumberFormat.Description" translate="yes" xml:space="preserve">
           <source>How do you want numbers to be presented.</source>
-          <target state="final">Hoe wilt u dat cijfers worden weergegeven?</target>
+          <target state="new">How do you want numbers to be presented.</target>
         </trans-unit>
         <trans-unit id="Settings_NumberFormat.Header" translate="yes" xml:space="preserve">
           <source>Number Format</source>
-          <target state="final">Getalsnotatie</target>
+          <target state="new">Number Format</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate.Description" translate="yes" xml:space="preserve">
           <source>Enables automatic checking for available updates.</source>
-          <target state="translated">Hoe wilt u dat cijfers worden weergegeven?</target>
+          <target state="new">Enables automatic checking for available updates.</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate.Header" translate="yes" xml:space="preserve">
           <source>Check for Update</source>
-          <target state="final">Controleer op Updates.</target>
+          <target state="new">Check for Update</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate_Version.Text" translate="yes" xml:space="preserve">
           <source>Current Version</source>
-          <target state="final">Huidige versie</target>
+          <target state="new">Current Version</target>
         </trans-unit>
         <trans-unit id="Settings_FontSize.Description" translate="yes" xml:space="preserve">
           <source>Sets the preferred font size for the different views.</source>
-          <target state="final">Stelt de gewenste lettergrootte in voor de verschillende weergaven.</target>
+          <target state="new">Sets the preferred font size for the different views.</target>
         </trans-unit>
         <trans-unit id="Settings_FontSize.Header" translate="yes" xml:space="preserve">
           <source>Font Size</source>
-          <target state="final">Tekstgrootte</target>
+          <target state="new">Font Size</target>
         </trans-unit>
         <trans-unit id="Settings_FontSize_Item1.Content" translate="yes" xml:space="preserve">
           <source>Small</source>
-          <target state="final">Klein</target>
+          <target state="new">Small</target>
         </trans-unit>
         <trans-unit id="Settings_FontSize_Item2.Content" translate="yes" xml:space="preserve">
           <source>Normal</source>
-          <target state="final">Normaal</target>
+          <target state="new">Normal</target>
         </trans-unit>
         <trans-unit id="Settings_FontSize_Item3.Content" translate="yes" xml:space="preserve">
           <source>Large</source>
-          <target state="final">Groot</target>
+          <target state="new">Large</target>
         </trans-unit>
         <trans-unit id="Settings_HideZeroBalances.Description" translate="yes" xml:space="preserve">
           <source>Overall setting for Hiding Zero Balances. In the overview itself this can be turned ON or OFF, temporarily.</source>
-          <target state="final">Algemene instelling voor het verbergen van nulsaldi. In het overzicht zelf kan dit tijdelijk AAN of UIT worden gezet.</target>
+          <target state="new">Overall setting for Hiding Zero Balances. In the overview itself this can be turned ON or OFF, temporarily.</target>
         </trans-unit>
         <trans-unit id="Settings_HideZeroBalances.Header" translate="yes" xml:space="preserve">
           <source>Hide Zero Balances</source>
-          <target state="final">Nulsaldi verbergen</target>
-        </trans-unit>
-        <trans-unit id="Settings_KeepScrollBarsExpanded.Header" translate="yes" xml:space="preserve">
-          <source>Keep ScrollBars Expanded</source>
-          <target state="final">Houd schuifbalken zichtbaar</target>
+          <target state="new">Hide Zero Balances</target>
         </trans-unit>
         <trans-unit id="Settings_KeepScrollBarsExpanded.Description" translate="yes" xml:space="preserve">
           <source>By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items or not.</source>
-          <target state="final">Standaard worden schuifbalken zichtbaar en groter wanneer de aanwijzer het gebied binnengaat. Zet dit AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</target>
+          <target state="new">By default, scroll bars become visible and expand when the pointer enters the area. Set this to ON to have always a clear view if a list contain more items or not.</target>
+        </trans-unit>
+        <trans-unit id="Settings_KeepScrollBarsExpanded.Header" translate="yes" xml:space="preserve">
+          <source>Keep ScrollBars Expanded</source>
+          <target state="new">Keep ScrollBars Expanded</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate_Toggle.OffContent" translate="yes" xml:space="preserve">
           <source>Off</source>
-          <target state="final">Uit</target>
+          <target state="new">Off</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate_Toggle.OnContent" translate="yes" xml:space="preserve">
           <source>On</source>
-          <target state="final">Aan</target>
+          <target state="new">On</target>
         </trans-unit>
         <trans-unit id="Settings_HideZeroBalances_Toggle.OffContent" translate="yes" xml:space="preserve">
           <source>Off</source>
-          <target state="final">Uit</target>
+          <target state="new">Off</target>
         </trans-unit>
         <trans-unit id="Settings_HideZeroBalances_Toggle.OnContent" translate="yes" xml:space="preserve">
           <source>On</source>
-          <target state="final">Aan</target>
+          <target state="new">On</target>
         </trans-unit>
         <trans-unit id="Settings_KeepScrollBarsExpanded_Toggle.OffContent" translate="yes" xml:space="preserve">
           <source>Off</source>
-          <target state="final">Uit</target>
+          <target state="new">Off</target>
         </trans-unit>
         <trans-unit id="Settings_KeepScrollBarsExpanded_Toggle.OnContent" translate="yes" xml:space="preserve">
           <source>On</source>
-          <target state="final">Aan</target>
+          <target state="new">On</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate_CheckNow.Content" translate="yes" xml:space="preserve">
           <source>Check Now</source>
-          <target state="final">Controleer nu</target>
-        </trans-unit>
-        <trans-unit id="Settings_Title.Text" translate="yes" xml:space="preserve">
-          <source>Settings</source>
-          <target state="final">Instellingen</target>
+          <target state="new">Check Now</target>
         </trans-unit>
         <trans-unit id="Navigation_Accounts.Content" translate="yes" xml:space="preserve">
           <source>Accounts</source>
-          <target state="final">Accounts</target>
+          <target state="new">Accounts</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Narratives.Content" translate="yes" xml:space="preserve">
+          <source>Narratives</source>
+          <target state="new">Narratives</target>
         </trans-unit>
         <trans-unit id="Navigation_Assets.Content" translate="yes" xml:space="preserve">
           <source>Assets</source>
-          <target state="final">Portefeuille</target>
+          <target state="new">Assets</target>
         </trans-unit>
         <trans-unit id="Navigation_CoinLibrary.Content" translate="yes" xml:space="preserve">
           <source>Coin Library</source>
-          <target state="final">Bibliotheek</target>
+          <target state="new">Coin Library</target>
         </trans-unit>
         <trans-unit id="Navigation_Help.Content" translate="yes" xml:space="preserve">
           <source>Help</source>
-          <target state="final">Help</target>
+          <target state="new">Help</target>
         </trans-unit>
-        <trans-unit id="Assets_Title.Text" translate="yes" xml:space="preserve">
-          <source>Assets</source>
-          <target state="final">Portefeuille</target>
+        <trans-unit id="Settings_Title.Text" translate="yes" xml:space="preserve">
+          <source>Settings</source>
+          <target state="new">Settings</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_24Hour.Text" translate="yes" xml:space="preserve">
+          <source>24 Hour</source>
+          <target state="new">24 Hour</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_ActualPrice.Text" translate="yes" xml:space="preserve">
+          <source>Actual Price</source>
+          <target state="new">Actual Price</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_AverageCostPrice.Text" translate="yes" xml:space="preserve">
+          <source>Average Cost Price</source>
+          <target state="new">Average Cost Price</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_Change.Text" translate="yes" xml:space="preserve">
+          <source>Change %</source>
+          <target state="new">Change %</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_CostBase.Text" translate="yes" xml:space="preserve">
+          <source>Cost Base</source>
+          <target state="new">Cost Base</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_HideZeroBalances.Content" translate="yes" xml:space="preserve">
+          <source>Hide zero balance</source>
+          <target state="new">Hide zero balance</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_MarketValue.Text" translate="yes" xml:space="preserve">
+          <source>Market Value</source>
+          <target state="new">Market Value</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_Name.Text" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <target state="new">Name</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_ProfitLoss.Text" translate="yes" xml:space="preserve">
+          <source>Profit/Loss</source>
+          <target state="new">Profit/Loss</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_ProfitLossPerc.Text" translate="yes" xml:space="preserve">
+          <source>P/L %</source>
+          <target state="new">P/L %</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_Quantity.Text" translate="yes" xml:space="preserve">
+          <source>Quantity</source>
+          <target state="new">Quantity</target>
         </trans-unit>
         <trans-unit id="Assets_Explainer.Text" translate="yes" xml:space="preserve">
           <source>Assets are the crypto currencies that you have in portfolio at one or more accounts.
 Crypto of your interest need to be added first to the Coin Library. Also one or more accounts need to be configured.
 Build up your assets by adding transactions using the 'Add Transaction' button at the bottom of this window.</source>
-          <target state="final">Activa zijn de cryptovaluta die u op één of meerdere rekeningen in portefeuille heeft.
-Crypto van uw interesse moet eerst worden toegevoegd aan de muntenbibliotheek. Ook dient een of meerdere accounts te worden geconfigureerd.
-Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie Toevoegen' onderaan dit venster.</target>
+          <target state="new">Assets are the crypto currencies that you have in portfolio at one or more accounts.
+Crypto of your interest need to be added first to the Coin Library. Also one or more accounts need to be configured.
+Build up your assets by adding transactions using the 'Add Transaction' button at the bottom of this window.</target>
+        </trans-unit>
+        <trans-unit id="Assets_Title.Text" translate="yes" xml:space="preserve">
+          <source>Assets</source>
+          <target state="new">Assets</target>
         </trans-unit>
         <trans-unit id="Assets_TransactionButton.Content" translate="yes" xml:space="preserve">
           <source>Add Transaction</source>
-          <target state="final">Transactie Toevoegen</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_24Hour.Text" translate="yes" xml:space="preserve">
-          <source>24 Hour</source>
-          <target state="final">24 Uur</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_ActualPrice.Text" translate="yes" xml:space="preserve">
-          <source>Actual Price</source>
-          <target state="final">Actuele Prijs</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_AverageCostPrice.Text" translate="yes" xml:space="preserve">
-          <source>Average Cost Price</source>
-          <target state="final">Gem. Kostprijs</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_CostBase.Text" translate="yes" xml:space="preserve">
-          <source>Cost Base</source>
-          <target state="final">Aankoop Waarde</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_HideZeroBalances.Content" translate="yes" xml:space="preserve">
-          <source>Hide zero balance</source>
-          <target state="final">Verberg nulsaldi</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_MarketValue.Text" translate="yes" xml:space="preserve">
-          <source>Market Value</source>
-          <target state="final">Marktwaarde</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_ProfitLoss.Text" translate="yes" xml:space="preserve">
-          <source>Profit/Loss</source>
-          <target state="translated">Winst/Verlies</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_Quantity.Text" translate="yes" xml:space="preserve">
-          <source>Quantity</source>
-          <target state="final">Aantal</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_Name.Text" translate="yes" xml:space="preserve">
-          <source>Name</source>
-          <target state="final">Naam</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_Change.Text" translate="yes" xml:space="preserve">
-          <source>Change %</source>
-          <target state="final">Verand. %</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_ProfitLossPerc.Text" translate="yes" xml:space="preserve">
-          <source>P/L %</source>
-          <target state="final">W/V %</target>
+          <target state="new">Add Transaction</target>
         </trans-unit>
         <trans-unit id="AccountsLV_Edit.Label" translate="yes" xml:space="preserve">
           <source>Edit</source>
-          <target state="final">Wijzigen</target>
-        </trans-unit>
-        <trans-unit id="AccountsLV_MarketValue.Text" translate="yes" xml:space="preserve">
-          <source>Market Value</source>
-          <target state="final">Marktwaarde</target>
-        </trans-unit>
-        <trans-unit id="AccountsLV_Name.Text" translate="yes" xml:space="preserve">
-          <source>Name</source>
-          <target state="final">Naam</target>
-        </trans-unit>
-        <trans-unit id="AccountsLV_Note.Text" translate="yes" xml:space="preserve">
-          <source>Note</source>
-          <target state="final">Notitie</target>
-        </trans-unit>
-        <trans-unit id="Accounts_AddAccount.Content" translate="yes" xml:space="preserve">
-          <source>Add Account</source>
-          <target state="final">Account Toevoegen</target>
-        </trans-unit>
-        <trans-unit id="Accounts_Explainer.Text" translate="yes" xml:space="preserve">
-          <source>The Accounts list gives you an overview of locations where you have your crypto assets in custody.</source>
-          <target state="final">De Accountslijst geeft u een overzicht van locaties waar u uw crypto-activa in bewaring heeft.</target>
-        </trans-unit>
-        <trans-unit id="Accounts_Title.Text" translate="yes" xml:space="preserve">
-          <source>Accounts</source>
-          <target state="final">Accounts</target>
-        </trans-unit>
-        <trans-unit id="AccountsLV_Delete.Label" translate="yes" xml:space="preserve">
-          <source>Delete</source>
-          <target state="final">Verwijderen</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_24HrChange.Text" translate="yes" xml:space="preserve">
-          <source>24 Hour Change</source>
-          <target state="final">24 uur verand.</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_30DayChange.Text" translate="yes" xml:space="preserve">
-          <source>30 Day Change</source>
-          <target state="final">30 dagen verand.</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_52WeekChange.Text" translate="yes" xml:space="preserve">
-          <source>52 Week Change</source>
-          <target state="final">52 weken verand.</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_About.Label" translate="yes" xml:space="preserve">
-          <source>About</source>
-          <target state="final">Over...</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_AddEditNote.Label" translate="yes" xml:space="preserve">
-          <source>Add/Edit Note</source>
-          <target state="final">Toevoegen/Wijzigen Notitie</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_Ath.Text" translate="yes" xml:space="preserve">
-          <source>ATH</source>
-          <target state="final">Hoogste Prijs Ooit</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_Delete.Label" translate="yes" xml:space="preserve">
-          <source>Delete Coin</source>
-          <target state="final">Munt Verwijderen</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_MarketCap.Text" translate="yes" xml:space="preserve">
-          <source>Market Cap</source>
-          <target state="final">Marktkapitalisatie</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_Name.Text" translate="yes" xml:space="preserve">
-          <source>Name</source>
-          <target state="final">Naam</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_Price.Text" translate="yes" xml:space="preserve">
-          <source>Price</source>
-          <target state="final">Prijs</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_Rank.Text" translate="yes" xml:space="preserve">
-          <source>Rank</source>
-          <target state="final">Positie</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_Symbol.Text" translate="yes" xml:space="preserve">
-          <source>Symbol</source>
-          <target state="final">Symbool</target>
-        </trans-unit>
-        <trans-unit id="Library_AddCoin.Content" translate="yes" xml:space="preserve">
-          <source>Add Coin</source>
-          <target state="final">Munt Toevoegen</target>
-        </trans-unit>
-        <trans-unit id="Library_Explainer.Text" translate="yes" xml:space="preserve">
-          <source>The Library is a collection of crypto coins that you are interested in. So you won't be distracted or disturbed by the large amount of unimportant coins out there. The coins in the library can be used to build your portfolio.</source>
-          <target state="final">De Bibliotheek is een verzameling cryptomunten waarin u geïnteresseerd bent. U wordt dus niet afgeleid of gestoord door de grote hoeveelheid onbelangrijke munten die er zijn. De munten in de bibliotheek kunnen worden gebruikt bij het opbouwen van uw portefeuille.</target>
-        </trans-unit>
-        <trans-unit id="Library_Title.Text" translate="yes" xml:space="preserve">
-          <source>Coin Library</source>
-          <target state="final">Bibliotheek</target>
-        </trans-unit>
-        <trans-unit id="TransactionsLV_From.Text" translate="yes" xml:space="preserve">
-          <source>From</source>
-          <target state="final">Van</target>
-        </trans-unit>
-        <trans-unit id="TransactionsLV_To.Text" translate="yes" xml:space="preserve">
-          <source>To</source>
-          <target state="final">Naar</target>
-        </trans-unit>
-        <trans-unit id="TransactionsLV_Type.Text" translate="yes" xml:space="preserve">
-          <source>Transaction Type</source>
-          <target state="final">Type Transactie</target>
-        </trans-unit>
-        <trans-unit id="TransactionsLV_Delete.Label" translate="yes" xml:space="preserve">
-          <source>Delete Transaction</source>
-          <target state="final">Transactie Verwijderen</target>
-        </trans-unit>
-        <trans-unit id="TransactionsLV_Edit.Label" translate="yes" xml:space="preserve">
-          <source>Edit</source>
-          <target state="final">Wijzigen</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_AccountFromHeader" translate="yes" xml:space="preserve">
-          <source>From Account</source>
-          <target state="final">Van Account</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_AccountToHeader" translate="yes" xml:space="preserve">
-          <source>To Account</source>
-          <target state="final">Naar Account</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Buy_Explainer" translate="yes" xml:space="preserve">
-          <source>A Buy is a conversion from a StableCoin to a Non-StableCoin and can be combined with a Transfer from accounts.</source>
-          <target state="final">Een aankoop is een conversie van een StableCoin naar een Non-StableCoin en kan worden gecombineerd met een transfer van het ene account naar een andere.</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_CloseButton" translate="yes" xml:space="preserve">
-          <source>Cancel</source>
-          <target state="final">Annuleren</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_CoinFromHeader" translate="yes" xml:space="preserve">
-          <source>From Coin</source>
-          <target state="final">Van Munt</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_CoinHeader" translate="yes" xml:space="preserve">
-          <source>Coin</source>
-          <target state="final">Munt</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_CoinToHeader" translate="yes" xml:space="preserve">
-          <source>To Coin</source>
-          <target state="final">Naar Munt</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Convert_Explainer" translate="yes" xml:space="preserve">
-          <source>A Convert is a conversion from Coin_A to Coin_B and can be combined with a Transfer from accounts.</source>
-          <target state="final">Wisselen is een conversie van de ene munt naar een andere munt en kan worden gecombineerd met een transfer van de ene account naar de andere.</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_DatePicker.Header" translate="yes" xml:space="preserve">
-          <source>Date</source>
-          <target state="final">Datum</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Deposit_Explainer" translate="yes" xml:space="preserve">
-          <source>A Deposit is a transaction where 'new' crypto flows into your portfolio. The source could be any fiat bank account, but will not be registered. Only the receiving Account is registered.</source>
-          <target state="final">Een Storting is een transactie waarbij ‘nieuwe’ cryptovaluta uw portefeuille binnenstromen. De bron kan elke fiat-bankrekening zijn, maar wordt niet geregistreerd. Alleen het ontvangende account wordt geregistreerd.</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_FeeCoin.Header" translate="yes" xml:space="preserve">
-          <source>Coin</source>
-          <target state="final">Munt</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_FeeQty.Header" translate="yes" xml:space="preserve">
-          <source>Fee</source>
-          <target state="final">Kosten</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Note.Header" translate="yes" xml:space="preserve">
-          <source>Note</source>
-          <target state="final">Notitie</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_PrimaryButton" translate="yes" xml:space="preserve">
-          <source>Accept Transaction</source>
-          <target state="final">Transactie Accepteren</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_QtyHeader" translate="yes" xml:space="preserve">
-          <source>Qty</source>
-          <target state="final">Aantal</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Sell_Explainer" translate="yes" xml:space="preserve">
-          <source>A Sell is a conversion from a Non-StableCoin to a StableCoin and can be combined with a Transfer from accounts.</source>
-          <target state="final">Een Verkoop is een conversie van een Non-StableCoin naar een StableCoin en kan worden gecombineerd met een transfer van de ene account naar de andere.</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_TimePicker.Header" translate="yes" xml:space="preserve">
-          <source>Time</source>
-          <target state="final">Tijd</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Title_Add" translate="yes" xml:space="preserve">
-          <source>Add Transaction</source>
-          <target state="final">Transactie Toevoegen</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Title_Edit" translate="yes" xml:space="preserve">
-          <source>Edit Transaction</source>
-          <target state="final">Transactie Wijzigen</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_TransactionType.Header" translate="yes" xml:space="preserve">
-          <source>Transaction Type</source>
-          <target state="final">Type Transactie</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Transfer_Explainer" translate="yes" xml:space="preserve">
-          <source>A Transfer is a 'transaction' where crypto moves from one account to another.</source>
-          <target state="final">Een Transfer is een ‘transactie’ waarbij cryptovaluta van de ene rekening naar de andere wordt verplaatst.</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Withdraw_Explainer" translate="yes" xml:space="preserve">
-          <source>A Withdraw is a transaction where crypto flows out of your portfolio. The destination could be any fiat bank account.</source>
-          <target state="final">Een Opname is een transactie waarbij cryptovaluta uit uw portefeuille gaat. De bestemming kan elke fiat-bankrekening zijn.</target>
-        </trans-unit>
-        <trans-unit id="TransactionType_Buy.Content" translate="yes" xml:space="preserve">
-          <source>Buy</source>
-          <target state="final">Koop</target>
-        </trans-unit>
-        <trans-unit id="TransactionType_Convert.Content" translate="yes" xml:space="preserve">
-          <source>Convert</source>
-          <target state="final">Wissel</target>
-        </trans-unit>
-        <trans-unit id="TransactionType_Deposit.Content" translate="yes" xml:space="preserve">
-          <source>Deposit</source>
-          <target state="final">Storting</target>
-        </trans-unit>
-        <trans-unit id="TransactionType_Sell.Content" translate="yes" xml:space="preserve">
-          <source>Sell</source>
-          <target state="final">Verkoop</target>
-        </trans-unit>
-        <trans-unit id="TransactionType_Transfer.Content" translate="yes" xml:space="preserve">
-          <source>Transfer</source>
-          <target state="final">Transfer</target>
-        </trans-unit>
-        <trans-unit id="TransactionType_Withdraw.Content" translate="yes" xml:space="preserve">
-          <source>Withdraw</source>
-          <target state="final">Opname</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_PriceA.Header" translate="yes" xml:space="preserve">
-          <source>Price</source>
-          <target state="final">Prijs</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_QtyB.Header" translate="yes" xml:space="preserve">
-          <source>Qty</source>
-          <target state="final">Aantal</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_FeeQty.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>Set fee</source>
-          <target state="final">Kosten opgeven...</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>e.g. this is a note...</source>
-          <target state="final">bijv. hier kun je een notitie ingeven</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_PriceA.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>Set price...</source>
-          <target state="final">price opgeven...</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_QtyB.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>Set quantity...</source>
-          <target state="final">aantal opgeven...</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_PriceB.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>calculated price...</source>
-          <target state="final">berekende prijs...</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_PriceB.Header" translate="yes" xml:space="preserve">
-          <source>Price</source>
-          <target state="final">Prijs</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_Description.Header" translate="yes" xml:space="preserve">
-          <source>Account Description</source>
-          <target state="final">Omschrijving</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_Description.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>Description goes here....</source>
-          <target state="final">beschrijving kan hier....</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_Name.Header" translate="yes" xml:space="preserve">
-          <source>Account Name</source>
-          <target state="final">Naam</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>e.g. Bybit Funding...</source>
-          <target state="final">bijv: Bybit Funding...</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_CloseButton" translate="yes" xml:space="preserve">
-          <source>Cancel</source>
-          <target state="final">Annuleren</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_PrimaryButton_Add" translate="yes" xml:space="preserve">
-          <source>Accept Account</source>
-          <target state="final">Account Accepteren</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
-          <source>Accept</source>
-          <target state="final">Accepteren</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_Title_Add" translate="yes" xml:space="preserve">
-          <source>Add Account</source>
-          <target state="final">Account Toevoegen</target>
-        </trans-unit>
-        <trans-unit id="AccountDialog_Title_Edit" translate="yes" xml:space="preserve">
-          <source>Edit Account</source>
-          <target state="final">Account Wijzigen</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_BePatient.Text" translate="yes" xml:space="preserve">
-          <source>* Be patient - busy at CoinGecko API at the moment.</source>
-          <target state="final">* Wees geduldig - momenteel druk bij CoinGecko API.</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_CloseButton" translate="yes" xml:space="preserve">
-          <source>Cancel</source>
-          <target state="final">Annuleren</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_Id.Text" translate="yes" xml:space="preserve">
-          <source>ID</source>
-          <target state="final">ID</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_MarketCapRank.Text" translate="yes" xml:space="preserve">
-          <source>Market Cap Rank</source>
-          <target state="final">Marktkapitalisatie Positie</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_Name.Text" translate="yes" xml:space="preserve">
-          <source>Name</source>
-          <target state="final">Naam</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_Price.Text" translate="yes" xml:space="preserve">
-          <source>Price</source>
-          <target state="final">Prijs</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_PrimaryButton" translate="yes" xml:space="preserve">
-          <source>Accept</source>
-          <target state="final">Accepteren</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_Symbol.Text" translate="yes" xml:space="preserve">
-          <source>Symbol</source>
-          <target state="final">Symbool</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_Title" translate="yes" xml:space="preserve">
-          <source>Add Coin to Library</source>
-          <target state="final">Voeg munt toe aan de Bibliotheek</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_PrimaryButton_CoinExists" translate="yes" xml:space="preserve">
-          <source>Coin Already In Library</source>
-          <target state="final">Munt al in Bibliotheek</target>
-        </trans-unit>
-        <trans-unit id="NoteDialog_CloseButton" translate="yes" xml:space="preserve">
-          <source>Cancel</source>
-          <target state="final">Annuleren</target>
-        </trans-unit>
-        <trans-unit id="NoteDialog_Note.Header" translate="yes" xml:space="preserve">
-          <source>Note</source>
-          <target state="final">Notitie</target>
-        </trans-unit>
-        <trans-unit id="NoteDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>e.g. this is the place to put a note....</source>
-          <target state="final">bijv. hier kun je een notitie ingeven</target>
-        </trans-unit>
-        <trans-unit id="NoteDialog_PrimaryButton" translate="yes" xml:space="preserve">
-          <source>Accept</source>
-          <target state="final">Accepteren</target>
-        </trans-unit>
-        <trans-unit id="NoteDialog_Title" translate="yes" xml:space="preserve">
-          <source>Note for</source>
-          <target state="final">Notitie voor</target>
-        </trans-unit>
-        <trans-unit id="DescriptionDialog_CloseButton" translate="yes" xml:space="preserve">
-          <source>Close</source>
-          <target state="final">Sluiten</target>
-        </trans-unit>
-        <trans-unit id="DescriptionDialog_Title" translate="yes" xml:space="preserve">
-          <source>About</source>
-          <target state="final">Over</target>
-        </trans-unit>
-        <trans-unit id="Common_AcceptButton" translate="yes" xml:space="preserve">
-          <source>Accept</source>
-          <target state="final">Accepteren</target>
-        </trans-unit>
-        <trans-unit id="Common_CancelButton" translate="yes" xml:space="preserve">
-          <source>Cancel</source>
-          <target state="final">Annuleren</target>
-        </trans-unit>
-        <trans-unit id="Common_CloseButton" translate="yes" xml:space="preserve">
-          <source>Close</source>
-          <target state="final">Sluiten</target>
-        </trans-unit>
-        <trans-unit id="Common_ConfirmButton" translate="yes" xml:space="preserve">
-          <source>Confirm</source>
-          <target state="final">Akkoord</target>
-        </trans-unit>
-        <trans-unit id="Common_DownloadButton" translate="yes" xml:space="preserve">
-          <source>Download</source>
-          <target state="final">Download</target>
-        </trans-unit>
-        <trans-unit id="Common_InstallButton" translate="yes" xml:space="preserve">
-          <source>Install</source>
-          <target state="final">Installeren</target>
-        </trans-unit>
-        <trans-unit id="Common_OkButton" translate="yes" xml:space="preserve">
-          <source>OK</source>
-          <target state="final">OK</target>
-        </trans-unit>
-        <trans-unit id="Messages_AccountAddFailed_Title" translate="yes" xml:space="preserve">
-          <source>Adding account failed</source>
-          <target state="final">Fout bij toevoegen van Account</target>
-        </trans-unit>
-        <trans-unit id="Messages_AccountDeleteFailed_Msg" translate="yes" xml:space="preserve">
-          <source>Account may have assets assigned.</source>
-          <target state="final">Het account bevat mogelijk nog cryptomunten.</target>
-        </trans-unit>
-        <trans-unit id="Messages_AccountDeleteFailed_Title" translate="yes" xml:space="preserve">
-          <source>Failed to delete Account</source>
-          <target state="final">Fout bij het verwijderen van het Account</target>
-        </trans-unit>
-        <trans-unit id="Messages_AccountDialogFailed_Title" translate="yes" xml:space="preserve">
-          <source>Account Dialog Failure</source>
-          <target state="final">Fout bij openen van het dialoog venster.</target>
-        </trans-unit>
-        <trans-unit id="Messages_AccountUpdateFailed_Title" translate="yes" xml:space="preserve">
-          <source>Updating account failed</source>
-          <target state="final">Fout bij het wijzigen van het Accout</target>
-        </trans-unit>
-        <trans-unit id="Messages_CoinAddFailed_Title" translate="yes" xml:space="preserve">
-          <source>Adding Coin Failed</source>
-          <target state="final">Fout bij toevoegen van een munt</target>
-        </trans-unit>
-        <trans-unit id="Messages_CoinDeleteFailed_Title" translate="yes" xml:space="preserve">
-          <source>Failed to delete Coin</source>
-          <target state="final">Fout bij het verwijderen van een munt</target>
-        </trans-unit>
-        <trans-unit id="Messages_CoinDialogFailed_Title" translate="yes" xml:space="preserve">
-          <source>Add Coin Dialog failure</source>
-          <target state="final">Fout bij het openen van het dialoog venster</target>
-        </trans-unit>
-        <trans-unit id="Messages_NoteAddFailed_Title" translate="yes" xml:space="preserve">
-          <source>Updating Note Failed</source>
-          <target state="final">Fout bij het wijzigen van een Notitie</target>
-        </trans-unit>
-        <trans-unit id="Messages_NoteDialogFailed_Title" translate="yes" xml:space="preserve">
-          <source>Note Dialog Failure</source>
-          <target state="final">Fout bij het openen van het dialoog venster</target>
-        </trans-unit>
-        <trans-unit id="Messages_TransactionAddFailed_Title" translate="yes" xml:space="preserve">
-          <source>Adding transaction failed</source>
-          <target state="final">Fout bij het toevoegen van een Transactie</target>
-        </trans-unit>
-        <trans-unit id="Messages_TransactionDeleteFailed_Title" translate="yes" xml:space="preserve">
-          <source>Deleting transaction failed</source>
-          <target state="final">Fout bij het verwijderen van een Transactie</target>
-        </trans-unit>
-        <trans-unit id="Messages_TransactionDelete_Msg" translate="yes" xml:space="preserve">
-          <source>Please Confirm to delete and revert this transaction</source>
-          <target state="final">Graag akkoord geven voor het verwijderen en terugdraaien van deze transactie</target>
-        </trans-unit>
-        <trans-unit id="Messages_TransactionDelete_Title" translate="yes" xml:space="preserve">
-          <source>Delete Transaction Request</source>
-          <target state="final">Verzoek tot het verwijderen van een transactie</target>
-        </trans-unit>
-        <trans-unit id="Messages_TransactionDialogFailed_Title" translate="yes" xml:space="preserve">
-          <source>Transaction Dialog Failure</source>
-          <target state="final">Fout bij het openen van een dialoog vensterTransaction Dialog Failure</target>
-        </trans-unit>
-        <trans-unit id="Messages_TransactionUpdateFailed_Title" translate="yes" xml:space="preserve">
-          <source>Updating transaction failed</source>
-          <target state="final">Fout bij het wijzigen van een Transactie</target>
-        </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_DownloadFailedMsg" translate="yes" xml:space="preserve">
-          <source>Update will be postponed.</source>
-          <target state="final">Update wordt uitgesteld!</target>
-        </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_DownloadFailedTitle" translate="yes" xml:space="preserve">
-          <source>Downloading Setup File failed</source>
-          <target state="final">Fout bij het downloaden van de Setup File.</target>
-        </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_DownloadSuccesMsg" translate="yes" xml:space="preserve">
-          <source>The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.</source>
-          <target state="final">Het installatiebestand is opgeslagen in uw Downloads map. Klik op 'Installeren' om door te gaan met de installatie. De applicatie wordt automatisch gesloten.</target>
-        </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_NewVersionMsg" translate="yes" xml:space="preserve">
-          <source>Do you want to download it? In the meanwhile you can continue using the app. You will be notified when the download has finished.</source>
-          <target state="final">Wil je het downloaden? In de tussentijd kunt u de app blijven gebruiken. U ontvangt een melding wanneer het downloaden is voltooid.</target>
-        </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_NewVersionTitle" translate="yes" xml:space="preserve">
-          <source>New Version Available!</source>
-          <target state="final">Nieuwe versie beschikbaar!</target>
-        </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_UpToDate_Msg" translate="yes" xml:space="preserve">
-          <source>Version is up-to-date</source>
-          <target state="final">Versie is up-to-date</target>
-        </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_UpToDate_Title" translate="yes" xml:space="preserve">
-          <source>Update Checker</source>
-          <target state="final">Update Checker</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_GetDetails_Failed" translate="yes" xml:space="preserve">
-          <source>Error while getting Details</source>
-          <target state="final">Fout bij het ophalen van de details</target>
-        </trans-unit>
-        <trans-unit id="Messages_AccountDeleteNotAllowd_Title" translate="yes" xml:space="preserve">
-          <source>Deleting not allowed!</source>
-          <target state="final">Verwijderen niet toegestaan!</target>
-        </trans-unit>
-        <trans-unit id="Messages_AccountDeleteNotAllowed_Msg" translate="yes" xml:space="preserve">
-          <source>The Account is holding assets.</source>
-          <target state="final">Deze account maakt nog onderdeel uit van uw portefeuille.</target>
-        </trans-unit>
-        <trans-unit id="Settings_AppTheme_Toggle.OffContent" translate="yes" xml:space="preserve">
-          <source>Light</source>
-          <target state="final">Licht</target>
-        </trans-unit>
-        <trans-unit id="Settings_AppTheme_Toggle.OnContent" translate="yes" xml:space="preserve">
-          <source>Dark</source>
-          <target state="final">Donker</target>
-        </trans-unit>
-        <trans-unit id="Settings_AppTheme.Description" translate="yes" xml:space="preserve">
-          <source>Select Dark or Light color theme for the application.</source>
-          <target state="final">Selecteer een donker of licht kleurenthema voor de toepassing.</target>
-        </trans-unit>
-        <trans-unit id="Settings_AppTheme.Header" translate="yes" xml:space="preserve">
-          <source>Theme</source>
-          <target state="final">Thema</target>
-        </trans-unit>
-        <trans-unit id="Messages_UpdateChecker_DownloadSuccesTitle" translate="yes" xml:space="preserve">
-          <source>Download Succesfull</source>
-          <target state="final">Download gereed</target>
-        </trans-unit>
-        <trans-unit id="Settings_AppCulture.Description" translate="yes" xml:space="preserve">
-          <source>Select the language you prefer for this app.</source>
-          <target state="final">Selecteer uw taal voorkeur voor deze app.</target>
-        </trans-unit>
-        <trans-unit id="Settings_AppCulture.Header" translate="yes" xml:space="preserve">
-          <source>Language</source>
-          <target state="final">Taal</target>
-        </trans-unit>
-        <trans-unit id="TransactionKind_Buy" translate="yes" xml:space="preserve">
-          <source>Buy</source>
-          <target state="final">Koop</target>
-        </trans-unit>
-        <trans-unit id="TransactionKind_Convert" translate="yes" xml:space="preserve">
-          <source>Convert</source>
-          <target state="final">Wissel</target>
-        </trans-unit>
-        <trans-unit id="TransactionKind_Deposit" translate="yes" xml:space="preserve">
-          <source>Deposit</source>
-          <target state="final">Storting</target>
-        </trans-unit>
-        <trans-unit id="TransactionKind_Sell" translate="yes" xml:space="preserve">
-          <source>Sell</source>
-          <target state="final">Verkoop</target>
-        </trans-unit>
-        <trans-unit id="TransactionKind_Transfer" translate="yes" xml:space="preserve">
-          <source>Transfer</source>
-          <target state="final">Transfer</target>
-        </trans-unit>
-        <trans-unit id="TransactionKind_Withdraw" translate="yes" xml:space="preserve">
-          <source>Withdraw</source>
-          <target state="final">Opname</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_1Month.Text" translate="yes" xml:space="preserve">
-          <source>30 days</source>
-          <target state="final">30 dagen</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_SearchBox.MyPlaceholderText" translate="yes" xml:space="preserve">
-          <source>search using name, symbol, id</source>
-          <target state="final">zoek op naam, symbool, id</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_SearchBox.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
-          <source>Search coin using name, symbol, id</source>
-          <target state="final">zoek op naam, symbool, id</target>
-        </trans-unit>
-        <trans-unit id="Messages_AddingCoinFailed" translate="yes" xml:space="preserve">
-          <source>Adding coin to the Library failed</source>
-          <target state="final">Fout bij toevoegen van de munt</target>
-        </trans-unit>
-        <trans-unit id="Messages_CoinDataMissing" translate="yes" xml:space="preserve">
-          <source>Mandatory Coin data missing (Id/Name/Symbol). Coin will NOT be added to the Coin Library</source>
-          <target state="final">Noodzakelijke muntgegevens ontbreken. De munt wordt niet toegevoegd aan de bibliotheek</target>
-        </trans-unit>
-        <trans-unit id="ASBox_NoItems_Msg" translate="yes" xml:space="preserve">
-          <source>no items available yet</source>
-          <target state="final">nog geen items beschikbaar</target>
-        </trans-unit>
-        <trans-unit id="ASBox_SelectItem_Msg" translate="yes" xml:space="preserve">
-          <source>select item</source>
-          <target state="final">selecteer item</target>
-        </trans-unit>
-        <trans-unit id="ASBox_NoSuitableItems_Msg" translate="yes" xml:space="preserve">
-          <source>No results found</source>
-          <target state="final">niets gevonden</target>
-        </trans-unit>
-        <trans-unit id="Assets_InFlow.Text" translate="yes" xml:space="preserve">
-          <source>Inflow</source>
-          <target state="final">Instroom</target>
-        </trans-unit>
-        <trans-unit id="Assets_OutFlow.Text" translate="yes" xml:space="preserve">
-          <source>Outflow</source>
-          <target state="final">Uitstroom</target>
-        </trans-unit>
-        <trans-unit id="Settings_HideCapitalFlow.Description" translate="yes" xml:space="preserve">
-          <source>Determine if you want to have the Inflow and Outflow information shown on the Portfolio View.</source>
-          <target state="final">Geef aan of u de kapitaal in- en uitstroom wil tonen in het portefeuille-overzicht.</target>
-        </trans-unit>
-        <trans-unit id="Settings_HideCapitalFlow.Header" translate="yes" xml:space="preserve">
-          <source>Hide Capital Flow</source>
-          <target state="final">Kapitaal Stroom verbergen</target>
-        </trans-unit>
-        <trans-unit id="Settings_HideCapitalFlow_Toggle.OffContent" translate="yes" xml:space="preserve">
-          <source>Off</source>
-          <target state="final">Uit</target>
-        </trans-unit>
-        <trans-unit id="Settings_HideCapitalFlow_Toggle.OnContent" translate="yes" xml:space="preserve">
-          <source>On</source>
-          <target state="final">Aan</target>
-        </trans-unit>
-        <trans-unit id="Assets_InFlowPanel.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
-          <source>Capital Inflow based on sum of all Deposits</source>
-          <target state="final">Kapitaal Instroom gebaseerd op de som van alle Stortingen.</target>
-        </trans-unit>
-        <trans-unit id="Assets_OutFlowPanel.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
-          <source>Capital Outflow based on sum of all Withdraws</source>
-          <target state="final">Kapitaal Uitstroom gebaseerd op de som van alle Opnames.</target>
-        </trans-unit>
-        <trans-unit id="Library_AddPreListingCoin.Content" translate="yes" xml:space="preserve">
-          <source>Add Pre-Listing Coin</source>
-          <target state="final">Pre-Listing Munt toevoegen</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_About.Header" translate="yes" xml:space="preserve">
-          <source>Description/Note</source>
-          <target state="final">Omschrijving/Notitie</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_About.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>e.g. Coin listing expected to be in Q1 2025</source>
-          <target state="final">bijv. munt listing verwacht in Q1-2025</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_Name.Header" translate="yes" xml:space="preserve">
-          <source>Coin Name</source>
-          <target state="final">Munt Naam</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>e.g. Promising Project</source>
-          <target state="final">bijv. Veelbelovend Project</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_Symbol.Header" translate="yes" xml:space="preserve">
-          <source>Coin Symbol</source>
-          <target state="final">Munt Symbool</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_Symbol.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>e.g. PTKN</source>
-          <target state="final">bijv. VTKN</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_Title" translate="yes" xml:space="preserve">
-          <source>Add a Pre-listing Coin</source>
-          <target state="final">Voeg een pre-listing munt toe</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_Price.Header" translate="yes" xml:space="preserve">
-          <source>Price</source>
-          <target state="final">Prijs</target>
-        </trans-unit>
-        <trans-unit id="PreListingCoinDialog_Explainer.Text" translate="yes" xml:space="preserve">
-          <source>Sometimes a new coin you have invested in, is not yet listed at data aggregators like CoinGecko. In this case you can add a pre-listing coin here. In a later stage, when the coin becomes listed, you can 'merge' this coin with the listed one. See the 'merge' action at the three dots ...</source>
-          <target state="final">Soms staat een nieuwe munt waarin je hebt geïnvesteerd nog niet vermeld bij data-aggregators zoals CoinGecko. In dit geval kun je hier een pre-listingmunt toevoegen. In een later stadium, wanneer de munt genoteerd (gelist) wordt, kunt u deze munt samenvoegen met de 'geliste' munt. Zie de actie 'samenvoegen' bij de drie stippen...</target>
-        </trans-unit>
-        <trans-unit id="LibraryLV_Merge.Label" translate="yes" xml:space="preserve">
-          <source>Merge pre-listing coin...</source>
-          <target state="final">Pre-listing munt Samenvoegen...</target>
-        </trans-unit>
-        <trans-unit id="CoinDialog_MergeTitle" translate="yes" xml:space="preserve">
-          <source>Merge pre-listing Coin</source>
-          <target state="final">Pre-listing Munt samenvoegen </target>
-        </trans-unit>
-        <trans-unit id="Navigation_Graphic.Content" translate="yes" xml:space="preserve">
-          <source>Chart</source>
-          <target state="final">Grafiek</target>
-        </trans-unit>
-        <trans-unit id="GrahicView_UpdateText.Text" translate="yes" xml:space="preserve">
-          <source>Updating...</source>
-          <target state="translated">Bijwerken...</target>
-        </trans-unit>
-        <trans-unit id="GraphicView_InFlowSeriesTitle" translate="yes" xml:space="preserve">
-          <source>Inflow</source>
-          <target state="final">Instroom</target>
-        </trans-unit>
-        <trans-unit id="GraphicView_OutFlowSeriesTitle" translate="yes" xml:space="preserve">
-          <source>Outflow</source>
-          <target state="final">Uitstroom</target>
-        </trans-unit>
-        <trans-unit id="GraphicView_PortfolioSeriesTitle" translate="yes" xml:space="preserve">
-          <source>Portfolio Value</source>
-          <target state="final">Portefeuille Waarde</target>
-        </trans-unit>
-        <trans-unit id="GraphicView_DateFormat" translate="yes" xml:space="preserve">
-          <source>MMMM dd, yyyy</source>
-          <target state="final">dd MMMM yyyy</target>
-        </trans-unit>
-        <trans-unit id="Navigation_About.Content" translate="yes" xml:space="preserve">
-          <source>About</source>
-          <target state="final">Over</target>
-        </trans-unit>
-        <trans-unit id="Navigation_Exit.Content" translate="yes" xml:space="preserve">
-          <source>Exit</source>
-          <target state="final">Sluiten</target>
-        </trans-unit>
-        <trans-unit id="Messages_HelpFile_FailedMsg" translate="yes" xml:space="preserve">
-          <source>Unable to open the Online Help file in your default browser.</source>
-          <target state="final">Kan het Online Help-bestand niet openen in de standaardbrowser.</target>
-        </trans-unit>
-        <trans-unit id="Messages_HelpFile_FailedTitle" translate="yes" xml:space="preserve">
-          <source>Failed to open Online Help.</source>
-          <target state="final">Kan het Online Help-bestand niet openen</target>
-        </trans-unit>
-        <trans-unit id="AboutView_Title.Text" translate="yes" xml:space="preserve">
-          <source>About</source>
-          <target state="final">Over</target>
-        </trans-unit>
-        <trans-unit id="TransactionDialog_Earnings.Content" translate="yes" xml:space="preserve">
-          <source>Staking yield</source>
-          <target state="final">Staking opbrengst</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_Title" translate="yes" xml:space="preserve">
-          <source>About</source>
-          <target state="final">Over</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_CoinGecko_Sub1.Text" translate="yes" xml:space="preserve">
-          <source>This app is retrieving its data using the public API provided by CoinGecko, a Crypto market data aggregator.</source>
-          <target state="final">Deze app haalt zijn gegevens op met behulp van de openbare API van CoinGecko, een Crypto-marktgegevensaggregator.</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_CoinGecko_Sub2.Text" translate="yes" xml:space="preserve">
-          <source>CoinGecko’s Public API has a rate limit of 5 to 15 calls per minute, depending on usage conditions worldwide. Most of the time it turns out to be around 5 requests per minute. When a 'Too Many Requests' occurs then a 30 seconds timeout is build in before re-trying the request.</source>
-          <target state="translated">De openbare API van CoinGecko heeft een snelheidslimiet van 5 tot 15 oproepen per minuut, afhankelijk van de gebruiksomstandigheden wereldwijd. Meestal blijkt het rond de 5 verzoeken per minuut te zijn. Wanneer er een 'Too Many Requests' optreedt, wordt er een time-out van 30 seconden aangehouden voordat het verzoek opnieuw wordt geprobeerd.</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_CoinGecko_Title.Text" translate="yes" xml:space="preserve">
-          <source>CoinGecko public API</source>
-          <target state="final">CoinGecko openbare API</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_Contact_Sub1.Text" translate="yes" xml:space="preserve">
-          <source>The navigation menu on the left has an 'Help' option which opens a PDF document in your browser. This document is updated regularly, if needed.</source>
-          <target state="final">Het navigatiemenu aan de linkerkant heeft een 'Help'-optie waarmee een PDF-document in uw browser wordt geopend. Dit document wordt indien nodig regelmatig bijgewerkt.</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_Contact_Sub2a.Text" translate="yes" xml:space="preserve">
-          <source>Need for additional support or do you have a question, comment or request? Please feel free to send me an email (</source>
-          <target state="final">Heeft u behoefte aan extra ondersteuning of heeft u een vraag, opmerking of verzoek? Stuur mij gerust een e-mail (</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_Contact_Sub2b.Text" translate="yes" xml:space="preserve">
-          <source>) or contact me on Discord (</source>
-          <target state="final">) of neem contact met mij op via Discord (</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_Contact_Title.Text" translate="yes" xml:space="preserve">
-          <source>Contact and Support</source>
-          <target state="final">Contact en ondersteuning</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_Donation_Sub.Text" translate="yes" xml:space="preserve">
-          <source>If you find this app valuable and would like to support further development, you can make a donation to one of the following addresses:</source>
-          <target state="final">Als u deze app waardevol vindt en de verdere ontwikkeling wilt ondersteunen, kunt u een donatie doen op één van de volgende adressen:</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_Donation_Title.Text" translate="yes" xml:space="preserve">
-          <source>Donation</source>
-          <target state="final">Donatie</target>
-        </trans-unit>
-        <trans-unit id="AboutDialog_Version.Text" translate="yes" xml:space="preserve">
-          <source>Version</source>
-          <target state="final">Versie</target>
-        </trans-unit>
-        <trans-unit id="Navigation_Dashboard.Content" translate="yes" xml:space="preserve">
-          <source>Dashboard</source>
-          <target state="final">Dashboard</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_BuyLevel.Text" translate="yes" xml:space="preserve">
-          <source>Buy Level</source>
-          <target state="translated">Koopniveau</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_DistanceToBuyLevel.Text" translate="yes" xml:space="preserve">
-          <source>Distance</source>
-          <target state="translated">Afstand</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_DistanceToTpLevel.Text" translate="yes" xml:space="preserve">
-          <source>Distance</source>
-          <target state="translated">Afstand</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_Name.Text" translate="yes" xml:space="preserve">
-          <source>Name</source>
-          <target state="translated">Naam</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_Price.Text" translate="yes" xml:space="preserve">
-          <source>Actual Price</source>
-          <target state="translated">Huidige Prijs</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_StopLevel.Text" translate="yes" xml:space="preserve">
-          <source>Stop Level</source>
-          <target state="translated">Stopniveau</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_TpLevel.Text" translate="yes" xml:space="preserve">
-          <source>Take Profit Level</source>
-          <target state="translated">Winstname niveau</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_DistanceToStopLevel.Text" translate="yes" xml:space="preserve">
-          <source>Distance</source>
-          <target state="translated">Afstand</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_Symbol.Text" translate="yes" xml:space="preserve">
-          <source>Symbol</source>
-          <target state="translated">Symbool</target>
-        </trans-unit>
-        <trans-unit id="PriceLevels_Explainer.Text" translate="yes" xml:space="preserve">
-          <source>This overview gives an indication if the actual price of a coin is within range of a specified level. The levels that can be set are, a Take Profit, a buy and a Stop level. If the price is within range of a level it will be indicated by a colour. </source>
-          <target state="translated">Dit overzicht geeft een indicatie of de actuele prijs van een munt binnen het bereik van een bepaald niveau ligt. De niveaus die kunnen worden ingesteld zijn een Take Profit, een buy en een Stop-niveau. Als de prijs binnen het bereik van een niveau ligt, wordt dit aangegeven door een kleur.</target>
-        </trans-unit>
-        <trans-unit id="PriceLevels_Title.Text" translate="yes" xml:space="preserve">
-          <source>Price Levels</source>
-          <target state="translated">Prijsniveaus</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_AddEditLevels.Label" translate="yes" xml:space="preserve">
-          <source>Add/Edit Price Levels</source>
-          <target state="translated">Toevoegen/wijzigen Prijsniveaus</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_Delete.Label" translate="yes" xml:space="preserve">
-          <source>Delete Price Levels</source>
-          <target state="translated">Verwijder Prijsniveaus</target>
-        </trans-unit>
-        <trans-unit id="Navigation_PriceLevels.Content" translate="yes" xml:space="preserve">
-          <source>Price Levels</source>
-          <target state="translated">Prijsniveaus</target>
-        </trans-unit>
-        <trans-unit id="Messages_ResetLevelsFailed_Title" translate="yes" xml:space="preserve">
-          <source>Failed to reset Price Levels</source>
-          <target state="translated">Fout bij het verwijderen van prijsniveaus</target>
-        </trans-unit>
-        <trans-unit id="Messages_PriceLevelsAddFailed_Title" translate="yes" xml:space="preserve">
-          <source>Adding/Updating Price Levels failed</source>
-          <target state="translated">Fout bij het toevoegen/wijzigen van Prijsniveaus</target>
-        </trans-unit>
-        <trans-unit id="Messages_PriceLevelsDialogFailed_Title" translate="yes" xml:space="preserve">
-          <source>Price Levels Dialog Failure</source>
-          <target state="translated">Fout bij het openen van het Prijsniveaus venster</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsDialog_CloseButton" translate="yes" xml:space="preserve">
-          <source>Cancel</source>
-          <target state="translated">Annuleren</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsDialog_PrimaryButton" translate="yes" xml:space="preserve">
-          <source>Accept</source>
-          <target state="translated">Accepteren</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsDialog_Title" translate="yes" xml:space="preserve">
-          <source>Price Levels for </source>
-          <target state="translated">Prijsniveaus voor </target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
-          <source>Write a note....</source>
-          <target state="translated">Schrijf hier een notitie...</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsLV_AvgCost.Text" translate="yes" xml:space="preserve">
-          <source>Avg. cost price</source>
-          <target state="translated">gem. kostprijs</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsDialog_BuyHeader.Text" translate="yes" xml:space="preserve">
-          <source>Buy level</source>
-          <target state="translated">Koopniveau</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsDialog_StopHeader.Text" translate="yes" xml:space="preserve">
-          <source>Stop level</source>
-          <target state="translated">Stopniveau</target>
-        </trans-unit>
-        <trans-unit id="PriceLevelsDialog_TpHeader.Text" translate="yes" xml:space="preserve">
-          <source>Take profit level</source>
-          <target state="translated">Winstname-niveau</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_AssetView.Description" translate="yes" xml:space="preserve">
-          <source>Expand this to get access to settings related to the 'Assets View' like HideCapitalFlow, HideZeroBalances</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Portfolio overzicht' zoals KapitaalStroom verbergen, Nulsaldi verbergen</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_AssetView.Header" translate="yes" xml:space="preserve">
-          <source>Asset View settings</source>
-          <target state="translated">Instellingen Portfolio-overzicht</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_General.Description" translate="yes" xml:space="preserve">
-          <source>Expand this to get access to general settings like NumberFormat, FontSize, Language, Dark/Light theme, ExpandedScrollBars</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot algemene instellingen zoals getalsnotatie, lettergrootte, taal, donker/licht thema, zichtbaarheid schuifbalken</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_General.Header" translate="yes" xml:space="preserve">
-          <source>General settings</source>
-          <target state="translated">Algemene instellingen</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_PriceLevels.Description" translate="yes" xml:space="preserve">
-          <source>Expand this to get acces to settings related to the 'Price Level' feature like WithinRangePerc and CloseToPerc.</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de functie 'Prijsniveau', 'binnen bereik'- en 'dichtbij'drempelpercentages.</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_PriceLevels.Header" translate="yes" xml:space="preserve">
-          <source>Price Level settings</source>
-          <target state="translated">Instellingen Prijsniveaus</target>
-        </trans-unit>
-        <trans-unit id="Settings_PriceLevels1.Description" translate="yes" xml:space="preserve">
-          <source>This threshold is used to provide a visual confirmation of the Actual Price being within the range of it's target level.</source>
-          <target state="translated">Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs binnen het bereik van het streefniveau ligt.</target>
-        </trans-unit>
-        <trans-unit id="Settings_PriceLevels1.Header" translate="yes" xml:space="preserve">
-          <source>'Within Range' Threshold percentage</source>
-          <target state="translated">'Binnen bereik' drempelpercentage</target>
-        </trans-unit>
-        <trans-unit id="Settings_PriceLevels2.Description" translate="yes" xml:space="preserve">
-          <source>This threshold is used to provide a visual confirmation of the Actual Price being within close range of it's target level.</source>
-          <target state="translated">Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs zich dicht bij het streefniveau bevindt.</target>
-        </trans-unit>
-        <trans-unit id="Settings_PriceLevels2.Header" translate="yes" xml:space="preserve">
-          <source>'Close To' Threshold percentage</source>
-          <target state="translated">'Dichtbij' drempelpercentage</target>
-        </trans-unit>
-        <trans-unit id="HeatMapView_YAxisTitle" translate="yes" xml:space="preserve">
-          <source>Distance to Profit Take Level [%]</source>
-          <target state="translated">Afstand tot Winstname-niveau [%]</target>
-        </trans-unit>
-        <trans-unit id="HeatMapView.Text" translate="yes" xml:space="preserve">
-          <source>Target Bubbels</source>
-          <target state="final">Target Bubbels</target>
-        </trans-unit>
-        <trans-unit id="GraphicView.Text" translate="yes" xml:space="preserve">
-          <source>Portfolio Value</source>
-          <target state="translated">Portefeuille waarde</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_DashBoard.Description" translate="yes" xml:space="preserve">
-          <source>Expand this to get access to settings related to the Dasboard View</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de Dashboardweergave</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_DashBoard.Header" translate="yes" xml:space="preserve">
-          <source>Dashboard Settings</source>
-          <target state="translated">Instellingen Dashboard</target>
-        </trans-unit>
-        <trans-unit id="Settings_DashBoard1.Description" translate="yes" xml:space="preserve">
-          <source>The number of coins visible in the Portfolio Pie. The remaining coins will be grouped into 'Others'</source>
-          <target state="translated">Het aantal munten dat zichtbaar is in de Portfolio Pie. De resterende munten worden gegroepeerd in 'Overige'</target>
-        </trans-unit>
-        <trans-unit id="Settings_DashBoard1.Header" translate="yes" xml:space="preserve">
-          <source>Maximum number of coins in the Portfolio Pie Chart</source>
-          <target state="translated">Maximaal aantal munten in de portefeuille-cirkeldiagram</target>
-        </trans-unit>
-        <trans-unit id="Dashboard_Title.Text" translate="yes" xml:space="preserve">
-          <source>Dashboard</source>
-          <target state="final">Dashboard</target>
-        </trans-unit>
-        <trans-unit id="Top5View.Text" translate="yes" xml:space="preserve">
-          <source>Top 5 Winners &amp; Losers 24h</source>
-          <target state="translated">Top 5 Stijgers &amp; Dalers 24u</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView.Text" translate="yes" xml:space="preserve">
-          <source>Values &amp; Gains</source>
-          <target state="translated">Waardes &amp; Groei</target>
-        </trans-unit>
-        <trans-unit id="CapitalFlowView_DateFormat" translate="no" xml:space="preserve">
-          <source>yyyy</source>
-          <target state="final">yyyy</target>
-        </trans-unit>
-        <trans-unit id="CapitalFlowView.Text" translate="yes" xml:space="preserve">
-          <source>Capital Flow</source>
-          <target state="translated">Kapitaalstroom</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_PortfolioValue.Text" translate="yes" xml:space="preserve">
-          <source>Portfolio value</source>
-          <target state="translated">Portefeuillewaarde</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_Day.Text" translate="yes" xml:space="preserve">
-          <source>day</source>
-          <target state="translated">dag</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_Month.Text" translate="yes" xml:space="preserve">
-          <source>month</source>
-          <target state="translated">maand</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_Year.Text" translate="yes" xml:space="preserve">
-          <source>year</source>
-          <target state="translated">jaar</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_ytd.Text" translate="yes" xml:space="preserve">
-          <source>YTD</source>
-          <target state="final">YTD</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_CostBaseVersus.Text" translate="yes" xml:space="preserve">
-          <source>vs. cost base</source>
-          <target state="translated">vs. kostenbasis</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_CostBase.Text" translate="yes" xml:space="preserve">
-          <source>Cost base</source>
-          <target state="translated">Kostenbasis</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_NetCapFlow.Text" translate="yes" xml:space="preserve">
-          <source>net flow</source>
-          <target state="translated">netto kapitaalstroom</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_Week.Text" translate="yes" xml:space="preserve">
-          <source>week</source>
-          <target state="final">week</target>
-        </trans-unit>
-        <trans-unit id="HeatMapView_NoTargets.Text" translate="yes" xml:space="preserve">
-          <source>Go to the 'Price Levels' view to set target levels.</source>
-          <target state="translated">Ga naar het overzicht 'Prijsniveaus' om streefniveaus in te stellen.</target>
-        </trans-unit>
-        <trans-unit id="PieChartView_Portfolio.Text" translate="yes" xml:space="preserve">
-          <source>Portfolio distribution</source>
-          <target state="translated">Portefeuille verdeling</target>
-        </trans-unit>
-        <trans-unit id="PieChartView_Accounts.Text" translate="yes" xml:space="preserve">
-          <source>Accounts distribution</source>
-          <target state="translated">Accounts verdeling</target>
-        </trans-unit>
-        <trans-unit id="AssetsLV_NetInvestment.Text" translate="yes" xml:space="preserve">
-          <source>Net Investment</source>
-          <target state="translated">Netto Investering</target>
-        </trans-unit>
-        <trans-unit id="ValueGainsView_NetInvestment.Text" translate="yes" xml:space="preserve">
-          <source>Net Investment</source>
-          <target state="translated">Netto investering</target>
-        </trans-unit>
-        <trans-unit id="Navigation_Narratives.Content" translate="yes" xml:space="preserve">
-          <source>Narratives</source>
-          <target state="translated">Narratief</target>
+          <target state="new">Edit</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_Edit.Label" translate="yes" xml:space="preserve">
           <source>Edit</source>
-          <target state="translated">Wijzigen</target>
+          <target state="new">Edit</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_MarketValue.Text" translate="yes" xml:space="preserve">
           <source>Market Value</source>
-          <target state="translated">Marktwaarde</target>
+          <target state="new">Market Value</target>
+        </trans-unit>
+        <trans-unit id="AccountsLV_MarketValue.Text" translate="yes" xml:space="preserve">
+          <source>Market Value</source>
+          <target state="new">Market Value</target>
+        </trans-unit>
+        <trans-unit id="AccountsLV_Name.Text" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <target state="new">Name</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_Name.Text" translate="yes" xml:space="preserve">
           <source>Name</source>
-          <target state="translated">Naam</target>
+          <target state="new">Name</target>
+        </trans-unit>
+        <trans-unit id="AccountsLV_Note.Text" translate="yes" xml:space="preserve">
+          <source>Note</source>
+          <target state="new">Note</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_Note.Text" translate="yes" xml:space="preserve">
           <source>Note</source>
-          <target state="translated">Notitie</target>
+          <target state="new">Note</target>
+        </trans-unit>
+        <trans-unit id="Accounts_AddAccount.Content" translate="yes" xml:space="preserve">
+          <source>Add Account</source>
+          <target state="new">Add Account</target>
         </trans-unit>
         <trans-unit id="Narratives_AddNarrative.Content" translate="yes" xml:space="preserve">
           <source>Add Narrative</source>
-          <target state="translated">Narratief toevoegen</target>
+          <target state="new">Add Narrative</target>
+        </trans-unit>
+        <trans-unit id="Accounts_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>The Accounts list gives you an overview of locations where you have your crypto assets in custody.</source>
+          <target state="new">The Accounts list gives you an overview of locations where you have your crypto assets in custody.</target>
         </trans-unit>
         <trans-unit id="Narratives_Explainer.Text" translate="yes" xml:space="preserve">
           <source>The Narratives view gives you an overview of your crypto assets in relation to their narrative. Go to the Library View to assign a Narrative to a coin that is already in the Library. When you add e new coin then a narrative can be assigned right away. The app comes with an initial Narrative List that can be modified. The Name and Description can be changed and also new Narratives can be added.</source>
-          <target state="translated">Het Narratieven overzicht geeft u een lijst van uw crypto-activa in relatie tot hun narratief. Ga naar het Bibliotheek overzicht om een ​​Narrative toe te wijzen aan een munt die al in uw Bibliotheek zit. Indien u een nieuwe munt gaat toevoegen kunt u daar gelijk een Narratief toekennen. De app wordt geleverd met een initiële  narratievenList die kan worden aangepast. De naam en beschrijving kunnen worden gewijzigd en er kunnen ook nieuwe narratieven worden toegevoegd.</target>
+          <target state="new">The Narratives view gives you an overview of your crypto assets in relation to their narrative. Go to the Library View to assign a Narrative to a coin that is already in the Library. When you add e new coin then a narrative can be assigned right away. The app comes with an initial Narrative List that can be modified. The Name and Description can be changed and also new Narratives can be added.</target>
+        </trans-unit>
+        <trans-unit id="Accounts_Title.Text" translate="yes" xml:space="preserve">
+          <source>Accounts</source>
+          <target state="new">Accounts</target>
         </trans-unit>
         <trans-unit id="Narratives_Title.Text" translate="yes" xml:space="preserve">
           <source>Narratives</source>
-          <target state="translated">Narratieven</target>
+          <target state="new">Narratives</target>
+        </trans-unit>
+        <trans-unit id="AccountsLV_Delete.Label" translate="yes" xml:space="preserve">
+          <source>Delete</source>
+          <target state="new">Delete</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_Delete.Label" translate="yes" xml:space="preserve">
           <source>Delete</source>
-          <target state="translated">Verwijderen</target>
+          <target state="new">Delete</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_24HrChange.Text" translate="yes" xml:space="preserve">
+          <source>24 Hour Change</source>
+          <target state="new">24 Hour Change</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_30DayChange.Text" translate="yes" xml:space="preserve">
+          <source>30 Day Change</source>
+          <target state="new">30 Day Change</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_52WeekChange.Text" translate="yes" xml:space="preserve">
+          <source>52 Week Change</source>
+          <target state="new">52 Week Change</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_About.Label" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="new">About</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_AddEditNote.Label" translate="yes" xml:space="preserve">
+          <source>Add/Edit Note</source>
+          <target state="new">Add/Edit Note</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Ath.Text" translate="yes" xml:space="preserve">
+          <source>ATH</source>
+          <target state="new">ATH</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Delete.Label" translate="yes" xml:space="preserve">
+          <source>Delete Coin</source>
+          <target state="new">Delete Coin</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_MarketCap.Text" translate="yes" xml:space="preserve">
+          <source>Market Cap</source>
+          <target state="new">Market Cap</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Name.Text" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <target state="new">Name</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Price.Text" translate="yes" xml:space="preserve">
+          <source>Price</source>
+          <target state="new">Price</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Rank.Text" translate="yes" xml:space="preserve">
+          <source>Rank</source>
+          <target state="new">Rank</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Symbol.Text" translate="yes" xml:space="preserve">
+          <source>Symbol</source>
+          <target state="new">Symbol</target>
+        </trans-unit>
+        <trans-unit id="Library_AddCoin.Content" translate="yes" xml:space="preserve">
+          <source>Add Coin</source>
+          <target state="new">Add Coin</target>
+        </trans-unit>
+        <trans-unit id="Library_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>The Library is a collection of crypto coins that you are interested in. So you won't be distracted or disturbed by the large amount of unimportant coins out there. The coins in the library can be used to build your portfolio.</source>
+          <target state="new">The Library is a collection of crypto coins that you are interested in. So you won't be distracted or disturbed by the large amount of unimportant coins out there. The coins in the library can be used to build your portfolio.</target>
+        </trans-unit>
+        <trans-unit id="Library_Title.Text" translate="yes" xml:space="preserve">
+          <source>Coin Library</source>
+          <target state="new">Coin Library</target>
+        </trans-unit>
+        <trans-unit id="TransactionsLV_Delete.Label" translate="yes" xml:space="preserve">
+          <source>Delete Transaction</source>
+          <target state="new">Delete Transaction</target>
+        </trans-unit>
+        <trans-unit id="TransactionsLV_Edit.Label" translate="yes" xml:space="preserve">
+          <source>Edit</source>
+          <target state="new">Edit</target>
+        </trans-unit>
+        <trans-unit id="TransactionsLV_From.Text" translate="yes" xml:space="preserve">
+          <source>From</source>
+          <target state="new">From</target>
+        </trans-unit>
+        <trans-unit id="TransactionsLV_To.Text" translate="yes" xml:space="preserve">
+          <source>To</source>
+          <target state="new">To</target>
+        </trans-unit>
+        <trans-unit id="TransactionsLV_Type.Text" translate="yes" xml:space="preserve">
+          <source>Transaction Type</source>
+          <target state="new">Transaction Type</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_AccountFromHeader" translate="yes" xml:space="preserve">
+          <source>From Account</source>
+          <target state="new">From Account</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_AccountToHeader" translate="yes" xml:space="preserve">
+          <source>To Account</source>
+          <target state="new">To Account</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Buy_Explainer" translate="yes" xml:space="preserve">
+          <source>A Buy is a conversion from a StableCoin to a Non-StableCoin and can be combined with a Transfer from accounts.</source>
+          <target state="new">A Buy is a conversion from a StableCoin to a Non-StableCoin and can be combined with a Transfer from accounts.</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="new">Cancel</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_CoinFromHeader" translate="yes" xml:space="preserve">
+          <source>From Coin</source>
+          <target state="new">From Coin</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_CoinHeader" translate="yes" xml:space="preserve">
+          <source>Coin</source>
+          <target state="new">Coin</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_CoinToHeader" translate="yes" xml:space="preserve">
+          <source>To Coin</source>
+          <target state="new">To Coin</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Convert_Explainer" translate="yes" xml:space="preserve">
+          <source>A Convert is a conversion from Coin_A to Coin_B and can be combined with a Transfer from accounts.</source>
+          <target state="new">A Convert is a conversion from Coin_A to Coin_B and can be combined with a Transfer from accounts.</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_DatePicker.Header" translate="yes" xml:space="preserve">
+          <source>Date</source>
+          <target state="new">Date</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Deposit_Explainer" translate="yes" xml:space="preserve">
+          <source>A Deposit is a transaction where 'new' crypto flows into your portfolio. The source could be any fiat bank account, but will not be registered. Only the receiving Account is registered.</source>
+          <target state="new">A Deposit is a transaction where 'new' crypto flows into your portfolio. The source could be any fiat bank account, but will not be registered. Only the receiving Account is registered.</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_FeeCoin.Header" translate="yes" xml:space="preserve">
+          <source>Coin</source>
+          <target state="new">Coin</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_FeeQty.Header" translate="yes" xml:space="preserve">
+          <source>Fee</source>
+          <target state="new">Fee</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_FeeQty.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Set fee</source>
+          <target state="new">Set fee</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Note.Header" translate="yes" xml:space="preserve">
+          <source>Note</source>
+          <target state="new">Note</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. this is a note...</source>
+          <target state="new">e.g. this is a note...</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_PriceB.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>calculated price...</source>
+          <target state="new">calculated price...</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_PriceA.Header" translate="yes" xml:space="preserve">
+          <source>Price</source>
+          <target state="new">Price</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_PriceA.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Set price...</source>
+          <target state="new">Set price...</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_PrimaryButton" translate="yes" xml:space="preserve">
+          <source>Accept Transaction</source>
+          <target state="new">Accept Transaction</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_QtyB.Header" translate="yes" xml:space="preserve">
+          <source>Qty</source>
+          <target state="new">Qty</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_QtyB.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Set quantity...</source>
+          <target state="new">Set quantity...</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_QtyHeader" translate="yes" xml:space="preserve">
+          <source>Qty</source>
+          <target state="new">Qty</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Sell_Explainer" translate="yes" xml:space="preserve">
+          <source>A Sell is a conversion from a Non-StableCoin to a StableCoin and can be combined with a Transfer from accounts.</source>
+          <target state="new">A Sell is a conversion from a Non-StableCoin to a StableCoin and can be combined with a Transfer from accounts.</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_TimePicker.Header" translate="yes" xml:space="preserve">
+          <source>Time</source>
+          <target state="new">Time</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Title_Add" translate="yes" xml:space="preserve">
+          <source>Add Transaction</source>
+          <target state="new">Add Transaction</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Title_Edit" translate="yes" xml:space="preserve">
+          <source>Edit Transaction</source>
+          <target state="new">Edit Transaction</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_TransactionType.Header" translate="yes" xml:space="preserve">
+          <source>Transaction Type</source>
+          <target state="new">Transaction Type</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Transfer_Explainer" translate="yes" xml:space="preserve">
+          <source>A Transfer is a 'transaction' where crypto moves from one account to another.</source>
+          <target state="new">A Transfer is a 'transaction' where crypto moves from one account to another.</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Withdraw_Explainer" translate="yes" xml:space="preserve">
+          <source>A Withdraw is a transaction where crypto flows out of your portfolio. The destination could be any fiat bank account.</source>
+          <target state="new">A Withdraw is a transaction where crypto flows out of your portfolio. The destination could be any fiat bank account.</target>
+        </trans-unit>
+        <trans-unit id="TransactionType_Buy.Content" translate="yes" xml:space="preserve">
+          <source>Buy</source>
+          <target state="new">Buy</target>
+        </trans-unit>
+        <trans-unit id="TransactionType_Convert.Content" translate="yes" xml:space="preserve">
+          <source>Convert</source>
+          <target state="new">Convert</target>
+        </trans-unit>
+        <trans-unit id="TransactionType_Deposit.Content" translate="yes" xml:space="preserve">
+          <source>Deposit</source>
+          <target state="new">Deposit</target>
+        </trans-unit>
+        <trans-unit id="TransactionType_Sell.Content" translate="yes" xml:space="preserve">
+          <source>Sell</source>
+          <target state="new">Sell</target>
+        </trans-unit>
+        <trans-unit id="TransactionType_Transfer.Content" translate="yes" xml:space="preserve">
+          <source>Transfer</source>
+          <target state="new">Transfer</target>
+        </trans-unit>
+        <trans-unit id="TransactionType_Withdraw.Content" translate="yes" xml:space="preserve">
+          <source>Withdraw</source>
+          <target state="new">Withdraw</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_PriceB.Header" translate="yes" xml:space="preserve">
+          <source>Price</source>
+          <target state="new">Price</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Description.Header" translate="yes" xml:space="preserve">
           <source>Narrative Description</source>
-          <target state="translated">Narratief omschrijving</target>
+          <target state="new">Narrative Description</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_Description.Header" translate="yes" xml:space="preserve">
+          <source>Account Description</source>
+          <target state="new">Account Description</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_Description.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Description goes here....</source>
+          <target state="new">Description goes here....</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Description.PlaceholderText" translate="yes" xml:space="preserve">
           <source>Description goes here....</source>
-          <target state="translated">Omschrijving komt hier...</target>
+          <target state="new">Description goes here....</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_Name.Header" translate="yes" xml:space="preserve">
+          <source>Account Name</source>
+          <target state="new">Account Name</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Name.Header" translate="yes" xml:space="preserve">
           <source>Narrative Name</source>
-          <target state="translated">Narratief naam</target>
+          <target state="new">Narrative Name</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. Bybit Funding...</source>
+          <target state="new">e.g. Bybit Funding...</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
           <source>e.g. Layer 1...</source>
-          <target state="translated">bijv. Layer 1...</target>
+          <target state="new">e.g. Layer 1...</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="new">Cancel</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_CloseButton" translate="yes" xml:space="preserve">
           <source>Cancel</source>
-          <target state="translated">Annuleren</target>
+          <target state="new">Cancel</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_PrimaryButton_Add" translate="yes" xml:space="preserve">
+          <source>Accept Account</source>
+          <target state="new">Accept Account</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_PrimaryButton_Add" translate="yes" xml:space="preserve">
           <source>Accept Narrative</source>
-          <target state="translated">Accepteer narratief</target>
+          <target state="new">Accept Narrative</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="new">Accept</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
           <source>Accept</source>
-          <target state="translated">Accepteren</target>
+          <target state="new">Accept</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_Title_Add" translate="yes" xml:space="preserve">
+          <source>Add Account</source>
+          <target state="new">Add Account</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Title_Add" translate="yes" xml:space="preserve">
           <source>Add Narrative</source>
-          <target state="translated">Narratief toevoegen</target>
+          <target state="new">Add Narrative</target>
+        </trans-unit>
+        <trans-unit id="AccountDialog_Title_Edit" translate="yes" xml:space="preserve">
+          <source>Edit Account</source>
+          <target state="new">Edit Account</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Title_Edit" translate="yes" xml:space="preserve">
           <source>Edit Narrative</source>
-          <target state="translated">Narratief wijzigen</target>
+          <target state="new">Edit Narrative</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_BePatient.Text" translate="yes" xml:space="preserve">
+          <source>* Be patient - busy at CoinGecko API at the moment.</source>
+          <target state="new">* Be patient - busy at CoinGecko API at the moment.</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="new">Cancel</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_Id.Text" translate="yes" xml:space="preserve">
+          <source>ID</source>
+          <target state="new">ID</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_MarketCapRank.Text" translate="yes" xml:space="preserve">
+          <source>Market Cap Rank</source>
+          <target state="new">Market Cap Rank</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_Name.Text" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <target state="new">Name</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_Price.Text" translate="yes" xml:space="preserve">
+          <source>Price</source>
+          <target state="new">Price</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_PrimaryButton" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="new">Accept</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_Symbol.Text" translate="yes" xml:space="preserve">
+          <source>Symbol</source>
+          <target state="new">Symbol</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_Title" translate="yes" xml:space="preserve">
+          <source>Add Coin to Library</source>
+          <target state="new">Add Coin to Library</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_PrimaryButton_CoinExists" translate="yes" xml:space="preserve">
+          <source>Coin Already In Library</source>
+          <target state="new">Coin Already In Library</target>
+        </trans-unit>
+        <trans-unit id="NoteDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="new">Cancel</target>
+        </trans-unit>
+        <trans-unit id="NoteDialog_Note.Header" translate="yes" xml:space="preserve">
+          <source>Note</source>
+          <target state="new">Note</target>
+        </trans-unit>
+        <trans-unit id="NoteDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. this is the place to put a note....</source>
+          <target state="new">e.g. this is the place to put a note....</target>
+        </trans-unit>
+        <trans-unit id="NoteDialog_PrimaryButton" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="new">Accept</target>
+        </trans-unit>
+        <trans-unit id="NoteDialog_Title" translate="yes" xml:space="preserve">
+          <source>Note for</source>
+          <target state="new">Note for</target>
+        </trans-unit>
+        <trans-unit id="DescriptionDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Close</source>
+          <target state="new">Close</target>
+        </trans-unit>
+        <trans-unit id="DescriptionDialog_Title" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="new">About</target>
+        </trans-unit>
+        <trans-unit id="Common_AcceptButton" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="new">Accept</target>
+        </trans-unit>
+        <trans-unit id="Common_CancelButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="new">Cancel</target>
+        </trans-unit>
+        <trans-unit id="Common_CloseButton" translate="yes" xml:space="preserve">
+          <source>Close</source>
+          <target state="new">Close</target>
+        </trans-unit>
+        <trans-unit id="Common_ConfirmButton" translate="yes" xml:space="preserve">
+          <source>Confirm</source>
+          <target state="new">Confirm</target>
+        </trans-unit>
+        <trans-unit id="Common_DownloadButton" translate="yes" xml:space="preserve">
+          <source>Download</source>
+          <target state="new">Download</target>
+        </trans-unit>
+        <trans-unit id="Common_InstallButton" translate="yes" xml:space="preserve">
+          <source>Install</source>
+          <target state="new">Install</target>
+        </trans-unit>
+        <trans-unit id="Common_OkButton" translate="yes" xml:space="preserve">
+          <source>OK</source>
+          <target state="new">OK</target>
+        </trans-unit>
+        <trans-unit id="Messages_AccountAddFailed_Title" translate="yes" xml:space="preserve">
+          <source>Adding account failed</source>
+          <target state="new">Adding account failed</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeAddFailed_Title" translate="yes" xml:space="preserve">
           <source>Adding Narrative failed</source>
-          <target state="translated">Fout bij het toevoegen van een narratief</target>
+          <target state="new">Adding Narrative failed</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDeleteFailed_Msg" translate="yes" xml:space="preserve">
           <source>Narrative may have assets assigned.</source>
-          <target state="translated">Aan het narratief zijn al munten gekoppeld</target>
+          <target state="new">Narrative may have assets assigned.</target>
+        </trans-unit>
+        <trans-unit id="Messages_AccountDeleteFailed_Msg" translate="yes" xml:space="preserve">
+          <source>Account may have assets assigned.</source>
+          <target state="new">Account may have assets assigned.</target>
+        </trans-unit>
+        <trans-unit id="Messages_AccountDeleteFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to delete Account</source>
+          <target state="new">Failed to delete Account</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDeleteFailed_Title" translate="yes" xml:space="preserve">
           <source>Failed to delete Narrative</source>
-          <target state="translated">Fout bij het verwijderen van een narratief</target>
+          <target state="new">Failed to delete Narrative</target>
+        </trans-unit>
+        <trans-unit id="Messages_AccountDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Account Dialog Failure</source>
+          <target state="new">Account Dialog Failure</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDialogFailed_Title" translate="yes" xml:space="preserve">
           <source>Narrative Dialog Failure</source>
-          <target state="translated">Fout bij het openen van het Narratief dialoogvenster</target>
+          <target state="new">Narrative Dialog Failure</target>
+        </trans-unit>
+        <trans-unit id="Messages_AccountUpdateFailed_Title" translate="yes" xml:space="preserve">
+          <source>Updating account failed</source>
+          <target state="new">Updating account failed</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativetUpdateFailed_Title" translate="yes" xml:space="preserve">
           <source>Updating narrative failed</source>
-          <target state="translated">Fout bij het updaten van het narratief</target>
+          <target state="new">Updating narrative failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_CoinAddFailed_Title" translate="yes" xml:space="preserve">
+          <source>Adding Coin Failed</source>
+          <target state="new">Adding Coin Failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_CoinDeleteFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to delete Coin</source>
+          <target state="new">Failed to delete Coin</target>
+        </trans-unit>
+        <trans-unit id="Messages_CoinDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Add Coin Dialog failure</source>
+          <target state="new">Add Coin Dialog failure</target>
+        </trans-unit>
+        <trans-unit id="Messages_NoteAddFailed_Title" translate="yes" xml:space="preserve">
+          <source>Updating Note Failed</source>
+          <target state="new">Updating Note Failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_NoteDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Note Dialog Failure</source>
+          <target state="new">Note Dialog Failure</target>
+        </trans-unit>
+        <trans-unit id="Messages_TransactionAddFailed_Title" translate="yes" xml:space="preserve">
+          <source>Adding transaction failed</source>
+          <target state="new">Adding transaction failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_TransactionDeleteFailed_Title" translate="yes" xml:space="preserve">
+          <source>Deleting transaction failed</source>
+          <target state="new">Deleting transaction failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_TransactionDelete_Msg" translate="yes" xml:space="preserve">
+          <source>Please Confirm to delete and revert this transaction</source>
+          <target state="new">Please Confirm to delete and revert this transaction</target>
+        </trans-unit>
+        <trans-unit id="Messages_TransactionDelete_Title" translate="yes" xml:space="preserve">
+          <source>Delete Transaction Request</source>
+          <target state="new">Delete Transaction Request</target>
+        </trans-unit>
+        <trans-unit id="Messages_TransactionDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Transaction Dialog Failure</source>
+          <target state="new">Transaction Dialog Failure</target>
+        </trans-unit>
+        <trans-unit id="Messages_TransactionUpdateFailed_Title" translate="yes" xml:space="preserve">
+          <source>Updating transaction failed</source>
+          <target state="new">Updating transaction failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_DownloadFailedMsg" translate="yes" xml:space="preserve">
+          <source>Update will be postponed.</source>
+          <target state="new">Update will be postponed.</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_DownloadFailedTitle" translate="yes" xml:space="preserve">
+          <source>Downloading Setup File failed</source>
+          <target state="new">Downloading Setup File failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_DownloadSuccesTitle" translate="yes" xml:space="preserve">
+          <source>Download Succesfull</source>
+          <target state="new">Download Succesfull</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_DownloadSuccesMsg" translate="yes" xml:space="preserve">
+          <source>The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.</source>
+          <target state="new">The setup file has been saved in your Downloads folder. Click 'Install' to proceed with th einstallation. The application will be closed automatically.</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_NewVersionMsg" translate="yes" xml:space="preserve">
+          <source>Do you want to download it? In the meanwhile you can continue using the app. You will be notified when the download has finished.</source>
+          <target state="new">Do you want to download it? In the meanwhile you can continue using the app. You will be notified when the download has finished.</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_NewVersionTitle" translate="yes" xml:space="preserve">
+          <source>New Version Available!</source>
+          <target state="new">New Version Available!</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_UpToDate_Msg" translate="yes" xml:space="preserve">
+          <source>Version is up-to-date</source>
+          <target state="new">Version is up-to-date</target>
+        </trans-unit>
+        <trans-unit id="Messages_UpdateChecker_UpToDate_Title" translate="yes" xml:space="preserve">
+          <source>Update Checker</source>
+          <target state="new">Update Checker</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_GetDetails_Failed" translate="yes" xml:space="preserve">
+          <source>Error while getting Details</source>
+          <target state="new">Error while getting Details</target>
+        </trans-unit>
+        <trans-unit id="Messages_AccountDeleteNotAllowd_Title" translate="yes" xml:space="preserve">
+          <source>Deleting not allowed!</source>
+          <target state="new">Deleting not allowed!</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDeleteNotAllowd_Title" translate="yes" xml:space="preserve">
           <source>Deleting not allowed!</source>
-          <target state="translated">Verwijderen niet toegestaan!</target>
+          <target state="new">Deleting not allowed!</target>
+        </trans-unit>
+        <trans-unit id="Messages_AccountDeleteNotAllowed_Msg" translate="yes" xml:space="preserve">
+          <source>The Account is holding assets.</source>
+          <target state="new">The Account is holding assets.</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDeleteNotAllowed_Msg" translate="yes" xml:space="preserve">
           <source>The Narrative is assigned to one or more assets.</source>
-          <target state="translated">Het narratief is aan één of meer munten gekoppeld</target>
+          <target state="new">The Narrative is assigned to one or more assets.</target>
+        </trans-unit>
+        <trans-unit id="Settings_AppTheme_Toggle.OffContent" translate="yes" xml:space="preserve">
+          <source>Light</source>
+          <target state="new">Light</target>
+        </trans-unit>
+        <trans-unit id="Settings_AppTheme_Toggle.OnContent" translate="yes" xml:space="preserve">
+          <source>Dark</source>
+          <target state="new">Dark</target>
+        </trans-unit>
+        <trans-unit id="Settings_AppTheme.Description" translate="yes" xml:space="preserve">
+          <source>Select Dark or Light color theme for the application.</source>
+          <target state="new">Select Dark or Light color theme for the application.</target>
+        </trans-unit>
+        <trans-unit id="Settings_AppTheme.Header" translate="yes" xml:space="preserve">
+          <source>Theme</source>
+          <target state="new">Theme</target>
+        </trans-unit>
+        <trans-unit id="Settings_AppCulture.Description" translate="yes" xml:space="preserve">
+          <source>Select the language you prefer for this app.</source>
+          <target state="new">Select the language you prefer for this app.</target>
+        </trans-unit>
+        <trans-unit id="Settings_AppCulture.Header" translate="yes" xml:space="preserve">
+          <source>Language</source>
+          <target state="new">Language</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Buy" translate="yes" xml:space="preserve">
+          <source>Buy</source>
+          <target state="new">Buy</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Convert" translate="yes" xml:space="preserve">
+          <source>Convert</source>
+          <target state="new">Convert</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Deposit" translate="yes" xml:space="preserve">
+          <source>Deposit</source>
+          <target state="new">Deposit</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Sell" translate="yes" xml:space="preserve">
+          <source>Sell</source>
+          <target state="new">Sell</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Transfer" translate="yes" xml:space="preserve">
+          <source>Transfer</source>
+          <target state="new">Transfer</target>
+        </trans-unit>
+        <trans-unit id="TransactionKind_Withdraw" translate="yes" xml:space="preserve">
+          <source>Withdraw</source>
+          <target state="new">Withdraw</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_1Month.Text" translate="yes" xml:space="preserve">
+          <source>30 days</source>
+          <target state="new">30 days</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_SearchBox.MyPlaceholderText" translate="yes" xml:space="preserve">
+          <source>search using name, symbol, id</source>
+          <target state="new">search using name, symbol, id</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_SearchBox.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>Search coin using name, symbol, id</source>
+          <target state="new">Search coin using name, symbol, id</target>
+        </trans-unit>
+        <trans-unit id="Messages_AddingCoinFailed" translate="yes" xml:space="preserve">
+          <source>Adding coin to the Library failed</source>
+          <target state="new">Adding coin to the Library failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_CoinDataMissing" translate="yes" xml:space="preserve">
+          <source>Mandatory Coin data missing (Id/Name/Symbol). Coin will NOT be added to the Coin Library</source>
+          <target state="new">Mandatory Coin data missing (Id/Name/Symbol). Coin will NOT be added to the Coin Library</target>
+        </trans-unit>
+        <trans-unit id="ASBox_NoItems_Msg" translate="yes" xml:space="preserve">
+          <source>no items available yet</source>
+          <target state="new">no items available yet</target>
+        </trans-unit>
+        <trans-unit id="ASBox_SelectItem_Msg" translate="yes" xml:space="preserve">
+          <source>select item</source>
+          <target state="new">select item</target>
+        </trans-unit>
+        <trans-unit id="ASBox_NoSuitableItems_Msg" translate="yes" xml:space="preserve">
+          <source>No results found</source>
+          <target state="new">No results found</target>
+        </trans-unit>
+        <trans-unit id="Assets_InFlow.Text" translate="yes" xml:space="preserve">
+          <source>Inflow</source>
+          <target state="new">Inflow</target>
+        </trans-unit>
+        <trans-unit id="Assets_OutFlow.Text" translate="yes" xml:space="preserve">
+          <source>Outflow</source>
+          <target state="new">Outflow</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideCapitalFlow.Description" translate="yes" xml:space="preserve">
+          <source>Determine if you want to have the Inflow and Outflow information shown on the Portfolio View.</source>
+          <target state="new">Determine if you want to have the Inflow and Outflow information shown on the Portfolio View.</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideCapitalFlow.Header" translate="yes" xml:space="preserve">
+          <source>Hide Capital Flow</source>
+          <target state="new">Hide Capital Flow</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideCapitalFlow_Toggle.OffContent" translate="yes" xml:space="preserve">
+          <source>Off</source>
+          <target state="new">Off</target>
+        </trans-unit>
+        <trans-unit id="Settings_HideCapitalFlow_Toggle.OnContent" translate="yes" xml:space="preserve">
+          <source>On</source>
+          <target state="new">On</target>
+        </trans-unit>
+        <trans-unit id="Assets_InFlowPanel.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>Capital Inflow based on sum of all Deposits</source>
+          <target state="new">Capital Inflow based on sum of all Deposits</target>
+        </trans-unit>
+        <trans-unit id="Assets_OutFlowPanel.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>Capital Outflow based on sum of all Withdraws</source>
+          <target state="new">Capital Outflow based on sum of all Withdraws</target>
+        </trans-unit>
+        <trans-unit id="Library_AddPreListingCoin.Content" translate="yes" xml:space="preserve">
+          <source>Add Pre-Listing Coin</source>
+          <target state="new">Add Pre-Listing Coin</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_About.Header" translate="yes" xml:space="preserve">
+          <source>Description/Note</source>
+          <target state="new">Description/Note</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_About.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. Coin listing expected to be in Q1 2025</source>
+          <target state="new">e.g. Coin listing expected to be in Q1 2025</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Name.Header" translate="yes" xml:space="preserve">
+          <source>Coin Name</source>
+          <target state="new">Coin Name</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. Promising Project</source>
+          <target state="new">e.g. Promising Project</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Symbol.Header" translate="yes" xml:space="preserve">
+          <source>Coin Symbol</source>
+          <target state="new">Coin Symbol</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Symbol.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>e.g. PTKN</source>
+          <target state="new">e.g. PTKN</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Title" translate="yes" xml:space="preserve">
+          <source>Add a Pre-listing Coin</source>
+          <target state="new">Add a Pre-listing Coin</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Price.Header" translate="yes" xml:space="preserve">
+          <source>Price</source>
+          <target state="new">Price</target>
+        </trans-unit>
+        <trans-unit id="LibraryLV_Merge.Label" translate="yes" xml:space="preserve">
+          <source>Merge pre-listing coin...</source>
+          <target state="new">Merge pre-listing coin...</target>
+        </trans-unit>
+        <trans-unit id="PreListingCoinDialog_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>Sometimes a new coin you have invested in, is not yet listed at data aggregators like CoinGecko. In this case you can add a pre-listing coin here. In a later stage, when the coin becomes listed, you can 'merge' this coin with the listed one. See the 'merge' action at the three dots ...</source>
+          <target state="new">Sometimes a new coin you have invested in, is not yet listed at data aggregators like CoinGecko. In this case you can add a pre-listing coin here. In a later stage, when the coin becomes listed, you can 'merge' this coin with the listed one. See the 'merge' action at the three dots ...</target>
+        </trans-unit>
+        <trans-unit id="CoinDialog_MergeTitle" translate="yes" xml:space="preserve">
+          <source>Merge pre-listing Coin</source>
+          <target state="new">Merge pre-listing Coin</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Graphic.Content" translate="yes" xml:space="preserve">
+          <source>Chart</source>
+          <target state="new">Chart</target>
+        </trans-unit>
+        <trans-unit id="GrahicView_UpdateText.Text" translate="yes" xml:space="preserve">
+          <source>Updating...</source>
+          <target state="new">Updating...</target>
+        </trans-unit>
+        <trans-unit id="GraphicView_InFlowSeriesTitle" translate="yes" xml:space="preserve">
+          <source>Inflow</source>
+          <target state="new">Inflow</target>
+        </trans-unit>
+        <trans-unit id="GraphicView_OutFlowSeriesTitle" translate="yes" xml:space="preserve">
+          <source>Outflow</source>
+          <target state="new">Outflow</target>
+        </trans-unit>
+        <trans-unit id="GraphicView_PortfolioSeriesTitle" translate="yes" xml:space="preserve">
+          <source>Portfolio Value</source>
+          <target state="new">Portfolio Value</target>
+        </trans-unit>
+        <trans-unit id="GraphicView_DateFormat" translate="yes" xml:space="preserve">
+          <source>MMMM dd, yyyy</source>
+          <target state="new">MMMM dd, yyyy</target>
+        </trans-unit>
+        <trans-unit id="Navigation_About.Content" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="new">About</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Exit.Content" translate="yes" xml:space="preserve">
+          <source>Exit</source>
+          <target state="new">Exit</target>
+        </trans-unit>
+        <trans-unit id="Messages_HelpFile_FailedMsg" translate="yes" xml:space="preserve">
+          <source>Unable to open the Online Help file in your default browser.</source>
+          <target state="new">Unable to open the Online Help file in your default browser.</target>
+        </trans-unit>
+        <trans-unit id="Messages_HelpFile_FailedTitle" translate="yes" xml:space="preserve">
+          <source>Failed to open Online Help.</source>
+          <target state="new">Failed to open Online Help.</target>
+        </trans-unit>
+        <trans-unit id="AboutView_Title.Text" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="new">About</target>
+        </trans-unit>
+        <trans-unit id="TransactionDialog_Earnings.Content" translate="yes" xml:space="preserve">
+          <source>Staking yield</source>
+          <target state="new">Staking yield</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Title" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="new">About</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_CoinGecko_Sub1.Text" translate="yes" xml:space="preserve">
+          <source>This app is retrieving its data using the public API provided by CoinGecko, a Crypto market data aggregator.</source>
+          <target state="new">This app is retrieving its data using the public API provided by CoinGecko, a Crypto market data aggregator.</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_CoinGecko_Sub2.Text" translate="yes" xml:space="preserve">
+          <source>CoinGecko’s Public API has a rate limit of 5 to 15 calls per minute, depending on usage conditions worldwide. Most of the time it turns out to be around 5 requests per minute. When a 'Too Many Requests' occurs then a 30 seconds timeout is build in before re-trying the request.</source>
+          <target state="new">CoinGecko’s Public API has a rate limit of 5 to 15 calls per minute, depending on usage conditions worldwide. Most of the time it turns out to be around 5 requests per minute. When a 'Too Many Requests' occurs then a 30 seconds timeout is build in before re-trying the request.</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_CoinGecko_Title.Text" translate="yes" xml:space="preserve">
+          <source>CoinGecko public API</source>
+          <target state="new">CoinGecko public API</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Contact_Sub1.Text" translate="yes" xml:space="preserve">
+          <source>The navigation menu on the left has an 'Help' option which opens a PDF document in your browser. This document is updated regularly, if needed.</source>
+          <target state="new">The navigation menu on the left has an 'Help' option which opens a PDF document in your browser. This document is updated regularly, if needed.</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Contact_Sub2a.Text" translate="yes" xml:space="preserve">
+          <source>Need for additional support or do you have a question, comment or request? Please feel free to send me an email (</source>
+          <target state="new">Need for additional support or do you have a question, comment or request? Please feel free to send me an email (</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Contact_Sub2b.Text" translate="yes" xml:space="preserve">
+          <source>) or contact me on Discord (</source>
+          <target state="new">) or contact me on Discord (</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Contact_Title.Text" translate="yes" xml:space="preserve">
+          <source>Contact and Support</source>
+          <target state="new">Contact and Support</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Donation_Sub.Text" translate="yes" xml:space="preserve">
+          <source>If you find this app valuable and would like to support further development, you can make a donation to one of the following addresses:</source>
+          <target state="new">If you find this app valuable and would like to support further development, you can make a donation to one of the following addresses:</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Donation_Title.Text" translate="yes" xml:space="preserve">
+          <source>Donation</source>
+          <target state="new">Donation</target>
+        </trans-unit>
+        <trans-unit id="AboutDialog_Version.Text" translate="yes" xml:space="preserve">
+          <source>Version</source>
+          <target state="new">Version</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Dashboard.Content" translate="yes" xml:space="preserve">
+          <source>Dashboard</source>
+          <target state="new">Dashboard</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_BuyLevel.Text" translate="yes" xml:space="preserve">
+          <source>Buy Level</source>
+          <target state="new">Buy Level</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_DistanceToBuyLevel.Text" translate="yes" xml:space="preserve">
+          <source>Distance</source>
+          <target state="new">Distance</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_DistanceToTpLevel.Text" translate="yes" xml:space="preserve">
+          <source>Distance</source>
+          <target state="new">Distance</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_Name.Text" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <target state="new">Name</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_Price.Text" translate="yes" xml:space="preserve">
+          <source>Actual Price</source>
+          <target state="new">Actual Price</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_StopLevel.Text" translate="yes" xml:space="preserve">
+          <source>Stop Level</source>
+          <target state="new">Stop Level</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_TpLevel.Text" translate="yes" xml:space="preserve">
+          <source>Take Profit Level</source>
+          <target state="new">Take Profit Level</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_DistanceToStopLevel.Text" translate="yes" xml:space="preserve">
+          <source>Distance</source>
+          <target state="new">Distance</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_Symbol.Text" translate="yes" xml:space="preserve">
+          <source>Symbol</source>
+          <target state="new">Symbol</target>
+        </trans-unit>
+        <trans-unit id="PriceLevels_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>This overview gives an indication if the actual price of a coin is within range of a specified level. The levels that can be set are, a Take Profit, a buy and a Stop level. If the price is within range of a level it will be indicated by a colour. </source>
+          <target state="new">This overview gives an indication if the actual price of a coin is within range of a specified level. The levels that can be set are, a Take Profit, a buy and a Stop level. If the price is within range of a level it will be indicated by a colour. </target>
+        </trans-unit>
+        <trans-unit id="PriceLevels_Title.Text" translate="yes" xml:space="preserve">
+          <source>Price Levels</source>
+          <target state="new">Price Levels</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_AddEditLevels.Label" translate="yes" xml:space="preserve">
+          <source>Add/Edit Price Levels</source>
+          <target state="new">Add/Edit Price Levels</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_Delete.Label" translate="yes" xml:space="preserve">
+          <source>Delete Price Levels</source>
+          <target state="new">Delete Price Levels</target>
+        </trans-unit>
+        <trans-unit id="Navigation_PriceLevels.Content" translate="yes" xml:space="preserve">
+          <source>Price Levels</source>
+          <target state="new">Price Levels</target>
+        </trans-unit>
+        <trans-unit id="Messages_ResetLevelsFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to reset Price Levels</source>
+          <target state="new">Failed to reset Price Levels</target>
+        </trans-unit>
+        <trans-unit id="Messages_PriceLevelsAddFailed_Title" translate="yes" xml:space="preserve">
+          <source>Adding/Updating Price Levels failed</source>
+          <target state="new">Adding/Updating Price Levels failed</target>
+        </trans-unit>
+        <trans-unit id="Messages_PriceLevelsDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Price Levels Dialog Failure</source>
+          <target state="new">Price Levels Dialog Failure</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_BuyHeader.Text" translate="yes" xml:space="preserve">
+          <source>Buy level</source>
+          <target state="new">Buy level</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="new">Cancel</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_PrimaryButton" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="new">Accept</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_StopHeader.Text" translate="yes" xml:space="preserve">
+          <source>Stop level</source>
+          <target state="new">Stop level</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_Title" translate="yes" xml:space="preserve">
+          <source>Price Levels for </source>
+          <target state="new">Price Levels for </target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_TpHeader.Text" translate="yes" xml:space="preserve">
+          <source>Take profit level</source>
+          <target state="new">Take profit level</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Write a note....</source>
+          <target state="new">Write a note....</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_AvgCost.Text" translate="yes" xml:space="preserve">
+          <source>Avg. cost price</source>
+          <target state="new">Avg. cost price</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_AssetView.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get access to settings related to the 'Assets View' like HideCapitalFlow, HideZeroBalances</source>
+          <target state="new">Expand this to get access to settings related to the 'Assets View' like HideCapitalFlow, HideZeroBalances</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_AssetView.Header" translate="yes" xml:space="preserve">
+          <source>Asset View settings</source>
+          <target state="new">Asset View settings</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_General.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get access to general settings like NumberFormat, FontSize, Language, Dark/Light theme, ExpandedScrollBars</source>
+          <target state="new">Expand this to get access to general settings like NumberFormat, FontSize, Language, Dark/Light theme, ExpandedScrollBars</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_General.Header" translate="yes" xml:space="preserve">
+          <source>General settings</source>
+          <target state="new">General settings</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_PriceLevels.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get acces to settings related to the 'Price Level' feature like WithinRangePerc and CloseToPerc.</source>
+          <target state="new">Expand this to get acces to settings related to the 'Price Level' feature like WithinRangePerc and CloseToPerc.</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_PriceLevels.Header" translate="yes" xml:space="preserve">
+          <source>Price Level settings</source>
+          <target state="new">Price Level settings</target>
+        </trans-unit>
+        <trans-unit id="Settings_PriceLevels1.Description" translate="yes" xml:space="preserve">
+          <source>This threshold is used to provide a visual confirmation of the Actual Price being within the range of it's target level.</source>
+          <target state="new">This threshold is used to provide a visual confirmation of the Actual Price being within the range of it's target level.</target>
+        </trans-unit>
+        <trans-unit id="Settings_PriceLevels1.Header" translate="yes" xml:space="preserve">
+          <source>'Within Range' Threshold percentage</source>
+          <target state="new">'Within Range' Threshold percentage</target>
+        </trans-unit>
+        <trans-unit id="Settings_PriceLevels2.Description" translate="yes" xml:space="preserve">
+          <source>This threshold is used to provide a visual confirmation of the Actual Price being within close range of it's target level.</source>
+          <target state="new">This threshold is used to provide a visual confirmation of the Actual Price being within close range of it's target level.</target>
+        </trans-unit>
+        <trans-unit id="Settings_PriceLevels2.Header" translate="yes" xml:space="preserve">
+          <source>'Close To' Threshold percentage</source>
+          <target state="new">'Close To' Threshold percentage</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView_YAxisTitle" translate="yes" xml:space="preserve">
+          <source>Distance to Profit Take Level [%]</source>
+          <target state="new">Distance to Profit Take Level [%]</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView.Text" translate="yes" xml:space="preserve">
+          <source>Target Bubbels</source>
+          <target state="new">Target Bubbels</target>
+        </trans-unit>
+        <trans-unit id="GraphicView.Text" translate="yes" xml:space="preserve">
+          <source>Portfolio Value</source>
+          <target state="new">Portfolio Value</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_DashBoard.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get access to settings related to the Dasboard View</source>
+          <target state="new">Expand this to get access to settings related to the Dasboard View</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_DashBoard.Header" translate="yes" xml:space="preserve">
+          <source>Dashboard Settings</source>
+          <target state="new">Dashboard Settings</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard1.Description" translate="yes" xml:space="preserve">
+          <source>The number of coins visible in the Portfolio Pie. The remaining coins will be grouped into 'Others'</source>
+          <target state="new">The number of coins visible in the Portfolio Pie. The remaining coins will be grouped into 'Others'</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard1.Header" translate="yes" xml:space="preserve">
+          <source>Maximum number of coins in the Portfolio Pie Chart</source>
+          <target state="new">Maximum number of coins in the Portfolio Pie Chart</target>
+        </trans-unit>
+        <trans-unit id="Dashboard_Title.Text" translate="yes" xml:space="preserve">
+          <source>Dashboard</source>
+          <target state="new">Dashboard</target>
+        </trans-unit>
+        <trans-unit id="Top5View.Text" translate="yes" xml:space="preserve">
+          <source>Top 5 Winners &amp; Losers 24h</source>
+          <target state="new">Top 5 Winners &amp; Losers 24h</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView.Text" translate="yes" xml:space="preserve">
+          <source>Values &amp; Gains</source>
+          <target state="new">Values &amp; Gains</target>
+        </trans-unit>
+        <trans-unit id="CapitalFlowView_DateFormat" translate="yes" xml:space="preserve">
+          <source>yyyy</source>
+          <target state="new">yyyy</target>
+        </trans-unit>
+        <trans-unit id="CapitalFlowView.Text" translate="yes" xml:space="preserve">
+          <source>Capital Flow</source>
+          <target state="new">Capital Flow</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_PortfolioValue.Text" translate="yes" xml:space="preserve">
+          <source>Portfolio value</source>
+          <target state="new">Portfolio value</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_Day.Text" translate="yes" xml:space="preserve">
+          <source>day</source>
+          <target state="new">day</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_Week.Text" translate="yes" xml:space="preserve">
+          <source>week</source>
+          <target state="new">week</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_Month.Text" translate="yes" xml:space="preserve">
+          <source>month</source>
+          <target state="new">month</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_Year.Text" translate="yes" xml:space="preserve">
+          <source>year</source>
+          <target state="new">year</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_ytd.Text" translate="yes" xml:space="preserve">
+          <source>YTD</source>
+          <target state="new">YTD</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_CostBaseVersus.Text" translate="yes" xml:space="preserve">
+          <source>vs. cost base</source>
+          <target state="new">vs. cost base</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_CostBase.Text" translate="yes" xml:space="preserve">
+          <source>Cost base</source>
+          <target state="new">Cost base</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_NetCapFlow.Text" translate="yes" xml:space="preserve">
+          <source>net flow</source>
+          <target state="new">net flow</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView_NoTargets.Text" translate="yes" xml:space="preserve">
+          <source>Go to the 'Price Levels' view to set target levels.</source>
+          <target state="new">Go to the 'Price Levels' view to set target levels.</target>
+        </trans-unit>
+        <trans-unit id="PieChartView_Portfolio.Text" translate="yes" xml:space="preserve">
+          <source>Portfolio distribution</source>
+          <target state="new">Portfolio distribution</target>
+        </trans-unit>
+        <trans-unit id="PieChartView_Accounts.Text" translate="yes" xml:space="preserve">
+          <source>Accounts distribution</source>
+          <target state="new">Accounts distribution</target>
         </trans-unit>
         <trans-unit id="PieChartView_Narratives.Text" translate="yes" xml:space="preserve">
           <source>Narratives distribution</source>
-          <target state="translated">Narratief verdeling</target>
+          <target state="new">Narratives distribution</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_NetInvestment.Text" translate="yes" xml:space="preserve">
+          <source>Net Investment</source>
+          <target state="new">Net Investment</target>
+        </trans-unit>
+        <trans-unit id="ValueGainsView_NetInvestment.Text" translate="yes" xml:space="preserve">
+          <source>Net Investment</source>
+          <target state="new">Net Investment</target>
         </trans-unit>
         <trans-unit id="dummy" translate="yes" xml:space="preserve">
           <source>dummy</source>
@@ -1284,111 +1284,111 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="CoinDialog_Narrative.Header" translate="yes" xml:space="preserve">
           <source>Narrative</source>
-          <target state="translated">Narratief</target>
+          <target state="new">Narrative</target>
         </trans-unit>
         <trans-unit id="LibraryLV_AssignNarrative.Label" translate="yes" xml:space="preserve">
           <source>Assign/Change Narrative</source>
-          <target state="translated">Narratief toekennen/wijzigen</target>
+          <target state="new">Assign/Change Narrative</target>
         </trans-unit>
         <trans-unit id="Messages_AssignNarrativeFailed_Title" translate="yes" xml:space="preserve">
           <source>Assigning Narrative failed</source>
-          <target state="translated">Fout bij het toekennen van een narratief</target>
+          <target state="new">Assigning Narrative failed</target>
         </trans-unit>
         <trans-unit id="Messages_AssignNarrativeDialogFailed_Title" translate="yes" xml:space="preserve">
           <source>Assign Narrative dialog failure</source>
-          <target state="translated">Fout bij het openen van het dialoogvenster</target>
-        </trans-unit>
-        <trans-unit id="AssignNarrativeDialog_Title_Edit" translate="yes" xml:space="preserve">
-          <source>Assign/Edit Narrative for</source>
-          <target state="translated">Toekennen/wijzigen narratief voor</target>
-        </trans-unit>
-        <trans-unit id="AssignNarrativeDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
-          <source>Assign Narrative</source>
-          <target state="translated">Narratief toekennen</target>
+          <target state="new">Assign Narrative dialog failure</target>
         </trans-unit>
         <trans-unit id="AssignNarrativeDialog_AboutHeader.Text" translate="yes" xml:space="preserve">
           <source>Description/Note</source>
-          <target state="translated">Omschrijving/notitie</target>
+          <target state="new">Description/Note</target>
         </trans-unit>
         <trans-unit id="AssignNarrativeDialog_ComboHeader.Header" translate="yes" xml:space="preserve">
           <source>Narrative</source>
-          <target state="translated">Narratief</target>
+          <target state="new">Narrative</target>
+        </trans-unit>
+        <trans-unit id="AssignNarrativeDialog_Title_Edit" translate="yes" xml:space="preserve">
+          <source>Assign/Edit Narrative for</source>
+          <target state="new">Assign/Edit Narrative for</target>
+        </trans-unit>
+        <trans-unit id="AssignNarrativeDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
+          <source>Assign Narrative</source>
+          <target state="new">Assign Narrative</target>
         </trans-unit>
         <trans-unit id="LibraryLV_Narrative.Text" translate="yes" xml:space="preserve">
           <source>Narrative</source>
-          <target state="translated">Narratief</target>
+          <target state="new">Narrative</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_NarrativeNameExists" translate="yes" xml:space="preserve">
           <source>a Narrative with this name already exists</source>
-          <target state="translated">er bestaat al een narratief met deze naam</target>
+          <target state="new">a Narrative with this name already exists</target>
         </trans-unit>
         <trans-unit id="AccountDialog_AccountNameExists" translate="yes" xml:space="preserve">
           <source>an Account with this name already exists</source>
-          <target state="translated">er bestaat al een account met deze naam</target>
+          <target state="new">an Account with this name already exists</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachNarrative.Title" translate="yes" xml:space="preserve">
           <source>New Feature! The Narrative View</source>
-          <target state="translated">Nieuwe functie! Het narratieven overzicht</target>
-        </trans-unit>
-        <trans-unit id="Navigation_TeachAssets.Title" translate="yes" xml:space="preserve">
-          <source>How to Start! (3 of 3)</source>
-          <target state="translated">Hoe starten! (3 van 3)</target>
-        </trans-unit>
-        <trans-unit id="Navigation_TeachAccounts.Title" translate="yes" xml:space="preserve">
-          <source>How to Start! (2 of 3)</source>
-          <target state="translated">Hoe starten! (2 van 3)</target>
-        </trans-unit>
-        <trans-unit id="Navigation_TeachLibrary.Title" translate="yes" xml:space="preserve">
-          <source>How to Start! (1 of 3)</source>
-          <target state="translated">Hoe starten! (1 van 3)</target>
-        </trans-unit>
-        <trans-unit id="Dashboard_TeachNarrative.Title" translate="yes" xml:space="preserve">
-          <source>New Feature! (2 of 2)</source>
-          <target state="translated">Nieuwe functie! (2 van 2)</target>
-        </trans-unit>
-        <trans-unit id="Dashboard_TeachPortfolio.Title" translate="yes" xml:space="preserve">
-          <source>New Feature! (1 of 2)</source>
-          <target state="translated">Nieuwe functie! (1 van 2)</target>
-        </trans-unit>
-        <trans-unit id="Narrative_TeachGeneral.Title" translate="yes" xml:space="preserve">
-          <source>Click on a Narrative in the list to expand and show the related coins</source>
-          <target state="translated">Klik op een narratief in de lijst om deze uit te vouwen en de bijbehorende munten te tonen</target>
-        </trans-unit>
-        <trans-unit id="Library_TeachNarrative.Title" translate="yes" xml:space="preserve">
-          <source>Narrative Column Added!</source>
-          <target state="translated">Narratief kolom toegevoegd!</target>
+          <target state="new">New Feature! The Narrative View</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
           <source>Assign a main Narrative to each of your coins to get a Narrative View. Assigning can be done at the Library for already existing coins or when adding a new coin.</source>
-          <target state="translated">Wijs een narratief toe aan elk van uw munten om een ​​narratief overzicht te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt.</target>
+          <target state="new">Assign a main Narrative to each of your coins to get a Narrative View. Assigning can be done at the Library for already existing coins or when adding a new coin.</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachAssets.Title" translate="yes" xml:space="preserve">
+          <source>How to Start! (3 of 3)</source>
+          <target state="new">How to Start! (3 of 3)</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachAssets.Subtitle" translate="yes" xml:space="preserve">
           <source>Step 3: Build up your Portfolio by adding Transactions in the Assets View</source>
-          <target state="translated">Stap 3: Bouw uw portefeuille op door transacties toe te voegen in de portefeuilleweergave</target>
+          <target state="new">Step 3: Build up your Portfolio by adding Transactions in the Assets View</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachAccounts.Title" translate="yes" xml:space="preserve">
+          <source>How to Start! (2 of 3)</source>
+          <target state="new">How to Start! (2 of 3)</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachAccounts.Subtitle" translate="yes" xml:space="preserve">
           <source>Step 2: Add Accounts. An Account is a location where you hold your coins, like Bybit, MEXC, Ledger, Trezor or any other exchange or wallet</source>
-          <target state="translated">Stap 2: Accounts toevoegen. Een account is een locatie waar u uw munten bewaart, zoals Bybit, MEXC, Ledger, Trezor of een andere exchange of wallet</target>
+          <target state="new">Step 2: Add Accounts. An Account is a location where you hold your coins, like Bybit, MEXC, Ledger, Trezor or any other exchange or wallet</target>
+        </trans-unit>
+        <trans-unit id="Navigation_TeachLibrary.Title" translate="yes" xml:space="preserve">
+          <source>How to Start! (1 of 3)</source>
+          <target state="new">How to Start! (1 of 3)</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachLibrary.Subtitle" translate="yes" xml:space="preserve">
           <source>Step 1: Add coins to your Library.</source>
-          <target state="translated">Stap 1: Voeg munten toe aan uw bibliotheek.</target>
+          <target state="new">Step 1: Add coins to your Library.</target>
+        </trans-unit>
+        <trans-unit id="Dashboard_TeachNarrative.Title" translate="yes" xml:space="preserve">
+          <source>New Feature! (2 of 2)</source>
+          <target state="new">New Feature! (2 of 2)</target>
         </trans-unit>
         <trans-unit id="Dashboard_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
           <source>Assign a main Narrative to each of your coins to get a Narrative Distribution. Assigning can be done at the Library for already existing coins or when adding a new coin</source>
-          <target state="translated">Wijs een narratief toe aan elk van uw munten om een ​​narrtief verdeling te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt</target>
+          <target state="new">Assign a main Narrative to each of your coins to get a Narrative Distribution. Assigning can be done at the Library for already existing coins or when adding a new coin</target>
+        </trans-unit>
+        <trans-unit id="Dashboard_TeachPortfolio.Title" translate="yes" xml:space="preserve">
+          <source>New Feature! (1 of 2)</source>
+          <target state="new">New Feature! (1 of 2)</target>
         </trans-unit>
         <trans-unit id="Dashboard_TeachPortfolio.Subtitle" translate="yes" xml:space="preserve">
           <source>Set Maximum Number of visible coins in 'Settings -&gt; Dashboard Settings'. The remaining coins will be grouped into 'Others'</source>
-          <target state="translated">Stel het maximale aantal zichtbare munten in 'Instellingen -&gt; Dashboardinstellingen' in. De resterende munten worden gegroepeerd in 'Others'</target>
+          <target state="new">Set Maximum Number of visible coins in 'Settings -&gt; Dashboard Settings'. The remaining coins will be grouped into 'Others'</target>
+        </trans-unit>
+        <trans-unit id="Narrative_TeachGeneral.Title" translate="yes" xml:space="preserve">
+          <source>Click on a Narrative in the list to expand and show the related coins</source>
+          <target state="new">Click on a Narrative in the list to expand and show the related coins</target>
         </trans-unit>
         <trans-unit id="Narrative_TeachGeneral.Subtitle" translate="yes" xml:space="preserve">
           <source>First you have to assign a Narrative to each of the coins. You can do that in the Library</source>
-          <target state="translated">Eerst moet je een Narratief toewijzen aan elk van de munten. Dat kun je doen in de bibliotheek</target>
+          <target state="new">First you have to assign a Narrative to each of the coins. You can do that in the Library</target>
+        </trans-unit>
+        <trans-unit id="Library_TeachNarrative.Title" translate="yes" xml:space="preserve">
+          <source>Narrative Column Added!</source>
+          <target state="new">Narrative Column Added!</target>
         </trans-unit>
         <trans-unit id="Library_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
           <source>Assigning Narratives can be done for existing coins by selecting the action dots ... on the right of each coin</source>
-          <target state="translated">Het toewijzen van een narratief kan worden gedaan voor bestaande munten door de 'actie'-punten te selecteren, helemaal rechts naast elke munt.</target>
+          <target state="new">Assigning Narratives can be done for existing coins by selecting the action dots ... on the right of each coin</target>
         </trans-unit>
       </group>
     </body>

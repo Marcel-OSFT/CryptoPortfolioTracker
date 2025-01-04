@@ -40,7 +40,8 @@ public sealed partial class ColumnHeaderButton : UserControl
     {
         get
         {
-            if (GetValue(GroupProperty).GetType().Name == "Int32")
+            var groupValue = GetValue(GroupProperty);
+            if (groupValue == null || groupValue.GetType().Name == "Int32")
             {
                 return string.Empty;
             }
@@ -79,7 +80,8 @@ public sealed partial class ColumnHeaderButton : UserControl
     {
         get
         {
-            if (GetValue(TextProperty).GetType().Name == "Int32")
+            var textValue = GetValue(TextProperty);
+            if ( textValue ==null || textValue.GetType().Name == "Int32")
             {
                 return string.Empty;
             }

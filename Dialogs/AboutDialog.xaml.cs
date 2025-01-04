@@ -35,6 +35,10 @@ public partial class AboutDialog : ContentDialog
         EthImage = App.appPath + "\\Assets\\ethereum.png";
         UsdcImage = App.appPath + "\\Assets\\usdc.png";
         Version = App.ProductVersion;
+        BtcAddress = string.Empty;
+        EthAddress = string.Empty;
+        UsdcArbAddress = string.Empty;
+        UsdcBscAddress = string.Empty;
         InitializeComponent();
         DataContext = this;
         _theme = theme;

@@ -13,41 +13,26 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Serilog;
 using Serilog.Core;
-using WinUI3Localizer;
-using Microsoft.UI.Xaml;
-using Windows.ApplicationModel.Store;
 using System.IO.Compression;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using LanguageExt;
 using System.Net.Http;
-using Microsoft.UI.Xaml.Markup;
+
+using WinUI3Localizer;
+using Microsoft.UI.Xaml;
+
+//using Microsoft.UI.Xaml.Markup;
+//using Microsoft.UI.Xaml;
 
 namespace CryptoPortfolioTracker;
 
-public partial class App : Application, IApplicationOverrides, IXamlMetadataProvider
+public partial class App : Application
 {
-
-    public IXamlType GetXamlType(Type type)
-    {
-        return _AppProvider.GetXamlType(type);
-    }
-
-    public IXamlType GetXamlType(string fullName)
-    {
-        return _AppProvider.GetXamlType(fullName);
-    }
-
-    public XmlnsDefinition[] GetXmlnsDefinitions()
-    {
-        return _AppProvider.GetXmlnsDefinitions();
-    }
-
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public static App Current;
+    
     public static MainWindow? Window { get; private set; }
     public static Window? Splash;
     public const string CoinGeckoApiKey = "";
@@ -124,7 +109,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
         }
     }
 
-    private static async Task CacheLibraryIcons()
+    private async Task CacheLibraryIcons()
     {
         var iconsFolderPath = Path.Combine(appDataPath, IconsFolder);
         if (Directory.Exists(iconsFolderPath))
@@ -164,7 +149,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
         }
     }
 
-    private static async Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
+    private async Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
     {
         using var httpClient = new HttpClient();
         try
@@ -185,13 +170,13 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
         }
     }
 
-    private static string ExtractFileNameFromUri(string uri)
+    private string ExtractFileNameFromUri(string uri)
     {
         var uriWithoutQuery = uri.Split('?')[0];
         return Path.GetFileName(uriWithoutQuery);
     }
 
-    private static void AddNewTeachingTips()
+    private void AddNewTeachingTips()
     {
         var tips = new List<TeachingTipCPT>
         {
@@ -205,7 +190,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
         _preferencesService.AddTeachingTipsIfNotExist(tips);
     }
 
-    private static async Task InitializeLocalizer()
+    private async Task InitializeLocalizer()
     {
         var stringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
 
@@ -213,8 +198,18 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
             .AddStringResourcesFolderForLanguageDictionaries(stringsFolderPath)
             .Build();
 
-        Logger?.Information("Setting Language to {0}", _preferencesService.GetAppCultureLanguage());
-        await Localizer.SetLanguage(_preferencesService.GetAppCultureLanguage());
+        var culture = _preferencesService.GetAppCultureLanguage();
+        Logger?.Information("Setting Language to {0}", culture);
+
+        try
+        {
+            await Localizer.SetLanguage(culture);
+            Logger?.Information("Language set successfully.");
+        }
+        catch (Exception ex)
+        {
+            Logger?.Error(ex, "Failed to set language.");
+        }
     }
 
     private async Task CheckDatabase()
@@ -270,7 +265,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
     }
 
 
-    private static void BackupCptFiles(bool isMigration)
+    private void BackupCptFiles(bool isMigration)
     {
         var dbFile = Path.Combine(appDataPath, DbName);
         var preferencesFile = Path.Combine(appDataPath, PrefFileName);
@@ -317,7 +312,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
         }
     }
 
-    private static async void SeedPriceLevelsTable(PortfolioContext context)
+    private async void SeedPriceLevelsTable(PortfolioContext context)
     {
         if (!context.Coins.Any()) return;
 
@@ -332,7 +327,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
         await context.SaveChangesAsync();
     }
 
-    private static async void SeedNarrativesTable(PortfolioContext context)
+    private async void SeedNarrativesTable(PortfolioContext context)
     {
         if (context.Narratives.Count() > 1) return;
 
@@ -370,7 +365,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
     }
 
 
-    private static void GetAppEnvironmentals()
+    private void GetAppEnvironmentals()
     {
         appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
         appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
@@ -383,7 +378,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         ProductVersion = version is not null ? version.ToString() : string.Empty ;
     }
-    private static IServiceProvider RegisterServices()
+    private IServiceProvider RegisterServices()
     {
         var services = new ServiceCollection();
 
@@ -429,7 +424,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
         return services.BuildServiceProvider();
     }
 
-    private static void InitializeLogger()
+    private void InitializeLogger()
     {
         var commandLineArgs = Environment.GetCommandLineArgs();
 
@@ -463,7 +458,7 @@ public partial class App : Application, IApplicationOverrides, IXamlMetadataProv
             Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
         }
     }
-    private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+    private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
     {
         DirectoryInfo dir = new (sourceDirName);
         DirectoryInfo[] dirs = dir.GetDirectories();

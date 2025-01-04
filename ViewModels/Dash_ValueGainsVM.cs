@@ -37,7 +37,7 @@ public partial class DashboardViewModel : BaseViewModel
 
     [ObservableProperty] double netCapitalFlow;
     [ObservableProperty] public ObservableCollection<ISeries> seriesCapFlow = new();
-    [ObservableProperty] Axis[] xAxesCapitalFlow;
+    [ObservableProperty] Axis[] xAxesCapitalFlow = Array.Empty<Axis>();
     [ObservableProperty] public double legendTextSizeCapitalFlow = 12;
 
 
@@ -132,33 +132,29 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
 
         if (XAxesCapitalFlow is not null)
         {
-            XAxesCapitalFlow = null;
+            XAxesCapitalFlow = Array.Empty<Axis>();
         }
         XAxesCapitalFlow = new Axis[]
         {
             new Axis
             {
                 Labels = new List<string>(deposits.Select(x => x.Year).ToList()),
-                // Labels = labels,
                 LabelsPaint = new SolidColorPaint
                 {
                     Color = SKColors.DarkGoldenrod,
                     FontFamily = "Times New Roman",
                     SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
                 },
-                TextSize=12,
-                Padding = new LiveChartsCore.Drawing.Padding(0,0),
-
+                TextSize = 12,
+                Padding = new LiveChartsCore.Drawing.Padding(0, 0),
                 LabelsRotation = 0,
             }
         };
 
 
-
         if (SeriesCapFlow is not null)
         {
             SeriesCapFlow.Clear();
-            SeriesCapFlow = null;
         }
         SeriesCapFlow = new ObservableCollection<ISeries>
         {

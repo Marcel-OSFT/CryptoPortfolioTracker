@@ -5,7 +5,7 @@ using Uri = System.Uri;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class ImageUriToBitmapImageConverter : IValueConverter
+public partial class ImageUriToBitmapImageConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

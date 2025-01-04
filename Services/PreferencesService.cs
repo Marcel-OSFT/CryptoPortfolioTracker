@@ -17,9 +17,10 @@ public class PreferencesService : IPreferencesService
 {
     private UserPreferences userPreferences;
     private Serilog.ILogger Logger { get; set; }
-    public PreferencesService() 
+    public PreferencesService()
     {
         userPreferences = new UserPreferences();
+        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PreferencesService).Name.PadRight(22));
     }
 
     public UserPreferences GetPreferences()
@@ -206,8 +207,6 @@ public class PreferencesService : IPreferencesService
 
     public void AttachLogger()
     {
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PreferencesService).Name.PadRight(22));
-
         Logger.Information("AppCultureLanguage set to {0}", userPreferences.AppCultureLanguage.ToString());
         Logger.Information("DecimalSeparator set to {0}", userPreferences.NumberFormat.NumberDecimalSeparator.ToString());
         Logger.Information("Font Size set to {0}", userPreferences.FontSize.ToString());
@@ -216,7 +215,6 @@ public class PreferencesService : IPreferencesService
         Logger.Information("IsScrollBarsExpanded set to {0}", userPreferences.IsScrollBarsExpanded.ToString());
         Logger.Information("IsCheckForUpdate set to {0}", userPreferences.IsCheckForUpdate);
         Logger.Information("IsHidingCapitalFlow set to {0}", userPreferences.IsHidingCapitalFlow);
-
     }
 
     public void AddTeachingTipsIfNotExist(List<TeachingTipCPT> list)

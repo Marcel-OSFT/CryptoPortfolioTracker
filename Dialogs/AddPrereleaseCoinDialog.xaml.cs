@@ -15,7 +15,7 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
     public readonly CoinLibraryViewModel _viewModel;
     private readonly IPreferencesService _preferencesService;
 
-    public Coin newCoin;
+    public Coin? newCoin;
     private readonly ILocalizer loc = Localizer.Get();
 
     [ObservableProperty] private string decimalSeparator;

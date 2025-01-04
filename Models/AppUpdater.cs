@@ -16,7 +16,7 @@ public class AppUpdater
     private string downloadLink = string.Empty;
     private string downloadsFolderPath = string.Empty;
     private string fileName = string.Empty;
-    private string latestVersion;
+    private string latestVersion = string.Empty;
 
     /// 2. Declare DownloadsFolder GUI and import SHGetKnownFolderPath method
     private static Guid FolderDownloads = new("374DE290-123F-4565-9164-39C4925E467B");

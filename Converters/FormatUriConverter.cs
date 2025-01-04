@@ -8,7 +8,7 @@ using Windows.Storage;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class FormatUriConverter : IValueConverter
+public partial class FormatUriConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

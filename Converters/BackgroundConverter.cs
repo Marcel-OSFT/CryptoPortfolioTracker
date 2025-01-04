@@ -8,7 +8,7 @@ using Windows.UI;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class BackgroundConverter : IValueConverter
+public partial class BackgroundConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

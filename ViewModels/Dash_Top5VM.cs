@@ -18,8 +18,8 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class DashboardViewModel : BaseViewModel
 {
-    [ObservableProperty] ObservableCollection<Coin> topWinners;
-    [ObservableProperty] ObservableCollection<Coin> topLosers;
+    [ObservableProperty] ObservableCollection<Coin> topWinners = new();
+    [ObservableProperty] ObservableCollection<Coin> topLosers = new();
 
     private void ConstructTop5()
     {

@@ -32,8 +32,8 @@ public partial class CoinLibraryViewModel : BaseViewModel
    // [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public AddCoinDialog dialog;
-    public AddPrereleaseCoinDialog preListingDialog;
+    public AddCoinDialog? dialog;
+    public AddPrereleaseCoinDialog? preListingDialog;
     public static CoinLibraryViewModel Current;
     public List<string> searchListGecko;
     public List<CoinList> coinListGecko;
@@ -57,6 +57,10 @@ public partial class CoinLibraryViewModel : BaseViewModel
         sortGroup = "Library";
         initialSortFunc = x => x.Rank;
         initialSortingOrder = SortingOrder.Ascending;
+
+        searchListGecko = new List<string>();
+        coinListGecko = new List<CoinList>();
+        narratives = new List<Narrative>();
     }
     public async Task Initialize()
     {

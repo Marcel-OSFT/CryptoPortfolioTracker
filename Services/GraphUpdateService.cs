@@ -35,12 +35,11 @@ public class GraphUpdateService : IGraphUpdateService
     private double progressCounter;
     private double progressInterval;
 
-    private static ILogger Logger { get; set; }
+    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphUpdateService).Name.PadRight(22));
     public bool IsPaused { get; set; }
 
     public GraphUpdateService(IGraphService graphService, PortfolioContext portfolioContext)
     {
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphUpdateService).Name.PadRight(22));
         coinContext = portfolioContext;
         timer = new(System.TimeSpan.FromMinutes(1));
         IsPaused = false;
@@ -354,7 +353,7 @@ public class GraphUpdateService : IGraphUpdateService
                 if (date.Equals(expectedDate))
                 {
                     var point = new DataPoint();
-                    var price = (double)dataSetChart[i - dateShift][1];
+                    var price = (double)(dataSetChart[i - dateShift][1] ?? 0);
                     var historicalQty = await GetHistoricalQtyByDate(date, asset);
                     point.Date = date;
                     point.Value = price * historicalQty;

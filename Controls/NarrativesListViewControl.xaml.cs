@@ -108,7 +108,7 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
         }
     }
 
-    private static ScrollViewer GetScrollViewerFromGridView(GridView gridView)
+    private ScrollViewer GetScrollViewerFromGridView(GridView gridView)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(gridView); i++)
         {
@@ -129,7 +129,7 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
         return null;
     }
 
-    private static ScrollViewer GetScrollViewerFromGridView(DependencyObject element)
+    private ScrollViewer GetScrollViewerFromGridView(DependencyObject element)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
         {

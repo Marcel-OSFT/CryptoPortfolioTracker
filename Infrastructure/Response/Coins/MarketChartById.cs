@@ -18,25 +18,26 @@ public class MarketChartById
 {
 
     [JsonProperty("prices")]
-    public decimal?[][] Prices { get; set; }
+    public decimal?[][] Prices { get; set; } = Array.Empty<decimal?[]>();
 
 
     public List<DataPoint> GetPriceList()
     {
-
         if (Prices == null || Prices.Length == 0) return new List<DataPoint>();
 
         var list = new List<DataPoint>();
 
         for (int i = 0; i < Prices.Length; i++)
         {
-            var date = DateTime.UnixEpoch.AddMilliseconds((double)Prices[i][0]).Date;
-            var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = (double)Prices[i][1] };
-            list.Add(dataPoint);
+            if (Prices[i][0].HasValue && Prices[i][1].HasValue)
+            {
+                var date = DateTime.UnixEpoch.AddMilliseconds((double)Prices[i][0]!.Value).Date;
+                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = (double)Prices[i][1]!.Value };
+                list.Add(dataPoint);
+            }
         }
 
         //remove faulty duplicate enties
-
         var cleanList = list.GroupBy(x => x.Date).Select(g => g.First()).OrderBy(t => t.Date).ToList();
 
         return cleanList;
@@ -46,15 +47,13 @@ public class MarketChartById
     {
         var sortedList = list.OrderBy(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM"))).ToList();
 
-        Prices = null;
+        Prices = Array.Empty<decimal?[]>();
 
         foreach (var dataPoint in sortedList)
         {
             var date = dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date;
             var price = dataPoint.Value;
-            Prices = Prices is not null 
-                ? Prices.Append(new decimal?[] { (decimal)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds, (decimal)price }).ToArray() 
-                : new decimal?[][] { new decimal?[] { (decimal)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds, (decimal)price } };
+            Prices = Prices.Append(new decimal?[] { (decimal)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds, (decimal)price }).ToArray();
         }
         return Prices;
     }
@@ -62,16 +61,15 @@ public class MarketChartById
 
     public DateOnly StartDate()
     {
-        if (Prices == null || Prices.Length == 0) return DateOnly.MinValue;
-        var start = DateTime.UnixEpoch.AddMilliseconds((double)Prices[0][0]).Date; 
-        return  DateOnly.FromDateTime(start);
+        if (Prices == null || Prices.Length == 0 || !Prices[0][0].HasValue) return DateOnly.MinValue;
+        var start = DateTime.UnixEpoch.AddMilliseconds((double)Prices[0][0]!.Value).Date;
+        return DateOnly.FromDateTime(start);
     }
 
     public DateOnly EndDate()
     {
-        if (Prices == null || Prices.Length == 0) return DateOnly.MinValue;
-
-        var end = DateTime.UnixEpoch.AddMilliseconds((double)Prices[Prices.Length-1][0]).Date;
+        if (Prices == null || Prices.Length == 0 || !Prices[Prices.Length - 1][0].HasValue) return DateOnly.MinValue;
+        var end = DateTime.UnixEpoch.AddMilliseconds((double)Prices[Prices.Length - 1][0]!.Value).Date;
         return DateOnly.FromDateTime(end);
     }
 
@@ -88,14 +86,18 @@ public class MarketChartById
         //check if both last datapoints have duplicate dates
         //if so then remove the last one
 
-        var mSecLast = (double)Prices[Prices.Length - 1][0];
-        var mSecPrev = (double)Prices[Prices.Length - 2][0];
-        var lastDate = DateTime.UnixEpoch.AddMilliseconds((double)Prices[Prices.Length - 1][0]).Date;
-        var prevDate = DateTime.UnixEpoch.AddMilliseconds((double)Prices[Prices.Length - 2][0]).Date;
+        var mSecLast = Prices[Prices.Length - 1][0];
+        var mSecPrev = Prices[Prices.Length - 2][0];
 
-        if (lastDate == prevDate)
+        if (mSecLast.HasValue && mSecPrev.HasValue)
         {
-            Prices = Prices.SkipLast(1).ToArray();
+            var lastDate = DateTime.UnixEpoch.AddMilliseconds((double)mSecLast.Value).Date;
+            var prevDate = DateTime.UnixEpoch.AddMilliseconds((double)mSecPrev.Value).Date;
+
+            if (lastDate == prevDate)
+            {
+                Prices = Prices.SkipLast(1).ToArray();
+            }
         }
     }
 

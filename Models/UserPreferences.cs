@@ -31,7 +31,7 @@ public class UserPreferences
         }
         else
         {
-            appCultureLanguage = "en-US";
+            appCultureLanguage = "en-us";
         }
         numberFormat = new NumberFormatInfo();
         numberFormat = CultureInfo.CurrentUICulture.NumberFormat;
@@ -42,7 +42,7 @@ public class UserPreferences
         AreValuesMasked = false;
 
         TeachingTips = new List<TeachingTipCPT>();
-        
+
     }
 
     private int refreshIntervalMinutes;
@@ -97,7 +97,7 @@ public class UserPreferences
         }
     }
 
-    private NumberFormatInfo numberFormat;
+    private NumberFormatInfo numberFormat = new NumberFormatInfo();
     public NumberFormatInfo NumberFormat
     {
         get => numberFormat;
@@ -110,7 +110,7 @@ public class UserPreferences
         }
     }
 
-    private string appCultureLanguage;
+    private string appCultureLanguage = string.Empty;
     public string AppCultureLanguage
     {
         get => appCultureLanguage;
@@ -221,10 +221,7 @@ public class UserPreferences
     /// Teaching Tips
     /// 
 
-    public List<TeachingTipCPT> TeachingTips { get; set; }
-
-
-
+    public List<TeachingTipCPT> TeachingTips { get; set; } = new List<TeachingTipCPT>();
 
 }
 

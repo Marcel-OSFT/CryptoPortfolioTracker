@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class AddPrefixConverter : IValueConverter
+public partial class AddPrefixConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
