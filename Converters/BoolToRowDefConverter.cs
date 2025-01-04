@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class BoolToRowDefConverter : IValueConverter
+public partial class BoolToRowDefConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

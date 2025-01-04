@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class ColourConverter : IValueConverter
+public partial class ColourConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

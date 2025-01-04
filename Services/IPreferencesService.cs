@@ -39,7 +39,7 @@ namespace CryptoPortfolioTracker.Services
         void SetAreValuesMasked(bool value);
         bool GetAreValesMasked();
         void AddTeachingTipsIfNotExist(List<TeachingTipCPT> list);
-        TeachingTipCPT GetTeachingTip(string name);
+        TeachingTipCPT? GetTeachingTip(string name);
         void SetTeachingTipAsShown(string name);
     }
 }

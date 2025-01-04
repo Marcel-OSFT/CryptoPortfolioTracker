@@ -39,7 +39,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         }
     }
 
-    private static void KeepIntoView(ListView listView)
+    private void KeepIntoView(ListView listView)
     {
         if (listView?.DataContext is AccountsViewModel viewModel && viewModel.IsExtendedView)
         {
@@ -96,7 +96,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
     }
 
 
-    private static ScrollViewer? GetScrollViewerFromGridView(GridView gridView)
+    private ScrollViewer? GetScrollViewerFromGridView(GridView gridView)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(gridView); i++)
         {
@@ -117,7 +117,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         return null;
     }
 
-    private static ScrollViewer? GetScrollViewerFromGridView(DependencyObject element)
+    private ScrollViewer? GetScrollViewerFromGridView(DependencyObject element)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
         {

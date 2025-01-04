@@ -11,7 +11,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class OnTargetConverter : IValueConverter
+public partial class OnTargetConverter : IValueConverter
 {
 
 

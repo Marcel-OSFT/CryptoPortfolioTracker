@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class ZoomGridDefConverter : IValueConverter
+public partial class ZoomGridDefConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

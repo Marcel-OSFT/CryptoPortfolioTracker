@@ -28,7 +28,7 @@ public partial class PieChartControl : UserControl, INotifyPropertyChanged
 
     public bool isFillSet = false;
 
-    private ObservableCollection<ISeries> seriesPie;
+    private ObservableCollection<ISeries> seriesPie = new ObservableCollection<ISeries>();
     public ObservableCollection<ISeries> SeriesPie
     {
         get { return seriesPie; }

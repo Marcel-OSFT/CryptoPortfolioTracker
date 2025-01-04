@@ -6,7 +6,7 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class MaxQtyAConverter : IValueConverter
+public partial class MaxQtyAConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
@@ -21,7 +21,7 @@ public class MaxQtyAConverter : IValueConverter
         }
         else
         {
-            ci = new CultureInfo("en-US");
+            ci = new CultureInfo("en-us");
             ci.NumberFormat = App._preferencesService.GetNumberFormat();
         }
 

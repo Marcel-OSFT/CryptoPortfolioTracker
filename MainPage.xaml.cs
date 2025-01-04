@@ -234,7 +234,7 @@ public partial class MainPage : Page, INotifyPropertyChanged
         var loc = Localizer.Get();
         var fileName = "HelpFile_NL.pdf";
 
-        if (_preferencesService.GetAppCultureLanguage() == "en-US")
+        if (_preferencesService.GetAppCultureLanguage() == "en-us")
         {
             fileName = "HelpFile_EN.pdf";
         }

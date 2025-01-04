@@ -34,8 +34,8 @@ public partial class DashboardViewModel : BaseViewModel
     private ObservableCollection<DateTimePoint> valuesOutFlow = new();
     
     [ObservableProperty] public ObservableCollection<ISeries> seriesGraph = new();
-    public Axis[] XAxesGraph { get; set; }
-    public Axis[] YAxesGraph { get; set; }
+    public Axis[] XAxesGraph { get; set; } = Array.Empty<Axis>();
+    public Axis[] YAxesGraph { get; set; } = Array.Empty<Axis>();
 
     [ObservableProperty] public int progressValueGraph;
     [ObservableProperty] public bool isUpdatingGraph;
@@ -126,7 +126,6 @@ public partial class DashboardViewModel : BaseViewModel
         if (SeriesGraph is not null) 
         { 
             SeriesGraph.Clear();
-            SeriesGraph = null;
         }
         SeriesGraph = new ObservableCollection<ISeries>
         {
@@ -166,7 +165,7 @@ public partial class DashboardViewModel : BaseViewModel
 
         if (XAxesGraph is not null)
         {
-            XAxesGraph = null;
+            XAxesGraph = Array.Empty<Axis>();
         }
         XAxesGraph = new Axis[]
         {
@@ -180,7 +179,6 @@ public partial class DashboardViewModel : BaseViewModel
                 },
                 TextSize=12,
                 Padding = new LiveChartsCore.Drawing.Padding(0,0),
-               
             }
         };
     }

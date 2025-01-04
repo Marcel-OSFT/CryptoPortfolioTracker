@@ -19,14 +19,13 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
     public HeatMapControl()
     {
         InitializeComponent();
-        _viewModel = DashboardViewModel.Current;
+        _viewModel = DashboardViewModel.Current ?? throw new InvalidOperationException("DashboardViewModel.Current is null");
         DataContext = _viewModel;
     }
 
     private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         _viewModel.InitializeHeatMap();
-        
     }
 
     private void HeatMap_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -40,5 +39,4 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
 }

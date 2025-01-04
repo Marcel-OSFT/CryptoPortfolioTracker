@@ -26,7 +26,7 @@ public enum MyEnum
     RegExPhone
 }
 
-public class RegExTextBox : TextBox, INotifyPropertyChanged
+public partial class RegExTextBox : TextBox, INotifyPropertyChanged
 {
     const string RegExPositiveDecimalEn = "^([0-9])*(\\.[0-9]+)?$";
     const string RegExPositiveIntEn = "^([0-9])?([^\\.])([0-9])*$";

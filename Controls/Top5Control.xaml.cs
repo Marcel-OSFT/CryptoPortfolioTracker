@@ -19,14 +19,13 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
     public Top5Control()
     {
         InitializeComponent();
-        _viewModel = DashboardViewModel.Current;
+        _viewModel = DashboardViewModel.Current ?? throw new InvalidOperationException("DashboardViewModel.Current is null");
         DataContext = _viewModel;
     }
 
     private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         await _viewModel.GetTop5();
-
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -35,5 +34,4 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
 }

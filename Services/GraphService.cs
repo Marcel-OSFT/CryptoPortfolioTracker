@@ -19,8 +19,8 @@ namespace CryptoPortfolioTracker.Services;
 
 public partial class GraphService : ObservableObject, IGraphService
 {
-    private Graph graph;
-    private static ILogger Logger { get; set; }
+    private Graph graph = new();
+    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphUpdateService).Name.PadRight(22));
     private List<HistoricalDataByIdRev> HistoricalDataByIdsBufferList { get; set; } = new();
     [ObservableProperty] private bool isLoadingFromJson;
     
@@ -28,7 +28,6 @@ public partial class GraphService : ObservableObject, IGraphService
 
     public GraphService() 
     {
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
         HistoricalDataByIdsBufferList = new();
     }
 

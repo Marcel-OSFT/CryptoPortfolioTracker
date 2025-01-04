@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public sealed class ValueFormatConverter : IValueConverter
+public sealed partial class ValueFormatConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

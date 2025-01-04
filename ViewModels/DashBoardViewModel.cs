@@ -16,7 +16,7 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class DashboardViewModel : BaseViewModel
 {
-    public static DashboardViewModel Current;
+    public static DashboardViewModel? Current;
     private static ILocalizer loc = Localizer.Get();
 
     public readonly IDashboardService _dashboardService;
@@ -26,7 +26,6 @@ public partial class DashboardViewModel : BaseViewModel
 
     [ObservableProperty] private string glyph = "\uEE47";
     [ObservableProperty] private string glyphPrivacy = "\uE890";
-
 
     [ObservableProperty] private FullScreenMode toggleFsMode;
 
@@ -45,13 +44,10 @@ public partial class DashboardViewModel : BaseViewModel
 
         labelerYAxis = value ? value => "****" : value => string.Format("$ {0:N0}", value);
 
-         _preferencesService.SetAreValuesMasked(value);
+        _preferencesService.SetAreValuesMasked(value);
 
         ReloadAffectedControls();
-
     }
-    
-    
 
     [ObservableProperty] bool needUpdateDashboard = false;
     partial void OnNeedUpdateDashboardChanged(bool oldValue, bool newValue)
@@ -66,8 +62,8 @@ public partial class DashboardViewModel : BaseViewModel
         };
     }
 
-    public DashboardViewModel(IDashboardService dashboardService, 
-                                IGraphService graphService, 
+    public DashboardViewModel(IDashboardService dashboardService,
+                                IGraphService graphService,
                                 IPriceLevelService priceLevelService,
                                 IPreferencesService preferencesService) : base(preferencesService)
     {
@@ -84,19 +80,13 @@ public partial class DashboardViewModel : BaseViewModel
         ConstructGraph();
         ConstructPie();
         ConstructTop5();
-
         ConstructValueGains();
-
-        
-        
     }
 
     public void Initialize()
     {
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
     }
-
-
 
     [RelayCommand]
     private void TogglePrivacyMode()
@@ -124,7 +114,6 @@ public partial class DashboardViewModel : BaseViewModel
             case "Portfolio":
                 {
                     requestedMode = FullScreenMode.PiePortfolio;
-                    
                     break;
                 }
             case "Accounts":
@@ -140,7 +129,6 @@ public partial class DashboardViewModel : BaseViewModel
             default: break;
         }
         ToggleFsMode = ToggleFsMode == requestedMode ? FullScreenMode.None : requestedMode;
-
     }
 
     private void ReloadAffectedControls()
@@ -148,9 +136,6 @@ public partial class DashboardViewModel : BaseViewModel
         ReloadValueGains();
         ReloadGraph();
     }
-
-
-
 }
 
 

@@ -43,19 +43,17 @@ public partial class DashboardViewModel : BaseViewModel
     private async void SetSeriesPie(PieChartControl pieChart)
     {
         var points = new ObservableCollection<PiePoint>(await _dashboardService.GetPiePoints(pieChart.Name));
-        double totalValue = (double)points.Sum(p => p.Value); // Assuming PiePoint has a property 'Value'
+        double totalValue = points.Sum(p => p.Value) ?? 0.0; // Assuming PiePoint has a property 'Value'
 
         double sumSlice = 0;
 
         var random = new Random();
-        
 
-        //SeriesPiePortfolio = new ObservableCollection<ISeries>(PiePoints.AsPieSeries((value, series) =>
         pieChart.SeriesPie = new ObservableCollection<ISeries>(points.AsPieSeries((value, series) =>
             {
                 series.Name = value.Label;
                 series.DataLabelsPosition = PolarLabelsPosition.Middle;
-                series.DataLabelsRotation = GetLabelAngle((double)value.Value, totalValue, ref sumSlice);
+                series.DataLabelsRotation = GetLabelAngle(value.Value ?? 0.0, totalValue, ref sumSlice);
                 series.DataLabelsSize = 12; //initial labelsize
                 series.DataLabelsPaint = new SolidColorPaint(SKColors.Black);
                 series.DataLabelsFormatter = point => $"{value.Label.Truncate(9)}"; //initial truncate
@@ -65,7 +63,6 @@ public partial class DashboardViewModel : BaseViewModel
         );
 
         pieChart.isFillSet = false;
-
     }
 
     private double GetLabelAngle(double sliceValue, double totalValue, ref double sumSlice)

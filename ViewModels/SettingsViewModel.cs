@@ -83,7 +83,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
 
     public void Dispose()
     {
-        Current = null;
+        Current = null!;
     }
 
     private void InitializeFields()
@@ -116,7 +116,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
     }
     private void SetCulturePreference(int index)
     {
-        string culture = index == 0 ? "nl" : "en-US";
+        string culture = index == 0 ? "nl" : "en-us";
         _preferencesService.SetAppCultureLanguage(culture);
     }
 

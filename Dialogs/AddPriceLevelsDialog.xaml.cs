@@ -28,7 +28,7 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
 
 
     [ObservableProperty] private bool isValidTest = false;
-    [ObservableProperty] private Validator validator;
+   // [ObservableProperty] private Validator validator;
     [ObservableProperty] private string decimalSeparator;
 
 
@@ -39,8 +39,13 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
         _preferencesService = preferencesService;
 
         DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
-       // newPriceLevels = coin.PriceLevels;
+        newPriceLevels = new List<PriceLevel>(); // Initialize newPriceLevels
         InitializeFields(coin.PriceLevels);
+
+        TpNote = string.Empty; // Initialize tpNote
+        BuyNote = string.Empty; // Initialize buyNote
+        StopNote = string.Empty; // Initialize stopNote
+       // Validator = new Validator(); // Initialize validator
 
         SetDialogTitleAndButtons(coin);
     }
@@ -68,8 +73,6 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
                 StopNote = level.Note;
             }
         }
-
-
     }
 
 

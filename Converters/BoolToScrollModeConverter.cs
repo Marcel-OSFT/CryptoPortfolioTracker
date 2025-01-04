@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace CryptoPortfolioTracker.Converters;
 
-public class BoolToScrollModeConverter : IValueConverter
+public partial class BoolToScrollModeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

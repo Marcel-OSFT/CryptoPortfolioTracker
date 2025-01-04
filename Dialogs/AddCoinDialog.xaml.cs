@@ -189,7 +189,7 @@ public partial class AddCoinDialog : ContentDialog
         {
             var msgbox = new MessageDialog(loc.GetLocalizedString("Messages_AddingCoinFailed" + ex.Message));
         }
-        finally { Current = null; }
+        finally { Current = null!; }
     }
     public async Task<CoinFullDataById> GetCoinDetails(string coinId)
     {

@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 using SkiaSharp;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System;
 
 namespace CryptoPortfolioTracker.Controls;
 
@@ -21,7 +22,7 @@ public partial class ValueGainsControl : UserControl, INotifyPropertyChanged
     public ValueGainsControl()
     {
         InitializeComponent();
-        _viewModel = DashboardViewModel.Current;
+        _viewModel = DashboardViewModel.Current ?? throw new InvalidOperationException("DashboardViewModel.Current is null");
         DataContext = _viewModel;
     }
 
@@ -29,7 +30,6 @@ public partial class ValueGainsControl : UserControl, INotifyPropertyChanged
     {
         _viewModel.GetValueGains();
         await _viewModel.GetCapitalFlowData();
-
     }
 
     private void Graph_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -37,14 +37,10 @@ public partial class ValueGainsControl : UserControl, INotifyPropertyChanged
         _viewModel.ChangeLabelSizeCapitalFlow(e);
     }
 
-    
-
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
 }

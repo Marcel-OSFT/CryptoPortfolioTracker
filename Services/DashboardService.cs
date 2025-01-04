@@ -27,7 +27,7 @@ namespace CryptoPortfolioTracker.Services;
 
 public partial class DashboardService : ObservableObject, IDashboardService
 {
-    private static ILogger Logger { get; set; }
+    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
     public readonly PortfolioContext coinContext;
     private readonly IAssetService _assetService;
     private readonly INarrativeService _narrativeService;
@@ -39,7 +39,6 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
     public DashboardService(PortfolioContext portfolioContext, IAssetService assetService, INarrativeService narrativeService, IAccountService accountService, IPreferencesService preferencesService)
     {
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
         coinContext = portfolioContext;
         _assetService = assetService;
         _preferencesService = preferencesService;
