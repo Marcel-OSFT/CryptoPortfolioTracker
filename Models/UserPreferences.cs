@@ -31,7 +31,7 @@ public class UserPreferences
         }
         else
         {
-            appCultureLanguage = "en-us";
+            appCultureLanguage = "en-US";
         }
         numberFormat = new NumberFormatInfo();
         numberFormat = CultureInfo.CurrentUICulture.NumberFormat;
