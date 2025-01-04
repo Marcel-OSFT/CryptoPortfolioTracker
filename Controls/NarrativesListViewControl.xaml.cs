@@ -18,7 +18,7 @@ namespace CryptoPortfolioTracker.Controls;
 public partial class NarrativesListViewControl : UserControl, INotifyPropertyChanged
 {
     public readonly NarrativesViewModel _viewModel;
-    private List<ScrollViewer> gridViewScrollViewers = new List<ScrollViewer>();
+    private readonly List<ScrollViewer> gridViewScrollViewers = new();
 
     //***********************************************//
     //** All databound fields are in the viewModel**//
@@ -54,18 +54,16 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
 
     private void KeepIntoView(ListView listView)
     {
-        var viewModel = DataContext as NarrativesViewModel;
+        if (listView == null || DataContext is not NarrativesViewModel viewModel || !viewModel.IsExtendedView)
+            return;
 
-        if (listView != null && viewModel != null && viewModel.IsExtendedView)
+        if (viewModel.selectedNarrative != null && listView.SelectedItem != viewModel.selectedNarrative)
         {
-            if (viewModel.selectedNarrative != null && listView.SelectedItem != viewModel.selectedNarrative)
-            {
-                listView.SelectedItem = viewModel.selectedNarrative;
-
-            }
-            listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
+            listView.SelectedItem = viewModel.selectedNarrative;
         }
+        listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
     }
+
     private void IconGridView_Loaded(object sender, RoutedEventArgs e)
     {
         var gridView = sender as GridView;
@@ -110,7 +108,7 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
         }
     }
 
-    private ScrollViewer GetScrollViewerFromGridView(GridView gridView)
+    private static ScrollViewer GetScrollViewerFromGridView(GridView gridView)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(gridView); i++)
         {
@@ -131,7 +129,7 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
         return null;
     }
 
-    private ScrollViewer GetScrollViewerFromGridView(DependencyObject element)
+    private static ScrollViewer GetScrollViewerFromGridView(DependencyObject element)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
         {

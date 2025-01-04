@@ -18,7 +18,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
 {
     public readonly AccountsViewModel _viewModel;
     //private ScrollViewer gridViewScrollViewer;
-    private List<ScrollViewer> gridViewScrollViewers = new List<ScrollViewer>();
+    private readonly List<ScrollViewer> gridViewScrollViewers = new();
     //***********************************************//
     //** All databound fields are in the viewModel**//
     //*********************************************//
@@ -35,16 +35,13 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         KeepIntoView(sender as ListView);
     }
 
-    private void KeepIntoView(ListView listView)
+    private static void KeepIntoView(ListView listView)
     {
-        var viewModel = DataContext as AccountsViewModel;
-
-        if (listView != null && viewModel != null && viewModel.IsExtendedView)
+        if (listView?.DataContext is AccountsViewModel viewModel && viewModel.IsExtendedView)
         {
             if (viewModel.selectedAccount != null && listView.SelectedItem != viewModel.selectedAccount)
             {
                 listView.SelectedItem = viewModel.selectedAccount;
-
             }
             listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
         }
@@ -95,7 +92,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
     }
 
 
-    private ScrollViewer GetScrollViewerFromGridView(GridView gridView)
+    private static ScrollViewer GetScrollViewerFromGridView(GridView gridView)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(gridView); i++)
         {
@@ -116,7 +113,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         return null;
     }
 
-    private ScrollViewer GetScrollViewerFromGridView(DependencyObject element)
+    private static ScrollViewer GetScrollViewerFromGridView(DependencyObject element)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
         {
