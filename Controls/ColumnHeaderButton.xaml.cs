@@ -98,9 +98,9 @@ public sealed partial class ColumnHeaderButton : UserControl
     public static readonly DependencyProperty GroupProperty = DependencyProperty.Register("Group", typeof(string), typeof(ColumnHeaderButton), null);
    
 
-    private string _text;
+    private string _text = string.Empty;
     private static List<ColumnHeaderButton> _buttons = new();
-    private static Brush _originalBrush;
+    private static Brush? _originalBrush;
     private bool _isClicked;
     private bool _disposing;
 
@@ -135,44 +135,40 @@ public sealed partial class ColumnHeaderButton : UserControl
         }
     }
 
-    private void btn_Click(object sender, RoutedEventArgs e)
+    private void Btn_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && IsEnabled)
+        if (sender is Button && IsEnabled)
         {
             _isClicked = true;
+            if (_originalBrush is null)
+            {
+                _originalBrush = innerText.Foreground;
+            }
+
             switch (SortingOrder)
             {
                 case SortingOrder.None:
-                    {
-                        if (_originalBrush is null)
-                        {
-                            _originalBrush = innerText.Foreground;
-                        }
-                        ResetAllButtonsInGroup(Group);
-                        _text = Text;
-                        SortingOrder = SortingOrder.Ascending;
-                        Text = _text + $" ↑";
-                        innerText.Foreground = PointerHoverColor;
-                        break;
-                    }
+                    ResetAllButtonsInGroup(Group);
+                    SortingOrder = SortingOrder.Ascending;
+                    break;
                 case SortingOrder.Descending:
-                    {
-                        SortingOrder = SortingOrder.Ascending;
-                        Text = _text + $" ↑";
-                        innerText.Foreground = PointerHoverColor;
-                        break;
-                    }
+                    SortingOrder = SortingOrder.Ascending;
+                    break;
                 case SortingOrder.Ascending:
-                    {
-                        SortingOrder = SortingOrder.Descending;
-                        Text = _text + $" ↓";
-                        innerText.Foreground = PointerHoverColor;
-                        break;
-                    }
+                    SortingOrder = SortingOrder.Descending;
+                    break;
             }
+
+            _text = Text;
+            Text = SortingOrder switch
+            {
+                SortingOrder.Ascending => _text + " ↑",
+                SortingOrder.Descending => _text + " ↓",
+                _ => _text
+            };
+            innerText.Foreground = PointerHoverColor;
         }
         _isClicked = false;
-
     }
 
     private void ResetAllButtonsInGroup(string group)

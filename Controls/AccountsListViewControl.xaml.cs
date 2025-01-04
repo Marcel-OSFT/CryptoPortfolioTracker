@@ -32,7 +32,11 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
 
     private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        KeepIntoView(sender as ListView);
+        var listView = sender as ListView;
+        if (listView != null)
+        {
+            KeepIntoView(listView);
+        }
     }
 
     private static void KeepIntoView(ListView listView)
@@ -92,7 +96,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
     }
 
 
-    private static ScrollViewer GetScrollViewerFromGridView(GridView gridView)
+    private static ScrollViewer? GetScrollViewerFromGridView(GridView gridView)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(gridView); i++)
         {
@@ -103,7 +107,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
             }
             else
             {
-                ScrollViewer descendant = GetScrollViewerFromGridView(child);
+                ScrollViewer? descendant = GetScrollViewerFromGridView(child);
                 if (descendant != null)
                 {
                     return descendant;
@@ -113,7 +117,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         return null;
     }
 
-    private static ScrollViewer GetScrollViewerFromGridView(DependencyObject element)
+    private static ScrollViewer? GetScrollViewerFromGridView(DependencyObject element)
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
         {
@@ -124,7 +128,7 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
             }
             else
             {
-                ScrollViewer descendant = GetScrollViewerFromGridView(child);
+                ScrollViewer? descendant = GetScrollViewerFromGridView(child);
                 if (descendant != null)
                 {
                     return descendant;
@@ -134,12 +138,15 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         return null;
     }
 
-    private void IconGrid_ItemClick(object sender, ItemClickEventArgs e)
+    private async void IconGrid_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (sender is FrameworkElement frameworkElement && frameworkElement.Parent is FrameworkElement parentElement)
         {
             var account = parentElement.Tag as Account;
-            _viewModel.AccountItemClicked(account);
+            if (account != null)
+            {
+                await _viewModel.AccountItemClicked(account);
+            }
         }
     }
 

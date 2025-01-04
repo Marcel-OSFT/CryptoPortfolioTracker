@@ -418,7 +418,7 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NoWarn>0108;8305</NoWarn>
+    <NoWarn>0108;8305;0060</NoWarn>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
   </PropertyGroup>
@@ -434,7 +434,7 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NoWarn>0108;8305</NoWarn>
+    <NoWarn>0108;8305;0060</NoWarn>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
