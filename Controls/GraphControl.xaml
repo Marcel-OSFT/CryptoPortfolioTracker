@@ -50,7 +50,7 @@
         <lvc:CartesianChart Grid.Row="1" SizeChanged="Graph_SizeChanged"
             x:Name="thisChart"
             Series="{Binding SeriesGraph}" 
-            ZoomMode="ZoomX"
+            ZoomMode="Both"
             
             XAxes="{Binding XAxesGraph}"
             YAxes="{Binding YAxesGraph}"
