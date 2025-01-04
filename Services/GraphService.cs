@@ -145,7 +145,7 @@ public partial class GraphService : IGraphService
         }
     }
 
-    private async Task LoadGraphDataAsync(string fileName, Func<FileStream, Task> processStream)
+    private static async Task LoadGraphDataAsync(string fileName, Func<FileStream, Task> processStream)
     {
         if (File.Exists(fileName))
         {
@@ -256,7 +256,7 @@ public partial class GraphService : IGraphService
         }
     }
 
-    private List<DataPoint> RemoveDuplicates(List<DataPoint> dataPoints)
+    private static List<DataPoint> RemoveDuplicates(List<DataPoint> dataPoints)
     {
         return dataPoints
             .GroupBy(x => new { x.Date, x.Value })
@@ -264,7 +264,7 @@ public partial class GraphService : IGraphService
             .ToList();
     }
 
-    private List<DataPoint> RemoveLeadingZeros(List<DataPoint> dataPoints, DateOnly date, double initialValue)
+    private static List<DataPoint> RemoveLeadingZeros(List<DataPoint> dataPoints, DateOnly date, double initialValue)
     {
         var filteredDataPoints = dataPoints.Where(x => x.Date >= date).ToList();
         filteredDataPoints.Add(new DataPoint { Date = date.AddDays(-1), Value = initialValue });
@@ -401,7 +401,7 @@ public partial class GraphService : IGraphService
         }
     }
 
-    private void RemoveDataPointsFromDate(List<DataPoint> dataPoints, DateOnly date)
+    private static void RemoveDataPointsFromDate(List<DataPoint> dataPoints, DateOnly date)
     {
         dataPoints.RemoveAll(x => x.Date >= date);
     }

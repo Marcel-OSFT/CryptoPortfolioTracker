@@ -28,7 +28,6 @@ namespace CryptoPortfolioTracker.Dialogs;
 [ObservableObject]
 public partial class AddCoinDialog : ContentDialog
 {
-    private readonly DispatcherQueue dispatcherQueue;
     public readonly CoinLibraryViewModel _viewModel;
     private readonly IPreferencesService _preferencesService;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -37,7 +36,7 @@ public partial class AddCoinDialog : ContentDialog
     private CoinFullDataById? coinFullDataById;
     public Coin? selectedCoin;
     
-    private DialogAction _dialogAction;
+    private readonly DialogAction _dialogAction;
     private readonly ILocalizer loc = Localizer.Get();
     
     [ObservableProperty] private Visibility bePatientVisibility;
@@ -48,12 +47,9 @@ public partial class AddCoinDialog : ContentDialog
     [ObservableProperty] private Narrative initialNarrative = new();
 
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AddCoinDialog(CoinLibraryViewModel viewModel, DialogAction dialogAction, IPreferencesService preferencesService)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         _viewModel = viewModel;
-        dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         CoinName = "";
         Current = this;
         _dialogAction = dialogAction;

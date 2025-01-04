@@ -206,10 +206,7 @@ public partial class AssetService : ObservableObject, IAssetService
 
     public void ClearAssetTotalsList()
     {
-        if (ListAssetTotals is not null)
-        {
-            ListAssetTotals.Clear();
-        }
+        ListAssetTotals?.Clear();
     }
     public double GetTotalsAssetsValue()
     {
