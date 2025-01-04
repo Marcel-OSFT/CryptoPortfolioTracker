@@ -54,6 +54,8 @@ public partial class DashboardViewModel : BaseViewModel
 
     private static Func<double, string> labelerGraph = value => string.Format("$ {0:N0}", value);
 
+    
+
 
     partial void OnIsLoadingFromJsonGraphChanged(bool value)
     {
@@ -76,6 +78,7 @@ public partial class DashboardViewModel : BaseViewModel
         IsNotLoadingFromJsonGraph = !IsLoadingFromJsonGraph;
         SetYAxesGraph();
         SetXAxesGraph();
+        
     }
 
 
@@ -130,7 +133,7 @@ public partial class DashboardViewModel : BaseViewModel
         SeriesGraph = new ObservableCollection<ISeries>
         {
             new LineSeries<DateTimePoint>
-            {
+            { 
                 LineSmoothness=0.2,
                 MiniatureShapeSize=2,
                 Values = valuesPortfolio,

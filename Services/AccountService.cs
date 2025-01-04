@@ -64,6 +64,11 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public AssetAccount GetAffectedAccount(Transaction transaction)
     {
+        if (ListAssetAccounts == null || transaction.RequestedAsset == null)
+        {
+            throw new InvalidOperationException("ListAssetAccounts or RequestedAsset is null");
+        }
+
         return ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
     }
     public bool IsAccountHoldingAssets(Account account)

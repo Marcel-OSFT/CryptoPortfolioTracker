@@ -109,7 +109,7 @@ public partial class App : Application
         }
     }
 
-    private async Task CacheLibraryIcons()
+    private async static Task CacheLibraryIcons()
     {
         var iconsFolderPath = Path.Combine(appDataPath, IconsFolder);
         if (Directory.Exists(iconsFolderPath))
@@ -149,12 +149,12 @@ public partial class App : Application
         }
     }
 
-    private async Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
+    private async static Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
     {
         using var httpClient = new HttpClient();
         try
         {
-            var response = await httpClient.GetAsync(coin.ImageUri);
+            var response = await httpClient.GetAsync(coin?.ImageUri);
             if (!response.IsSuccessStatusCode)
             {
                 return false;
@@ -164,19 +164,20 @@ public partial class App : Application
             await response.Content.CopyToAsync(fs);
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger?.Error(ex, "Failed to retrieve coin icon for {0}", coin?.Name);
             return false;
         }
     }
 
-    private string ExtractFileNameFromUri(string uri)
+    private static string ExtractFileNameFromUri(string uri)
     {
         var uriWithoutQuery = uri.Split('?')[0];
         return Path.GetFileName(uriWithoutQuery);
     }
 
-    private void AddNewTeachingTips()
+    private static void AddNewTeachingTips()
     {
         var tips = new List<TeachingTipCPT>
         {
@@ -190,7 +191,7 @@ public partial class App : Application
         _preferencesService.AddTeachingTipsIfNotExist(tips);
     }
 
-    private async Task InitializeLocalizer()
+    private async static Task InitializeLocalizer()
     {
         var stringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
 
@@ -217,6 +218,12 @@ public partial class App : Application
         try
         {
             var context = App.Container.GetService<PortfolioContext>();
+            if (context == null)
+            {
+                Logger?.Error("Failed to retrieve PortfolioContext from the service container.");
+                return;
+            }
+
             var dbFilename = Path.Combine(appDataPath, DbName);
 
             if (File.Exists(dbFilename))
@@ -238,7 +245,6 @@ public partial class App : Application
                 if (File.Exists(dbFilename)) BackupCptFiles(true);
             }
 
-            //var appliedMigrations = (await context.Database.GetAppliedMigrationsAsync());
             needFixFaultyMigration = (await context.Database.GetAppliedMigrationsAsync()).Contains("20241228225250_AddNarrativesEntity");
 
             await context.Database.MigrateAsync();
@@ -265,7 +271,7 @@ public partial class App : Application
     }
 
 
-    private void BackupCptFiles(bool isMigration)
+    private static void BackupCptFiles(bool isMigration)
     {
         var dbFile = Path.Combine(appDataPath, DbName);
         var preferencesFile = Path.Combine(appDataPath, PrefFileName);
@@ -312,7 +318,7 @@ public partial class App : Application
         }
     }
 
-    private async void SeedPriceLevelsTable(PortfolioContext context)
+    private async static void SeedPriceLevelsTable(PortfolioContext context)
     {
         if (!context.Coins.Any()) return;
 
@@ -327,7 +333,7 @@ public partial class App : Application
         await context.SaveChangesAsync();
     }
 
-    private async void SeedNarrativesTable(PortfolioContext context)
+    private async static void SeedNarrativesTable(PortfolioContext context)
     {
         if (context.Narratives.Count() > 1) return;
 
@@ -365,7 +371,7 @@ public partial class App : Application
     }
 
 
-    private void GetAppEnvironmentals()
+    private static void GetAppEnvironmentals()
     {
         appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
         appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
@@ -378,7 +384,7 @@ public partial class App : Application
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         ProductVersion = version is not null ? version.ToString() : string.Empty ;
     }
-    private IServiceProvider RegisterServices()
+    private static IServiceProvider RegisterServices()
     {
         var services = new ServiceCollection();
 
@@ -424,7 +430,7 @@ public partial class App : Application
         return services.BuildServiceProvider();
     }
 
-    private void InitializeLogger()
+    private static void InitializeLogger()
     {
         var commandLineArgs = Environment.GetCommandLineArgs();
 
@@ -458,7 +464,7 @@ public partial class App : Application
             Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
         }
     }
-    private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+    private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
     {
         DirectoryInfo dir = new (sourceDirName);
         DirectoryInfo[] dirs = dir.GetDirectories();

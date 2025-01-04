@@ -97,7 +97,7 @@ public class UserPreferences
         }
     }
 
-    private NumberFormatInfo numberFormat = new NumberFormatInfo();
+    private NumberFormatInfo numberFormat = new();
     public NumberFormatInfo NumberFormat
     {
         get => numberFormat;
@@ -116,9 +116,9 @@ public class UserPreferences
         get => appCultureLanguage;
         set
         {
-            if (value != appCultureLanguage)
+            if (value.ToLower() != appCultureLanguage.ToLower())
             {
-                appCultureLanguage = value;
+                appCultureLanguage = value.ToLower();
             }
         }
     }

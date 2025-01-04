@@ -106,13 +106,13 @@
                                                 <GridView.ItemsPanel>
                                                     <ItemsPanelTemplate>
                                                         <ItemsWrapGrid x:Name="MaxItemsWrapGrid" MaximumRowsOrColumns="1" Orientation="Vertical"
-                                                                       ItemWidth="32" ItemHeight="34" Margin="0,0,0,0" GroupPadding="0,0,0,0"
+                                                                       ItemWidth="24" ItemHeight="34" Margin="5,0,0,0" GroupPadding="0,0,0,0"
                                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                     </ItemsPanelTemplate>
                                                 </GridView.ItemsPanel>
                                                 <GridView.ItemTemplate>
                                                     <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Asset">
-                                                        <Image Name="Image" Height="21" Source="{Binding Coin.ImageUri, Converter={StaticResource ImageConverter}}"/>
+                                                        <Image Name="Image" HorizontalAlignment="Left" Height="20" Width="39" Source="{Binding Coin.ImageUri, Converter={StaticResource ImageConverter}}"/>
                                                     </DataTemplate>
                                                 </GridView.ItemTemplate>
                                             </GridView>
@@ -126,7 +126,7 @@
                                         </RelativePanel>
                                     </Border>
 
-                                    <RelativePanel HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                                    <RelativePanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
                                         <CommandBar x:Name="HoverCommandBar" Visibility="{Binding DataContext.DataContext.IsExtendedView, ElementName=proxy, Converter={StaticResource BoolToVisibilityConverter}}" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
                                             <CommandBar.SecondaryCommands>
                                                 <AppBarButton l:Uids.Uid="AccountsLV_Edit" Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowAccountDialogToEditCommand, ElementName=proxy}" CommandParameter="{x:Bind}">

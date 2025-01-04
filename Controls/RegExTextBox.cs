@@ -143,25 +143,31 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
         if (invalidKeyEntered)
         {
             var cursorPosition = SelectionStart - 1;
-            if (cursorPosition >= 0) 
+            if (cursorPosition >= 0)
             {
                 Text = Text.Remove(cursorPosition, 1);
-                SelectionStart = cursorPosition ;
+                SelectionStart = cursorPosition;
                 invalidKeyEntered = false;
             }
             return;
         }
-        
-        if ((Text == "" || (Text == "0" && !IsZeroAllowed)) 
+
+        if ((Text == "" || (Text == "0" && !IsZeroAllowed))
             && SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone)
         {
             IsEntryValid = false;
         }
         else
         {
-            var test = Regex.Match(Text, regExChoosen).Value;
-            IsEntryValid = Text == Regex.Match(Text, regExChoosen).Value;
-            //IsEntryValid = TextBoxExtensions.GetIsValid(this); //<= this one doesn't work properly... does not allow 1 decimal...
+            if (regExChoosen != null)
+            {
+                var test = Regex.Match(Text, regExChoosen).Value;
+                IsEntryValid = Text == test;
+            }
+            else
+            {
+                IsEntryValid = false;
+            }
         }
         OnPropertyChanged(nameof(Text));
         TextChanged?.Invoke(this, EventArgs.Empty);

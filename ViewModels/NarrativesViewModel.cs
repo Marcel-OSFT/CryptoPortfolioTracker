@@ -98,42 +98,39 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         IsExtendedView = false;
     }
 
+
     [RelayCommand]
     public void SortOnNameNarr(SortingOrder sortingOrder)
     {
-        Func<Narrative, object> sortFunc = x => x.Name;
-        currentSortFuncNarr = sortFunc;
-        currentSortingOrderNarr = sortingOrder;
-        _narrativeService.SortList(sortingOrder, sortFunc);
+        SortNarratives(x => x.Name, sortingOrder);
     }
+
     [RelayCommand]
     public void SortOnMarketValueNarr(SortingOrder sortingOrder)
     {
-        Func<Narrative, object> sortFunc = x => x.TotalValue;
-        currentSortFuncNarr = sortFunc;
-        currentSortingOrderNarr = sortingOrder;
-        _narrativeService.SortList(sortingOrder, sortFunc);
+        SortNarratives(x => x.TotalValue, sortingOrder);
     }
+
     [RelayCommand]
     public void SortOnCostBaseNarr(SortingOrder sortingOrder)
     {
-        Func<Narrative, object> sortFunc = x => x.CostBase;
-        currentSortFuncNarr = sortFunc;
-        currentSortingOrderNarr = sortingOrder;
-        _narrativeService.SortList(sortingOrder, sortFunc);
+        SortNarratives(x => x.CostBase, sortingOrder);
     }
+
     [RelayCommand]
     public void SortOnPnLNarr(SortingOrder sortingOrder)
     {
-        Func<Narrative, object> sortFunc = x => x.ProfitLoss;
-        currentSortFuncNarr = sortFunc;
-        currentSortingOrderNarr = sortingOrder;
-        _narrativeService.SortList(sortingOrder, sortFunc);
+        SortNarratives(x => x.ProfitLoss, sortingOrder);
     }
+
     [RelayCommand]
     public void SortOnPnLPercNarr(SortingOrder sortingOrder)
     {
-        Func<Narrative, object> sortFunc = x => x.ProfitLossPerc;
+        SortNarratives(x => x.ProfitLossPerc, sortingOrder);
+    }
+
+    private void SortNarratives(Func<Narrative, object> sortFunc, SortingOrder sortingOrder)
+    {
         currentSortFuncNarr = sortFunc;
         currentSortingOrderNarr = sortingOrder;
         _narrativeService.SortList(sortingOrder, sortFunc);
@@ -142,60 +139,157 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     [RelayCommand]
     public void SortOnName(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortAssets(x => x.Coin.Name, sortingOrder);
     }
+
     [RelayCommand]
     public void SortOn24Hour(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortAssets(x => x.Coin.Change24Hr, sortingOrder);
     }
+
     [RelayCommand]
     public void SortOn1Month(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
+        SortAssets(x => x.Coin.Change1Month, sortingOrder);
+    }
+
+    [RelayCommand]
+    public void SortOnMarketValue(SortingOrder sortingOrder)
+    {
+        SortAssets(x => x.MarketValue, sortingOrder);
+    }
+
+    [RelayCommand]
+    public void SortOnCostBase(SortingOrder sortingOrder)
+    {
+        SortAssets(x => x.CostBase, sortingOrder);
+    }
+
+    [RelayCommand]
+    public void SortOnPnL(SortingOrder sortingOrder)
+    {
+        SortAssets(x => x.ProfitLoss, sortingOrder);
+    }
+
+    [RelayCommand]
+    public void SortOnPnLPerc(SortingOrder sortingOrder)
+    {
+        SortAssets(x => x.ProfitLossPerc, sortingOrder);
+    }
+
+    private void SortAssets(Func<AssetTotals, object> sortFunc, SortingOrder sortingOrder)
+    {
         currentSortFunc = sortFunc;
         currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
 
     [RelayCommand]
-    public void SortOnMarketValue(SortingOrder sortingOrder)
+    public static void SortOnNetInvestment(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.MarketValue;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        //*** disabled in NarrativesView
     }
-    [RelayCommand]
-    public void SortOnCostBase(SortingOrder sortingOrder)
-    {
-        Func<AssetTotals, object> sortFunc = x => x.CostBase;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
-    }
-    [RelayCommand]
-    public void SortOnPnL(SortingOrder sortingOrder)
-    {
-        Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
-    }
-    [RelayCommand]
-    public void SortOnPnLPerc(SortingOrder sortingOrder)
-    {
-        Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
-    }
+
+    //[RelayCommand]
+    //public void SortOnNameNarr(SortingOrder sortingOrder)
+    //{
+    //    Func<Narrative, object> sortFunc = x => x.Name;
+    //    currentSortFuncNarr = sortFunc;
+    //    currentSortingOrderNarr = sortingOrder;
+    //    _narrativeService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnMarketValueNarr(SortingOrder sortingOrder)
+    //{
+    //    Func<Narrative, object> sortFunc = x => x.TotalValue;
+    //    currentSortFuncNarr = sortFunc;
+    //    currentSortingOrderNarr = sortingOrder;
+    //    _narrativeService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnCostBaseNarr(SortingOrder sortingOrder)
+    //{
+    //    Func<Narrative, object> sortFunc = x => x.CostBase;
+    //    currentSortFuncNarr = sortFunc;
+    //    currentSortingOrderNarr = sortingOrder;
+    //    _narrativeService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnPnLNarr(SortingOrder sortingOrder)
+    //{
+    //    Func<Narrative, object> sortFunc = x => x.ProfitLoss;
+    //    currentSortFuncNarr = sortFunc;
+    //    currentSortingOrderNarr = sortingOrder;
+    //    _narrativeService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnPnLPercNarr(SortingOrder sortingOrder)
+    //{
+    //    Func<Narrative, object> sortFunc = x => x.ProfitLossPerc;
+    //    currentSortFuncNarr = sortFunc;
+    //    currentSortingOrderNarr = sortingOrder;
+    //    _narrativeService.SortList(sortingOrder, sortFunc);
+    //}
+
+    //[RelayCommand]
+    //public void SortOnName(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOn24Hour(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOn1Month(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+
+
+    //[RelayCommand]
+    //public void SortOnMarketValue(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.MarketValue;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnCostBase(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.CostBase;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnPnL(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnPnLPerc(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
 
 
 
@@ -287,7 +381,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         }
         finally { App.isBusy = false; }
     }
-    private bool CanEditNarrative(Narrative narrative)
+    private static bool CanEditNarrative(Narrative narrative)
     {
         return !(narrative.Name == "- Not Assigned -");
     }

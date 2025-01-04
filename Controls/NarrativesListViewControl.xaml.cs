@@ -49,7 +49,10 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
 
     private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        KeepIntoView(sender as ListView);
+        if (sender is ListView listView)
+        {
+            KeepIntoView(listView);
+        }
     }
 
     private void KeepIntoView(ListView listView)
@@ -182,12 +185,15 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    private void IconGrid_ItemClick(object sender, ItemClickEventArgs e)
+    private async void IconGrid_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (sender is FrameworkElement frameworkElement && frameworkElement.Parent is FrameworkElement parentElement)
         {
             var narrative = parentElement.Tag as Narrative;
-            _viewModel.NarrativeItemClicked(narrative);
+            if (narrative != null)
+            {
+                await _viewModel.NarrativeItemClicked(narrative);
+            }
         }
     }
 }
