@@ -21,7 +21,7 @@ public partial class MaxQtyAConverter : IValueConverter
         }
         else
         {
-            ci = new CultureInfo("en-us");
+            ci = new CultureInfo("en-US");
             ci.NumberFormat = App._preferencesService.GetNumberFormat();
         }
 

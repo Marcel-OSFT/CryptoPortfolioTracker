@@ -116,7 +116,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
     }
     private void SetCulturePreference(int index)
     {
-        string culture = index == 0 ? "nl" : "en-us";
+        string culture = index == 0 ? "nl" : "en-US";
         _preferencesService.SetAppCultureLanguage(culture);
     }
 
