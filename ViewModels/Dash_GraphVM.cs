@@ -44,12 +44,11 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] public bool isNotLoadingFromJsonGraph;
 
    // public LiveChartsCore.Measure.Margin MarginGraph { get; set; } = new LiveChartsCore.Measure.Margin(0, 10, 20, 20); //(60,10,20,20);
-    public SolidColorPaint LegendTextPaintGraph { get; set; } =
-        new SolidColorPaint
-        {
-            Color = SKColors.DarkGoldenrod,
-            SKTypeface = SKTypeface.FromFamilyName("Times New Roman")
-        };
+    public SolidColorPaint LegendTextPaintGraph { get; set; } = new()
+    {
+        Color = SKColors.DarkGoldenrod,
+        SKTypeface = SKTypeface.FromFamilyName("Times New Roman")
+    };
 
     [ObservableProperty] public double legendTextSizeGraph = 12;
 
@@ -73,7 +72,7 @@ public partial class DashboardViewModel : BaseViewModel
 
     private void ConstructGraph()
     {
-        IsNotUpdatingGraph = !isUpdatingGraph;
+        IsNotUpdatingGraph = !IsUpdatingGraph;
         IsNotLoadingFromJsonGraph = !IsLoadingFromJsonGraph;
         SetYAxesGraph();
         SetXAxesGraph();
@@ -186,14 +185,43 @@ public partial class DashboardViewModel : BaseViewModel
         };
     }
 
+    //private void SetYAxesGraph()
+    //{
+    //    var loc = Localizer.Get();
+
+    //    if (YAxesGraph is not null)
+    //    {
+    //        YAxesGraph = null;
+    //    }
+    //    YAxesGraph = new Axis[]
+    //    {
+    //        new Axis
+    //        {
+    //            MinLimit = 0,
+    //            NamePadding = new LiveChartsCore.Drawing.Padding(0, 0),
+    //            NameTextSize = 0,
+    //            TextSize = 12,
+    //            NamePaint = new SolidColorPaint
+    //            {
+    //                Color = SKColors.White,
+    //                FontFamily = "Times New Roman",
+    //                SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
+    //            },
+    //            LabelsPaint = new SolidColorPaint
+    //            {
+    //                Color = SKColors.DarkGoldenrod,
+    //                FontFamily = "Times New Roman",
+    //                SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
+    //            },
+
+    //            Labeler = labelerYAxis,
+    //        }
+    //    };
+    //}
     private void SetYAxesGraph()
     {
         var loc = Localizer.Get();
 
-        if (YAxesGraph is not null)
-        {
-            YAxesGraph = null;
-        }
         YAxesGraph = new Axis[]
         {
             new Axis
@@ -202,21 +230,20 @@ public partial class DashboardViewModel : BaseViewModel
                 NamePadding = new LiveChartsCore.Drawing.Padding(0, 0),
                 NameTextSize = 0,
                 TextSize = 12,
-                NamePaint = new SolidColorPaint
-                {
-                    Color = SKColors.White,
-                    FontFamily = "Times New Roman",
-                    SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-                },
-                LabelsPaint = new SolidColorPaint
-                {
-                    Color = SKColors.DarkGoldenrod,
-                    FontFamily = "Times New Roman",
-                    SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-                },
-
+                NamePaint = CreateSolidColorPaint(SKColors.White),
+                LabelsPaint = CreateSolidColorPaint(SKColors.DarkGoldenrod),
                 Labeler = labelerYAxis,
             }
+        };
+    }
+
+    private SolidColorPaint CreateSolidColorPaint(SKColor color)
+    {
+        return new SolidColorPaint
+        {
+            Color = color,
+            FontFamily = "Times New Roman",
+            SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
         };
     }
 

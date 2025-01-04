@@ -17,8 +17,7 @@ using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Services;
 
-[ObservableObject]
-public partial class GraphService : IGraphService
+public partial class GraphService : ObservableObject, IGraphService
 {
     private Graph graph;
     private static ILogger Logger { get; set; }

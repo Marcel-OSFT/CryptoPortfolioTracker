@@ -22,11 +22,29 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using LanguageExt;
 using System.Net.Http;
+using Microsoft.UI.Xaml.Markup;
 
 namespace CryptoPortfolioTracker;
 
-public partial class App : Application
+public partial class App : Application, IApplicationOverrides, IXamlMetadataProvider
 {
+
+    public IXamlType GetXamlType(Type type)
+    {
+        return _AppProvider.GetXamlType(type);
+    }
+
+    public IXamlType GetXamlType(string fullName)
+    {
+        return _AppProvider.GetXamlType(fullName);
+    }
+
+    public XmlnsDefinition[] GetXmlnsDefinitions()
+    {
+        return _AppProvider.GetXmlnsDefinitions();
+    }
+
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public static App Current;
@@ -67,18 +85,15 @@ public partial class App : Application
     //public const string DbName = "sqlCPT.db";
 
 
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
     public App()
     {
         Current = this;
         InitializeComponent();
-       
         GetAppEnvironmentals();
-
         Container = RegisterServices();
-        _preferencesService = Container.GetService<IPreferencesService>();
+        _preferencesService = Container.GetService<IPreferencesService>() ?? throw new InvalidOperationException("Failed to retrieve IPreferencesService from the service container.");
     }
+
 
     /// <summary>
     /// Invoked when the application is launched.
@@ -97,9 +112,16 @@ public partial class App : Application
         InitializeLogger();
         await InitializeLocalizer();
         await CheckDatabase();
-        CacheLibraryIcons();
-        Window = Container.GetService<MainWindow>(); 
-        Window.Activate();
+        await CacheLibraryIcons();
+        Window = Container.GetService<MainWindow>();
+        if (Window != null)
+        {
+            Window.Activate();
+        }
+        else
+        {
+            Logger?.Error("Failed to retrieve MainWindow from the service container.");
+        }
     }
 
     private static async Task CacheLibraryIcons()
@@ -107,7 +129,10 @@ public partial class App : Application
         var iconsFolderPath = Path.Combine(appDataPath, IconsFolder);
         if (Directory.Exists(iconsFolderPath))
         {
-            Directory.GetFiles(iconsFolderPath).ToList().ForEach(File.Delete);
+            foreach (var file in Directory.GetFiles(iconsFolderPath))
+            {
+                File.Delete(file);
+            }
         }
         else
         {
@@ -115,22 +140,27 @@ public partial class App : Application
         }
 
         var context = Container.GetService<PortfolioContext>();
-        var coins = context.Coins.Where(coin => !string.IsNullOrEmpty(coin.ImageUri)).ToList();
+        var coins = context?.Coins.Where(coin => !string.IsNullOrEmpty(coin.ImageUri)).ToList();
 
-        foreach (var coin in coins)
+        if (coins != null)
         {
-            var fileName = ExtractFileNameFromUri(coin.ImageUri);
-            if (fileName != "QuestionMarkBlue.png")
+            var tasks = coins.Select(async coin =>
             {
-                var iconPath = Path.Combine(iconsFolderPath, fileName);
-                if (!File.Exists(iconPath))
+                var fileName = ExtractFileNameFromUri(coin.ImageUri);
+                if (fileName != "QuestionMarkBlue.png")
                 {
-                    if (!await RetrieveCoinIconAsync(coin, iconPath))
+                    var iconPath = Path.Combine(iconsFolderPath, fileName);
+                    if (!File.Exists(iconPath))
                     {
-                        Logger?.Warning("Failed to cache icon for {0}", coin.Name);
+                        if (!await RetrieveCoinIconAsync(coin, iconPath))
+                        {
+                            Logger?.Warning("Failed to cache icon for {0}", coin.Name);
+                        }
                     }
                 }
-            }
+            });
+
+            await Task.WhenAll(tasks);
         }
     }
 
@@ -149,7 +179,7 @@ public partial class App : Application
             await response.Content.CopyToAsync(fs);
             return true;
         }
-        catch (Exception)
+        catch
         {
             return false;
         }

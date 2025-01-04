@@ -38,11 +38,15 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
     
     private void AssetsListView_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        KeepIntoView(sender as ListView);
+        var listView = sender as ListView;
+        if (listView != null)
+        {
+            KeepIntoView(listView);
+        }
     }
 
    
-    private async void View_ItemClick(object sender, ItemClickEventArgs e)
+    private void View_ItemClick(object sender, ItemClickEventArgs e)
     {
        //dummy
     }
