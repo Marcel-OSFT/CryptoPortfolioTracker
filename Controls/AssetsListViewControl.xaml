@@ -19,6 +19,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <converters:BoolToScrollModeConverter x:Key="BoolToScrollModeConverter"/>
         <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
         <converters:ColourConverter x:Key="myColourConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
@@ -243,6 +244,7 @@
                   toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                   ui:ListViewExtensions.Command="{Binding AssetItemClickedCommand}" SizeChanged="AssetsListView_SizeChanged" ItemClick="View_ItemClick"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                  ScrollViewer.VerticalScrollMode="{Binding IsAssetsExtendedView , Converter={StaticResource BoolToScrollModeConverter}}"
                         CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" 
                   SelectionChanged="AssetsListView_SelectionChanged" Loading="AssetsListView_Loading">
 

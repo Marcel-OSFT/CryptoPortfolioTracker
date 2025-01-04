@@ -1,5 +1,6 @@
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
+using Flurl.Util;
 using LanguageExt;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -183,6 +184,12 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-   
-   
+    private void IconGrid_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        if (sender is FrameworkElement frameworkElement && frameworkElement.Parent is FrameworkElement parentElement)
+        {
+            var narrative = parentElement.Tag as Narrative;
+            _viewModel.NarrativeItemClicked(narrative);
+        }
+    }
 }

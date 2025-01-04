@@ -6,7 +6,7 @@
     xmlns:local="using:CryptoPortfolioTracker.Controls"    
     xmlns:converters="using:CryptoPortfolioTracker.Converters"    
     xmlns:views="using:CryptoPortfolioTracker.Views"    
-   xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
     xmlns:models="using:CryptoPortfolioTracker.Models"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,6 +18,7 @@
 
     <UserControl.Resources>
         <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+        <converters:BoolToScrollModeConverter x:Key="BoolToScrollModeConverter"/>
         <converters:ColourConverter x:Key="myColourConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
@@ -34,25 +35,24 @@
         </Style>
     </UserControl.Resources>
 
-   
-    <Grid Name="ColumnHeadersAndListView" Margin="15,0,5,0" Padding="10,8,0,0" >
+    <Grid Name="ColumnHeadersAndListView" Margin="15,0,5,0" Padding="10,8,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.9*"/>
             <ColumnDefinition Width="0.2*"/>
             <ColumnDefinition Width="0.2*"/>
             <ColumnDefinition Width="60"/>
-            </Grid.ColumnDefinitions>
-       
+        </Grid.ColumnDefinitions>
+
         <StackPanel Grid.Row="0" Grid.Column="0" Margin="10,0,0,5" VerticalAlignment="Bottom">
             <local:ColumnHeaderButton
                 x:Name="NameHeader"
                 l:Uids.Uid="NarrativesLV_Name" 
-                IsEnabled="{Binding IsExtendedView , Converter={StaticResource InvertBoolConverter}}"
+                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}"
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -61,15 +61,14 @@
                 PointerHoverColor="Goldenrod"
                 Group="{Binding SortGroup}"
                 Command="{Binding SortOnNameNarrCommand}"
-                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
-                />
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"/>
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" VerticalAlignment="Bottom">
             <local:ColumnHeaderButton
                 x:Name="CostBaseHeader"
                 l:Uids.Uid="AssetsLV_MarketValue" 
-                IsEnabled="{Binding IsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -79,12 +78,11 @@
                 SortingOrder="Descending"
                 Group="{Binding SortGroup}"
                 Command="{Binding SortOnCostBaseNarrCommand}"
-                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
-                />
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"/>
             <local:ColumnHeaderButton
                 x:Name="MarketValueHeader"
                 l:Uids.Uid="AssetsLV_CostBase" 
-                IsEnabled="{Binding IsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -93,15 +91,14 @@
                 PointerHoverColor="Goldenrod"
                 Group="{Binding SortGroup}"
                 Command="{Binding SortOnMarketValueNarrCommand}"
-                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
-                />
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"/>
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,5" VerticalAlignment="Bottom">
 
+        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,5" VerticalAlignment="Bottom">
             <local:ColumnHeaderButton
                 x:Name="PnlHeader"
                 l:Uids.Uid="AssetsLV_ProfitLoss" 
-                IsEnabled="{Binding IsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -110,12 +107,11 @@
                 PointerHoverColor="Goldenrod"
                 Group="{Binding SortGroup}"
                 Command="{Binding SortOnPnLNarrCommand}"
-                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
-                />
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"/>
             <local:ColumnHeaderButton 
                 x:Name="PnlPercHeader"
                 l:Uids.Uid="AssetsLV_ProfitLossPerc" 
-                IsEnabled="{Binding IsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -124,128 +120,120 @@
                 PointerHoverColor="Goldenrod"
                 Group="{Binding SortGroup}"
                 Command="{Binding SortOnPnLPercNarrCommand}"
-                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
-                />
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"/>
         </StackPanel>
 
         <Rectangle Grid.Row="1" Grid.ColumnSpan="4" Fill="#eebc3f" Height="2" Margin="5,0,8,0"/>
 
-        <ListView x:Name="NarrativesListView" Grid.Row="2" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding _narrativeService.ListNarratives}" BorderBrush="Transparent" BorderThickness="1"                              
-                        IsItemClickEnabled="True" SelectionMode="Single" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
+        <ListView x:Name="NarrativesListView" Grid.Row="2" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding _narrativeService.ListNarratives}" 
+                  BorderBrush="Transparent" BorderThickness="1" IsItemClickEnabled="True" SelectionMode="Single" 
+                  toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                   ui:ListViewExtensions.Command="{Binding NarrativeItemClickedCommand}" SizeChanged="ListView_SizeChanged"
-                        ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                        CanReorderItems="False" AllowDrop="false" Margin="0,0,0,0" >
+                  ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                  ScrollViewer.VerticalScrollMode="{Binding IsExtendedView, Converter={StaticResource BoolToScrollModeConverter}}" 
+                  CanReorderItems="False" AllowDrop="false" Margin="0,0,0,0">
             
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:Narrative">
                     <UserControl>
-                    <Grid AutomationProperties.Name="{x:Bind Id}">
+                        <Grid AutomationProperties.Name="{x:Bind Id}">
                             <SwipeControl x:Name="NarrativesListViewSwipeContainer" Height="60">
-                            <Grid>
                                 <Grid VerticalAlignment="Center" Margin="2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.9*"/>
-                                            <ColumnDefinition Width="0.2*"/>
-                                            <ColumnDefinition Width="0.2*"/>
-                                            <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="0.9*"/>
+                                        <ColumnDefinition Width="0.2*"/>
+                                        <ColumnDefinition Width="0.2*"/>
+                                        <ColumnDefinition Width="70"/>
                                     </Grid.ColumnDefinitions>
                                         
-                                        <TextBlock x:Name="proxy" Text="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed" />
-                                        <Border Grid.Column="0"  Margin="10,0,0,0" VerticalAlignment="Center">    
-                                            <RelativePanel>
-                                                <TextBlock Name="txtName" Height="30"  Text="{Binding Name}" ToolTipService.ToolTip="{Binding About}" 
-                                                            FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
-                                                            TextWrapping="Wrap" Margin="10,5,0,0"/>
-                                                <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Coins}"
-                                                            RelativePanel.RightOf="txtName" RelativePanel.AlignTopWithPanel="True" VerticalAlignment="Stretch"
-                                                            Margin="0,0,0,0" IsItemClickEnabled="False" SelectionMode="None" 
-                                                            PointerEntered="IconGrid_PointerEntered"  PointerExited="IconGrid_PointerExited" 
-                                                         Loaded="IconGridView_Loaded"  ScrollViewer.HorizontalScrollMode="Enabled">
-                                                    <GridView.ItemContainerStyle>
-                                                        <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
-                                                            <Setter Property="Margin" Value="0,0,0,0" />
-                                                            <Setter Property="MinHeight" Value="20" />
-                                                        </Style>
-                                                    </GridView.ItemContainerStyle>
+                                    <TextBlock x:Name="proxy" Text="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed"/>
+                                    <Border Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center">    
+                                        <RelativePanel Tag="{Binding}">
+                                            <TextBlock Name="txtName" Height="30" Text="{Binding Name}" ToolTipService.ToolTip="{Binding About}" 
+                                                       FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
+                                                       TextWrapping="Wrap" Margin="10,5,0,0"/>
+                                            <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Coins}"
+                                                      RelativePanel.RightOf="txtName" RelativePanel.AlignTopWithPanel="True" VerticalAlignment="Stretch"
+                                                      Margin="0,0,0,0" IsItemClickEnabled="True" SelectionMode="None" ItemClick="IconGrid_ItemClick"
+                                                      PointerEntered="IconGrid_PointerEntered" PointerExited="IconGrid_PointerExited" 
+                                                      Loaded="IconGridView_Loaded" ScrollViewer.HorizontalScrollMode="Enabled">
+                                                <GridView.ItemContainerStyle>
+                                                    <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                                                        <Setter Property="Margin" Value="0,0,0,0"/>
+                                                        <Setter Property="MinHeight" Value="20"/>
+                                                    </Style>
+                                                </GridView.ItemContainerStyle>
 
-                                                    <GridView.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"  MaximumRowsOrColumns="1" Orientation="Vertical"
-                                                                            ItemWidth="32" ItemHeight="34" Margin="0,0,0,0" GroupPadding="0,0,0,0"
-                                                                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                            />
-                                                        </ItemsPanelTemplate>
-                                                    </GridView.ItemsPanel>
-                                                    <GridView.ItemTemplate>
-                                                        <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Coin">
-                                                            <Image Name="Image" Height="21" Source="{Binding ImageUri, Converter={StaticResource ImageConverter}}"/>
-                                                        </DataTemplate>
-                                                    </GridView.ItemTemplate>
-                                                </GridView>
+                                                <GridView.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <ItemsWrapGrid x:Name="MaxItemsWrapGrid" MaximumRowsOrColumns="1" Orientation="Vertical"
+                                                                       ItemWidth="32" ItemHeight="34" Margin="0,0,0,0" GroupPadding="0,0,0,0"
+                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </ItemsPanelTemplate>
+                                                </GridView.ItemsPanel>
+                                                <GridView.ItemTemplate>
+                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Coin">
+                                                        <Image Name="Image" Height="21" Source="{Binding ImageUri, Converter={StaticResource ImageConverter}}"/>
+                                                    </DataTemplate>
+                                                </GridView.ItemTemplate>
+                                            </GridView>
+                                        </RelativePanel>
+                                    </Border>
 
-                                            </RelativePanel>
-                                        </Border>
+                                    <Border Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                        <RelativePanel HorizontalAlignment="Right">
+                                            <TextBlock Name="txtMarketValue" 
+                                                       Text="{Binding TotalValue, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                                                       FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" 
+                                                       RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
+                                            <TextBlock Name="txtCostBase" 
+                                                       Text="{Binding CostBase, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                                                       RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketValue" 
+                                                       FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
+                                        </RelativePanel>
+                                    </Border>
 
-                                        <Border Grid.Column="1"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
-                                            <RelativePanel HorizontalAlignment="Right">
-                                                <TextBlock Name="txtMarketValue" 
-                                                   Text="{Binding TotalValue, 
-                                                       Converter={StaticResource ValueFormatConverter}, 
-                                                       ConverterParameter='{}$ {0:N0}'}" 
-                                                   FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
-                                                <TextBlock Name="txtCostBase" 
-                                                   Text="{Binding CostBase, 
-                                                       Converter={StaticResource ValueFormatConverter}, 
-                                                       ConverterParameter='{}$ {0:N0}'}" 
-                                                   RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketValue" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
-                                            </RelativePanel>
-                                        </Border>
-
-                                        <Border Grid.Column="2"  Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"  >
-                                            <RelativePanel HorizontalAlignment="Right">
-                                                <TextBlock Name="txtProfitLoss" 
-                                           Text="{Binding ProfitLoss, 
-                                               Converter={StaticResource ValueFormatConverter}, 
-                                               ConverterParameter='{}$ {0:N0}'}"  
-                                           FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"  RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
-                                                <TextBlock Name="txtProfitLossPerc" 
-                                           Text="{Binding ProfitLossPerc, 
-                                               Converter={StaticResource StringFormatConverter}, 
-                                               ConverterParameter='{}{0:0.00} %'}" 
-                                           RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtProfitLoss" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"
-                                           Foreground="{Binding ProfitLossPerc, Converter={StaticResource myColourConverter}}"/>
-                                            </RelativePanel>
-                                        </Border>
-                                    </Grid>
+                                    <Border Grid.Column="2" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                        <RelativePanel HorizontalAlignment="Right">
+                                            <TextBlock Name="txtProfitLoss" 
+                                                       Text="{Binding ProfitLoss, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}"  
+                                                       FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"  
+                                                       RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
+                                            <TextBlock Name="txtProfitLossPerc" 
+                                                       Text="{Binding ProfitLossPerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.00} %'}" 
+                                                       RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtProfitLoss" 
+                                                       FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"
+                                                       Foreground="{Binding ProfitLossPerc, Converter={StaticResource myColourConverter}}"/>
+                                        </RelativePanel>
+                                    </Border>
+                                
                                     <RelativePanel Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
                                         <CommandBar x:Name="HoverCommandBar" Visibility="{Binding DataContext.DataContext.IsExtendedView, ElementName=proxy, Converter={StaticResource BoolToVisibilityConverter}}" 
-                                                    IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
+                                                    IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
                                             <CommandBar.SecondaryCommands>
-                                                <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
                                                 <AppBarButton l:Uids.Uid="NarrativesLV_Edit" Visibility="Visible" x:Name="HoverButtonEdit"  
                                                               Command="{Binding DataContext.DataContext.ShowNarrativeDialogToEditCommand, ElementName=proxy}"  
-                                                              CommandParameter="{x:Bind }">
-                                                    <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
+                                                              CommandParameter="{x:Bind}">
+                                                    <FontIcon Glyph="&#xE70B;" FontWeight="Normal"/>
                                                 </AppBarButton>
-                                                <AppBarButton l:Uids.Uid="NarrativesLV_Delete" Icon="Delete"  x:Name="HoverButtonDel" 
+                                                <AppBarButton l:Uids.Uid="NarrativesLV_Delete" Icon="Delete" x:Name="HoverButtonDel" 
                                                               Command="{Binding DataContext.DataContext.DeleteNarrativeCommand, ElementName=proxy}" 
-                                                              CommandParameter="{x:Bind }"/>
+                                                              CommandParameter="{x:Bind}"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>
                                 </Grid>
-                        </SwipeControl>
-                    </Grid>
-                </UserControl>
-            </DataTemplate>
-        </ListView.ItemTemplate>
-    </ListView>
-
+                            </SwipeControl>
+                        </Grid>
+                    </UserControl>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
         <muxc:TeachingTip x:Name="MyTeachingTipNarr" l:Uids.Uid="Narrative_TeachGeneral"
-              PreferredPlacement="Center" PlacementMargin="0" Background="DarkGoldenrod">
+               PreferredPlacement="Center" PlacementMargin="0" Background="DarkGoldenrod">
             <muxc:TeachingTip.ActionButtonContent>
                 <Button Content="Show me" Click="OnGetItClickedNarr"/>
             </muxc:TeachingTip.ActionButtonContent>
@@ -254,10 +242,5 @@
             </muxc:TeachingTip.CloseButtonContent>
 
         </muxc:TeachingTip>
-
-
-
     </Grid>
-
 </UserControl>
-

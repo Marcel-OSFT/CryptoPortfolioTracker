@@ -33,9 +33,6 @@ namespace CryptoPortfolioTracker.Services
         int GetHistoricalDataBufferDatesCount();
         DateOnly GetHistoricalDataBufferLatestDate();
         bool HasHistoricalDataBuffer();
-        Graph GetGraph();
-        Task<Graph> GetGraphFromJson();
-        Task SetGraph(Graph graph);
         DataPoint GetLatestDataPointInFlow();
         DataPoint GetLatestDataPointOutFlow();
     }
