@@ -102,7 +102,7 @@ public partial class App : Application
         Window.Activate();
     }
 
-    private async Task CacheLibraryIcons()
+    private static async Task CacheLibraryIcons()
     {
         var iconsFolderPath = Path.Combine(appDataPath, IconsFolder);
         if (Directory.Exists(iconsFolderPath))
@@ -155,13 +155,13 @@ public partial class App : Application
         }
     }
 
-    private string ExtractFileNameFromUri(string uri)
+    private static string ExtractFileNameFromUri(string uri)
     {
         var uriWithoutQuery = uri.Split('?')[0];
         return Path.GetFileName(uriWithoutQuery);
     }
 
-    private void AddNewTeachingTips()
+    private static void AddNewTeachingTips()
     {
         var tips = new List<TeachingTipCPT>
         {
@@ -175,16 +175,15 @@ public partial class App : Application
         _preferencesService.AddTeachingTipsIfNotExist(tips);
     }
 
-    private async Task InitializeLocalizer()
+    private static async Task InitializeLocalizer()
     {
-        // Initialize a "Strings" folder in the executables folder.
-        var StringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
+        var stringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
 
         Localizer = await new LocalizerBuilder()
-            .AddStringResourcesFolderForLanguageDictionaries(StringsFolderPath)
+            .AddStringResourcesFolderForLanguageDictionaries(stringsFolderPath)
             .Build();
 
-        if (Logger != null) { Logger.Information("Setting Language to {0}", _preferencesService.GetAppCultureLanguage()); }
+        Logger?.Information("Setting Language to {0}", _preferencesService.GetAppCultureLanguage());
         await Localizer.SetLanguage(_preferencesService.GetAppCultureLanguage());
     }
 
@@ -241,7 +240,7 @@ public partial class App : Application
     }
 
 
-    private void BackupCptFiles(bool isMigration)
+    private static void BackupCptFiles(bool isMigration)
     {
         var dbFile = Path.Combine(appDataPath, DbName);
         var preferencesFile = Path.Combine(appDataPath, PrefFileName);
@@ -288,45 +287,22 @@ public partial class App : Application
         }
     }
 
-    private async void SeedPriceLevelsTable(PortfolioContext context)
+    private static async void SeedPriceLevelsTable(PortfolioContext context)
     {
-        if (context.Coins.Count() == 0) return;
+        if (!context.Coins.Any()) return;
 
-        foreach(Coin coin in context.Coins)
+        var priceLevels = context.Coins.SelectMany(coin => new List<PriceLevel>
         {
-            List<PriceLevel> levels = new();
+            new() { Coin = coin, Type = PriceLevelType.TakeProfit, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty },
+            new() { Coin = coin, Type = PriceLevelType.Buy, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty },
+            new() { Coin = coin, Type = PriceLevelType.Stop, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty }
+        }).ToList();
 
-            var pLevelTp = new PriceLevel();
-            pLevelTp.Coin = coin;
-            pLevelTp.Type = PriceLevelType.TakeProfit;
-            pLevelTp.Value = 0;
-            pLevelTp.Status = PriceLevelStatus.NotWithinRange;
-            pLevelTp.Note = string.Empty;
-            levels.Add(pLevelTp);
-
-            var pLevelBuy = new PriceLevel();
-            pLevelBuy.Coin = coin;
-            pLevelBuy.Type = PriceLevelType.Buy;
-            pLevelBuy.Value = 0;
-            pLevelBuy.Status = PriceLevelStatus.NotWithinRange;
-            pLevelBuy.Note = string.Empty;
-            levels.Add(pLevelBuy);
-
-            var pLevelStop = new PriceLevel();
-            pLevelStop.Coin = coin;
-            pLevelStop.Type = PriceLevelType.Stop;
-            pLevelStop.Value = 0;
-            pLevelStop.Status = PriceLevelStatus.NotWithinRange;
-            pLevelStop.Note = string.Empty;
-            levels.Add(pLevelStop);
-
-            context.PriceLevels.AddRange(levels);
-
-        }
+        context.PriceLevels.AddRange(priceLevels);
         await context.SaveChangesAsync();
     }
 
-    private async void SeedNarrativesTable(PortfolioContext context)
+    private static async void SeedNarrativesTable(PortfolioContext context)
     {
         if (context.Narratives.Count() > 1) return;
 
@@ -334,27 +310,27 @@ public partial class App : Application
         var narratives = new List<Narrative>
         {
             //new Narrative { Id = 1, Name = "- Not Assigned -", About = "Default setting in case you don't want to assign narratives" },
-            new Narrative { Name = "AI", About = "AI in crypto refers to the use of artificial intelligence to optimize trading, provide market insights, and enhance security." },
-            new Narrative { Name = "Appchain", About = "Appchains are application-specific blockchains designed to optimize performance for particular decentralized applications (DApps)." },
-            new Narrative { Name = "DeFI", About = "DeFi (Decentralized Finance) aims to recreate traditional financial systems using decentralized technologies like blockchain." },
-            new Narrative { Name = "DEX", About = "DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly without an intermediary, leveraging smart contracts." },
-            new Narrative { Name = "DePin", About = "DePin (Decentralized Physical Infrastructure Networks) combines blockchain with physical infrastructures like IoT to create decentralized networks." },
-            new Narrative { Name = "Domains", About = "Blockchain domains offer decentralized, censorship-resistant alternatives to traditional domain names, enhancing ownership and control." },
-            new Narrative { Name = "Gamble-Fi", About = "Gamble-Fi integrates decentralized finance principles with online gambling, providing transparent and secure gaming experiences." },
-            new Narrative { Name = "Game-Fi", About = "Game-Fi combines gaming and decentralized finance, allowing players to earn cryptocurrency and trade in-game assets." },
-            new Narrative { Name = "Social-Fi", About = "Social-Fi integrates social media with decentralized finance, enabling monetization and decentralized governance of social platforms." },
-            new Narrative { Name = "Interoperability", About = "Interoperability focuses on enabling different blockchain networks to communicate and interact, facilitating seamless asset transfers and data exchange." },
-            new Narrative { Name = "Layer 1s", About = "Layer 1s are the base layer blockchains like Bitcoin and Ethereum that provide the foundational security and consensus mechanisms." },
-            new Narrative { Name = "Layer 2s", About = "Layer 2s are scaling solutions built on top of Layer 1 blockchains to improve transaction speed and reduce fees." },
-            new Narrative { Name = "LSD", About = "LSD (Liquid Staking Derivatives) allow users to stake assets and receive liquid tokens that can be used in DeFi activities." },
-            new Narrative { Name = "Meme", About = "Meme coins are cryptocurrencies inspired by internet memes, often characterized by high volatility and community-driven value." },
-            new Narrative { Name = "NFT", About = "NFTs (Non-Fungible Tokens) are unique digital assets representing ownership of items like art, music, and virtual real estate." },
-            new Narrative { Name = "Privacy", About = "Privacy coins and technologies aim to enhance transaction anonymity and data protection on the blockchain." },
-            new Narrative { Name = "Real Yield", About = "Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing." },
-            new Narrative { Name = "RWA", About = "RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment." },
-            new Narrative { Name = "CEX", About = "CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity." },
-            new Narrative { Name = "Stablecoins", About = "Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility." },
-            new Narrative { Name = "Others", About = "Narrative for coins that you don't want to assign a specific Narrative" }
+            new() { Name = "AI", About = "AI in crypto refers to the use of artificial intelligence to optimize trading, provide market insights, and enhance security." },
+            new() { Name = "Appchain", About = "Appchains are application-specific blockchains designed to optimize performance for particular decentralized applications (DApps)." },
+            new() { Name = "DeFI", About = "DeFi (Decentralized Finance) aims to recreate traditional financial systems using decentralized technologies like blockchain." },
+            new() { Name = "DEX", About = "DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly without an intermediary, leveraging smart contracts." },
+            new() { Name = "DePin", About = "DePin (Decentralized Physical Infrastructure Networks) combines blockchain with physical infrastructures like IoT to create decentralized networks." },
+            new() { Name = "Domains", About = "Blockchain domains offer decentralized, censorship-resistant alternatives to traditional domain names, enhancing ownership and control." },
+            new() { Name = "Gamble-Fi", About = "Gamble-Fi integrates decentralized finance principles with online gambling, providing transparent and secure gaming experiences." },
+            new() { Name = "Game-Fi", About = "Game-Fi combines gaming and decentralized finance, allowing players to earn cryptocurrency and trade in-game assets." },
+            new() { Name = "Social-Fi", About = "Social-Fi integrates social media with decentralized finance, enabling monetization and decentralized governance of social platforms." },
+            new() { Name = "Interoperability", About = "Interoperability focuses on enabling different blockchain networks to communicate and interact, facilitating seamless asset transfers and data exchange." },
+            new() { Name = "Layer 1s", About = "Layer 1s are the base layer blockchains like Bitcoin and Ethereum that provide the foundational security and consensus mechanisms." },
+            new() { Name = "Layer 2s", About = "Layer 2s are scaling solutions built on top of Layer 1 blockchains to improve transaction speed and reduce fees." },
+            new() { Name = "LSD", About = "LSD (Liquid Staking Derivatives) allow users to stake assets and receive liquid tokens that can be used in DeFi activities." },
+            new() { Name = "Meme", About = "Meme coins are cryptocurrencies inspired by internet memes, often characterized by high volatility and community-driven value." },
+            new() { Name = "NFT", About = "NFTs (Non-Fungible Tokens) are unique digital assets representing ownership of items like art, music, and virtual real estate." },
+            new() { Name = "Privacy", About = "Privacy coins and technologies aim to enhance transaction anonymity and data protection on the blockchain." },
+            new() { Name = "Real Yield", About = "Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing." },
+            new() { Name = "RWA", About = "RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment." },
+            new() { Name = "CEX", About = "CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity." },
+            new() { Name = "Stablecoins", About = "Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility." },
+            new() { Name = "Others", About = "Narrative for coins that you don't want to assign a specific Narrative" }
         };
 
         context.Narratives.AddRange(narratives);
@@ -364,7 +340,7 @@ public partial class App : Application
     }
 
 
-    private void GetAppEnvironmentals()
+    private static void GetAppEnvironmentals()
     {
         appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
         appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
@@ -377,7 +353,7 @@ public partial class App : Application
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         ProductVersion = version is not null ? version.ToString() : string.Empty ;
     }
-    private IServiceProvider RegisterServices()
+    private static IServiceProvider RegisterServices()
     {
         var services = new ServiceCollection();
 
@@ -423,7 +399,7 @@ public partial class App : Application
         return services.BuildServiceProvider();
     }
 
-    private void InitializeLogger()
+    private static void InitializeLogger()
     {
         var commandLineArgs = Environment.GetCommandLineArgs();
 
@@ -457,9 +433,9 @@ public partial class App : Application
             Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
         }
     }
-    private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+    private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
     {
-        DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+        DirectoryInfo dir = new (sourceDirName);
         DirectoryInfo[] dirs = dir.GetDirectories();
 
         // If the source directory does not exist, throw an exception.
