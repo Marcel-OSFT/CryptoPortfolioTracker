@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CryptoPortfolioTracker.Converters;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
@@ -290,7 +291,11 @@ public class PriceUpdateService : IPriceUpdateService
             if (IsInit) coin.Price = 0;
             coin.Price = coinData.CurrentPrice ?? 0;
             coin.MarketCap = coinData.MarketCap ?? 0;
-            coin.ImageUri = coinData.Image.AbsoluteUri ?? string.Empty;
+            
+            var imageUri = coinData.Image.AbsoluteUri ?? string.Empty;
+            imageUri =  imageUri.Replace("large", "small");
+
+            coin.ImageUri = imageUri ?? string.Empty;
             coin.Rank = coinData.MarketCapRank ?? 999999;
             coin.Change24Hr = coinData.PriceChangePercentage24HInCurrency ?? 0;
             coin.Ath = coinData.Ath ?? 0;

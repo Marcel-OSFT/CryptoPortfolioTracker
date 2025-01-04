@@ -21,6 +21,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using LanguageExt;
+using System.Net.Http;
 
 namespace CryptoPortfolioTracker;
 
@@ -59,6 +60,7 @@ public partial class App : Application
     public const string BackupFolder = "Backup";
     public const string PrefixBackupName = "CPTbackup";
     public const string ExtentionBackup = "cpt";
+    public const string IconsFolder = "LibraryIcons";
 
 
     //public const string DbRestoreName = "sqlCPT_DevRestore.db";
@@ -91,29 +93,86 @@ public partial class App : Application
         _preferencesService.LoadUserPreferencesFromXml();
 
         AddNewTeachingTips();
-
-
-       //await LoadPortfolioValueGraph();
+        
         InitializeLogger();
         await InitializeLocalizer();
         await CheckDatabase();
-
+        CacheLibraryIcons();
         Window = Container.GetService<MainWindow>(); 
         Window.Activate();
     }
 
+    private async Task CacheLibraryIcons()
+    {
+        var iconsFolderPath = Path.Combine(appDataPath, IconsFolder);
+        if (Directory.Exists(iconsFolderPath))
+        {
+            Directory.GetFiles(iconsFolderPath).ToList().ForEach(File.Delete);
+        }
+        else
+        {
+            Directory.CreateDirectory(iconsFolderPath);
+        }
+
+        var context = Container.GetService<PortfolioContext>();
+        var coins = context.Coins.Where(coin => !string.IsNullOrEmpty(coin.ImageUri)).ToList();
+
+        foreach (var coin in coins)
+        {
+            var fileName = ExtractFileNameFromUri(coin.ImageUri);
+            if (fileName != "QuestionMarkBlue.png")
+            {
+                var iconPath = Path.Combine(iconsFolderPath, fileName);
+                if (!File.Exists(iconPath))
+                {
+                    if (!await RetrieveCoinIconAsync(coin, iconPath))
+                    {
+                        Logger?.Warning("Failed to cache icon for {0}", coin.Name);
+                    }
+                }
+            }
+        }
+    }
+
+    private static async Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
+    {
+        using var httpClient = new HttpClient();
+        try
+        {
+            var response = await httpClient.GetAsync(coin.ImageUri);
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            await using var fs = new FileStream(iconPath, FileMode.Create);
+            await response.Content.CopyToAsync(fs);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private string ExtractFileNameFromUri(string uri)
+    {
+        var uriWithoutQuery = uri.Split('?')[0];
+        return Path.GetFileName(uriWithoutQuery);
+    }
+
     private void AddNewTeachingTips()
     {
-        var newTip1 = new TeachingTipCPT(){ Name = "TeachingTipNarrLibr", IsShown = false };
-        var newTip2 = new TeachingTipCPT(){ Name = "TeachingTipNarrDash", IsShown = false };
-        var newTip3 = new TeachingTipCPT(){ Name = "TeachingTipNarrNarr", IsShown = false };
-        var newTip4 = new TeachingTipCPT(){ Name = "TeachingTipPortDash", IsShown = false };
-        var newTip5 = new TeachingTipCPT(){ Name = "TeachingTipNarrNavi", IsShown = false };
-
-        List<TeachingTipCPT> tips = new() { newTip1, newTip2, newTip3, newTip4, newTip5};
+        var tips = new List<TeachingTipCPT>
+        {
+            new() { Name = "TeachingTipNarrLibr", IsShown = false },
+            new() { Name = "TeachingTipNarrDash", IsShown = false },
+            new() { Name = "TeachingTipNarrNarr", IsShown = false },
+            new() { Name = "TeachingTipPortDash", IsShown = false },
+            new() { Name = "TeachingTipNarrNavi", IsShown = false }
+        };
 
         _preferencesService.AddTeachingTipsIfNotExist(tips);
-
     }
 
     private async Task InitializeLocalizer()
@@ -134,85 +193,74 @@ public partial class App : Application
         try
         {
             var context = App.Container.GetService<PortfolioContext>();
-            var dbFilename = appDataPath + "\\" + DbName;
-            
+            var dbFilename = Path.Combine(appDataPath, DbName);
+
             if (File.Exists(dbFilename))
             {
                 BackupCptFiles(false);
             }
 
-            var pending = await context.Database.GetPendingMigrationsAsync();
-            var initPriceLevelsEntity = false;
-            var initNarrativesEntity = false;
+            var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+            var initPriceLevelsEntity = pendingMigrations.Any(m => m.Contains("AddPriceLevelsEntity"));
+            var initNarrativesEntity = pendingMigrations.Any(m => m.Contains("AddNarrativesEntity"));
 
-            if (pending.Count() > 0)
+            if (pendingMigrations.Any())
             {
-                foreach (var migration in pending)
+                foreach (var migration in pendingMigrations)
                 {
-                    if (Logger != null) { Logger.Information("Pending Migrations {0}", migration.ToString()); }
-                    if (initPriceLevelsEntity != true) initPriceLevelsEntity = migration.Contains("AddPriceLevelsEntity");
-                    if (initNarrativesEntity != true) initNarrativesEntity = migration.Contains("AddNarrativesEntity");
+                    Logger?.Information("Pending Migrations {0}", migration);
                 }
 
                 if (File.Exists(dbFilename)) BackupCptFiles(true);
             }
 
+            //var appliedMigrations = (await context.Database.GetAppliedMigrationsAsync());
+            needFixFaultyMigration = (await context.Database.GetAppliedMigrationsAsync()).Contains("20241228225250_AddNarrativesEntity");
+
+            await context.Database.MigrateAsync();
+
+            if (initPriceLevelsEntity)
+            {
+                SeedPriceLevelsTable(context);
+            }
+            if (initNarrativesEntity)
+            {
+                SeedNarrativesTable(context);
+            }
 
             var appliedMigrations = await context.Database.GetAppliedMigrationsAsync();
-
-            //*** check if the faulty Narrative Migration has been ran
-            //*** if so, then reverse when correct migration will be applied.
-            needFixFaultyMigration = appliedMigrations.Contains("20241228225250_AddNarrativesEntity");
-
-            context?.Database.Migrate();
-
-            if (initPriceLevelsEntity) 
-            { 
-                SeedPriceLevelsTable(context); 
-            }
-            if (initNarrativesEntity) 
+            foreach (var migration in appliedMigrations)
             {
-                SeedNarrativesTable(context); 
-            }
-
-            var applied = await context.Database.GetAppliedMigrationsAsync();
-            foreach (var migration in applied)
-            {
-                if (Logger != null) { Logger.Information("Applied Migrations {0}", migration.ToString()); }
+                Logger?.Information("Applied Migrations {0}", migration);
             }
         }
         catch (Exception ex)
         {
-            if (Logger != null) { Logger.Error(ex.Message, "Checking Database failed!"); }
+            Logger?.Error(ex, "Checking Database failed!");
         }
     }
 
 
     private void BackupCptFiles(bool isMigration)
     {
-        var dbFile = appDataPath + "\\" + DbName;
-        var preferencesFile = appDataPath + "\\" + PrefFileName;
-        var chartsFolder = appDataPath + "\\" + ChartsFolder;
-        var tempFolder = appDataPath + "\\Temp";
-        var backupFolder = appDataPath + "\\" + BackupFolder;
-        string backUpName = string.Empty;
+        var dbFile = Path.Combine(appDataPath, DbName);
+        var preferencesFile = Path.Combine(appDataPath, PrefFileName);
+        var chartsFolder = Path.Combine(appDataPath, ChartsFolder);
+        var tempFolder = Path.Combine(appDataPath, "Temp");
+        var backupFolder = Path.Combine(appDataPath, BackupFolder);
+        string backUpName;
 
         try
         {
-            if (!Directory.Exists(backupFolder))
-            {
-                Directory.CreateDirectory(backupFolder);
-            }
+            Directory.CreateDirectory(backupFolder);
 
             if (isMigration)
             {
-                //*** Skip migration backup if backup already exists
-                var file = Directory.GetFiles(backupFolder, "*" + ProductVersion.Replace(".", "-") + "*");
-                if (file.Length > 0)
+                if (Directory.GetFiles(backupFolder, "*" + ProductVersion.Replace(".", "-") + "*").Any())
                 {
                     return;
                 }
-                backUpName = PrefixBackupName + "_m" + ProductVersion.Replace(".", "-") + "_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "." + ExtentionBackup;
+                backUpName = $"{PrefixBackupName}_m{ProductVersion.Replace(".", "-")}_{DateTime.Now:yyyyMMdd-HHmmss}.{ExtentionBackup}";
             }
             else
             {
@@ -222,32 +270,21 @@ public partial class App : Application
                 {
                     File.Delete(backupFiles[0]);
                 }
-                backUpName = PrefixBackupName + "_s_" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "." + ExtentionBackup;
+                backUpName = $"{PrefixBackupName}_s_{DateTime.Now:yyyyMMdd-HHmmss}.{ExtentionBackup}";
             }
 
-            if (!Directory.Exists(tempFolder))
-            {
-                Directory.CreateDirectory(tempFolder);
-            }
-            else
-            {
-                Directory.Delete(tempFolder, true);
-                Directory.CreateDirectory(tempFolder);
-            }
-            File.Copy(dbFile, tempFolder + "\\" + DbName);
-            File.Copy(preferencesFile, tempFolder + "\\" + PrefFileName);
+            Directory.CreateDirectory(tempFolder);
+            File.Copy(dbFile, Path.Combine(tempFolder, DbName));
+            File.Copy(preferencesFile, Path.Combine(tempFolder, PrefFileName));
 
-            if (!Directory.Exists(chartsFolder))
-            {
-                Directory.CreateDirectory(chartsFolder);
-            }
-            DirectoryCopy(chartsFolder, tempFolder + "\\" + ChartsFolder, true);
-            ZipFile.CreateFromDirectory(tempFolder, backupFolder + "\\" + backUpName);
+            Directory.CreateDirectory(chartsFolder);
+            DirectoryCopy(chartsFolder, Path.Combine(tempFolder, ChartsFolder), true);
+            ZipFile.CreateFromDirectory(tempFolder, Path.Combine(backupFolder, backUpName));
             Directory.Delete(tempFolder, true);
         }
         catch (Exception ex)
         {
-            if (Logger != null) { Logger.Error(ex.Message, "BackUp CPT files failed!"); }
+            Logger?.Error(ex, "BackUp CPT files failed!");
         }
     }
 
@@ -324,17 +361,6 @@ public partial class App : Application
 
         await context.SaveChangesAsync();
 
-        //if (context.Coins is not null && context.Coins.Count() > 0)
-        //{
-        //    var coins = await context.Coins.ToListAsync();
-        //    var initialNarrative = context.Narratives.Where(x => x.Id == 1).First();
-        //    foreach (var coin in coins)
-        //    {
-        //       coin.Narrative = initialNarrative;
-        //    }
-        //    context.Coins.UpdateRange(coins);
-        //}
-        //await context.SaveChangesAsync();
     }
 
 
@@ -468,6 +494,7 @@ public partial class App : Application
             }
         }
     }
+    
     
 
 

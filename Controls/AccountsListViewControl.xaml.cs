@@ -1,3 +1,4 @@
+using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
 using Microsoft.UI.Xaml;
@@ -134,6 +135,15 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
             }
         }
         return null;
+    }
+
+    private void IconGrid_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        if (sender is FrameworkElement frameworkElement && frameworkElement.Parent is FrameworkElement parentElement)
+        {
+            var account = parentElement.Tag as Account;
+            _viewModel.AccountItemClicked(account);
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

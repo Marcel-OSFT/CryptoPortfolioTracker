@@ -6,7 +6,7 @@
     xmlns:local="using:CryptoPortfolioTracker.Controls"    
     xmlns:converters="using:CryptoPortfolioTracker.Converters"    
     xmlns:views="using:CryptoPortfolioTracker.Views"    
-   xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
     xmlns:models="using:CryptoPortfolioTracker.Models"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
@@ -18,6 +18,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <converters:BoolToScrollModeConverter x:Key="BoolToScrollModeConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:StringFormatConverter x:Key="StringFormatConverter"/>
         <converters:ValueFormatConverter x:Key="ValueFormatConverter"/>
@@ -32,135 +33,116 @@
         </Style>
     </UserControl.Resources>
 
-   
-    <Grid Name="ColumnHeadersAndListView" Margin="15,0,5,0" Padding="10,8,0,0" >
+    <Grid Name="ColumnHeadersAndListView" Margin="15,0,5,0" Padding="10,8,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.7*"/>
             <ColumnDefinition Width="0.3*"/>
             <ColumnDefinition Width="120"/>
-            </Grid.ColumnDefinitions>
-        
-        
-        
-        <RichTextBlock  Grid.Row="0" Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" >
-            <Paragraph TextAlignment="Left" >
-                <Run l:Uids.Uid="AccountsLV_Name" FontSize="12" FontStyle="Italic" />
+        </Grid.ColumnDefinitions>
+
+        <RichTextBlock Grid.Row="0" Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+            <Paragraph TextAlignment="Left">
+                <Run l:Uids.Uid="AccountsLV_Name" FontSize="12" FontStyle="Italic"/>
             </Paragraph>
             <Paragraph TextAlignment="Left">
-                <Run l:Uids.Uid="AccountsLV_Note" FontSize="12" FontStyle="Italic" />
+                <Run l:Uids.Uid="AccountsLV_Note" FontSize="12" FontStyle="Italic"/>
             </Paragraph>
         </RichTextBlock>
-        <RichTextBlock   Grid.Row="0" Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" >
-            <Paragraph TextAlignment="Right" >
-                <Run l:Uids.Uid="AccountsLV_MarketValue" FontSize="12" FontStyle="Italic" />
+        <RichTextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <Paragraph TextAlignment="Right">
+                <Run l:Uids.Uid="AccountsLV_MarketValue" FontSize="12" FontStyle="Italic"/>
             </Paragraph>
         </RichTextBlock>
-        
 
         <Rectangle Grid.Row="1" Grid.ColumnSpan="3" Fill="#eebc3f" Height="2" Margin="5,0,8,0"/>
 
-        <ListView x:Name="AccountsListView" Grid.Row="2" Grid.ColumnSpan="3" x:FieldModifier="public" ItemsSource="{Binding _accountService.ListAccounts}" BorderBrush="Transparent" BorderThickness="1"                              
-                        IsItemClickEnabled="True" SelectionMode="Single" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
+        <ListView x:Name="AccountsListView" Grid.Row="2" Grid.ColumnSpan="3" x:FieldModifier="public" ItemsSource="{Binding _accountService.ListAccounts}" BorderBrush="Transparent" BorderThickness="1"
+                  IsItemClickEnabled="True" SelectionMode="Single" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                   ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" SizeChanged="ListView_SizeChanged"
-                        ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                        CanReorderItems="False" AllowDrop="false" Margin="0,0,0,0" >
-            
+                  ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                  ScrollViewer.VerticalScrollMode="{Binding IsExtendedView, Converter={StaticResource BoolToScrollModeConverter}}"
+                  CanReorderItems="False" AllowDrop="false" Margin="0,0,0,0">
+
             <ListView.ItemTemplate>
-            <DataTemplate x:DataType="models:Account">
+                <DataTemplate x:DataType="models:Account">
                     <UserControl>
-                    <Grid AutomationProperties.Name="{x:Bind Id}">
-                            <SwipeControl x:Name="AccountsListViewSwipeContainer" >
-                            <Grid>
+                        <Grid AutomationProperties.Name="{x:Bind Id}">
+                            <SwipeControl x:Name="AccountsListViewSwipeContainer">
                                 <Grid VerticalAlignment="Center" Margin="2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.8*"/>
-                                            <ColumnDefinition Width="0.2*"/>
-                                            <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.2*"/>
+                                        <ColumnDefinition Width="120"/>
                                     </Grid.ColumnDefinitions>
-                                        <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed" />
-                                        <Border Grid.Column="0"  Margin="10,0,0,0" VerticalAlignment="Center" >
-                                            <RelativePanel>
-                                                <TextBlock Height="30" Name="txtName" Text="{Binding Name}" 
-                                                           FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
-                                                           TextWrapping="Wrap" Margin="0,5,0,0"/>
-                                                <TextBlock Name="txtAbout" Text="{Binding About}" TextWrapping="Wrap" 
-                                                           RelativePanel.Below="txtName" 
-                                                           FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" 
-                                                           Margin="0,0,0,5"/>
+                                    <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed"/>
+                                    <Border Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center">
+                                        <RelativePanel Tag="{Binding}">
+                                            <TextBlock Height="30" Name="txtName" Text="{Binding Name}"
+                                                       FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"
+                                                       TextWrapping="Wrap" Margin="0,5,0,0"/>
+                                            <TextBlock Name="txtAbout" Text="{Binding About}" TextWrapping="Wrap"
+                                                       RelativePanel.Below="txtName"
+                                                       FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"
+                                                       Margin="0,0,0,5"/>
+                                            <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Assets}"
+                                                      RelativePanel.RightOf="txtName" RelativePanel.AlignTopWithPanel="True" VerticalAlignment="Stretch"
+                                                      Margin="0,0,0,0" IsItemClickEnabled="True" SelectionMode="None" ItemClick="IconGrid_ItemClick"
+                                                      PointerEntered="IconGrid_PointerEntered" PointerExited="IconGrid_PointerExited"
+                                                      Loaded="IconGridView_Loaded" ScrollViewer.HorizontalScrollMode="Enabled">
+                                                <GridView.ItemContainerStyle>
+                                                    <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                                                        <Setter Property="Margin" Value="0,0,0,0"/>
+                                                        <Setter Property="MinHeight" Value="20"/>
+                                                    </Style>
+                                                </GridView.ItemContainerStyle>
+                                                <GridView.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <ItemsWrapGrid x:Name="MaxItemsWrapGrid" MaximumRowsOrColumns="1" Orientation="Vertical"
+                                                                       ItemWidth="32" ItemHeight="34" Margin="0,0,0,0" GroupPadding="0,0,0,0"
+                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </ItemsPanelTemplate>
+                                                </GridView.ItemsPanel>
+                                                <GridView.ItemTemplate>
+                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Asset">
+                                                        <Image Name="Image" Height="21" Source="{Binding Coin.ImageUri, Converter={StaticResource ImageConverter}}"/>
+                                                    </DataTemplate>
+                                                </GridView.ItemTemplate>
+                                            </GridView>
+                                        </RelativePanel>
+                                    </Border>
+                                    <Border Grid.Column="1" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <RelativePanel>
+                                            <TextBlock Name="txtValue"
+                                                       Text="{Binding TotalValue, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}"
+                                                       FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" TextAlignment="Right"/>
+                                        </RelativePanel>
+                                    </Border>
 
-                                                
-                                                <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Assets}"
-                                                            RelativePanel.RightOf="txtName" RelativePanel.AlignTopWithPanel="True" VerticalAlignment="Stretch"
-                                                            Margin="0,0,0,0" IsItemClickEnabled="False" SelectionMode="None" 
-                                                            PointerEntered="IconGrid_PointerEntered"  PointerExited="IconGrid_PointerExited" 
-                                                        Loaded="IconGridView_Loaded"  ScrollViewer.HorizontalScrollMode="Enabled" >
-                                                    <!--toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}">-->
-
-                                                    <GridView.ItemContainerStyle>
-                                                        <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
-                                                            <Setter Property="Margin" Value="0,0,0,0" />
-                                                            <Setter Property="MinHeight" Value="20" />
-                                                        </Style>
-                                                    </GridView.ItemContainerStyle>
-
-                                                    <GridView.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"  MaximumRowsOrColumns="1" Orientation="Vertical"
-                                                                        ItemWidth="32" ItemHeight="34" Margin="0,0,0,0" GroupPadding="0,0,0,0"
-                                                                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                        />
-                                                        </ItemsPanelTemplate>
-                                                    </GridView.ItemsPanel>
-                                                    <GridView.ItemTemplate>
-                                                        <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Asset">
-                                                            <!--<TextBlock Text="{Binding Coin.Symbol }"  />-->
-
-
-                                                            <Image Name="Image" Height="21" Source="{Binding Coin.ImageUri, Converter={StaticResource ImageConverter}}"/>
-                                                        </DataTemplate>
-                                                    </GridView.ItemTemplate>
-                                                </GridView>
-
-                                            </RelativePanel>
-                                        </Border>
-
-                                        <Border Grid.Column="1"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right" >
-                                            <RelativePanel>
-                                                <TextBlock Name="txtValue" 
-                                                    Text="{Binding TotalValue, 
-                                                        Converter={StaticResource ValueFormatConverter}, 
-                                                        ConverterParameter='{}$ {0:N0}'}" 
-                                                    FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" TextAlignment="Right" />
-                                            </RelativePanel>
-                                        </Border>
-                                    </Grid>
                                     <RelativePanel HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                                        <CommandBar x:Name="HoverCommandBar" Visibility="{Binding DataContext.DataContext.IsExtendedView, ElementName=proxy, Converter={StaticResource BoolToVisibilityConverter}}" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  >
+                                        <CommandBar x:Name="HoverCommandBar" Visibility="{Binding DataContext.DataContext.IsExtendedView, ElementName=proxy, Converter={StaticResource BoolToVisibilityConverter}}" IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
                                             <CommandBar.SecondaryCommands>
-                                                <!-- Added dummy button to enforce showing the icons. without this dummy the Binding for the icon doesn't work-->
-                                                <AppBarButton l:Uids.Uid="AccountsLV_Edit" Visibility="Visible" x:Name="HoverButtonEdit"  Command="{Binding DataContext.DataContext.ShowAccountDialogToEditCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
-                                                    <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
+                                                <AppBarButton l:Uids.Uid="AccountsLV_Edit" Visibility="Visible" x:Name="HoverButtonEdit" Command="{Binding DataContext.DataContext.ShowAccountDialogToEditCommand, ElementName=proxy}" CommandParameter="{x:Bind}">
+                                                    <FontIcon Glyph="&#xE70B;" FontWeight="Normal"/>
                                                 </AppBarButton>
-                                                <AppBarButton l:Uids.Uid="AccountsLV_Delete" Icon="Delete"  x:Name="HoverButtonDel" Command="{Binding DataContext.DataContext.DeleteAccountCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
+                                                <AppBarButton l:Uids.Uid="AccountsLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Command="{Binding DataContext.DataContext.DeleteAccountCommand, ElementName=proxy}" CommandParameter="{x:Bind}"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>
                                 </Grid>
-                        </SwipeControl>
-                    </Grid>
-                </UserControl>
-            </DataTemplate>
-        </ListView.ItemTemplate>
-    </ListView>
+                            </SwipeControl>
+                        </Grid>
+                    </UserControl>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
-
 </UserControl>
 
