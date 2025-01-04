@@ -31,9 +31,6 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
     private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         await _viewModel.InitializeGraph();
-        thisChart.ZoomMode = LiveChartsCore.Measure.ZoomAndPanMode.Both;
-    
-
     }
 
     private void Graph_SizeChanged(object sender, SizeChangedEventArgs e)
