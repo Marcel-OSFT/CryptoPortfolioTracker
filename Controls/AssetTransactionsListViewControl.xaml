@@ -52,10 +52,9 @@
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
-        <TextBlock l:Uids.Uid="TransactionsLV_Type" Name="txtType" Grid.Column="0" FontWeight="Light" FontSize="16" Margin="20,0,0,0" HorizontalAlignment="Right"/>
-        <TextBlock l:Uids.Uid="TransactionsLV_From" Name="txtFrom" Grid.Column="1" FontWeight="Light" FontSize="18" HorizontalAlignment="Center"/>
-        <TextBlock l:Uids.Uid="TransactionsLV_To" Name="txtTo" Grid.Column="2" FontWeight="Light" FontSize="18" HorizontalAlignment="Center" />
-        
+        <TextBlock l:Uids.Uid="TransactionsLV_Type" Grid.Row="0" Name="txtType" Grid.Column="0" FontWeight="Light" FontSize="16" Margin="20,-18,0,0" HorizontalAlignment="Right"/>
+        <TextBlock l:Uids.Uid="TransactionsLV_From" Grid.Row="0" Name="txtFrom" Grid.Column="1" FontWeight="Light" FontSize="16" Margin="0,-18,0,0" HorizontalAlignment="Center"/>
+        <TextBlock l:Uids.Uid="TransactionsLV_To" Grid.Row="0" Name="txtTo" Grid.Column="2" FontWeight="Light" FontSize="16" Margin="0,-18,0,0" HorizontalAlignment="Center" />
         <!--Rectangle Fill="#eebc3f" Grid.Row="0"  Height="1" Margin="5,0,8,0"/-->
 
 
