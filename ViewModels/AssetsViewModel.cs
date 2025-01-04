@@ -132,70 +132,128 @@ public sealed partial class AssetsViewModel : BaseViewModel
         _assetService.ClearAssetTotalsList();
     }
 
+
+
+
     [RelayCommand]
     public void SortOnName(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Coin.Name);
     }
+
     [RelayCommand]
     public void SortOn24Hour(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Coin.Change24Hr);
     }
+
     [RelayCommand]
     public void SortOn1Month(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Coin.Change1Month);
     }
+
     [RelayCommand]
     public void SortOnMarketValue(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.MarketValue;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.MarketValue);
     }
+
     [RelayCommand]
     public void SortOnCostBase(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.CostBase;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.CostBase);
     }
+
     [RelayCommand]
     public void SortOnNetInvestment(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.NetInvestment;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.NetInvestment);
     }
+
     [RelayCommand]
     public void SortOnPnL(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.ProfitLoss);
     }
+
     [RelayCommand]
     public void SortOnPnLPerc(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
+        SortList(sortingOrder, x => x.ProfitLossPerc);
+    }
+
+    private void SortList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    {
         currentSortFunc = sortFunc;
         currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
+
+    //[RelayCommand]
+    //public void SortOnName(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOn24Hour(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOn1Month(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnMarketValue(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.MarketValue;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnCostBase(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.CostBase;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnNetInvestment(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.NetInvestment;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnPnL(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnPnLPerc(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
 
     [RelayCommand]
     public async Task AssetItemClicked(AssetTotals clickedAsset)
@@ -307,9 +365,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         {
             Logger.Information("Showing Transaction Dialog for Editing");
             //*** editing a transaction also involves a change for an element in the ListAssetAccounts
-#pragma warning disable CS8604 // Possible null reference argument.
             accountAffected = _accountService.GetAffectedAccount(transaction);  //  ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
-#pragma warning restore CS8604 // Possible null reference argument.
 
             var dialog = new TransactionDialog(_transactionService, _preferencesService, DialogAction.Edit, transaction)
             {
@@ -379,9 +435,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
             {
                 Logger.Information("Deleting Transaction");
                 //*** editing a transaction also involves a change for an element in the ListAssetAccounts
-#pragma warning disable CS8604 // Possible null reference argument.
                 var accountAffected = _accountService.GetAffectedAccount(transaction);
-#pragma warning restore CS8604 // Possible null reference argument.
 
                 await (await _transactionService.DeleteTransaction(transaction, accountAffected))
                          .Match(Succ: async s =>

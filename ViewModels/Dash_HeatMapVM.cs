@@ -33,7 +33,7 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     public RectangularSection[] sectionsHeatMap = new RectangularSection[]
     {
-        new RectangularSection
+        new()
         {
             // creates a section from 3 to 4 in the y axis
             Yi = 0,
@@ -111,11 +111,8 @@ public partial class DashboardViewModel : BaseViewModel
 
     public void InitializeHeatMap()
     {
-       
-        var ci = new CultureInfo(loc.GetCurrentLanguage());
         try
         {
-            //GetValuesHeatMap();
             bubbleSizeMax = 50;
             bubbleSizeMin = 1;
 
@@ -138,14 +135,19 @@ public partial class DashboardViewModel : BaseViewModel
         //*** Introduce dummyPoints for a second (not-visible) serie to force Bubble Geometry for weight 100
         //*** and MinGeometry to weight 1. In this way interpolation is in range 1 to 100.
         //*** example: 3 almost equal weights will now return in also 3 almost equal sized bubbels.
-        HeatMapPoint dummyMax = new();
-        dummyMax.X = 0;
-        dummyMax.Y = -150;
-        dummyMax.Weight = 100;
-        HeatMapPoint dummyMin = new();
-        dummyMin.X = 1;
-        dummyMin.Y = -150;
-        dummyMin.Weight = 1;
+        HeatMapPoint dummyMax = new()
+        {
+            X = 0,
+            Y = -150,
+            Weight = 100
+        };
+
+        HeatMapPoint dummyMin = new()
+        {
+            X = 0,
+            Y = -150,
+            Weight = 1
+        };
 
         var dummyPoints = new ObservableCollection<HeatMapPoint>() {dummyMin, dummyMax};
 
@@ -154,24 +156,21 @@ public partial class DashboardViewModel : BaseViewModel
 
         var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
 
-        YAxesHeatMap.First().MaxLimit = maxYValuePoint is not null && maxYValuePoint.Y > 10 ? maxYValuePoint.Y + 10 : 10;
+        YAxesHeatMap.First().MaxLimit = maxYValuePoint?.Y > 10 ? maxYValuePoint.Y + 10 : 10;
 
         //*** Normalize the value to a multiple of 10
         YAxesHeatMap.First().MaxLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) * 10;
 
-        var seperators = YAxesHeatMap.First().CustomSeparators.ToArray();
+        var separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
 
         var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
-        seperators[seperators.Length - 1] = (double)maxLimit;
-        YAxesHeatMap.First().CustomSeparators = seperators;
+        separators[^1] = (double)maxLimit;
+        YAxesHeatMap.First().CustomSeparators = separators;
 
 
         HasTargets = HeatMapPoints.Count > 0;
 
-        if (SeriesHeatMap is not null) 
-        {
-            SeriesHeatMap.Clear();
-        }
+        SeriesHeatMap?.Clear();
 
         SeriesHeatMap = new ObservableCollection<ISeries>
         {

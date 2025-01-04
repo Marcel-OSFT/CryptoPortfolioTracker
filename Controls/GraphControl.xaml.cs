@@ -1,4 +1,5 @@
 using CryptoPortfolioTracker.ViewModels;
+using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView.SKCharts;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -22,6 +23,7 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
         _viewModel = DashboardViewModel.Current ?? throw new InvalidOperationException("DashboardViewModel.Current is null");
         DataContext = _viewModel;
         InitializeComponent();
+        
     }
 
     // ... other code ...
@@ -29,6 +31,9 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
     private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         await _viewModel.InitializeGraph();
+        thisChart.ZoomMode = LiveChartsCore.Measure.ZoomAndPanMode.Both;
+    
+
     }
 
     private void Graph_SizeChanged(object sender, SizeChangedEventArgs e)

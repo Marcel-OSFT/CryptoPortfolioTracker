@@ -100,69 +100,108 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         IsExtendedView = false;
     }
 
+    
     [RelayCommand]
     public void SortOnName(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        Sort(sortingOrder, x => x.Coin.Name);
     }
+
     [RelayCommand]
     public void SortOn24Hour(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        Sort(sortingOrder, x => x.Coin.Change24Hr);
     }
+
     [RelayCommand]
     public void SortOn1Month(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        Sort(sortingOrder, x => x.Coin.Change1Month);
     }
+
     [RelayCommand]
     public void SortOnMarketValue(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.MarketValue;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        Sort(sortingOrder, x => x.MarketValue);
     }
+
     [RelayCommand]
     public void SortOnCostBase(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.CostBase;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        Sort(sortingOrder, x => x.CostBase);
     }
+
     [RelayCommand]
     public void SortOnPnL(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        Sort(sortingOrder, x => x.ProfitLoss);
     }
+
     [RelayCommand]
     public void SortOnPnLPerc(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
+        Sort(sortingOrder, x => x.ProfitLossPerc);
+    }
+
+    private void Sort(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    {
         currentSortFunc = sortFunc;
         currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
-    [RelayCommand]
-    public void SortOnNetInvestment(SortingOrder sortingOrder)
+        
+    //[RelayCommand]
+    //public void SortOn24Hour(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOn1Month(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnMarketValue(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.MarketValue;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnCostBase(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.CostBase;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnPnL(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    //public void SortOnPnLPerc(SortingOrder sortingOrder)
+    //{
+    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
+    //    currentSortFunc = sortFunc;
+    //    currentSortingOrder = sortingOrder;
+    //    _assetService.SortList(sortingOrder, sortFunc);
+    //}
+    //[RelayCommand]
+    public static void SortOnNetInvestment(SortingOrder sortingOrder)
     {
-        Func<AssetTotals, object> sortFunc = x => x.NetInvestment;
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+        //*** disabled in AccountsView
     }
     [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
     public async Task ShowAccountDialogToAdd()

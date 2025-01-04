@@ -99,6 +99,9 @@
     </PackageReference>
     <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="LanguageExt.Core" Version="4.4.8" />
+    <PackageReference Include="LiveChartsCore" Version="2.0.0-rc4.5" />
+    <PackageReference Include="LiveChartsCore.Behaviours" Version="2.0.0-rc4.5" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-rc4.5" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc4.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.15" />

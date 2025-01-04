@@ -170,13 +170,13 @@
                                                 <GridView.ItemsPanel>
                                                     <ItemsPanelTemplate>
                                                         <ItemsWrapGrid x:Name="MaxItemsWrapGrid" MaximumRowsOrColumns="1" Orientation="Vertical"
-                                                                       ItemWidth="32" ItemHeight="34" Margin="0,0,0,0" GroupPadding="0,0,0,0"
-                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            ItemWidth="24" ItemHeight="34" Margin="5,0,0,0" GroupPadding="0,0,0,0"
+                                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                     </ItemsPanelTemplate>
                                                 </GridView.ItemsPanel>
                                                 <GridView.ItemTemplate>
-                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Coin">
-                                                        <Image Name="Image" Height="21" Source="{Binding ImageUri, Converter={StaticResource ImageConverter}}"/>
+                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Asset">
+                                                        <Image Name="Image" HorizontalAlignment="Left" Height="20" Width="39" Source="{Binding ImageUri, Converter={StaticResource ImageConverter}}"/>
                                                     </DataTemplate>
                                                 </GridView.ItemTemplate>
                                             </GridView>

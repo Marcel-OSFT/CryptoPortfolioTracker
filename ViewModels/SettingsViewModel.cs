@@ -15,7 +15,7 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, IDisposable
+public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static SettingsViewModel Current;
@@ -79,11 +79,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged, 
         Current = this;
         _preferencesService = preferencesService;
         InitializeFields();
-    }
-
-    public void Dispose()
-    {
-        Current = null!;
     }
 
     private void InitializeFields()

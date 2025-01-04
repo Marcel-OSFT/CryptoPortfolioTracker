@@ -460,7 +460,6 @@ public class GraphUpdateService : IGraphUpdateService
         }
         else
         {
-
             var lastChartDate = marketChart.EndDate().ToDateTime(TimeOnly.Parse("01:00 AM"));
             daysToGet = DateTime.UtcNow.Subtract(lastChartDate).Days;
             if (daysToGet > 0)
@@ -473,13 +472,13 @@ public class GraphUpdateService : IGraphUpdateService
             }
         }
 
-        if (daysToGet > 0 &&  (asset.Coin.Name.Length <= 12 || (asset.Coin.Name.Length > 12
+        if (daysToGet > 0 && (asset.Coin.Name.Length <= 12 || (asset.Coin.Name.Length > 12
             && asset.Coin.Name.Substring(asset.Coin.Name.Length - 12) != "_pre-listing")))
         {
             //No data yet, so get/save History for 365 days and set marketChart.Prices for requested amount of days
             Task delay = Task.Run(() => DelayAndShowProgress(true));
 
-            var result = await GetHistoricalPricesFromGecko(asset, daysToGet, marketChart);
+            var result = await GetHistoricalPricesFromGecko(asset, daysToGet, marketChart ?? new MarketChartById());
             result.IfSucc(s => marketChart.AddPrices(s.Prices));
             result.IfFail(err => marketChart = null);
 
@@ -492,7 +491,6 @@ public class GraphUpdateService : IGraphUpdateService
         }
 
         if (daysToGet == 0) await DelayAndShowProgress(false);
-
 
         if (marketChart is not null && marketChart.Prices is not null && marketChart.Prices.Length > 0)
         {
@@ -627,7 +625,7 @@ public class GraphUpdateService : IGraphUpdateService
         }
 
         Logger.Information("Checking MarketChart for {0}", asset.Coin.ApiId);
-        var checkedMarketChart = CheckAndFixMarketChart(additionalMarketChart, fullChart, DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)) );
+        var checkedMarketChart = CheckAndFixMarketChart(additionalMarketChart ?? new MarketChartById(), fullChart, DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
 
 
         return checkedMarketChart ?? new Result<MarketChartById>(new NullReferenceException());

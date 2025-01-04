@@ -49,9 +49,9 @@
         </RelativePanel>
         <lvc:CartesianChart Grid.Row="1" SizeChanged="Graph_SizeChanged"
             x:Name="thisChart"
-            
             Series="{Binding SeriesGraph}" 
-            ZoomMode="Both"
+            ZoomMode="ZoomX"
+            
             XAxes="{Binding XAxesGraph}"
             YAxes="{Binding YAxesGraph}"
             LegendPosition="Bottom"

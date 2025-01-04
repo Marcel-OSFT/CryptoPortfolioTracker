@@ -40,15 +40,14 @@ public partial class AssetService : ObservableObject, IAssetService
         VisibleAssetsCount = ListAssetTotals.Count;
         if (value)
         {
-            var itemsToHide = ListAssetTotals.Where(x => x.MarketValue <= 0).ToList();
+            var itemsToHide = ListAssetTotals?.Where(x => x.MarketValue <= 0).ToList();
             foreach (var item in itemsToHide)
             {
-                item.IsHidden = true; ;
+                item.IsHidden = true;
             }
             if (itemsToHide != null)
             {
                 VisibleAssetsCount -= itemsToHide.Count;
-                //hiddenAssetsCount = itemsToHide.Count;
             }
         }
         else
@@ -56,7 +55,6 @@ public partial class AssetService : ObservableObject, IAssetService
             foreach (var item in ListAssetTotals)
             {
                 item.IsHidden = false;
-                // hiddenAssetsCount = 0;
             }
         }
     }
@@ -620,13 +618,12 @@ public partial class AssetService : ObservableObject, IAssetService
 
     private void GetNetInvestments(List<AssetTotals> assetsTotals)
     {
-
         foreach (var assetTotal in assetsTotals)
         {
             var sumBuy = context.Mutations
-            .Where(m => m.Direction == MutationDirection.In
-                && m.Asset.Coin.Id == assetTotal.Coin.Id)
-            .Sum(s => s.Qty * s.Price);
+                .Where(m => m.Direction == MutationDirection.In
+                    && m.Asset.Coin.Id == assetTotal.Coin.Id)
+                .Sum(s => s.Qty * s.Price);
 
             var sumSell = context.Mutations
                 .Where(m => m.Direction == MutationDirection.Out
@@ -639,14 +636,13 @@ public partial class AssetService : ObservableObject, IAssetService
 
     private void GetNetInvestmentsByAccount(List<AssetTotals> assetsTotals, int accountId)
     {
-
         foreach (var assetTotal in assetsTotals)
         {
             var sumBuy = context.Mutations
-            .Where(m => m.Direction == MutationDirection.In
-                && m.Asset.Coin.Id == assetTotal.Coin.Id
-                && m.Asset.Account.Id == accountId)
-            .Sum(s => s.Qty * s.Price);
+                .Where(m => m.Direction == MutationDirection.In
+                    && m.Asset.Coin.Id == assetTotal.Coin.Id
+                    && m.Asset.Account.Id == accountId)
+                .Sum(s => s.Qty * s.Price);
 
             var sumSell = context.Mutations
                 .Where(m => m.Direction == MutationDirection.Out
@@ -656,7 +652,6 @@ public partial class AssetService : ObservableObject, IAssetService
 
             assetTotal.NetInvestment = sumBuy - sumSell;
         }
-
     }
 
     
