@@ -45,6 +45,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
 
     [ObservableProperty] private bool isPrivacyMode;
 
+
     partial void OnIsPrivacyModeChanged(bool value)
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
@@ -89,7 +90,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     public async Task Initialize()
     {
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
-        await _narrativeService.PopulateNarrativesList(currentSortingOrderNarr, currentSortFuncNarr);
+        await _narrativeService.PopulateNarrativesList(currentSortingOrderNarr, currentSortFuncNarr, _narrativeService.ShowOnlyAssets);
     }
 
     public void Terminate()
@@ -189,6 +190,12 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     public static void SortOnNetInvestment(SortingOrder sortingOrder)
     {
         //*** disabled in NarrativesView
+    }
+
+    [RelayCommand]
+    public void ShowOnlyAssets(bool param)
+    {
+        _narrativeService.ShowOnlyAssets = param;
     }
 
     //[RelayCommand]

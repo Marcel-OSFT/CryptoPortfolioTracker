@@ -1043,4 +1043,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Library_TeachNarrative.Subtitle" xml:space="preserve">
     <value>Het toewijzen van een narratief kan worden gedaan voor bestaande munten door de 'actie'-punten te selecteren, helemaal rechts naast elke munt.</value>
   </data>
+  <data name="NarrativesLV_ShowOnlyAssets.Content" xml:space="preserve">
+    <value>Toon alleen portefeuille</value>
+  </data>
 </root>

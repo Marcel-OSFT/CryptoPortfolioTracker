@@ -59,23 +59,16 @@
     </Style>
     </UserControl.Resources>
 
-    <Grid 
-        VerticalAlignment="Stretch"
-        HorizontalAlignment="Stretch">
-        <RichTextBlock Name="innerRtb"
-            Margin="5,0,5,0" 
-            VerticalAlignment="Center"
-            HorizontalTextAlignment="{Binding HorizontalTextAlignment, ElementName=Root, Mode=OneWay}">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <RichTextBlock Name="innerRtb" Margin="5,0,5,0" VerticalAlignment="Center" HorizontalTextAlignment="{Binding HorizontalTextAlignment, ElementName=Root, Mode=OneWay}">
             <Paragraph  >
-                <Run x:Name="innerText" Text="{Binding Text, ElementName=Root, Mode=OneWay}" 
-                    FontSize="{Binding FontSize, ElementName=Root, Mode=OneWay}"
-                    FontStyle="{Binding FontStyle, ElementName=Root, Mode=OneWay}"/>
+                <Run x:Name="innerText" Text="{Binding Text, ElementName=Root, Mode=OneWay}" FontSize="{Binding FontSize, ElementName=Root, Mode=OneWay}" FontStyle="{Binding FontStyle, ElementName=Root, Mode=OneWay}"/>
             </Paragraph>
         </RichTextBlock>
         <Button 
             Style="{StaticResource ColumnHeaderButtonStyle}" 
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             Margin="0,0,0,0"
             Opacity="0.4"
             Click="Btn_Click"

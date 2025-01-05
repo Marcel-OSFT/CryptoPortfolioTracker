@@ -1390,6 +1390,10 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Assigning Narratives can be done for existing coins by selecting the action dots ... on the right of each coin</source>
           <target state="translated">Het toewijzen van een narratief kan worden gedaan voor bestaande munten door de 'actie'-punten te selecteren, helemaal rechts naast elke munt.</target>
         </trans-unit>
+        <trans-unit id="NarrativesLV_ShowOnlyAssets.Content" translate="yes" xml:space="preserve">
+          <source>Show only Assets</source>
+          <target state="translated">Toon alleen portefeuille</target>
+        </trans-unit>
       </group>
     </body>
   </file>
