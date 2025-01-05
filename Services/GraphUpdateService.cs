@@ -598,6 +598,7 @@ public class GraphUpdateService : IGraphUpdateService
                 await strategy.ExecuteAsync(async token =>
                 {
                     Logger.Debug("Getting Historical Data; (Retries: {0})", Retries.ToString());
+                    
                     additionalMarketChart = await coinsClient.Coins[asset.Coin.ApiId].MarketChart
                         .Interval("daily")
                         .Precision("full")

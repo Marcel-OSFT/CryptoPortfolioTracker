@@ -1154,4 +1154,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Library_TeachNarrative.Subtitle" xml:space="preserve">
     <value>Assigning Narratives can be done for existing coins by selecting the action dots ... on the right of each coin</value>
   </data>
+  <data name="NarrativesLV_ShowOnlyAssets.Content" xml:space="preserve">
+    <value>Show only Assets</value>
+  </data>
 </root>

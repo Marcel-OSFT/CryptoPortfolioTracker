@@ -26,9 +26,9 @@ public partial class AssetService : ObservableObject, IAssetService
     [ObservableProperty] private double outFlow;
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;
-    [ObservableProperty] public bool isHidingZeroBalances;
     [ObservableProperty] public long visibleAssetsCount;
     //private long hiddenAssetsCount;
+    [ObservableProperty] public bool isHidingZeroBalances;
 
     partial void OnIsHidingZeroBalancesChanged(bool value)
     {

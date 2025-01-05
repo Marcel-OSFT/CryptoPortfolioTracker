@@ -21,6 +21,19 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     private SortingOrder currentSortingOrder;
     private Func<Narrative, object> currentSortFunc;
 
+    [ObservableProperty] public bool showOnlyAssets;
+
+    partial void OnShowOnlyAssetsChanged(bool value)
+    {
+        PopulateNarrativesList(value);
+    }
+
+
+
+
+
+
+
 
     public NarrativeService(PortfolioContext portfolioContext)
     {
@@ -30,9 +43,9 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         currentSortingOrder = SortingOrder.Descending;
 
     }
-    public async Task<ObservableCollection<Narrative>> PopulateNarrativesList()
+    public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(bool onlyAssets = false)
     {
-        var getNarrativesResult = await GetNarratives();
+        var getNarrativesResult = await GetNarratives(onlyAssets);
         getNarrativesResult.IfSucc(list =>
         {
             if (currentSortingOrder == SortingOrder.Ascending)
@@ -52,9 +65,9 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         return ListNarratives;
     }
 
-    public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc)
+    public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false)
     {
-        var getNarrativesResult = await GetNarratives();
+        var getNarrativesResult = await GetNarratives(onlyAssets);
         getNarrativesResult.IfSucc(list =>
         {
             if (sortingOrder == SortingOrder.Ascending)
@@ -175,15 +188,27 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         }
         return _result;
     }
-    public async Task<Result<List<Narrative>>> GetNarratives()
+    public async Task<Result<List<Narrative>>> GetNarratives(bool onlyAssets = false)
     {
         List<Narrative> Narratives = null;
         try
         {
-            Narratives = await context.Narratives
-                .Include(x => x.Coins)
-                .OrderBy(x => x.Name)
-                .ToListAsync();
+            if (onlyAssets)
+            {
+                Narratives = await context.Narratives
+                    .Include(x => x.Coins)
+                    .ThenInclude(y => y.Assets)
+                    .Where(n => n.Coins.Any(c => c.Assets.Any()))
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
+            }
+            else
+            {
+                Narratives = await context.Narratives
+                    .Include(x => x.Coins)
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
+            }
 
             if (Narratives == null || Narratives.Count == 0) { return new List<Narrative>(); }
 

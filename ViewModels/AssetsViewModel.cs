@@ -46,10 +46,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
     [NotifyCanExecuteChangedFor(nameof(ShowTransactionDialogToAddCommand))]
     private bool isAssetsExtendedView = false;
 
-    //[ObservableProperty]
-    //[NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
-    //private bool isHidingZeroBalances;
-
+  
     [ObservableProperty] private bool isHidingCapitalFlow;
 
     public static List<CoinList>? coinListGecko;

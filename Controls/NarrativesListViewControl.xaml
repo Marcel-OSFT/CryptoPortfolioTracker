@@ -48,12 +48,13 @@
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="0" Margin="10,0,0,5" VerticalAlignment="Bottom">
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="10,0,0,5" VerticalAlignment="Bottom" Orientation="Horizontal">
             <local:ColumnHeaderButton
                 x:Name="NameHeader"
                 l:Uids.Uid="NarrativesLV_Name" 
                 IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}"
                 Margin="0,0,0,0"
+                MinWidth="140"
                 FontSize="12"
                 FontStyle="Italic"
                 VerticalAlignment="Bottom"
@@ -62,6 +63,13 @@
                 Group="{Binding SortGroup}"
                 Command="{Binding SortOnNameNarrCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"/>
+            <CheckBox 
+                x:Name="chkOnlyAssets"
+                l:Uids.Uid="NarrativesLV_ShowOnlyAssets" x:FieldModifier="public" FontSize="12" FontStyle="Normal" 
+                Margin="15,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center"
+                IsChecked="{Binding _narrativeService.ShowOnlyAssets, Mode=TwoWay}" 
+                Command="{Binding ShowOnlyAssetsCommand}" 
+                CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"/>
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" VerticalAlignment="Bottom">
