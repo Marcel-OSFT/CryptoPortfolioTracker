@@ -142,15 +142,17 @@ public sealed partial class ColumnHeaderButton : UserControl
         if (sender is Button && IsEnabled)
         {
             _isClicked = true;
-            if (_originalBrush is null)
-            {
-                _originalBrush = innerText.Foreground;
-            }
+            
 
             switch (SortingOrder)
             {
                 case SortingOrder.None:
+                    if (_originalBrush is null)
+                    {
+                        _originalBrush = innerText.Foreground;
+                    }
                     ResetAllButtonsInGroup(Group);
+                    _text = Text;
                     SortingOrder = SortingOrder.Ascending;
                     break;
                 case SortingOrder.Descending:
@@ -160,8 +162,7 @@ public sealed partial class ColumnHeaderButton : UserControl
                     SortingOrder = SortingOrder.Descending;
                     break;
             }
-
-            _text = Text;
+            
             Text = SortingOrder switch
             {
                 SortingOrder.Ascending => _text + " ↑",
