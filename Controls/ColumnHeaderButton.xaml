@@ -67,8 +67,8 @@
         </RichTextBlock>
         <Button 
             Style="{StaticResource ColumnHeaderButtonStyle}" 
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
             Margin="0,0,0,0"
             Opacity="0.4"
             Click="Btn_Click"
