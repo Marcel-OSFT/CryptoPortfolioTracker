@@ -72,10 +72,12 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
             .Property("Note")
             .HasColumnName("Note");
 
-        //configuration
-        //    .Ignore("TotalValue");
-        //configuration
-        //    .Ignore("IsHoldingAsset");
+        configuration
+            .Ignore("Rsi");
+        configuration
+            .Ignore("ClosingPrices");
+        configuration
+            .Ignore("FileDateMarketChart");
 
         configuration.HasIndex("NarrativeId");
 

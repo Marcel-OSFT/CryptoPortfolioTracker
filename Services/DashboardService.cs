@@ -1,54 +1,121 @@
 ﻿
 using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using Serilog;
 using System.Collections.Generic;
 using CryptoPortfolioTracker.Enums;
-using LiveChartsCore.Defaults;
 using Serilog.Core;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using CryptoPortfolioTracker.Infrastructure;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using CryptoPortfolioTracker.Controls;
-using LiveChartsCore.SkiaSharpView.WinUI;
 using LanguageExt;
-
+using CoinGeckoFluentApi.Client;
+using CryptoPortfolioTracker.Infrastructure.Response.Coins;
+using CryptoPortfolioTracker.Helpers;
 
 namespace CryptoPortfolioTracker.Services;
 
 
 public partial class DashboardService : ObservableObject, IDashboardService
 {
-    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
-    public readonly PortfolioContext coinContext;
+    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(DashboardService).Name.PadRight(22));
+    public readonly PortfolioContext context;
     private readonly IAssetService _assetService;
     private readonly INarrativeService _narrativeService;
     private readonly IPreferencesService _preferencesService;
     private readonly IAccountService _accountService;
 
-
+    private DataPoint[] priceData;
+    private DataPoint[] rsiData;
 
 
     public DashboardService(PortfolioContext portfolioContext, IAssetService assetService, INarrativeService narrativeService, IAccountService accountService, IPreferencesService preferencesService)
     {
-        coinContext = portfolioContext;
+        context = portfolioContext;
         _assetService = assetService;
         _preferencesService = preferencesService;
         _accountService = accountService;
         _narrativeService = narrativeService;
+        
+    }
+
+
+    public async Task<double> GetRsiValue(string coinApiId)
+    {
+        //*** RSI Calculation
+        //*** returns only the current RSI value for the given coinApiId, not a list of values
+        //*** the calculation is based on the last 14 days of data
+        //*** the calculation is based on the closing price of the coin
+
+        int period = 14;
+
+        MarketChartById marketChart = new();
+        await marketChart.LoadMarketChartJson(coinApiId);
+        var closingPrices = marketChart.Prices.TakeLast(2 * period + 50).Select(p => (double)p[1].Value).ToList();
+
+        return CalculateRSI(closingPrices, period);
+    }
+
+    public double CalculateRSI(List<double> closingPrices, int period)
+    {
+        if (closingPrices == null || closingPrices.Count < period + 1)
+            throw new ArgumentException("Insufficient data to calculate RSI");
+
+        List<double> rsiValues = new List<double>();
+        List<double> gains = new List<double>();
+        List<double> losses = new List<double>();
+
+        // Calculate initial average gains and losses
+        for (int i = 1; i <= period; i++)
+        {
+            double change = closingPrices[i] - closingPrices[i - 1];
+            if (change > 0)
+            {
+                gains.Add(change);
+                losses.Add(0);
+            }
+            else
+            {
+                gains.Add(0);
+                losses.Add(-change);
+            }
+        }
+
+        double avgGain = gains.Average();
+        double avgLoss = losses.Average();
+
+        // Calculate the alpha for EWMA
+        double alpha = 1.0 / period;
+
+        // Calculate RSI for the first period
+        double rs = avgGain / avgLoss;
+        double rsi = 100 - (100 / (1 + rs));
+        rsiValues.Add(rsi);
+
+        // Calculate RSI for the remaining periods using EWMA
+        for (int i = period + 1; i < closingPrices.Count; i++)
+        {
+            double change = closingPrices[i] - closingPrices[i - 1];
+            double gain = change > 0 ? change : 0;
+            double loss = change < 0 ? -change : 0;
+
+            avgGain = (gain * alpha) + (avgGain * (1 - alpha));
+            avgLoss = (loss * alpha) + (avgLoss * (1 - alpha));
+
+            rs = avgGain / avgLoss;
+            rsi = 100 - (100 / (1 + rs));
+            rsiValues.Add(rsi);
+        }
+
+        return rsiValues.Last();
     }
 
     public ObservableCollection<Coin> GetTopWinners()
     {
-        var topWinners = coinContext.Assets
+        var topWinners = context.Assets
             .Include(x => x.Coin)
             .Where(x => x.Qty > 0 && x.Coin.Change24Hr > 0)
             .GroupBy(x => x.Coin) // Group by Coin
@@ -67,7 +134,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
     }
     public ObservableCollection<Coin> GetTopLosers()
     {
-        var topLosers = coinContext.Assets
+        var topLosers = context.Assets
             .Include(x => x.Coin)
             .Where(x => x.Qty > 0 && x.Coin.Change24Hr < 0)
             .GroupBy(x => x.Coin) // Group by Coin
@@ -223,7 +290,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
         //var endDate = DateTime.UtcNow.Date;
         var dataPoints = new List<CapitalFlowPoint>();
 
-        var mutations = await coinContext.Mutations
+        var mutations = await context.Mutations
             .Include(t => t.Transaction)
             .Where(x => x.Type == transactionKind)
             .GroupBy(g => g.Transaction.TimeStamp.Year)

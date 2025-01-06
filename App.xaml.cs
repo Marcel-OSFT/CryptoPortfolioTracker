@@ -21,6 +21,7 @@ using System.Net.Http;
 
 using WinUI3Localizer;
 using Microsoft.UI.Xaml;
+using System.Diagnostics;
 
 //using Microsoft.UI.Xaml.Markup;
 //using Microsoft.UI.Xaml;
@@ -143,10 +144,12 @@ public partial class App : Application
                         }
                     }
                 }
+                
             });
 
             await Task.WhenAll(tasks);
         }
+       
     }
 
     private async static Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
@@ -181,11 +184,16 @@ public partial class App : Application
     {
         var tips = new List<TeachingTipCPT>
         {
+            //*** version 1.2.7
             new() { Name = "TeachingTipNarrLibr", IsShown = false },
             new() { Name = "TeachingTipNarrDash", IsShown = false },
             new() { Name = "TeachingTipNarrNarr", IsShown = false },
             new() { Name = "TeachingTipPortDash", IsShown = false },
-            new() { Name = "TeachingTipNarrNavi", IsShown = false }
+            new() { Name = "TeachingTipNarrNavi", IsShown = false },
+
+            //*** version 1.2.9
+            new() { Name = "TeachingTipRsiHeat", IsShown = false },
+
         };
 
         _preferencesService.AddTeachingTipsIfNotExist(tips);

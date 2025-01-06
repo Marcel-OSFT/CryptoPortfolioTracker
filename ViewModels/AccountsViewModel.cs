@@ -149,7 +149,12 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         currentSortingOrder = sortingOrder;
         _assetService.SortList(sortingOrder, sortFunc);
     }
-        
+    [RelayCommand]
+    public static void SortOnNetInvestment(SortingOrder sortingOrder)
+    {
+        //*** disabled in AccountsView
+    }
+
     //[RelayCommand]
     //public void SortOn24Hour(SortingOrder sortingOrder)
     //{
@@ -198,11 +203,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     //    currentSortingOrder = sortingOrder;
     //    _assetService.SortList(sortingOrder, sortFunc);
     //}
-    //[RelayCommand]
-    public static void SortOnNetInvestment(SortingOrder sortingOrder)
-    {
-        //*** disabled in AccountsView
-    }
+    
     [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
     public async Task ShowAccountDialogToAdd()
     {

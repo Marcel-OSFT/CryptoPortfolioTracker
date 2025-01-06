@@ -405,16 +405,6 @@ public class GraphUpdateService : IGraphUpdateService
         var nrOfPointsAdded = 0;
         try
         {
-            //for (var i = 0; i < dataByIds.First().Dates.Count; i++)
-            //{
-            //    var dataPoint = new DataPoint();
-            //    var totalValueByDate = dataByIds.Sum(x => x.Quantities[i] * x.Prices[i]);
-            //    dataPoint.Date = dataByIds.First().Dates[i];
-            //    dataPoint.Value = Math.Round(totalValueByDate, 0);
-            //    _graphService.AddDataPointPortfolio(dataPoint);
-            //    nrOfPointsAdded++;
-            //}
-
             var dates = dataByIds.First().DataPoints.Select(x => x.Date).ToList();
 
             foreach (var date in dates)

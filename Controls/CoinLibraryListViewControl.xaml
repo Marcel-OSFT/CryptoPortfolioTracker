@@ -241,7 +241,7 @@
                                         </Border>
 
                                         <Border Grid.Column="2" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                                <TextBlock Name="txtNarrative" Text="{Binding Narrative.Name, Converter={StaticResource NarrativeConverter}}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextWrapping="Wrap" />
+                                            <TextBlock Name="txtNarrative" Text="{Binding Narrative.Name, Converter={StaticResource NarrativeConverter}}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextWrapping="Wrap" />
                                         </Border>
 
 

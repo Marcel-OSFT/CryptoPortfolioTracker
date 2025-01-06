@@ -20,7 +20,7 @@ namespace CryptoPortfolioTracker.Services;
 public partial class GraphService : ObservableObject, IGraphService
 {
     private Graph graph = new();
-    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphUpdateService).Name.PadRight(22));
+    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
     private List<HistoricalDataByIdRev> HistoricalDataByIdsBufferList { get; set; } = new();
     [ObservableProperty] private bool isLoadingFromJson;
     
@@ -31,76 +31,6 @@ public partial class GraphService : ObservableObject, IGraphService
         HistoricalDataByIdsBufferList = new();
     }
 
-    //public async Task LoadGraphFromJsonOld()
-    //{
-    //    try
-    //    {
-    //        IsLoadingFromJson = true;
-
-    //        if (!Directory.Exists(chartsFolder))
-    //        {
-    //            Directory.CreateDirectory(chartsFolder);
-    //        }
-    //        var fileName = chartsFolder + "\\graph.json";
-    //        if (File.Exists(fileName))
-    //        {
-    //            using FileStream openStream = File.OpenRead(fileName);
-    //            graph = await JsonSerializer.DeserializeAsync<Graph>(openStream);
-    //            Logger.Information("Graph data de-serialized succesfully ({0} data points)", graph.DataPointsPortfolio.Count);
-    //        }
-
-    //        fileName = chartsFolder + "\\HistoryBuffer.json";
-    //        if (File.Exists(fileName))
-    //        {
-    //            try
-    //            {
-    //                using FileStream openStream = File.OpenRead(fileName);
-    //                HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(openStream);
-
-    //                openStream.Close();
-
-
-    //                if (HistoricalDataByIdsBufferList is not null && HistoricalDataByIdsBufferList.Count > 0)
-    //                {
-    //                    CheckValidityHistoricalDataBuffer();
-    //                }
-
-    //            }
-    //            catch (Exception ex)
-    //            {
-    //                Logger.Error(ex, "Failed to de-serialize HistoricalDataByIdRev data");
-    //            }
-    //        }
-
-    //        if (graph is null)
-    //        {
-    //            graph = new();
-
-    //        }
-    //        else //**** check existing graph for 'voorloper nullen' and correct
-    //        {
-    //            await CleanUpGraph();
-
-    //        }
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Logger.Error(ex, "Failed to de-serialize Graph data");
-
-    //        //*** check if backup file exists and restore it
-    //        var backupFileName = chartsFolder + "\\graph.json.bak";
-    //        if (File.Exists(backupFileName))
-    //        {
-    //            File.Copy(backupFileName, chartsFolder + "\\graph.json", true);
-    //            Logger.Information("Restored backup graph.json file");
-    //        }
-    //    }
-    //    finally
-    //    {
-    //        IsLoadingFromJson = false;
-    //    }
-    //}
     public async Task LoadGraphFromJson()
     {
         try
@@ -179,56 +109,6 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-
-    //private async Task CleanUpGraph()
-    //{
-    //    //*** First remove (possible) duplicate entries
-    //    var inFlow = graph.DataPointsInFlow = graph.DataPointsInFlow
-    //        .GroupBy(x => new { x.Date, x.Value })
-    //        .Select(g => g.First())
-    //        .ToList();
-
-    //    var outFlow = graph.DataPointsOutFlow = graph.DataPointsOutFlow
-    //        .GroupBy(x => new { x.Date, x.Value })
-    //        .Select(g => g.First())
-    //        .ToList();
-
-    //    var portfolio = graph.DataPointsPortfolio = graph.DataPointsPortfolio
-    //        .GroupBy(x => new { x.Date, x.Value })
-    //        .Select(g => g.First())
-    //        .ToList();
-
-
-    //    //*** Second, remove possible leading zeros
-
-    //    var firstValuePoint = portfolio.Where(x => x.Value > 0).OrderBy(x => x.Date).FirstOrDefault();
-
-    //    if (firstValuePoint != null)
-    //    {
-    //        var date = firstValuePoint.Date;
-    //        var sumInFlow = inFlow.Where(x => x.Date < firstValuePoint.Date).Sum(x => x.Value);
-    //        var sumOutFlow = outFlow.Where(x => x.Date < firstValuePoint.Date).Sum(x => x.Value);
-
-    //        portfolio = portfolio.Where(x => x.Date >= date).ToList();
-    //        inFlow = inFlow.Where(x => x.Date >= date).ToList();
-    //        outFlow = outFlow.Where(x => x.Date >= date).ToList();
-
-    //        var point = new DataPoint() { Date = date.AddDays(-1), Value = sumInFlow - sumOutFlow };
-    //        portfolio.Add(point);
-
-    //        point = new DataPoint() { Date = date.AddDays(-1), Value = sumInFlow };
-    //        inFlow.Add(point);
-
-    //        point = new DataPoint() { Date = date.AddDays(-1), Value = sumOutFlow };
-    //        outFlow.Add(point);
-
-    //        graph.DataPointsPortfolio = portfolio.OrderBy(x => x.Date).ToList();
-    //        graph.DataPointsInFlow = inFlow.OrderBy(x => x.Date).ToList();
-    //        graph.DataPointsOutFlow = outFlow.OrderBy(x => x.Date).ToList();
-
-    //        await SaveGraphToJson();
-    //    }
-    //}
 
     private async Task CleanUpGraph()
     {
@@ -352,30 +232,6 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    //public async Task ApplyModification()
-    //{
-    //    try
-    //    {
-    //        graph.GraphStatus = GraphStatus.Modifying;
-    //        var modDate = graph.ModifyFromDate;
-
-    //        graph.DataPointsPortfolio.RemoveAll(x => x.Date >= modDate);
-    //        graph.DataPointsInFlow.RemoveAll(x => x.Date >= modDate);
-    //        graph.DataPointsOutFlow.RemoveAll(x => x.Date >= modDate);
-
-    //        //*** might be a good idea to Save the modified Graph here
-    //        //*** In case of a crash or when the application is shutdown before the New Graph has been recalculated and saved
-    //        await SaveGraphToJson();
-
-    //        graph.ModifyFromDate = DateOnly.MinValue;
-    //        graph.IsModificationRequested = false;
-    //        graph.GraphStatus = GraphStatus.Idle;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Logger.Error(ex, "Failed to apply modification");
-    //    }
-    //}
     public async Task ApplyModification()
     {
         try
@@ -527,56 +383,5 @@ public partial class GraphService : ObservableObject, IGraphService
         return HistoricalDataByIdsBufferList.FirstOrDefault()?.DataPoints.MinBy(x => x.Date)?.Date ?? DateOnly.MinValue;
     }
 
-    //public Graph GetGraph()
-    //{
-    //    return graph;
-    //}
-
-    //public async Task SetGraph(Graph graph)
-    //{
-    //    this.graph = graph;
-    //    await SaveGraphToJson();
-        
-    //}
-
-    //public async Task<Graph> GetGraphFromJson()
-    //{
-    //    Graph _graph = new();
-    //    try
-    //    {
-    //        IsLoadingFromJson = true;
-
-    //        if (!Directory.Exists(chartsFolder))
-    //        {
-    //            Directory.CreateDirectory(chartsFolder);
-    //        }
-    //        var fileName = chartsFolder + "\\graph.json";
-    //        if (File.Exists(fileName))
-    //        {
-    //            using FileStream openStream = File.OpenRead(fileName);
-    //            _graph = await JsonSerializer.DeserializeAsync<Graph>(openStream);
-    //            Logger.Information("Graph data de-serialized succesfully ({0} data points)", _graph.DataPointsPortfolio.Count);
-    //        }
-
-    //        fileName = chartsFolder + "\\HistoryBuffer.json";
-    //        if (File.Exists(fileName))
-    //        {
-    //            using FileStream openStream = File.OpenRead(fileName);
-    //            HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(openStream);
-    //        }
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Logger.Error(ex, "Failed to de-serialize HGraph data");
-    //    }
-    //    finally
-    //    {
-    //        IsLoadingFromJson = false;
-    //    }
-    //    return _graph;
-    //}
-
-
-
+    
 }

@@ -21,6 +21,7 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
         InitializeComponent();
         _viewModel = DashboardViewModel.Current ?? throw new InvalidOperationException("DashboardViewModel.Current is null");
         DataContext = _viewModel;
+        SetupTeachingTips();
     }
 
     private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -31,6 +32,41 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
     private void HeatMap_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         _viewModel.ChangeBubbleSize(e);
+    }
+
+
+    private void SetupTeachingTips()
+    {
+        var teachingTipInitial = _viewModel._preferencesService.GetTeachingTip("TeachingTipBlank");
+        var teachingTipRsi = _viewModel._preferencesService.GetTeachingTip("TeachingTipRsiHeat");
+
+        if (teachingTipInitial == null || !teachingTipInitial.IsShown)
+        {
+            _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipRsiHeat");
+
+        }
+        else if (teachingTipRsi != null && !teachingTipRsi.IsShown)
+        {
+
+            MyTeachingTipRsi.IsOpen = true;
+        }
+    }
+
+
+    
+
+    private void HeatMapType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        //_viewModel.ChangeHeatMapType(rbtHeatMap.SelectedIndex);
+    }
+
+    private void OnGetItClickedRsi(object sender, RoutedEventArgs e)
+    {
+        // Handle the 'Get it' button click
+        MyTeachingTipRsi.IsOpen = false;
+        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipRsiHeat");
+
+        // Navigate to the new feature or provide additional information
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

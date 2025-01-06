@@ -989,7 +989,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Settings_PriceLevels2.Header" xml:space="preserve">
     <value>'Close To' Threshold percentage</value>
   </data>
-  <data name="HeatMapView_YAxisTitle" xml:space="preserve">
+  <data name="HeatMapView_Target_YAxisTitle" xml:space="preserve">
     <value>Distance to Profit Take Level [%]</value>
   </data>
   <data name="HeatMapView.Text" xml:space="preserve">
@@ -1156,5 +1156,17 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   </data>
   <data name="NarrativesLV_ShowOnlyAssets.Content" xml:space="preserve">
     <value>Show only Assets</value>
+  </data>
+  <data name="HeatMapType_Target.Content" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="HeatMapType_Rsi.Content" xml:space="preserve">
+    <value>daily RSI</value>
+  </data>
+  <data name="HeatMapView_Rsi_YAxisTitle" xml:space="preserve">
+    <value>daily RSI</value>
+  </data>
+  <data name="HeatMap_TeachRsi.Title" xml:space="preserve">
+    <value>New Feature: daily RSI bubbles</value>
   </data>
 </root>

@@ -20,9 +20,13 @@ public partial class DashboardViewModel : BaseViewModel
     private static ILocalizer loc = Localizer.Get();
 
     public readonly IDashboardService _dashboardService;
-    private readonly IPreferencesService _preferencesService;
+    public readonly IPreferencesService _preferencesService;
     private readonly IGraphService _graphService;
     private readonly IPriceLevelService _priceLevelService;
+
+
+    
+
 
     [ObservableProperty] private string glyph = "\uEE47";
     [ObservableProperty] private string glyphPrivacy = "\uE890";
@@ -54,7 +58,7 @@ public partial class DashboardViewModel : BaseViewModel
     {
         if (newValue)
         {
-            SetSeriesHeatMap();
+            SetSeriesHeatMap(selectedHeatMapIndex);
             GetTop5();
             GetValueGains();
 

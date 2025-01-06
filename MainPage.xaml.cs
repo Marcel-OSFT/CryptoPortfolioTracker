@@ -151,14 +151,11 @@ public partial class MainPage : Page, INotifyPropertyChanged
         }
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-        navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
-    }
-
     private async void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         //LoadView(Type.GetType("CryptoPortfolioTracker.Views.Temporary"));
+        Debug.WriteLine("MainPage NavigationView_SelectionChanged");
+
 
         var selectedItem = (NavigationViewItem)args.SelectedItem;
         Type? pageType;
@@ -229,7 +226,7 @@ public partial class MainPage : Page, INotifyPropertyChanged
         contentFrame.Content = App.Container.GetService(pageType);
     }
 
-    private void DisplayHelpFile()
+    private async void DisplayHelpFile()
     {
         var loc = Localizer.Get();
         var fileName = "HelpFile_NL.pdf";
@@ -246,7 +243,7 @@ public partial class MainPage : Page, INotifyPropertyChanged
         catch (Exception ex)
         {
             Logger.Warning(ex, "Failed to display HelpFile");
-            ShowMessageDialog(
+            await ShowMessageDialog(
                 loc.GetLocalizedString("Messages_HelpFile_FailedTitle"),
                 loc.GetLocalizedString("Messages_HelpFile_FailedMsg"),
                 loc.GetLocalizedString("Common_CloseButton"));
