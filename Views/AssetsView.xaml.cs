@@ -1,5 +1,7 @@
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI.Xaml.Controls;
+using System;
+using System.Diagnostics;
 
 namespace CryptoPortfolioTracker.Views;
 
@@ -9,6 +11,7 @@ public partial class AssetsView : Page
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AssetsView Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 
     public AssetsView(AssetsViewModel viewModel)// ** DI of viewModel into View
     {
@@ -22,6 +25,7 @@ public partial class AssetsView : Page
     {
         MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
         await _viewModel.Initialize();
+        
     }
 
     private void View_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

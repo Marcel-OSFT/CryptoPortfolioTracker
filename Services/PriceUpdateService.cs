@@ -30,7 +30,7 @@ public class PriceUpdateService : IPriceUpdateService
     private readonly IPreferencesService _preferencesService;
     private readonly IPriceLevelService _priceLevelService;
     private readonly IAssetService _assetService;
-    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphUpdateService).Name.PadRight(22));
+    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceUpdateService).Name.PadRight(22));
     public bool IsPaused { get; set; }
     private bool IsInit;
 

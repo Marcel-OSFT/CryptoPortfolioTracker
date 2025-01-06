@@ -243,10 +243,10 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         }
     }
 
-    public async Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints()
+    public async Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(int selectedHeatMapIndex)
     {
        // var values = new ObservableCollection<ObservablePoint>();
-        int index = 0;
+       
 
         var heatMapPoints = new ObservableCollection<HeatMapPoint>();
 
@@ -254,28 +254,19 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         {
             var assets = (await _assetService.PopulateAssetTotalsList()).Where(x => x.MarketValue > 0).OrderBy(x => x.Coin.Rank).ToList();
             var sumMarketValue = assets.Sum(x => x.MarketValue);
+            int index = 0;
 
             foreach (var asset in assets)
             {
-
-                if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0) { continue; }
-
-                var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
-                var weight = 100 * asset.MarketValue / sumMarketValue;
-
-                if (!double.IsInfinity(perc))
+                if (selectedHeatMapIndex == 0)
                 {
-                    var hmPoint = new HeatMapPoint
-                    {
-                        X = index += 1,
-                        Y = perc,
-                       // Y = -1 * perc,
-                        Weight = weight,
-                        Label = asset.Coin.Symbol
-                    };
-                    heatMapPoints.Add(hmPoint);
+                    index = AddHeatMapPointTarget(index, heatMapPoints, sumMarketValue, asset);
                 }
+                else
+                {
+                    index = AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
 
+                }
             }
         }
         catch (Exception)
@@ -286,6 +277,90 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return heatMapPoints;
     }
 
+    private int AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    {
+        var rsi = asset.Coin.Rsi;
+        var weight = 100 * asset.MarketValue / sumMarketValue;
+
+        if (!double.IsInfinity(rsi))
+        {
+            var hmPoint = new HeatMapPoint
+            {
+                X = index +=1,
+                Y = rsi,
+                // Y = -1 * perc,
+                Weight = weight,
+                Label = asset.Coin.Symbol
+            };
+            heatMapPoints.Add(hmPoint);
+        }
+        return index;
+    }
+
+    private int AddHeatMapPointTarget(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    {
+        if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0) { return index; }
+
+        var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
+        var weight = 100 * asset.MarketValue / sumMarketValue;
+
+        if (!double.IsInfinity(perc))
+        {
+            var hmPoint = new HeatMapPoint
+            {
+                X = index += 1,
+                Y = perc,
+                // Y = -1 * perc,
+                Weight = weight,
+                Label = asset.Coin.Symbol
+            };
+            heatMapPoints.Add(hmPoint);
+        }
+        return index;
+    }
+
+    //public async Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints()
+    //{
+    //    // var values = new ObservableCollection<ObservablePoint>();
+    //    int index = 0;
+
+    //    var heatMapPoints = new ObservableCollection<HeatMapPoint>();
+
+    //    try
+    //    {
+    //        var assets = (await _assetService.PopulateAssetTotalsList()).Where(x => x.MarketValue > 0).OrderBy(x => x.Coin.Rank).ToList();
+    //        var sumMarketValue = assets.Sum(x => x.MarketValue);
+
+    //        foreach (var asset in assets)
+    //        {
+
+    //            if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0) { continue; }
+
+    //            var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
+    //            var weight = 100 * asset.MarketValue / sumMarketValue;
+
+    //            if (!double.IsInfinity(perc))
+    //            {
+    //                var hmPoint = new HeatMapPoint
+    //                {
+    //                    X = index += 1,
+    //                    Y = perc,
+    //                    // Y = -1 * perc,
+    //                    Weight = weight,
+    //                    Label = asset.Coin.Symbol
+    //                };
+    //                heatMapPoints.Add(hmPoint);
+    //            }
+
+    //        }
+    //    }
+    //    catch (Exception)
+    //    {
+    //        throw;
+    //    }
+
+    //    return heatMapPoints;
+    //}
 
 
 }

@@ -33,7 +33,13 @@ public class PreferencesService : IPreferencesService
         userPreferences.NumberFormat = nf;
         SaveUserPreferences("NumberFormat - Decimal Separator", nf.NumberDecimalSeparator);
     }
-    
+    public void SetHeatMapIndex(int index)
+    {
+        userPreferences.HeatMapIndex = index;
+        SaveUserPreferences("HeatMapIndex", index);
+    }
+
+
     public void SetAppCultureLanguage(string language)
     {
         userPreferences.AppCultureLanguage = language;
@@ -138,6 +144,11 @@ public class PreferencesService : IPreferencesService
     {
         return userPreferences.RefreshIntervalMinutes;
     }
+    public int GetHeatMapIndex()
+    {
+        return userPreferences.HeatMapIndex;
+    }
+
     public int GetCloseToPerc()
     {
         return userPreferences.CloseToPerc;

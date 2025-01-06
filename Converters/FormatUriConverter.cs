@@ -12,8 +12,6 @@ public partial class FormatUriConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        Logger.LogMessage("Hallo");
-
         string result = string.Empty;
         try
         {
@@ -21,7 +19,17 @@ public partial class FormatUriConverter : IValueConverter
             {
                 var uriWithoutQuery = ((string)value).Split('?')[0];
                 var fileName = Path.GetFileName(uriWithoutQuery);
-                var iconPath = App.appDataPath + "\\" + App.IconsFolder + "\\" + fileName;
+                string iconPath;
+
+                if (fileName != "QuestionMarkBlue.png")
+                {
+                    iconPath = App.appDataPath + "\\" + App.IconsFolder + "\\" + fileName;
+                }
+                else
+                {
+                    iconPath = App.appPath + "\\Assets\\" + fileName;
+                }
+                
 
                 //*** get cached icon
                 if (File.Exists(iconPath))

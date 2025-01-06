@@ -71,8 +71,8 @@
                     <FontIcon Glyph="{Binding GlyphPrivacy}" FontWeight="Normal" Width="20" />
                 </helpers:CustomBtn>
             </RelativePanel>
-            
-            <controls:HeatMapControl  x:Name="heatMap"  Grid.Row="1" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
+
+            <controls:HeatMapControl  x:Name="heatMap" x:FieldModifier="public" Grid.Row="1" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
             <controls:GraphControl  x:Name="GraphControl" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
             <controls:PieChartControl x:Name="Portfolio" x:FieldModifier="public" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
             <controls:PieChartControl x:Name="Accounts" x:FieldModifier="public" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
@@ -99,6 +99,8 @@
                     <Button Content="Get it" Click="OnGetItClickedNarr"/>
                 </muxc:TeachingTip.ActionButtonContent>
             </muxc:TeachingTip>
+
+            
 
 
 

@@ -41,5 +41,7 @@ namespace CryptoPortfolioTracker.Services
         void AddTeachingTipsIfNotExist(List<TeachingTipCPT> list);
         TeachingTipCPT? GetTeachingTip(string name);
         void SetTeachingTipAsShown(string name);
+        int GetHeatMapIndex();
+        void SetHeatMapIndex(int index);
     }
 }

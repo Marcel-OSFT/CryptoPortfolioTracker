@@ -40,6 +40,7 @@ public class UserPreferences
         withinRangePerc = 20;
         MaxPieCoins = 10;
         AreValuesMasked = false;
+        HeatMapIndex = 0;
 
         TeachingTips = new List<TeachingTipCPT>();
 
@@ -222,6 +223,21 @@ public class UserPreferences
     /// 
 
     public List<TeachingTipCPT> TeachingTips { get; set; } = new List<TeachingTipCPT>();
+
+    private int heatMapIndex;
+    public int HeatMapIndex
+    {
+        get => heatMapIndex;
+        set
+        {
+            if (value != heatMapIndex)
+            {
+                heatMapIndex = value;
+            }
+        }
+    }
+
+
 
 }
 

@@ -1070,10 +1070,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>'Close To' Threshold percentage</source>
           <target state="translated">'Dichtbij' drempelpercentage</target>
         </trans-unit>
-        <trans-unit id="HeatMapView_YAxisTitle" translate="yes" xml:space="preserve">
-          <source>Distance to Profit Take Level [%]</source>
-          <target state="translated">Afstand tot Winstname-niveau [%]</target>
-        </trans-unit>
         <trans-unit id="HeatMapView.Text" translate="yes" xml:space="preserve">
           <source>Target Bubbels</source>
           <target state="final">Target Bubbels</target>
@@ -1393,6 +1389,26 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="NarrativesLV_ShowOnlyAssets.Content" translate="yes" xml:space="preserve">
           <source>Show only Assets</source>
           <target state="translated">Toon alleen portefeuille</target>
+        </trans-unit>
+        <trans-unit id="HeatMapType_Target.Content" translate="yes" xml:space="preserve">
+          <source>Target</source>
+          <target state="translated">Target</target>
+        </trans-unit>
+        <trans-unit id="HeatMapType_Rsi.Content" translate="yes" xml:space="preserve">
+          <source>daily RSI</source>
+          <target state="translated">dagelijkse RSI</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView_Target_YAxisTitle" translate="yes" xml:space="preserve">
+          <source>Distance to Profit Take Level [%]</source>
+          <target state="translated">Afstand tot target [%]</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView_Rsi_YAxisTitle" translate="yes" xml:space="preserve">
+          <source>daily RSI</source>
+          <target state="translated">dagelijkse RSI</target>
+        </trans-unit>
+        <trans-unit id="HeatMap_TeachRsi.Title" translate="yes" xml:space="preserve">
+          <source>New Feature: daily RSI bubbles</source>
+          <target state="translated">Nieuwe functie: dagelijkse RSI</target>
         </trans-unit>
       </group>
     </body>
