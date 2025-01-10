@@ -107,6 +107,11 @@ public class PreferencesService : IPreferencesService
         userPreferences.AreValuesMasked = value;
         SaveUserPreferences("AreValuesMasked", value);
     }
+    public void SetLastPortfolio(Portfolio value)
+    {
+        userPreferences.LastPortfolio = value;
+        SaveUserPreferences("LastPortfolio", value);
+    }
 
     public NumberFormatInfo GetNumberFormat()
     {
@@ -253,6 +258,11 @@ public class PreferencesService : IPreferencesService
             tip.IsShown = true;
             SaveUserPreferences("TeachingTips", userPreferences.TeachingTips);
         }   
+    }
+
+    public Portfolio GetLastPortfolio()
+    {
+        return userPreferences.LastPortfolio;
     }
 
 }

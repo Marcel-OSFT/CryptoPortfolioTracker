@@ -13,25 +13,34 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using CryptoPortfolioTracker.Models;
+using System.Collections.Generic;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class DashboardViewModel : BaseViewModel
 {
-    [ObservableProperty] ObservableCollection<Coin> topWinners = new();
-    [ObservableProperty] ObservableCollection<Coin> topLosers = new();
+    [ObservableProperty] List<Coin> topWinners = new();
+    [ObservableProperty] List<Coin> topLosers = new();
 
-    private void ConstructTop5()
+    
+
+    /// <summary>   
+    /// This method is called by the Top5Control_Loading event.  
+    /// </summary>
+    public async Task Top5ControlLoading()
     {
-
+        await GetTop5();
+    }
+    public void Top5ControlUnloaded()
+    {
+        TopWinners.Clear();
+        TopLosers.Clear();
     }
 
     public async Task GetTop5()
     {
-        TopWinners = _dashboardService.GetTopWinners();
-        TopLosers = _dashboardService.GetTopLosers();
+        TopWinners = await _dashboardService.GetTopWinners();
+        TopLosers = await _dashboardService.GetTopLosers();
     }
-
-
 
 }

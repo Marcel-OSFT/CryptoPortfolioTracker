@@ -24,9 +24,9 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
         SetupTeachingTips();
     }
 
-    private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private async void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        _viewModel.InitializeHeatMap();
+        _viewModel.HeatMapControlLoading();
     }
 
     private void HeatMap_SizeChanged(object sender, SizeChangedEventArgs e)

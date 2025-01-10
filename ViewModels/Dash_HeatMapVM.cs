@@ -10,6 +10,7 @@ using System.Diagnostics;
 using CryptoPortfolioTracker.Models;
 using System.Linq;
 using Microsoft.UI.Xaml;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
@@ -31,7 +32,6 @@ public partial class DashboardViewModel : BaseViewModel
         if (newValue == -1) return;
         ChangeHeatMapType(newValue);
     }
-
 
     [ObservableProperty] string heatMapTitle = string.Empty;
 
@@ -76,7 +76,6 @@ public partial class DashboardViewModel : BaseViewModel
 
         },
         };
-
 
     public Axis[] yAxesTarget = new Axis[]
     {
@@ -144,42 +143,42 @@ public partial class DashboardViewModel : BaseViewModel
 
     
 
-    private void ConstructHeatMap() 
+    private void SetCustomSeparators()
     {
         //*** Target
-        SeparatorsTarget[0] = -100;
-        SeparatorsTarget[1] = -50;
-        SeparatorsTarget[2] = -1 * _preferencesService.GetWithinRangePerc();
-        SeparatorsTarget[3] = 0;
-        SeparatorsTarget[4] = 100;
+        var withinRangePerc = _preferencesService.GetWithinRangePerc();
+        SeparatorsTarget = new double[] { -100, -50, -1 * withinRangePerc, 0, 100 };
 
-        sectionsTarget.First().Yi = SeparatorsTarget[2];
-        sectionsTarget.First().Yj = SeparatorsTarget[3];
+        var targetSection = sectionsTarget.First();
+        targetSection.Yi = SeparatorsTarget[2];
+        targetSection.Yj = SeparatorsTarget[3];
 
-        yAxesTarget.First().CustomSeparators = SeparatorsTarget;
+        var targetAxis = yAxesTarget.First();
+        targetAxis.CustomSeparators = SeparatorsTarget;
 
         //*** RSI
-        SeparatorsRsi[0] = 0;
-        SeparatorsRsi[1] = 30;
-        SeparatorsRsi[2] = 50;
-        SeparatorsRsi[3] = 70;
-        SeparatorsRsi[4] = 100;
+        SeparatorsRsi = new double[] { 0, 30, 50, 70, 100 };
 
-        sectionsRsi.First().Yi = SeparatorsRsi[1];
-        sectionsRsi.First().Yj = SeparatorsRsi[3];
+        var rsiSection = sectionsRsi.First();
+        rsiSection.Yi = SeparatorsRsi[1];
+        rsiSection.Yj = SeparatorsRsi[3];
 
-        yAxesRsi.First().CustomSeparators = SeparatorsRsi;
-
+        var rsiAxis = yAxesRsi.First();
+        rsiAxis.CustomSeparators = SeparatorsRsi;
     }
 
-    public void InitializeHeatMap()
+    /// <summary>   
+    /// This method is called by the HeatMapControl_Loading event.  
+    /// </summary>
+    public void HeatMapControlLoading()
     {
         try
         {
             bubbleSizeMax = 50;
             bubbleSizeMin = 1;
+            SetCustomSeparators();
             SelectedHeatMapIndex = _preferencesService.GetHeatMapIndex();
-            
+            SetSeriesHeatMap(SelectedHeatMapIndex);
         }
         catch (Exception ex)
         {
@@ -187,7 +186,17 @@ public partial class DashboardViewModel : BaseViewModel
         }
     }
 
-    private async void SetSeriesHeatMap(int selectedHeatMapIndex)
+
+
+    private async Task RefreshHeatMapPoints()
+    {
+        HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(SelectedHeatMapIndex));
+
+        SeriesHeatMap[0].Values = HeatMapPoints;
+
+    }
+
+    private async Task SetSeriesHeatMap(int selectedHeatMapIndex)
     {
         var loc = Localizer.Get();
 
@@ -272,7 +281,7 @@ public partial class DashboardViewModel : BaseViewModel
         {
             serie.YToolTipLabelFormatter = (point) => $"{point.Model!.Label}  RSI: {point.Model!.Y:N2}";
         }
-
+        return ;
 
     }
 

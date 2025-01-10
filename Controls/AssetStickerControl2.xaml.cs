@@ -18,8 +18,6 @@ public partial class AssetStickerControl2 : UserControl, INotifyPropertyChanged
     public AssetStickerControl2()
     {
         InitializeComponent();
-       // _viewModel = HeatMapControlViewModel.Current;
-       // DataContext = _viewModel;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

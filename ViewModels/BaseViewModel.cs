@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
@@ -11,6 +12,7 @@ public partial class BaseViewModel : ObservableObject
 {
     private protected ILogger Logger { get; set; }
     public readonly IPreferencesService _preferencesService;
+    
 
     [ObservableProperty] private double? fontLevel1;
     [ObservableProperty] private double? fontLevel2;

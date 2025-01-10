@@ -15,7 +15,7 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3" xmlns:models="using:CryptoPortfolioTracker.Models"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Loaded="Control_Loaded"
+    Loading="Control_Loading"
     mc:Ignorable="d">
 
 
@@ -29,12 +29,20 @@
     </UserControl.Resources>
 
 
+    
+
     <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
+        
+
+
+
+
         <TextBlock Grid.Row="0" 
             l:Uids.Uid="ValueGainsView" 
             FontSize="16" 

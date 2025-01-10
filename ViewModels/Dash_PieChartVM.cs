@@ -18,12 +18,12 @@ public partial class DashboardViewModel : BaseViewModel
 {
     public List<PieChartControl> PieChartControls { get; set; } = new();
 
-    private void ConstructPie()
-    {
-        
-    }
+    
 
-    public void InitializePie(PieChartControl pieChart)
+    /// <summary>   
+    /// This method is called by the PieChartControl_Loading event.  
+    /// </summary>
+    public void PieControlLoading(PieChartControl pieChart)
     {
         try
         {

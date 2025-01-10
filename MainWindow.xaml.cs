@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml;
 using Windows.UI.Core;
 using Microsoft.UI.Xaml.Controls;
 using WinUIEx;
+using CryptoPortfolioTracker.Infrastructure;
+using System.ComponentModel;
 
 namespace CryptoPortfolioTracker;
 
@@ -50,7 +52,7 @@ public sealed partial class MainWindow : Window
        
         
         SetTitleBar(null);
-        Content =  App.Container.GetService<MainPage>(); ;
+        Content =  App.Container.GetService<MainPage>();
 
         if (Content is FrameworkElement frameworkElement)
         {
@@ -62,3 +64,4 @@ public sealed partial class MainWindow : Window
 
 
 }
+

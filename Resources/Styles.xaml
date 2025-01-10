@@ -109,6 +109,9 @@
     <Style x:Key="SampleHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
         <Setter Property="FontSize" Value="20"/>
     </Style>
+    <Style x:Key="SubSampleHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontSize" Value="16"/>
+    </Style>
     <Style x:Key="ValueHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
         <Setter Property="FontSize" Value="32"/>
         <Setter Property="TextAlignment" Value="Right"/>

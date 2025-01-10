@@ -78,6 +78,16 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
+                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
+
+                <NavigationViewItem l:Uids.Uid="Navigation_SwitchPortfolio" Tag="SwitchPortfolioView" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+
+
 
             </NavigationView.MenuItems>
 

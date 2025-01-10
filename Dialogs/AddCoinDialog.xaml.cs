@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Animations.Expressions;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Enums;
@@ -25,7 +26,13 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
+public class ShowBePatienceMessage
+{
+   
+}
+
 [ObservableObject]
+[ObservableRecipient]
 public partial class AddCoinDialog : ContentDialog
 {
     public readonly CoinLibraryViewModel _viewModel;
@@ -47,7 +54,7 @@ public partial class AddCoinDialog : ContentDialog
     [ObservableProperty] private Narrative initialNarrative = new();
 
 
-    public AddCoinDialog(CoinLibraryViewModel viewModel, DialogAction dialogAction, IPreferencesService preferencesService)
+    public AddCoinDialog(CoinLibraryViewModel viewModel, DialogAction dialogAction, IMessenger messenger,IPreferencesService preferencesService)
     {
         _viewModel = viewModel;
         CoinName = "";
@@ -55,11 +62,18 @@ public partial class AddCoinDialog : ContentDialog
         _dialogAction = dialogAction;
         CoinList = _viewModel.searchListGecko ?? new List<string>();
         Narratives = _viewModel.narratives ?? new List<Narrative>();
-        initialNarrative = Narratives.Where(x => x.Name == "- Not Assigned -").FirstOrDefault();
+        InitialNarrative = Narratives.Where(x => x.Name == "- Not Assigned -").FirstOrDefault();
         InitializeComponent();
         _preferencesService = preferencesService;
         BePatientVisibility = Visibility.Collapsed;
         SetDialogTitleAndButtons();
+        messenger.Register<ShowBePatienceMessage>(this, (r, m) =>
+        {
+            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                BePatientVisibility = Visibility.Visible;
+            });
+        });
     }
 
     private void SetDialogTitleAndButtons()
@@ -120,10 +134,7 @@ public partial class AddCoinDialog : ContentDialog
             BePatientVisibility = Visibility.Collapsed;
         }
     }
-    public void ShowBePatienceNotice()
-    {
-        BePatientVisibility = Visibility.Visible;
-    }
+    
     private void Button_Click_AddCoin(ContentDialog sender, ContentDialogButtonClickEventArgs e)
     {
         try

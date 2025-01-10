@@ -15,7 +15,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Loaded="Control_Loaded"
+    Loading="Control_Loading"
     mc:Ignorable="d">
 
     <Grid>

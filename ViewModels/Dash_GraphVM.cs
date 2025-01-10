@@ -40,10 +40,8 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] public int progressValueGraph;
     [ObservableProperty] public bool isUpdatingGraph;
     [ObservableProperty] public bool isLoadingFromJsonGraph;
-    [ObservableProperty] public bool isNotUpdatingGraph;
-    [ObservableProperty] public bool isNotLoadingFromJsonGraph;
+  
 
-   // public LiveChartsCore.Measure.Margin MarginGraph { get; set; } = new LiveChartsCore.Measure.Margin(0, 10, 20, 20); //(60,10,20,20);
     public SolidColorPaint LegendTextPaintGraph { get; set; } = new()
     {
         Color = SKColors.DarkGoldenrod,
@@ -54,35 +52,26 @@ public partial class DashboardViewModel : BaseViewModel
 
     private static Func<double, string> labelerGraph = value => string.Format("$ {0:N0}", value);
 
-    
-
-
-    partial void OnIsLoadingFromJsonGraphChanged(bool value)
-    {
-        IsNotLoadingFromJsonGraph = !value;
-    }
-
     partial void OnIsUpdatingGraphChanged(bool value)
     {
         if (!IsUpdatingGraph) // && !_isInitializing)
         {
             GetValuesGraph();
-            SetSeriesGraph();
+            SetValuesGraph();
+            //SetSeriesGraph();
         }
-        IsNotUpdatingGraph = !value;
     }
 
-    private void ConstructGraph()
+    public void ConstructGraph()
     {
-        IsNotUpdatingGraph = !IsUpdatingGraph;
-        IsNotLoadingFromJsonGraph = !IsLoadingFromJsonGraph;
         SetYAxesGraph();
         SetXAxesGraph();
-        
     }
 
-
-    public async Task InitializeGraph()
+    /// <summary>   
+    /// This method is called by the GraphControl_Loading event.  
+    /// </summary>
+    public async Task GraphControlLoading()
     {
         var loc = Localizer.Get();
         var ci = new CultureInfo(loc.GetCurrentLanguage());
@@ -121,6 +110,12 @@ public partial class DashboardViewModel : BaseViewModel
         valuesOutFlow = new ObservableCollection<DateTimePoint>(_graphService.GetOutFlowValues());
     }
 
+    private void SetValuesGraph()
+    {
+        SeriesGraph[0].Values = valuesPortfolio;
+        SeriesGraph[1].Values = valuesInFlow;
+        SeriesGraph[2].Values = valuesOutFlow;
+    }
 
     private void SetSeriesGraph()
     {
@@ -133,7 +128,7 @@ public partial class DashboardViewModel : BaseViewModel
         SeriesGraph = new ObservableCollection<ISeries>
         {
             new LineSeries<DateTimePoint>
-            { 
+            {   Tag = "Portfolio",
                 LineSmoothness=0.2,
                 MiniatureShapeSize=2,
                 Values = valuesPortfolio,
@@ -143,6 +138,7 @@ public partial class DashboardViewModel : BaseViewModel
             },
             new ColumnSeries<DateTimePoint>
             {
+                Tag = "Inflow",
                 MiniatureShapeSize=2,
                 Values = valuesInFlow,
                 Stroke = new SolidColorPaint(SKColors.Yellow) { StrokeThickness = 2 },
@@ -151,6 +147,7 @@ public partial class DashboardViewModel : BaseViewModel
             },
             new ColumnSeries<DateTimePoint>
             {
+                Tag = "Outflow",
                 MiniatureShapeSize=2,
                 Values = valuesOutFlow,
                 Stroke = new SolidColorPaint(SKColors.Green) { StrokeThickness = 2 },
@@ -186,39 +183,7 @@ public partial class DashboardViewModel : BaseViewModel
         };
     }
 
-    //private void SetYAxesGraph()
-    //{
-    //    var loc = Localizer.Get();
-
-    //    if (YAxesGraph is not null)
-    //    {
-    //        YAxesGraph = null;
-    //    }
-    //    YAxesGraph = new Axis[]
-    //    {
-    //        new Axis
-    //        {
-    //            MinLimit = 0,
-    //            NamePadding = new LiveChartsCore.Drawing.Padding(0, 0),
-    //            NameTextSize = 0,
-    //            TextSize = 12,
-    //            NamePaint = new SolidColorPaint
-    //            {
-    //                Color = SKColors.White,
-    //                FontFamily = "Times New Roman",
-    //                SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-    //            },
-    //            LabelsPaint = new SolidColorPaint
-    //            {
-    //                Color = SKColors.DarkGoldenrod,
-    //                FontFamily = "Times New Roman",
-    //                SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-    //            },
-
-    //            Labeler = labelerYAxis,
-    //        }
-    //    };
-    //}
+  
     private void SetYAxesGraph()
     {
         var loc = Localizer.Get();

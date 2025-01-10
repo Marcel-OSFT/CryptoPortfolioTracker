@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Infrastructure;
@@ -14,6 +15,7 @@ using CryptoPortfolioTracker.Models;
 using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using Newtonsoft.Json;
 using Polly;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
@@ -23,14 +25,16 @@ namespace CryptoPortfolioTracker.Services;
 
 public partial class LibraryService : ObservableObject, ILibraryService
 {
-    private readonly PortfolioContext context;
+    private readonly IMessenger _messenger;
+    private readonly PortfolioService _portfolioService;
     [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
     private SortingOrder currentSortingOrder;
     private Func<Coin, object> currentSortFunc;
 
-    public LibraryService(PortfolioContext portfolioContext)
+    public LibraryService(PortfolioService portfolioService, IMessenger messenger)
     {
-        context = portfolioContext;
+        _portfolioService = portfolioService;
+        _messenger = messenger;
         currentSortFunc = x => x.Rank;
         currentSortingOrder = SortingOrder.Ascending;
     }
@@ -147,6 +151,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public async Task<Result<bool>> CreateCoin(Coin? newCoin)
     {
+        var context = _portfolioService.Context;
         var _result = false;
 
         if (newCoin == null) { return _result; }
@@ -165,6 +170,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public async Task<Result<bool>> MergeCoin(Coin prelistingCoin, Coin? newCoin)
     {
+        var context = _portfolioService.Context;
         var _result = false;
 
         if (newCoin == null || prelistingCoin == null) { return _result; }
@@ -190,6 +196,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public async Task<Result<Coin>> GetCoin(string coinId)
     {
+        var context = _portfolioService.Context;
         Coin coin;
         if (coinId == null || coinId == "") { return new Coin(); }
         try
@@ -208,6 +215,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public async Task<Result<List<Coin>>> GetCoinsFromContext()
     {
+        var context = _portfolioService.Context;
         List<Coin>? coinList = null;
         try
         {
@@ -227,6 +235,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public async Task<Result<bool>> RemoveCoin(Coin coin)
     {
+        var context = _portfolioService.Context;
         bool _result;
         if (coin == null) { return false; }
         try
@@ -249,6 +258,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public async Task<Result<List<CoinList>>> GetCoinListFromGecko()
     {
+        var context = _portfolioService.Context;
         var Retries = 0;
 
         var tokenSource2 = new CancellationTokenSource();
@@ -323,7 +333,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
                 Retries++;
                 if (Retries > 0)
                 {
-                    AddCoinDialog.Current?.ShowBePatienceNotice();
+                    _messenger.Send(new ShowBePatienceMessage());
                 }
                 return default;
             }
@@ -368,6 +378,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public async Task<Result<bool>> UpdateNote(Coin coin, string note)
     {
+        var context = _portfolioService.Context;
         bool result;
         if (coin.Note == note) { return false; }
         try
@@ -386,6 +397,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public bool IsNotAsset(Coin coin)
     {
+        var context = _portfolioService.Context;
         List<Asset> assets; 
 
         if (coin == null || coin.ApiId == "") { return false; }
@@ -400,15 +412,10 @@ public partial class LibraryService : ObservableObject, ILibraryService
         return !assets.Any();
     }
 
-    
-
-    
-
-    
-
 
     private void RejectChanges()
     {
+        var context = _portfolioService.Context;
         foreach (var entry in context.ChangeTracker.Entries())
         {
             switch (entry.State)
@@ -423,5 +430,10 @@ public partial class LibraryService : ObservableObject, ILibraryService
                     break;
             }
         }
+    }
+
+    public Portfolio? GetPortfolio()
+    {
+        return _portfolioService.CurrentPortfolio;
     }
 }

@@ -51,4 +51,5 @@ public interface ILibraryService
     Task RemoveFromCoinsList(Coin coin);
     Task AddToCoinsList(Coin coin);
     Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
+    Portfolio? GetPortfolio();
 }

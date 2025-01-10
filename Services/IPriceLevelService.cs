@@ -32,4 +32,5 @@ public interface IPriceLevelService
     Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(int selectedHeatMapIndex);
     void UpdateHeatMap();
     void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
+    Portfolio GetPortfolio();
 }

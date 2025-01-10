@@ -14,22 +14,27 @@ using Microsoft.EntityFrameworkCore;
 using LiveChartsCore.Defaults;
 using System.Diagnostics;
 using CryptoPortfolioTracker.ViewModels;
+using CryptoPortfolioTracker.Views;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CryptoPortfolioTracker.Services;
 
 public partial class PriceLevelService : ObservableObject, IPriceLevelService
 {
+    private readonly IMessenger _messenger;
+
     private HeatMap heatMap;
-    private readonly PortfolioContext context;
+    private readonly PortfolioService _portfolioService;
     private readonly IAssetService _assetService;
     [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
     private SortingOrder currentSortingOrder;
     private Func<Coin, object> currentSortFunc;
 
-    public PriceLevelService(PortfolioContext portfolioContext, IAssetService assetService)
+    public PriceLevelService(PortfolioService portfolioService, IAssetService assetService, IMessenger messenger)
     {
-        context = portfolioContext;
+        _portfolioService = portfolioService;
         _assetService= assetService;
+        _messenger = messenger;
         currentSortFunc = x => x.Rank;
         currentSortingOrder = SortingOrder.Ascending;
 
@@ -38,7 +43,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public void UpdateHeatMap()
     {
-        if (DashboardViewModel.Current is not null) { DashboardViewModel.Current.NeedUpdateDashboard = true; }
+        _messenger.Send(new UpdateDashboardMessage());
     }
 
     public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
@@ -157,6 +162,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public async Task<Result<List<Coin>>> GetCoinsFromContext()
     {
+        var context = _portfolioService.Context;
         List<Coin>? coinList = null;
         try
         {
@@ -177,6 +183,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public async Task<Result<bool>> ResetPriceLevels(Coin coin)
     {
+        var context = _portfolioService.Context;
         bool _result;
         if (coin == null) { return false; }
         try
@@ -203,6 +210,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public async Task<Result<bool>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels)
     {
+        var context = _portfolioService.Context;
         bool result;
         if (coin == null || priceLevels==null || priceLevels.Count == 0) { return false; }
         try
@@ -227,6 +235,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     private void RejectChanges()
     {
+        var context = _portfolioService.Context;
         foreach (var entry in context.ChangeTracker.Entries())
         {
             switch (entry.State)
@@ -245,9 +254,6 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public async Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(int selectedHeatMapIndex)
     {
-       // var values = new ObservableCollection<ObservablePoint>();
-       
-
         var heatMapPoints = new ObservableCollection<HeatMapPoint>();
 
         try
@@ -264,8 +270,8 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 }
                 else
                 {
-                    index = AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
-
+                    
+                    index = await AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
                 }
             }
         }
@@ -277,18 +283,25 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return heatMapPoints;
     }
 
-    private int AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    private async Task<int> AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
         var rsi = asset.Coin.Rsi;
+
+        //if (rsi == 0)
+        //{
+        //    asset.Coin.CalculateRsiAsync();
+        //}
+
+        Debug.WriteLine($"Add point RSI: {rsi} for coin {asset.Coin.ApiId}");
+
         var weight = 100 * asset.MarketValue / sumMarketValue;
 
         if (!double.IsInfinity(rsi))
         {
             var hmPoint = new HeatMapPoint
             {
-                X = index +=1,
+                X = index += 1,
                 Y = rsi,
-                // Y = -1 * perc,
                 Weight = weight,
                 Label = asset.Coin.Symbol
             };
@@ -319,48 +332,8 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return index;
     }
 
-    //public async Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints()
-    //{
-    //    // var values = new ObservableCollection<ObservablePoint>();
-    //    int index = 0;
-
-    //    var heatMapPoints = new ObservableCollection<HeatMapPoint>();
-
-    //    try
-    //    {
-    //        var assets = (await _assetService.PopulateAssetTotalsList()).Where(x => x.MarketValue > 0).OrderBy(x => x.Coin.Rank).ToList();
-    //        var sumMarketValue = assets.Sum(x => x.MarketValue);
-
-    //        foreach (var asset in assets)
-    //        {
-
-    //            if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0) { continue; }
-
-    //            var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
-    //            var weight = 100 * asset.MarketValue / sumMarketValue;
-
-    //            if (!double.IsInfinity(perc))
-    //            {
-    //                var hmPoint = new HeatMapPoint
-    //                {
-    //                    X = index += 1,
-    //                    Y = perc,
-    //                    // Y = -1 * perc,
-    //                    Weight = weight,
-    //                    Label = asset.Coin.Symbol
-    //                };
-    //                heatMapPoints.Add(hmPoint);
-    //            }
-
-    //        }
-    //    }
-    //    catch (Exception)
-    //    {
-    //        throw;
-    //    }
-
-    //    return heatMapPoints;
-    //}
-
-
+    public Portfolio GetPortfolio()
+    {
+        return _assetService.GetPortfolio();
+    }
 }
