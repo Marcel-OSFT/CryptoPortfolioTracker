@@ -26,10 +26,9 @@ public partial class ValueGainsControl : UserControl, INotifyPropertyChanged
         DataContext = _viewModel;
     }
 
-    private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private async void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        _viewModel.GetValueGains();
-        await _viewModel.GetCapitalFlowData();
+        _viewModel.ValueGainsControlLoading();
     }
 
     private void Graph_SizeChanged(object sender, SizeChangedEventArgs e)

@@ -25,7 +25,13 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
     public IAccountService _accountService {  get; private set; }
     public IAssetService _assetService { get; private set; }
+    [ObservableProperty] public string portfolioName = string.Empty;
+    [ObservableProperty] public Portfolio currentPortfolio;
 
+    partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    {
+        PortfolioName = newValue.Name;
+    }
     public bool IsHidingNetInvestment { get; set; } = true;
 
 
@@ -66,6 +72,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         _accountService = accountService;
         _preferencesService =  preferencesService;
         _assetService = assetService;
+        CurrentPortfolio = _assetService.GetPortfolio();
 
         SortGroup = "Accounts";
         currentSortFunc = x => x.MarketValue;
@@ -88,6 +95,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     /// <returns></returns>
     public async Task Initialize()
     {
+        CurrentPortfolio = _assetService.GetPortfolio();
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
        // IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
         await _accountService.PopulateAccountsList();

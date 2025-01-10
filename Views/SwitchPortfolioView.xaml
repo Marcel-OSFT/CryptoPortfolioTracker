@@ -1,0 +1,55 @@
+<Page
+    x:Class="CryptoPortfolioTracker.Views.SwitchPortfolioView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:CryptoPortfolioTracker.Models"
+    xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"
+    xmlns:converters="using:CryptoPortfolioTracker.Converters"
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"
+    xmlns:controls="using:CryptoPortfolioTracker.Controls"
+    xmlns:l="using:WinUI3Localizer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <!-- Define the animations -->
+        
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        
+        <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+              Margin="0,0,5,10" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="110"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!-- General Header -->
+            <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="3" Height="265" VerticalAlignment="Top"/>
+            <RelativePanel>
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod"
+                           Margin="36,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding SelectedPortfolio.Name}"
+                           Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" 
+                           RelativePanel.Below="smallHeaderText"/>
+                <TextBlock l:Uids.Uid="SwitchPortfolio_Title" x:Name="txtSwitchPortfolio" Margin="36,5,0,0"
+                           Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" 
+                           RelativePanel.Below="txtPortfolio" RelativePanel.AlignBottomWithPanel="True"/>
+            </RelativePanel>
+            <TextBlock l:Uids.Uid="SwitchPortfolio_Explainer" Grid.Row="1" VerticalAlignment="Bottom"
+                       Style="{StaticResource ExplainerTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"/>
+            <!-- End of General Header -->
+            <Border Grid.Row="2" VerticalAlignment="Stretch" Margin="10,50,0,0">
+                <Grid Name="SwitchPortfolioContent">
+
+
+                    <controls:TestUserControlWorking x:Name="ctrl" x:FieldModifier="public"/>
+
+
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

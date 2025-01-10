@@ -23,10 +23,17 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
         DataContext = _viewModel;
     }
 
-    private async void Control_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        await _viewModel.GetTop5();
+        _viewModel.Top5ControlLoading();
     }
+
+    private void Control_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        _viewModel.Top5ControlUnloaded();
+    }
+
+
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -34,4 +41,36 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+
+    private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        // Log the exception details (optional)
+       
+        // Prevent the application from crashing
+        e.Handled = true;
+
+        // Show a user-friendly message
+        ShowErrorMessage(e.Message);
+    }
+
+    public void ShowErrorMessage(string message)
+    {
+        // Ensure execution on the UI thread
+        MainPage.Current.DispatcherQueue.TryEnqueue(async () =>
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "An error occurred",
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = MainPage.Current.XamlRoot
+            };
+
+            await dialog.ShowAsync();
+        });
+    }
+
+
+
 }

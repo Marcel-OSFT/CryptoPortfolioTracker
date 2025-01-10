@@ -17,7 +17,7 @@
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
-    Loaded="Control_Loaded"
+    Loading="Control_Loading"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -64,12 +64,12 @@
         <ProgressRing Grid.Row="1"
                       HorizontalAlignment="Center" VerticalAlignment="Center"
                       IsActive="{Binding IsLoadingFromJsonGraph}" 
-                      Visibility="{Binding IsNotLoadingFromJsonGraph, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                      Visibility="{Binding IsLoadingFromJsonGraph, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='invert'}"/>
 
         <StackPanel Grid.Row="1" x:Name="layoutRoot" Background="black" Opacity="0.5" 
             HorizontalAlignment="Center" VerticalAlignment="Center"
             Margin="0,0,0,0"
-            Visibility="{Binding IsNotUpdatingGraph, Converter={StaticResource BoolToVisibilityConverter }}">
+            Visibility="{Binding IsUpdatingGraph, Converter={StaticResource BoolToVisibilityConverter }, ConverterParameter='invert'}">
             <StackPanel BorderBrush="PaleGoldenrod"  BorderThickness="2" Padding="12">
                 <TextBlock  l:Uids.Uid="GrahicView_UpdateText" />
                 <StackPanel Orientation="Vertical">

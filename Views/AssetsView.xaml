@@ -24,6 +24,10 @@
         <converters:AddPrefixConverter x:Key="AddPrefixConverter"/>
         <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:RowDefConverterParameters x:Key="ParamsRow0" Text="132|1*" XamlRoot="{x:Bind AssetsContent.XamlRoot}" />
+        <converters:RowDefConverterParameters x:Key="ParamsRow1" Text="75|0" XamlRoot="{x:Bind AssetsContent.XamlRoot}" />
+        <converters:RowDefConverterParameters x:Key="ParamsRow2" Text="0.7*|0" XamlRoot="{x:Bind AssetsContent.XamlRoot}" />
+
 
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
@@ -48,19 +52,20 @@
             <controls:HomePageHeaderImage Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="2" Height="265" VerticalAlignment="Top"/>
             <RelativePanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="0">
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
-                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                
-                <TextBlock l:Uids.Uid="Assets_Title" x:Name="txtAssets" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding PortfolioName}"  Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock l:Uids.Uid="Assets_Title" x:Name="txtAssets" Margin="36,5,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" 
+                           RelativePanel.Below="txtPortfolio" RelativePanel.AlignBottomWithPanel="True" />
                 <TextBlock x:Name="txtCount" Text="{Binding _assetService.VisibleAssetsCount, Converter={StaticResource AddPrefixConverter}, ConverterParameter=' (|)' }" 
-                    Margin="0,10,0,0" 
+                    Margin="0,8,0,0" 
                     Foreground="DarkGoldenrod" 
-                    Style="{StaticResource SampleHeaderTextStyle}" 
-                    RelativePanel.Below="smallHeaderText" RelativePanel.RightOf="txtAssets" />
+                    Style="{StaticResource SubSampleHeaderTextStyle}" 
+                    RelativePanel.Below="txtPortfolio" RelativePanel.RightOf="txtAssets"/>
                 <!--Grid HorizontalAlignment="Right" Width="{Binding ElementName=HeaderGrid,Path=ActualWidth}" Margin="0,10,0,0"-->
-                <helpers:CustomBtn Width="30" Padding="2,2,2,2" Margin="0,0,0,0" Style="{StaticResource MK_ButtonStyle}" BorderThickness="0"
+                <helpers:CustomBtn Width="25" Padding="2,2,2,2" Margin="0,0,0,0" Style="{StaticResource MK_ButtonStyle}" BorderThickness="0"
                     Command="{Binding TogglePrivacyModeCommand}" RelativePanel.RightOf="txtCount" RelativePanel.AlignBottomWith="txtCount" 
                     ToolTipService.ToolTip="Toggle privacy" >
-                    <FontIcon x:Name="Icon" Glyph="{Binding GlyphPrivacy}" FontWeight="Normal" Width="20" Foreground="Black"/>
+                    <FontIcon x:Name="Icon" Glyph="{Binding GlyphPrivacy}" FontSize="15" FontWeight="Normal" Width="20" Foreground="Black"/>
 
                 </helpers:CustomBtn>
             </RelativePanel>
@@ -126,9 +131,9 @@
             <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch">
                 <Grid Name="AssetsContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=132|1*}"/>
-                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=75|0}"/>
-                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter=0.7*|0}"/>
+                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow0}}"/>
+                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow1}}"/>
+                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow2}}"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="0"  />

@@ -12,11 +12,11 @@ namespace CryptoPortfolioTracker.Services
     public interface IGraphService
     {
         bool IsLoadingFromJson { get; set; }
-        public Task LoadGraphFromJson();
-        public Task SaveGraphToJson();
+        public Task LoadGraphFromJson(string portfolioPath);
+        public Task SaveGraphToJson(string portfolioPath);
         public Task SaveHistoricalDataBufferToJson();
         public Task RegisterModification(Transaction transactionA, Transaction? transactionB = null);
-        public Task ApplyModification();
+        public Task ApplyModification(string portfolioPath);
         public ObservableCollection<DateTimePoint> GetPortfolioValues();
         public ObservableCollection<DateTimePoint> GetInFlowValues();
         public ObservableCollection<DateTimePoint> GetOutFlowValues();

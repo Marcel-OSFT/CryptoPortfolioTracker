@@ -1,19 +1,49 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Converters;
 using CryptoPortfolioTracker.Enums;
+using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
+using CryptoPortfolioTracker.Views;
 using Serilog;
 using Serilog.Core;
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Windows.Security.Authentication.Web.Provider;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
+public class UpdateDashboardMessage
+{
+    // You can add properties here if you need to pass additional data with the message
+}
+
+public class UpdateProgressValueMessage
+{
+    public int ProgressValue { get;}
+
+    public UpdateProgressValueMessage(int value)
+    {
+        ProgressValue = value;
+    }
+}
+
+public class IsUpdatingGraphMessage
+{
+    public bool IsUpdating { get; }
+
+    public IsUpdatingGraphMessage(bool value)
+    {
+        IsUpdating = value;
+    }
+}
+
+[ObservableRecipient]
 public partial class DashboardViewModel : BaseViewModel
 {
     public static DashboardViewModel? Current;
@@ -23,10 +53,15 @@ public partial class DashboardViewModel : BaseViewModel
     public readonly IPreferencesService _preferencesService;
     private readonly IGraphService _graphService;
     private readonly IPriceLevelService _priceLevelService;
+    [ObservableProperty] public string portfolioName = string.Empty;
+    [ObservableProperty] public Portfolio currentPortfolio;
 
-
-    
-
+    async partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    {
+        await _dashboardService.CalculateRsiAllCoins();
+        UpdateDashboardAsync();
+        PortfolioName = newValue.Name;
+    }
 
     [ObservableProperty] private string glyph = "\uEE47";
     [ObservableProperty] private string glyphPrivacy = "\uE890";
@@ -54,42 +89,67 @@ public partial class DashboardViewModel : BaseViewModel
     }
 
     [ObservableProperty] bool needUpdateDashboard = false;
-    partial void OnNeedUpdateDashboardChanged(bool oldValue, bool newValue)
+    async partial void OnNeedUpdateDashboardChanged(bool oldValue, bool newValue)
     {
         if (newValue)
         {
-            SetSeriesHeatMap(selectedHeatMapIndex);
-            GetTop5();
-            GetValueGains();
+            await UpdateDashboardAsync();
 
             NeedUpdateDashboard = false;
         };
     }
 
+    private async Task UpdateDashboardAsync()
+    {
+        //await SetSeriesHeatMap(SelectedHeatMapIndex);
+        await RefreshHeatMapPoints();
+        await GetTop5();
+        GetValueGains();
+    }
+
     public DashboardViewModel(IDashboardService dashboardService,
                                 IGraphService graphService,
                                 IPriceLevelService priceLevelService,
+                                IMessenger messenger,
                                 IPreferencesService preferencesService) : base(preferencesService)
     {
         Current = this;
-
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
+
+        messenger.Register<UpdateDashboardMessage>(this, (r, m) =>
+        {
+            NeedUpdateDashboard = true;
+        });
+        messenger.Register<UpdateProgressValueMessage>(this, (r, m) =>
+        {
+            ProgressValueGraph = m.ProgressValue;
+        });
+        messenger.Register<IsUpdatingGraphMessage>(this, (r, m) =>
+        {
+            IsUpdatingGraph = m.IsUpdating;
+        });
+
         _preferencesService = preferencesService;
         _dashboardService = dashboardService;
         _graphService = graphService;
         _priceLevelService = priceLevelService;
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
+        CurrentPortfolio = _dashboardService.GetPortfolio();
 
-        ConstructHeatMap();
-        ConstructGraph();
-        ConstructPie();
-        ConstructTop5();
-        ConstructValueGains();
     }
 
-    public void Initialize()
+    /// <summary>  
+    /// This method is called by the DashboardView_Loading event.  
+    /// </summary>  
+    public void ViewLoading()
     {
+        CurrentPortfolio = _dashboardService.GetPortfolio();
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
+    }
+
+    public void Terminate()
+    {
+       
     }
 
     [RelayCommand]

@@ -30,6 +30,8 @@ public partial class MainPage : Page, INotifyPropertyChanged
     public IGraphUpdateService _graphUpdateService;
     public IPriceUpdateService _priceUpdateService;
     private readonly IPreferencesService _preferencesService;
+    private readonly PortfolioService _portfolioService;
+
     public LogWindow? logWindow;
     private Type lastPageType;
     private NavigationViewItem lastSelectedNavigationItem;
@@ -49,17 +51,22 @@ public partial class MainPage : Page, INotifyPropertyChanged
     }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public MainPage(IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IPreferencesService preferencesService)
+    public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IPreferencesService preferencesService)
     {
         ConfigureLogger();
+        Logger.Information("start MainPage Constructor");
         InitializeComponent();
         Current = this;
         DataContext = this;
+
+        _portfolioService = portfolioService;
 
         _preferencesService = preferencesService;
         _graphUpdateService = graphUpdateService;
         _priceUpdateService = priceUpdateService;
         SetupTeachingTips();
+        Logger.Information("End MainPage Constructor");
+
 
     }
 
@@ -154,8 +161,7 @@ public partial class MainPage : Page, INotifyPropertyChanged
     private async void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         //LoadView(Type.GetType("CryptoPortfolioTracker.Views.Temporary"));
-        Debug.WriteLine("MainPage NavigationView_SelectionChanged");
-
+        Logger?.Information("MainPage NavigationView_SelectionChanged");
 
         var selectedItem = (NavigationViewItem)args.SelectedItem;
         Type? pageType;
@@ -212,6 +218,8 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     private void LoadView(Type pageType)
     {
+        Logger.Information("start LoadView");
+
         if (pageType.Name == "CoinLibraryView" )
         {
             _graphUpdateService.Pause();
@@ -219,11 +227,34 @@ public partial class MainPage : Page, INotifyPropertyChanged
         }
         else if (lastPageType is not null && lastPageType.Name == "CoinLibraryView")
         {
-            _graphUpdateService.Continue();
-            _priceUpdateService.Continue();
+            if (_graphUpdateService != null)
+            {
+                _graphUpdateService.Resume();
+            }
+            else
+            {
+                _graphUpdateService = App.Container.GetService<IGraphUpdateService>();
+                _graphUpdateService?.Start();
+            }
+
+            if (_priceUpdateService != null)
+            {
+                _priceUpdateService.Resume();
+            }
+            else
+            {
+                _priceUpdateService = App.Container.GetService<IPriceUpdateService>();
+                _priceUpdateService?.Start();
+            }
+
+            //_graphUpdateService.Start();
+            //_priceUpdateService.Start();
+
         }
         lastPageType = pageType;
         contentFrame.Content = App.Container.GetService(pageType);
+        Logger.Information("End LoadView");
+
     }
 
     private async void DisplayHelpFile()
@@ -267,6 +298,8 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
     {
+        Logger.Information("start MainPage_Loaded");
+
         navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
         App.Splash?.Close();
         App.Splash = null;
@@ -275,8 +308,10 @@ public partial class MainPage : Page, INotifyPropertyChanged
         { 
             await CheckUpdateNow(); 
         }
-        await _graphUpdateService.Start();
+        _graphUpdateService.Start();
         _priceUpdateService.Start();
+        Logger.Information("End MainPage_Loaded");
+
     }
 
     private void OnGetItClickedNarr(object sender, RoutedEventArgs e)
@@ -307,13 +342,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
         _preferencesService.SetTeachingTipAsShown("TeachingTipBlank");
         // Navigate to the new feature or provide additional information
     }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
     private void OnDismisslickedBlank1(object sender, RoutedEventArgs e)
     {
         MyTeachingTipBlank1.IsOpen = false;
@@ -325,5 +353,13 @@ public partial class MainPage : Page, INotifyPropertyChanged
         _preferencesService.SetTeachingTipAsShown("TeachingTipBlank");
     }
     
+    
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+
 }
 

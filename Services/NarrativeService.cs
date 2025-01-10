@@ -15,7 +15,7 @@ namespace CryptoPortfolioTracker.Services;
 
 public partial class NarrativeService : ObservableObject, INarrativeService
 {
-    private readonly PortfolioContext context;
+    private readonly PortfolioService _portfolioService;
     [ObservableProperty] private static ObservableCollection<Narrative>? listNarratives;
 
     private SortingOrder currentSortingOrder;
@@ -28,16 +28,9 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         PopulateNarrativesList(value);
     }
 
-
-
-
-
-
-
-
-    public NarrativeService(PortfolioContext portfolioContext)
+    public NarrativeService(PortfolioService portfolioService)
     {
-        context = portfolioContext;
+        _portfolioService = portfolioService;
 
         currentSortFunc = x => x.TotalValue;
         currentSortingOrder = SortingOrder.Descending;
@@ -138,6 +131,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     public async Task<Result<bool>> CreateNarrative(Narrative? newNarrative)
     {
         bool _result;
+        var context = _portfolioService.Context;
 
         if (newNarrative == null) { return false; }
         try
@@ -153,6 +147,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public async Task<Result<bool>> EditNarrative(Narrative newNarrative, Narrative NarrativeToEdit)
     {
+        var context = _portfolioService.Context;
         bool _result;
         if (newNarrative == null || newNarrative.Name == "" || NarrativeToEdit == null) { return false; }
         try
@@ -174,6 +169,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public async Task<Result<bool>> RemoveNarrative(int NarrativeId)
     {
+        var context = _portfolioService.Context;
         bool _result;
         if (NarrativeId <= 0) { return false; }
         try
@@ -190,6 +186,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public async Task<Result<List<Narrative>>> GetNarratives(bool onlyAssets = false)
     {
+        var context = _portfolioService.Context;
         List<Narrative> Narratives = null;
         try
         {
@@ -228,6 +225,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public async Task<Result<Narrative>> GetNarrativeByName(string name)
     {
+        var context = _portfolioService.Context;
         Narrative narrative = null;
         try
         {
@@ -247,6 +245,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public async Task<Result<bool>> NarrativeHasNoCoins(int NarrativeId)
     {
+        var context = _portfolioService.Context;
         Narrative Narrative;
         if (NarrativeId <= 0) { return false; }
         try
@@ -265,6 +264,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public async Task<double> CalculateTotalValue(Narrative narrative)
     {
+        var context = _portfolioService.Context;
         if (narrative == null || narrative.Coins == null || !narrative.Coins.Any()) return 0.0;
 
         var sum = await context.Assets
@@ -278,6 +278,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public async Task<double> CalculateCostBase(Narrative narrative)
     {
+        var context = _portfolioService.Context;
         if (narrative == null || narrative.Coins == null || !narrative.Coins.Any()) return 0.0;
 
         var sum = await context.Assets
@@ -291,6 +292,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public Narrative GetNarrativeByCoin(Coin coin)
     {
+        var context = _portfolioService.Context;
         Narrative narrative;
         try
         {
@@ -304,6 +306,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public bool DoesNarrativeNameExist(string name)
     {
+        var context = _portfolioService.Context;
         Narrative narrative;
         try
         {
@@ -318,6 +321,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public async Task<Result<bool>> AssignNarrative(Coin coin, Narrative newNarrative)
     {
+        var context = _portfolioService.Context;
         bool result;
         if (newNarrative == null || coin == null) { return false; }
         try
@@ -350,6 +354,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     private void RejectChanges()
     {
+        var context = _portfolioService.Context;
         foreach (var entry in context.ChangeTracker.Entries())
         {
             switch (entry.State)

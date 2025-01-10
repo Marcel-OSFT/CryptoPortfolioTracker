@@ -1,0 +1,125 @@
+<UserControl
+    x:Class="CryptoPortfolioTracker.Controls.TestUserControlWorking"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"   
+    xmlns:local="using:CryptoPortfolioTracker.Controls"    
+    xmlns:converters="using:CryptoPortfolioTracker.Converters"    
+    xmlns:views="using:CryptoPortfolioTracker.Views"    
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
+    xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"    
+    xmlns:models="using:CryptoPortfolioTracker.Models"    
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:l="using:WinUI3Localizer"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:toolkit="using:AK.Toolkit.WinUI3"
+    d:DataContext="{d:DesignInstance Type=viewmodels:AccountsViewModel}"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+
+        <Storyboard x:Key="SelectAnimation">
+            <ColorAnimation Storyboard.TargetName="ItemBorder"
+                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                            To="LightBlue" Duration="0:0:0.3"/>
+        </Storyboard>
+        <Storyboard x:Key="DeselectAnimation">
+            <ColorAnimation Storyboard.TargetName="ItemBorder"
+                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                            To="Transparent" Duration="0:0:0.3"/>
+        </Storyboard>
+
+        <Storyboard x:Key="SelectAnimation1">
+            <DoubleAnimation Storyboard.TargetName="ItemBorder"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             To="0.5" Duration="0:0:0.3"/>
+            
+        </Storyboard>
+        <Storyboard x:Key="DeselectAnimation1">
+            <DoubleAnimation Storyboard.TargetName="ItemBorder"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             To="1" Duration="0:0:0.3"/>
+            
+        </Storyboard>
+
+        <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+    </UserControl.Resources>
+    
+    <ListView x:Name="PortfoliosLV" BorderThickness="1"
+                          BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
+                         DoubleTapped="PortfoliosListView_DoubleTapped"
+                          Width="350" Height="400" HorizontalAlignment="Left"
+                          ItemsSource="{Binding _portfolioService.Portfolios}" SelectionChanged="PortfoliosLV_SelectionChanged"
+              IsItemClickEnabled="True" SelectionMode="None"
+            ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+            CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
+
+        <ListView.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.7*"/>
+                    <ColumnDefinition Width="0.3*"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
+                <RichTextBlock Grid.Row="0" Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center"
+                                           HorizontalAlignment="Left">
+                    <Paragraph TextAlignment="Left">
+                        <Run l:Uids.Uid="SwitchPortfolioLV_Title" Text="Portfolios" FontSize="18" FontStyle="Italic"/>
+                    </Paragraph>
+                </RichTextBlock>
+                <Rectangle Grid.Row="1" Grid.ColumnSpan="3" Fill="#eebc3f" Height="2" Margin="5,0,8,0"/>
+            </Grid>
+        </ListView.Header>
+        <ListView.ItemTemplate>
+            <DataTemplate x:DataType="models:Portfolio">
+                <UserControl PointerEntered="ListViewItem_PointerEntered" PointerExited="ListViewItem_PointerExited" >
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="Notes">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="ShowGreen" >
+                                    <Storyboard>
+                                        <StaticResource ResourceKey="SelectAnimation1"/>
+                                    </Storyboard>
+                                    <!--<VisualState.Setters>
+                                        <Setter Target="ItemPanel.Background" Value="Green" />
+                                    </VisualState.Setters>-->
+                                </VisualState>
+                                <VisualState x:Name="ShowTransparent" >
+                                    <Storyboard>
+                                        <StaticResource ResourceKey="DeselectAnimation1"/>
+                                    </Storyboard>
+                                    <!--<VisualState.Setters>
+                                        <Setter Target="ItemPanel.Background" Value="Transparent" />
+                                    </VisualState.Setters>-->
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border x:Name="ItemBorder">
+                            <StackPanel>
+                                <TextBlock x:Name="txt1" Text="{Binding Name}"  FontSize="20" Margin="0,5,0,5"/>
+                                <TextBlock x:Name="txt2" Text="{Binding LastAccess}" FontSize="12" Margin="0,5,0,5" HorizontalAlignment="Right"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </UserControl>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+
+
+
+</UserControl>

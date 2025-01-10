@@ -5,8 +5,6 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoPortfolioTracker", "CryptoPortfolioTracker.csproj", "{75512AE8-0E1D-4584-A2F5-230AFAB3ED20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoPortfolioTrackerTest", "..\CryptoPortfolioTracker.Test\CryptoPortfolioTrackerTest.csproj", "{7985BC8A-C737-4F49-9248-A08DDD7F375B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,22 +41,6 @@ Global
 		{75512AE8-0E1D-4584-A2F5-230AFAB3ED20}.Release|x86.ActiveCfg = Release|x86
 		{75512AE8-0E1D-4584-A2F5-230AFAB3ED20}.Release|x86.Build.0 = Release|x86
 		{75512AE8-0E1D-4584-A2F5-230AFAB3ED20}.Release|x86.Deploy.0 = Release|x86
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Debug|x64.Build.0 = Debug|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Debug|x86.Build.0 = Debug|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Release|ARM64.Build.0 = Release|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Release|x64.ActiveCfg = Release|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Release|x64.Build.0 = Release|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Release|x86.ActiveCfg = Release|Any CPU
-		{7985BC8A-C737-4F49-9248-A08DDD7F375B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
@@ -13,6 +15,7 @@ using LanguageExt;
 using LanguageExt.Common;
 using LanguageExt.Pipes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
@@ -27,80 +30,33 @@ namespace CryptoPortfolioTracker.Services;
 
 public class GraphUpdateService : IGraphUpdateService
 {
+    private readonly IMessenger _messenger;
     private readonly PeriodicTimer timer;
     private readonly CancellationTokenSource cts = new();
     private Task? timerTask;
-    private readonly PortfolioContext coinContext;
+    private readonly PortfolioService _portfolioService;
     private readonly IGraphService _graphService;
     private double progressCounter;
     private double progressInterval;
 
+    private PortfolioContext currentContext;
+
     private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphUpdateService).Name.PadRight(22));
-    public bool IsPaused { get; set; }
+    public bool IsPausRequested { get; private set; }
+    public bool IsUpdating { get; private set; }
 
-    public GraphUpdateService(IGraphService graphService, PortfolioContext portfolioContext)
+    public GraphUpdateService(IGraphService graphService, PortfolioService portfolioService, IMessenger messenger)
     {
-        coinContext = portfolioContext;
+        _portfolioService = portfolioService;
         timer = new(System.TimeSpan.FromMinutes(1));
-        IsPaused = false;
+        IsPausRequested = false;
         _graphService = graphService;
+        _messenger = messenger;
     }
+   
 
-
-    private MarketChartById CheckAndFixMarketChart(MarketChartById additionalChart, MarketChartById fullChart, DateTime startDate)
+    public void  Start()
     {
-        var additionalPriceList = additionalChart.GetPriceList();
-        var fullPriceList = fullChart.GetPriceList();
-        var checkedChart = new MarketChartById();
-
-        var fixCounter = 0;
-
-        for (DateTime date = startDate; date <= DateTime.UtcNow; date = date.AddDays(1))
-        {
-            var dataPointToCheck = additionalPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.Date).FirstOrDefault();
-
-            if (dataPointToCheck is not null)
-            {
-                continue; //and check next
-            }
-            else
-            {
-                var value = 0.0;
-                var adjacent = additionalPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.AddDays(-1).Date).FirstOrDefault();
-
-                if (adjacent is null && fullPriceList is not null && fullPriceList.Count > 0)
-                {
-                    adjacent = fullPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.AddDays(-1).Date).FirstOrDefault();
-
-                }
-
-                if (adjacent is not null )
-                {
-                    value = adjacent.Value; 
-                }
-                fixCounter++;
-                Logger.Information("Missing DataPoint for {0} => added with value {1}", date.Date.ToString("dd-MM-yyyy"), value);
-                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = value };
-                additionalPriceList.Add(dataPoint);
-            }
-        }
-        Logger.Information("MarketChart CheckAndFix - Done. {0} entries needed fix.", fixCounter);
-
-
-        checkedChart.FillPricesArray(additionalPriceList);
-
-        return checkedChart;
-
-    }
-
-
-
-
-    public async Task Start()
-    {
-
-        await _graphService.LoadGraphFromJson();
-
         Logger.Information("GraphUpdateService started");
         timerTask = DoWorkAsync();
     }
@@ -108,12 +64,16 @@ public class GraphUpdateService : IGraphUpdateService
     {
         try
         {
+            await _graphService.LoadGraphFromJson(_portfolioService.CurrentPortfolio.Path);
+
             while (await timer.WaitForNextTickAsync(cts.Token))
             {
-                if (!IsPaused)
+                if (!IsPausRequested)
                 {
+                    IsUpdating = true;
                     Logger.Information("NextTick received");
                     await CheckForNewGraphData();
+                    IsUpdating = false;
                 }
                 else
                 {
@@ -123,7 +83,7 @@ public class GraphUpdateService : IGraphUpdateService
         }
         catch (OperationCanceledException)
         {
-            Logger.Information("GraphUpdateService canceled");
+            Logger.Information("GraphUpdateService cancelled");
         }
         catch (System.Exception ex)
         {
@@ -138,18 +98,29 @@ public class GraphUpdateService : IGraphUpdateService
         }
         cts.Cancel();
         cts.Dispose();
+        IsUpdating = false;
 
         Logger.Information("GraphUpdateService stopped");
     }
     public void Pause()
     {
-        IsPaused = true;
+        IsPausRequested = true;
         Logger.Information("GraphUpdateService Paused");
     }
-    public void Continue()
+    public async Task Resume()
     {
-        IsPaused = false;
-        Logger.Information("GraphUpdateService Continued");
+        if (currentContext != _portfolioService.Context)
+        {
+            Logger.Information("GraphUpdateService continued with new context");
+            currentContext = _portfolioService.Context;
+            await _graphService.LoadGraphFromJson(_portfolioService.CurrentPortfolio.Path);
+        }
+        else
+        {
+            Logger.Information("PriceUpdateService continued with existing context");
+        }
+
+        IsPausRequested = false;
     }
     private async Task<Result<bool>> CheckForNewGraphData()
     {
@@ -166,7 +137,7 @@ public class GraphUpdateService : IGraphUpdateService
             if (_graphService.IsModificationRequested())
             {
                 Logger.Information("Applying Modification => FromDate: {0}", _graphService.GetModifyFromDate());
-                await _graphService.ApplyModification();
+                await _graphService.ApplyModification(_portfolioService.CurrentPortfolio.Path);
             }
 
             if (_graphService.HasDataPoints())
@@ -223,8 +194,8 @@ public class GraphUpdateService : IGraphUpdateService
         startDate = lastEntryDate > DateOnly.FromDateTime(startDate.Date) ? lastEntryDate.ToDateTime(new TimeOnly(1,0)).Date : startDate;
 
         // var endDate = DateTime.UtcNow.Date;
-
-        var deposits = await coinContext.Mutations
+        var context = _portfolioService.Context;
+        var deposits = await context.Mutations
             .Include(t => t.Transaction)
             .Where(x => x.Transaction.TimeStamp.Date >= startDate
                 //&& x.Transaction.TimeStamp.Date <= endDate
@@ -267,7 +238,8 @@ public class GraphUpdateService : IGraphUpdateService
         }
         startDate = lastEntryDate > DateOnly.FromDateTime(startDate.Date) ? lastEntryDate.ToDateTime(new TimeOnly(1, 0)).Date : startDate;
 
-        var withdraws = await coinContext.Mutations
+        var context = _portfolioService.Context;
+        var withdraws = await context.Mutations
             .Include(t => t.Transaction)
             .Where(x => x.Transaction.TimeStamp.Date >= startDate
                // && x.Transaction.TimeStamp.Date <= endDate
@@ -298,7 +270,7 @@ public class GraphUpdateService : IGraphUpdateService
         progressInterval = (100.0/assets.Count);
         foreach (var asset in assets)
         {
-            if (cts is null || cts.IsCancellationRequested || IsPaused)
+            if (cts is null || cts.IsCancellationRequested || IsPausRequested)
             {
                 return; //break in case GraphUpdateService has been canceled or paused
             }
@@ -317,10 +289,9 @@ public class GraphUpdateService : IGraphUpdateService
                 return;
             }
             progressCounter++;
-            if (DashboardViewModel.Current is not null)
-            {
-                DashboardViewModel.Current.ProgressValueGraph = Convert.ToInt16((100 * progressCounter / assets.Count));
-            }
+            
+            _messenger.Send(new UpdateProgressValueMessage(Convert.ToInt16((100 * progressCounter / assets.Count))));
+            
         }
         await CalculateAndStoreDataPoints(_graphService.GetHistoricalDataBuffer());
 
@@ -429,10 +400,10 @@ public class GraphUpdateService : IGraphUpdateService
         }
         finally
         {
-            await _graphService.SaveGraphToJson();
+            await _graphService.SaveGraphToJson(_portfolioService.CurrentPortfolio.Path);
             _graphService.ClearHistoricalDataBuffer();
             Logger.Information("Historical Data updated and saved");
-            if (DashboardViewModel.Current is not null) DashboardViewModel.Current.IsUpdatingGraph = false;
+            _messenger.Send(new IsUpdatingGraphMessage(false));
         }
         return true;
     }
@@ -472,7 +443,7 @@ public class GraphUpdateService : IGraphUpdateService
             result.IfSucc(s => marketChart.AddPrices(s.Prices));
             result.IfFail(err => marketChart = null);
 
-            delay.Wait();
+            await delay;
         }
         else if (daysToGet > 0)
         {
@@ -501,28 +472,22 @@ public class GraphUpdateService : IGraphUpdateService
             for (int i = 0; i < nrOfSteps; i++)
             {
                 await Task.Delay(1000);
-
-                if (DashboardViewModel.Current is not null)
+                
+                // Use the DispatcherQueue to update the UI thread
+                MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
                 {
-                    // Use the DispatcherQueue to update the UI thread
-                    MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
-                    {
-                        // Check/set 'isFinishedLoading' to false to show message
-                        DashboardViewModel.Current.IsUpdatingGraph = true;
-                        var newValue = (int)Math.Floor(startValue + (stepSize * i));
-                        DashboardViewModel.Current.ProgressValueGraph = newValue;
-                    });
-                }
+                    // Check/set 'isFinishedLoading' to false to show message
+                    _messenger.Send(new IsUpdatingGraphMessage(true));
+                    var newValue = (int)Math.Floor(startValue + (stepSize * i));
+                    _messenger.Send(new UpdateProgressValueMessage(newValue));
+                        
+                });
             }
         }
         else
         {
-            if (DashboardViewModel.Current is not null)
-            {
-                // Check/set 'isFinishedLoading' to false to show message
-                DashboardViewModel.Current.IsUpdatingGraph = true;
-                DashboardViewModel.Current.ProgressValueGraph = (int)Math.Floor(startValue);
-            }
+            _messenger.Send(new IsUpdatingGraphMessage(true));
+            _messenger.Send(new UpdateProgressValueMessage((int)Math.Floor(startValue)));
         }
     }
 
@@ -580,7 +545,7 @@ public class GraphUpdateService : IGraphUpdateService
         System.Exception? error = null;
         MarketChartById? additionalMarketChart = null;
 
-        while (!cancellationToken.IsCancellationRequested && !IsPaused)
+        while (!cancellationToken.IsCancellationRequested && !IsPausRequested)
         {
             TotalRequests++;
             try
@@ -616,17 +581,18 @@ public class GraphUpdateService : IGraphUpdateService
         }
 
         Logger.Information("Checking MarketChart for {0}", asset.Coin.ApiId);
-        var checkedMarketChart = CheckAndFixMarketChart(additionalMarketChart ?? new MarketChartById(), fullChart, DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
+        var checkedMarketChart = await CheckAndFixMarketChart(additionalMarketChart ?? new MarketChartById(), fullChart, DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
 
 
         return checkedMarketChart ?? new Result<MarketChartById>(new NullReferenceException());
     }
     private async Task<double> GetHistoricalQtyByDate(DateOnly _date, AssetTotals asset)
     {
+        var context = _portfolioService.Context;
         var historicalQty = asset.Qty;
         var date = _date.ToDateTime(TimeOnly.Parse("01:00 AM"));
 
-        var mutations = await coinContext.Mutations
+        var mutations = await context.Mutations
             .Where(m => m.Asset.Coin.ApiId.ToLower() == asset.Coin.ApiId.ToLower())
             .Include(t => t.Transaction)
             .Where(t => t.Transaction.TimeStamp.Date >= date.Date && t.Transaction.TimeStamp.Date <= DateTime.UtcNow)
@@ -646,7 +612,8 @@ public class GraphUpdateService : IGraphUpdateService
     }
     private async Task<List<AssetTotals>> GetAssets()
     {
-        var assets = await coinContext.Assets
+        var context = _portfolioService.Context;
+        var assets = await context.Assets
                 .Include(x => x.Coin)
                 .GroupBy(asset => asset.Coin)
                 .Select(assetGroup => new AssetTotals
@@ -660,7 +627,8 @@ public class GraphUpdateService : IGraphUpdateService
     }
     private async Task<int> GetDaysBasedOnOldestTransaction()
     {
-        var tx = await coinContext.Transactions.OrderBy(x => x.TimeStamp).FirstOrDefaultAsync();
+        var context = _portfolioService.Context;
+        var tx = await context.Transactions.OrderBy(x => x.TimeStamp).FirstOrDefaultAsync();
         var days =  tx is not null ? DateTime.UtcNow.Subtract(tx.TimeStamp).Days + 1 : 0;
 
         return days;
@@ -675,7 +643,8 @@ public class GraphUpdateService : IGraphUpdateService
     
     private async Task<List<AssetTotals>> GetRemainingAssets()
     {
-        var assets = await coinContext.Assets
+        var context = _portfolioService.Context;
+        var assets = await context.Assets
                 .Include(x => x.Coin)
                 .GroupBy(asset => asset.Coin)
                 .Select(assetGroup => new AssetTotals
@@ -713,14 +682,15 @@ public class GraphUpdateService : IGraphUpdateService
     
     private void ObtainFirstPortfolioValue()
     {
+        var context = _portfolioService.Context;
         var beforeDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(365)).Date;
 
-        var sumDeposits = coinContext.Mutations
+        var sumDeposits = context.Mutations
             .Include(t => t.Transaction)
             .Where(x => x.Type == Enums.TransactionKind.Deposit && x.Transaction.TimeStamp.Date < beforeDate)
             .Sum(x => x.Qty * x.Price);
 
-        var sumWithDraws = coinContext.Mutations
+        var sumWithDraws = context.Mutations
                     .Include(t => t.Transaction)
                     .Where(x => x.Type == Enums.TransactionKind.Withdraw && x.Transaction.TimeStamp.Date < beforeDate)
                     .Sum(x => x.Qty * x.Price);
@@ -731,6 +701,50 @@ public class GraphUpdateService : IGraphUpdateService
 
     }
 
+    private async Task<MarketChartById> CheckAndFixMarketChart(MarketChartById additionalChart, MarketChartById fullChart, DateTime startDate)
+    {
+        var additionalPriceList = additionalChart.GetPriceList();
+        var fullPriceList = fullChart.GetPriceList();
+        var checkedChart = new MarketChartById();
+
+        var fixCounter = 0;
+
+        for (DateTime date = startDate; date <= DateTime.UtcNow; date = date.AddDays(1))
+        {
+            var dataPointToCheck = additionalPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.Date).FirstOrDefault();
+
+            if (dataPointToCheck is not null)
+            {
+                continue; //and check next
+            }
+            else
+            {
+                var value = 0.0;
+                var adjacent = additionalPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.AddDays(-1).Date).FirstOrDefault();
+
+                if (adjacent is null && fullPriceList is not null && fullPriceList.Count > 0)
+                {
+                    adjacent = fullPriceList.Where(x => x.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date == date.AddDays(-1).Date).FirstOrDefault();
+
+                }
+
+                if (adjacent is not null)
+                {
+                    value = adjacent.Value;
+                }
+                fixCounter++;
+                Logger.Information("Missing DataPoint for {0} => added with value {1}", date.Date.ToString("dd-MM-yyyy"), value);
+                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = value };
+                additionalPriceList.Add(dataPoint);
+            }
+        }
+        Logger.Information("MarketChart CheckAndFix - Done. {0} entries needed fix.", fixCounter);
+
+
+        checkedChart.FillPricesArray(additionalPriceList);
+
+        return await Task.FromResult(checkedChart);
+    }
 
 
 

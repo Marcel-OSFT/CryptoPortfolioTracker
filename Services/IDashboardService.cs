@@ -1,5 +1,6 @@
 ﻿using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Enums;
+using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView.WinUI;
@@ -16,10 +17,13 @@ namespace CryptoPortfolioTracker.Services
     {
         public Coin GetPriceLevelsFromContext(Coin coin);
         public Task<ObservableCollection<PiePoint>> GetPiePoints(string pieChartName);
-        ObservableCollection<Coin> GetTopWinners();
-        ObservableCollection<Coin> GetTopLosers();
+        Task<List<Coin>> GetTopWinners();
+        Task<List<Coin>> GetTopLosers();
         double GetPortfolioValue();
         double GetCostBase();
         Task<List<CapitalFlowPoint>> GetYearlyMutationsByTransactionKind(TransactionKind transactionKind);
+        PortfolioContext GetContext();
+        Portfolio GetPortfolio();
+        Task CalculateRsiAllCoins();
     }
 }

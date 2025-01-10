@@ -76,11 +76,15 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
             SKTypeface = SKTypeface.FromFamilyName("Times New Roman")
         };
 
-
-    private void ConstructValueGains()
+    /// <summary>   
+    /// This method is called by the ValueGainsControl_Loading event.  
+    /// </summary>
+    public async Task ValueGainsControlLoading()
     {
-       
+        GetValueGains();
+        await GetCapitalFlowData();
     }
+
 
     public void GetValueGains()
     {

@@ -25,7 +25,13 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
 
     public INarrativeService _narrativeService {  get; private set; }
     public IAssetService _assetService { get; private set; }
+    [ObservableProperty] public string portfolioName = string.Empty;
+    [ObservableProperty] public Portfolio currentPortfolio;
 
+    partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    {
+        PortfolioName = newValue.Name;
+    }
     public bool IsHidingNetInvestment { get; set; } = true;
 
 
@@ -65,6 +71,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         _narrativeService = NarrativeService;
         _preferencesService =  preferencesService;
         _assetService = assetService;
+        CurrentPortfolio = _assetService.GetPortfolio();
 
         SortGroup = "Narratives";
         currentSortFunc = x => x.MarketValue;
@@ -89,6 +96,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     /// <returns></returns>
     public async Task Initialize()
     {
+        CurrentPortfolio = _assetService.GetPortfolio();
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
         await _narrativeService.PopulateNarrativesList(currentSortingOrderNarr, currentSortFuncNarr, _narrativeService.ShowOnlyAssets);
     }

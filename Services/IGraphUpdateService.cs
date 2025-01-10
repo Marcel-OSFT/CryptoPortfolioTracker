@@ -5,9 +5,10 @@ namespace CryptoPortfolioTracker.Services
 {
     public interface IGraphUpdateService
     {
-        public Task Start();
+        public bool IsUpdating { get; }
+        public void Start();
         public Task Stop();
         public void Pause();
-        public void Continue();
+        public Task Resume();
     }
 }

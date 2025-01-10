@@ -1,9 +1,10 @@
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI.Xaml.Controls;
+using System;
 
 namespace CryptoPortfolioTracker.Views;
 
-public sealed partial class PriceLevelsView : Page
+public partial class PriceLevelsView : Page, IDisposable
 {
 
     public readonly PriceLevelsViewModel _viewModel;
@@ -29,4 +30,22 @@ public sealed partial class PriceLevelsView : Page
         _viewModel.Terminate();
     }
 
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.Terminate();
+                //_viewModel = null;
+            }
+        }
+    }
 }

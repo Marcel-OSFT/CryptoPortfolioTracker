@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
@@ -21,6 +22,20 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
+public class UpdatePricesMessage
+{
+    public Coin Coin { get; }
+    public double OldPrice { get; }
+    public double NewPrice { get; }
+    public UpdatePricesMessage(Coin coin, double oldPrice, double newPrice)
+    {
+        Coin = coin;
+        OldPrice = oldPrice;
+        NewPrice = newPrice;
+    }
+}
+
+[ObservableRecipient]
 public sealed partial class AssetsViewModel : BaseViewModel
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -34,6 +49,14 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
     public readonly IGraphService _graphService;
     private readonly IPreferencesService _preferencesService;
+
+    [ObservableProperty] public string portfolioName = string.Empty;
+    [ObservableProperty] public Portfolio currentPortfolio;
+
+    partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    {
+        PortfolioName = newValue.Name;
+    }
 
     public bool IsHidingNetInvestment { get; set; } = false;
 
@@ -73,23 +96,32 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public AssetsViewModel(IGraphService graphService, 
             IAssetService assetService, 
             IAccountService accountService,
-            ITransactionService transactionService, 
+            ITransactionService transactionService,
+            IMessenger messenger,
             IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
+
+        messenger.Register<UpdatePricesMessage>(this, (r, m) =>
+        {
+            _assetService.UpdatePricesAssetTotals(m.Coin, m.OldPrice, m.NewPrice);
+        });
+
         _assetService = assetService;
+        
         _transactionService = transactionService;
         _graphService = graphService;
         _preferencesService = preferencesService;
         _accountService = accountService;
+
+        CurrentPortfolio = _assetService.GetPortfolio();
 
         SortGroup = "Assets";
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
 
         _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
-        //_assetService.IsHidingZeroBalances = IsHidingZeroBalances;
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
 
     }
@@ -100,6 +132,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
     /// </summary>
     public async Task Initialize()
     {
+        CurrentPortfolio = _assetService.GetPortfolio();
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
 
         IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
@@ -127,6 +160,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         selectedAsset = null;
         IsAssetsExtendedView = false;
         _assetService.ClearAssetTotalsList();
+        
     }
 
 
@@ -187,70 +221,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         _assetService.SortList(sortingOrder, sortFunc);
     }
 
-    //[RelayCommand]
-    //public void SortOnName(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOn24Hour(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOn1Month(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnMarketValue(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.MarketValue;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnCostBase(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.CostBase;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnNetInvestment(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.NetInvestment;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnPnL(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnPnLPerc(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
+   
 
     [RelayCommand]
     public async Task AssetItemClicked(AssetTotals clickedAsset)

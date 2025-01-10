@@ -16,12 +16,12 @@ namespace CryptoPortfolioTracker.Services;
 
 public partial class TransactionService :  ObservableObject, ITransactionService
 {
-    private readonly PortfolioContext _context;
+    private readonly PortfolioService _portfolioService;
     [ObservableProperty] private static ObservableCollection<Transaction>? listAssetTransactions;
 
-    public TransactionService(PortfolioContext context)
+    public TransactionService(PortfolioService portfolioService)
     {
-        _context = context;
+        _portfolioService = portfolioService;
     }
 
     public async Task<ObservableCollection<Transaction>> PopulateTransactionsByAssetList(int assetId)
@@ -70,10 +70,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetCoinSymbolsFromLibrary()
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         try
         {
-           _result = await _context.Coins.Select(x => x.Symbol.ToUpper() + " " + x.Name).ToListAsync();
+           _result = await context.Coins.Select(x => x.Symbol.ToUpper() + " " + x.Name).ToListAsync();
         }
         catch (Exception ex)
         {
@@ -83,11 +84,12 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<Coin>> GetCoinBySymbol(string symbolName)
     {
+        var context = _portfolioService.Context;
         Coin coin;
         var _symbol = symbolName.Split(' ',2);
         try
         {
-            coin = await _context.Coins
+            coin = await context.Coins
                 .Where(x => x.Symbol.ToLower() == _symbol[0].ToLower() 
                     && x.Name.ToLower() == _symbol[1].ToLower() )
                 .SingleAsync();
@@ -100,10 +102,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<Account>> GetAccountByName(string name)
     {
+        var context = _portfolioService.Context;
         Account account;
         try
         {
-            account = await _context.Accounts.Where(x => x.Name.ToLower() == name.ToLower()).SingleAsync();
+            account = await context.Accounts.Where(x => x.Name.ToLower() == name.ToLower()).SingleAsync();
         }
         catch (Exception ex)
         {
@@ -113,13 +116,14 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string symbolName)
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         var _symbol = symbolName.Split(' ',2);
         if (symbolName == null || symbolName == "") { return new List<string>(); }
 
         try
         {
-            _result = await _context.Coins
+            _result = await context.Coins
                 .Where(x => 
                      !(x.Symbol.ToLower() == _symbol[0].ToLower() 
                      && x.Name.ToLower() == _symbol[1].ToLower())
@@ -136,10 +140,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<int>> GetAssetIdByCoinAndAccount(Coin coin, Account account)
     {
+        var context = _portfolioService.Context;
         Asset? asset;
         try
         {
-            asset = await _context.Assets
+            asset = await context.Assets
                 .Include(x => x.Coin)
                 .Include(y => y.Account)
                 .Where(x => x.Coin == coin && x.Account == account)
@@ -153,10 +158,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetCoinSymbolsFromAssets()
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         try
         {
-            _result = await _context.Assets
+            _result = await context.Assets
                 .Include(x => x.Coin)
                 .GroupBy(asset => asset.Coin)
                 .Select(assetGroup => assetGroup.Key.Symbol.ToUpper() + " " + assetGroup.Key.Name)
@@ -170,10 +176,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromAssets()
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         try
         {
-            _result = await _context.Assets
+            _result = await context.Assets
                 .Include(x => x.Coin)
                 .Where(s => s.Coin.Symbol.ToLower() != "usdt" && s.Coin.Symbol.ToLower() != "usdc")
                 .GroupBy(asset => asset.Coin)
@@ -188,10 +195,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetCoinSymbolsExcludingUsdtUsdcFromLibrary()
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         try
         {
-            _result = await _context.Coins
+            _result = await context.Coins
                 .Where(x => 
                     x.Symbol.ToLower() != "usdt" 
                     && x.Symbol.ToLower() != "usdc")
@@ -206,10 +214,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetUsdtUsdcSymbolsFromAssets()
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         try
         {
-            _result = await _context.Assets
+            _result = await context.Assets
                .Include(x => x.Coin)
                .Where(s => 
                     s.Coin.Symbol.ToLower() == "usdt" 
@@ -226,10 +235,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetUsdtUsdcSymbolsFromLibrary()
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         try
         {
-            _result = await _context.Coins
+            _result = await context.Coins
                 .Where(x => 
                     x.Symbol.ToLower() == "usdt" 
                     || x.Symbol.ToLower() == "usdc")
@@ -244,6 +254,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<double[]>> GetMaxQtyAndPrice(string symbolName, string accountName)
     {
+        var context = _portfolioService.Context;
         double[] _result;
         var _symbol = symbolName.Split(' ', 2);
 
@@ -251,7 +262,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
 
         try
         {
-            _result = await _context.Assets
+            _result = await context.Assets
                 .Include(x => x.Coin)
                 .Where(x =>
                     x.Coin.Symbol.ToLower() == _symbol[0].ToLower()
@@ -268,13 +279,14 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<double>> GetPriceFromLibrary(string symbolName)
     {
+        var context = _portfolioService.Context;
         double _result;
         var _symbol = symbolName.Split(' ', 2);
 
         if (symbolName == null || symbolName == "") { return 0; }
         try
         {
-            _result = await _context.Coins
+            _result = await context.Coins
                 .Where(x => 
                     x.Symbol.ToLower() == _symbol[0].ToLower()
                     && x.Name.ToLower() == _symbol[1].ToLower())
@@ -290,10 +302,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetAccountNames()
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         try
         {
-            _result = await _context.Accounts.Select(x => x.Name).ToListAsync();
+            _result = await context.Accounts.Select(x => x.Name).ToListAsync();
         }
         catch (Exception ex)
         {
@@ -303,6 +316,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetAccountNames(string symbolName)
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         var _symbol = symbolName.Split(' ', 2);
 
@@ -313,7 +327,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
 
         try
         {
-            _result = await _context.Assets
+            _result = await context.Assets
                 .Where(x => 
                     x.Coin.Symbol.ToLower() == _symbol[0].ToLower()  
                     && x.Coin.Name.ToLower() == _symbol[1].ToLower())
@@ -328,6 +342,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<List<string>>> GetAccountNamesExcluding(string excludedAccountName)
     {
+        var context = _portfolioService.Context;
         List<string> _result;
         if (excludedAccountName == null || excludedAccountName == "")
         {
@@ -336,7 +351,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
 
         try
         {
-            _result = await _context.Accounts
+            _result = await context.Accounts
                 .Where(x => x.Name.ToLower() != excludedAccountName.ToLower())
                 .Select(x => x.Name)
                 .ToListAsync();
@@ -349,11 +364,12 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<AssetTotals>> GetAssetTotalsByCoin(Coin coin)
     {
+        var context = _portfolioService.Context;
         if (coin == null) { return new AssetTotals(); }
         AssetTotals assetTotals;
         try
         {
-            assetTotals = await _context.Assets
+            assetTotals = await context.Assets
            .Where(c => c.Coin.Id == coin.Id)
            .Include(x => x.Coin)
            .GroupBy(asset => asset.Coin)
@@ -384,13 +400,14 @@ public partial class TransactionService :  ObservableObject, ITransactionService
 
         try
         {
+            var context = _portfolioService.Context;
             foreach (var mutation in mutations)
             {
                 //Check if ASSET (=combination CoinId and AccountId) already exists.
                 Asset? currentAsset;
                 
                 currentAsset = mutation.Asset is not null 
-                    ? await _context.Assets
+                    ? await context.Assets
                         .Where(x => x.Coin.Symbol.ToLower() == mutation.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutation.Asset.Account.Name.ToLower())
                         .SingleOrDefaultAsync()
                         : null;
@@ -412,7 +429,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
                        .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err));
                     // New Asset, so add this to the context
                     addedAsset = mutation.Asset;
-                    if (mutation.Asset is not null) { _context.Assets.Add(mutation.Asset); }
+                    if (mutation.Asset is not null) { context.Assets.Add(mutation.Asset); }
                 }
             } //End of All mutations
 
@@ -424,8 +441,8 @@ public partial class TransactionService :  ObservableObject, ITransactionService
                 Note = transaction.Note
             };
 
-            _context.Transactions.Update(transactionNew);
-            result = await _context.SaveChangesAsync();
+            context.Transactions.Update(transactionNew);
+            result = await context.SaveChangesAsync();
 
             return transactionNew.Id;
         }
@@ -443,6 +460,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     /// <returns></returns>
     public async Task<Result<Transaction>> GetTransactionById(int transactionId)
     {
+        var context = _portfolioService.Context;
         Transaction assetTransaction;
         if (transactionId <= 0)
         {
@@ -450,7 +468,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         try
         {
-            assetTransaction = await _context.Mutations
+            assetTransaction = await context.Mutations
                 .Include(t => t.Transaction)
                 .ThenInclude(m => m.Mutations)
                 .ThenInclude(a => a.Asset)
@@ -474,6 +492,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<int>> EditTransaction(Transaction transactionNew, Transaction _transactionToEdit)
     {
+        var context = _portfolioService.Context;
         var result = 0;
         if (_transactionToEdit == null || transactionNew == null)
         {
@@ -481,7 +500,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         }
         try
         {
-            var transactionToEdit = await _context.Transactions
+            var transactionToEdit = await context.Transactions
                 .Where(x => x.Id == _transactionToEdit.Id)
                 .Include(x => x.Mutations)
                 .ThenInclude(a => a.Asset.Coin)
@@ -529,8 +548,8 @@ public partial class TransactionService :  ObservableObject, ITransactionService
             transactionToEdit.TimeStamp = transactionNew.TimeStamp;
             transactionToEdit.Mutations = mutationsToEdit;
 
-            _context.Transactions.Update(transactionToEdit);
-            result = await _context.SaveChangesAsync();
+            context.Transactions.Update(transactionToEdit);
+            result = await context.SaveChangesAsync();
 
             //*** reflect type 'Transaction' also to 'Transaction' for Binding purpose
             _transactionToEdit.Mutations = transactionToEdit.Mutations;
@@ -544,10 +563,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public async Task<Result<int>> DeleteTransaction(Transaction _transactionToDelete, AssetAccount _accountAffected)
     {
+        var context = _portfolioService.Context;
         var result = 0;
         try
         {
-            var transaction = await _context.Transactions
+            var transaction = await context.Transactions
                 .Where(x => x.Id == _transactionToDelete.Id)
                 .Include(m => m.Mutations)
                 .ThenInclude(m => m.Asset)
@@ -557,10 +577,10 @@ public partial class TransactionService :  ObservableObject, ITransactionService
             {
                 mutation.Asset = (await ReverseAndRecalculateAsset(mutation))
                     .Match(Succ: asset => asset, Fail: err => throw new Exception(err.Message, err)); ;
-                _context.Mutations.Remove(mutation);
+                context.Mutations.Remove(mutation);
             }
-            _context.Transactions.Remove(transaction);
-            result = _context.SaveChanges();
+            context.Transactions.Remove(transaction);
+            result = context.SaveChanges();
             await RemoveAssetsWithoutMutations();
         }
         catch (Exception ex)
@@ -575,19 +595,20 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     
     private async Task<Result<bool>> RemoveAssetsWithoutMutations()
     {
+        var context = _portfolioService.Context;
         var result = 0;
         //*** Due to deletion of a transaction it could be that an asset (coin/account combi) doesn't have any mutations left.
         //*** In that case the qty for this coin in that specific account will also be zero and the asset can be removed as well
         try
         {
-            var assetsWithoutMutations = await _context.Assets.Where(x => x.Mutations.Count == 0).ToListAsync();
+            var assetsWithoutMutations = await context.Assets.Where(x => x.Mutations.Count == 0).ToListAsync();
             if (assetsWithoutMutations != null)
             {
                 foreach (var asset in assetsWithoutMutations)
                 {
-                    _context.Assets.Remove(asset);
+                    context.Assets.Remove(asset);
                 }
-                result = _context.SaveChanges();
+                result = context.SaveChanges();
             }
         }
         catch (Exception ex)
@@ -629,7 +650,8 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     private void RejectChanges()
     {
-        foreach (var entry in _context.ChangeTracker.Entries())
+        var context = _portfolioService.Context;
+        foreach (var entry in context.ChangeTracker.Entries())
         {
             switch (entry.State)
             {
@@ -646,11 +668,12 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     private async Task<Result<List<Transaction>>> GetTransactionsByAsset(int assetId)
     {
+        var context = _portfolioService.Context;
         if (assetId <= 0) { return new List<Transaction>(); }
         List<Transaction> assetTransactions = new();
         try
         {
-            assetTransactions = await _context.Mutations
+            assetTransactions = await context.Mutations
                 .Include(t => t.Transaction)
                 .ThenInclude(m => m.Mutations)
                 .ThenInclude(a => a.Asset)
@@ -717,10 +740,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     private async Task<Result<Asset>> ReverseAndRecalculateAsset(Mutation mutationNew, Mutation mutationToEdit)
     {
+        var context = _portfolioService.Context;
         Asset asset;
         try
         {
-            asset = await _context.Assets
+            asset = await context.Assets
                 .Where(x => x.Id == mutationToEdit.Asset.Id)
                 .SingleAsync();
 
@@ -789,6 +813,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     private async Task<Result<Asset>> ReverseAndRecalculateFee(Mutation mutationNew, Mutation mutationToEdit)
     {
+        var context = _portfolioService.Context;
         Asset assetNew;
         try
         {
@@ -796,13 +821,13 @@ public partial class TransactionService :  ObservableObject, ITransactionService
             {
                 //*** FEE is always "OUT":
                 //*** revert old
-                var assetOld = await _context.Assets
+                var assetOld = await context.Assets
                     .Where(x => x.Id == mutationToEdit.Asset.Id)
                     .SingleAsync();
 
                 assetOld.Qty += mutationToEdit.Qty;
                 //*** apply new
-                assetNew = await _context.Assets
+                assetNew = await context.Assets
                     .Where(x => x.Coin.Symbol.ToLower() == mutationNew.Asset.Coin.Symbol.ToLower() && x.Account.Name.ToLower() == mutationNew.Asset.Account.Name.ToLower())
                     .SingleAsync();
                 assetNew.Qty -= mutationNew.Qty;
@@ -818,7 +843,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
             }
             else //if nothing has changed then assure that 'assetNew' is set to its actual value instead of returning null
             {
-                assetNew = await _context.Assets
+                assetNew = await context.Assets
                     .Where(x => x.Id == mutationToEdit.Asset.Id)
                     .SingleAsync();
             }
@@ -831,6 +856,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     private static Result<Asset> CreateNewAsset(Mutation mutation)
     {
+        
         Asset asset;
         try
         {
@@ -856,10 +882,11 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     private async Task<Result<Asset>> ReverseAndRecalculateAsset(Mutation mutation)
     {
+        var context = _portfolioService.Context;
         Asset asset;
         try
         {
-            asset = await _context.Assets.Where(x => x.Id == mutation.Asset.Id).SingleAsync();
+            asset = await context.Assets.Where(x => x.Id == mutation.Asset.Id).SingleAsync();
             switch (mutation.Direction.ToString())
             {
                 case "In": //*** revert IN, so subtract instead of add

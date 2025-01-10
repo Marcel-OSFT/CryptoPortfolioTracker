@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Helpers;
@@ -10,6 +11,7 @@ using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
@@ -24,7 +26,13 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public ILibraryService _libraryService { get; private set; }
     private readonly IPreferencesService _preferencesService;
     public readonly INarrativeService _narrativeService;
+    [ObservableProperty] public string portfolioName = string.Empty;
+    [ObservableProperty] public Portfolio currentPortfolio;
 
+    partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    {
+        PortfolioName = newValue.Name;
+    }
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
     private bool isAllCoinDataRetrieved;
@@ -54,6 +62,8 @@ public partial class CoinLibraryViewModel : BaseViewModel
         _narrativeService = narrativeService;
         _viewModel = this;
 
+        CurrentPortfolio = _libraryService.GetPortfolio();
+
         sortGroup = "Library";
         initialSortFunc = x => x.Rank;
         initialSortingOrder = SortingOrder.Ascending;
@@ -64,6 +74,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     }
     public async Task Initialize()
     {
+        CurrentPortfolio = _libraryService.GetPortfolio();
         if (_libraryService.IsCoinsListEmpty())
         {
             await _libraryService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
@@ -169,7 +180,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         var loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(Current, Enums.DialogAction.Add, _preferencesService)
+            dialog = new AddCoinDialog(Current, Enums.DialogAction.Add, App.Container.GetService<IMessenger>() ,_preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -217,7 +228,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         var loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(Current, Enums.DialogAction.Merge, _preferencesService)
+            dialog = new AddCoinDialog(Current, Enums.DialogAction.Merge, App.Container.GetService<IMessenger>() ,_preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };

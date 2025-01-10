@@ -39,9 +39,12 @@
                 <Image Name="CoinImage"  Height="80" Margin="0,0,0,0"/>
             </StackPanel>
 
-            <ProgressRing x:Name="TheProgressRing" IsActive="False" Grid.Row="0" Margin="0,0,0,0"/>
-            <TextBlock l:Uids.Uid="CoinDialog_BePatient" x:Name="bePatientText" Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWholeWords" x:FieldModifier="public" 
-                       Visibility="{Binding BePatientVisibility, ElementName=Root}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,0" />
+            <StackPanel Grid.Row="0" VerticalAlignment="Center">
+                <ProgressRing x:Name="TheProgressRing" IsActive="False"  Margin="0,0,0,0"/>
+                <TextBlock l:Uids.Uid="CoinDialog_BePatient" x:Name="bePatientText" Grid.ColumnSpan="2" TextWrapping="WrapWholeWords" x:FieldModifier="public" 
+                    Visibility="{Binding BePatientVisibility, ElementName=Root}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,20,0,0" />
+                </StackPanel>
+            
             <StackPanel Name="DetailsStack2" Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Left">
                 <RichTextBlock SelectionHighlightColor="Green" Width="200" >
                     <Paragraph TextAlignment="Right">

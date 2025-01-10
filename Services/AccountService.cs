@@ -15,14 +15,15 @@ namespace CryptoPortfolioTracker.Services;
 
 public partial class AccountService : ObservableObject, IAccountService
 {
-    private readonly PortfolioContext context;
+    private readonly PortfolioService _portfolioService;
     [ObservableProperty] private static ObservableCollection<Account>? listAccounts;
     [ObservableProperty] private static ObservableCollection<AssetAccount>? listAssetAccounts;
 
-    public AccountService(PortfolioContext portfolioContext)
+    public AccountService(PortfolioService portfolioService)
     {
-        context = portfolioContext;
+        _portfolioService = portfolioService;
     }
+
     public async Task<ObservableCollection<Account>> PopulateAccountsList()
     {
         var getAccountsResult = await GetAccounts();
@@ -39,9 +40,6 @@ public partial class AccountService : ObservableObject, IAccountService
         var tempListAccounts = ListAccounts;
         ListAccounts = null;
         ListAccounts = tempListAccounts;
-
-       
-
     }
 
 
@@ -147,6 +145,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public async Task<Result<AssetAccount>> GetAccountByAsset(int assetId)
     {
+        var context = _portfolioService.Context;
         if (assetId <= 0) { return new AssetAccount(); }
         AssetAccount? assetAccount;
         try
@@ -173,6 +172,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public async Task<Result<bool>> CreateAccount(Account? newAccount)
     {
+        var context = _portfolioService.Context;
         bool _result;
 
         if (newAccount == null) { return false; }
@@ -189,6 +189,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public async Task<Result<bool>> EditAccount(Account newAccount, Account accountToEdit)
     {
+        var context = _portfolioService.Context;
         bool _result;
         if (newAccount == null || newAccount.Name == "" || accountToEdit == null) { return false; }
         try
@@ -210,6 +211,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public async Task<Result<bool>> RemoveAccount(int accountId)
     {
+        var context = _portfolioService.Context;
         bool _result;
         if (accountId <= 0) { return false; }
         try
@@ -226,6 +228,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     private async Task<Result<List<Account>>> GetAccounts()
     {
+        var context = _portfolioService.Context;
         List<Account> accounts;
         try
         {
@@ -250,6 +253,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public async Task<Result<Account>> GetAccountByName(string name)
     {
+        var context = _portfolioService.Context;
         Account account;
         try
         {
@@ -270,6 +274,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public async Task<Result<bool>> AccountHasNoAssets(int accountId)
     {
+        var context = _portfolioService.Context;
         Account account;
         if (accountId <= 0) { return false; }
         try
@@ -287,6 +292,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     private async Task<Result<List<AssetAccount>>> GetAccountsByAsset(int coinId)
     {
+        var context = _portfolioService.Context;
         if (coinId <= 0) { return new List<AssetAccount>(); }
         List<AssetAccount> assetAccounts;
         try
@@ -316,6 +322,7 @@ public partial class AccountService : ObservableObject, IAccountService
 
     public bool DoesAccountNameExist(string name)
     {
+        var context = _portfolioService.Context;
         Account account;
         try
         {

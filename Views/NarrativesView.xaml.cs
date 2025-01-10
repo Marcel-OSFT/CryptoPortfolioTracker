@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoPortfolioTracker.Views;
 
-public partial class NarrativesView : Page
+public partial class NarrativesView : Page, IDisposable
 {
     public readonly NarrativesViewModel _viewModel;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -39,5 +39,23 @@ public partial class NarrativesView : Page
         _viewModel.Terminate();
         MyAssetsListViewControl.AssetsListView.DataContext = null;
     }
-     
- }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.Terminate();
+                //_viewModel = null;
+            }
+        }
+    }
+
+}

@@ -43,6 +43,7 @@ public class UserPreferences
         HeatMapIndex = 0;
 
         TeachingTips = new List<TeachingTipCPT>();
+        LastPortfolio = null;
 
     }
 
@@ -223,6 +224,7 @@ public class UserPreferences
     /// 
 
     public List<TeachingTipCPT> TeachingTips { get; set; } = new List<TeachingTipCPT>();
+    public Portfolio? LastPortfolio { get; set; }
 
     private int heatMapIndex;
     public int HeatMapIndex

@@ -17,7 +17,10 @@ namespace CryptoPortfolioTracker.Services;
 
 public partial class AssetService : ObservableObject, IAssetService
 {
-    private readonly PortfolioContext context;
+    //private static PortfolioContext context;
+    private readonly PortfolioService _portfolioService;
+   
+
     [ObservableProperty] private static ObservableCollection<AssetTotals>? listAssetTotals;
     [ObservableProperty] private double totalAssetsValue;
     [ObservableProperty] private double totalAssetsCostBase;
@@ -59,14 +62,16 @@ public partial class AssetService : ObservableObject, IAssetService
         }
     }
 
-    public AssetService(PortfolioContext portfolioContext)
+    public AssetService(PortfolioService portfolioService)
     {
-        context = portfolioContext;
+        _portfolioService = portfolioService;
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
 
         IsHidingZeroBalances = false;
+        
     }
+
 
     public void ReloadValues()
     {
@@ -99,13 +104,6 @@ public partial class AssetService : ObservableObject, IAssetService
         getAssetTotalsResult.IfFail(err => ListAssetTotals = new());
         return ListAssetTotals;
     }
-
-    //public ObservableCollection<AssetTotals> GetAssetTotalsList()
-    //{
-    //    return ListAssetTotals;
-    //}
-
-
 
 
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
@@ -261,7 +259,7 @@ public partial class AssetService : ObservableObject, IAssetService
         InFlow = await CalculateInFlow();
         OutFlow = await CalculateOutFlow();
     }
-    public void UpdatePricesAssetTotals(Coin coin, double oldPrice, double? newPrice)
+    public Task UpdatePricesAssetTotals(Coin coin, double oldPrice, double? newPrice)
     {
         var asset = ListAssetTotals?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
         if (asset != null && ListAssetTotals != null && oldPrice != newPrice)
@@ -279,15 +277,13 @@ public partial class AssetService : ObservableObject, IAssetService
             ListAssetTotals[index].Coin = coin;
             ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
         }
-        //apply / refresh sorting
-        //if (IsSortingAfterUpdateEnabled)
-        //{
-        //    SortList(currentSortingOrder, currentSortFunc);
-        //}
+        return Task.CompletedTask;
 
     }
+
     private async Task<Result<List<AssetTotals>>> GetAssetsByAccountFromContext(int accountId)
     {
+        var context = _portfolioService.Context;
         List<AssetTotals> assetsTotals;
         if (accountId <= 0) { return new List<AssetTotals>(); }
         try
@@ -330,6 +326,7 @@ public partial class AssetService : ObservableObject, IAssetService
 
     private async Task<Result<List<AssetTotals>>> GetAssetsByNarrativeFromContext(int narrativeId)
     {
+        var context = _portfolioService.Context;
         List<AssetTotals> assetsTotals = null;
         if (narrativeId <= 0) { return new List<AssetTotals>(); }
         try
@@ -448,6 +445,7 @@ public partial class AssetService : ObservableObject, IAssetService
     }
     private async Task<Result<List<AssetTotals>>> GetAssetTotalsFromContext()
     {
+        var context = _portfolioService.Context;
         List<AssetTotals> assetsTotals;
         try
         {
@@ -492,6 +490,7 @@ public partial class AssetService : ObservableObject, IAssetService
     }
     private async Task<Double> CalculateInFlow()
     {
+        var context = _portfolioService.Context;
         double inFlow = 0;
         try
         {
@@ -510,6 +509,7 @@ public partial class AssetService : ObservableObject, IAssetService
     }
     private async Task<Double> CalculateOutFlow()
     {
+        var context = _portfolioService.Context;
         double outFlow = 0;
         try
         {
@@ -529,6 +529,7 @@ public partial class AssetService : ObservableObject, IAssetService
     }
     private async Task<Result<AssetTotals>> GetAssetTotalsByCoinFromContext(Coin coin)
     {
+        var context = _portfolioService.Context;
         if (coin == null) { return new AssetTotals(); }
         AssetTotals assetTotal;
         try
@@ -555,6 +556,7 @@ public partial class AssetService : ObservableObject, IAssetService
     }
     public async Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccountFromContext(Coin coin, Account account)
     {
+        var context = _portfolioService.Context;
         if (coin == null || account == null) { return new AssetTotals(); }
         AssetTotals assetTotals;
         try
@@ -584,6 +586,7 @@ public partial class AssetService : ObservableObject, IAssetService
 
     private void GetNetInvestment(AssetTotals assetTotal)
     {
+        var context = _portfolioService.Context;
         var sumBuy = context.Mutations
             .Where(m => m.Direction == MutationDirection.In
                 && m.Asset.Coin.Id == assetTotal.Coin.Id)
@@ -600,6 +603,7 @@ public partial class AssetService : ObservableObject, IAssetService
 
     private void GetNetInvestmentByAccount(AssetTotals assetTotal, int accountId)
     {
+        var context = _portfolioService.Context;
         var sumBuy = context.Mutations
             .Where(m => m.Direction == MutationDirection.In
                 && m.Asset.Coin.Id == assetTotal.Coin.Id
@@ -618,6 +622,7 @@ public partial class AssetService : ObservableObject, IAssetService
 
     private void GetNetInvestments(List<AssetTotals> assetsTotals)
     {
+        var context = _portfolioService.Context;
         foreach (var assetTotal in assetsTotals)
         {
             var sumBuy = context.Mutations
@@ -636,6 +641,7 @@ public partial class AssetService : ObservableObject, IAssetService
 
     private void GetNetInvestmentsByAccount(List<AssetTotals> assetsTotals, int accountId)
     {
+        var context = _portfolioService.Context;
         foreach (var assetTotal in assetsTotals)
         {
             var sumBuy = context.Mutations
@@ -654,7 +660,8 @@ public partial class AssetService : ObservableObject, IAssetService
         }
     }
 
-    
-
-
+    public Portfolio? GetPortfolio()
+    {
+        return _portfolioService.CurrentPortfolio;
+    }
 }

@@ -15,6 +15,7 @@ using LanguageExt;
 using CoinGeckoFluentApi.Client;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Helpers;
+using LanguageExt.Common;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -22,7 +23,7 @@ namespace CryptoPortfolioTracker.Services;
 public partial class DashboardService : ObservableObject, IDashboardService
 {
     private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(DashboardService).Name.PadRight(22));
-    public readonly PortfolioContext context;
+    private readonly PortfolioService _portfolioService;
     private readonly IAssetService _assetService;
     private readonly INarrativeService _narrativeService;
     private readonly IPreferencesService _preferencesService;
@@ -32,9 +33,9 @@ public partial class DashboardService : ObservableObject, IDashboardService
     private DataPoint[] rsiData;
 
 
-    public DashboardService(PortfolioContext portfolioContext, IAssetService assetService, INarrativeService narrativeService, IAccountService accountService, IPreferencesService preferencesService)
+    public DashboardService(PortfolioService portfolioService, IAssetService assetService, INarrativeService narrativeService, IAccountService accountService, IPreferencesService preferencesService)
     {
-        context = portfolioContext;
+        _portfolioService = portfolioService;
         _assetService = assetService;
         _preferencesService = preferencesService;
         _accountService = accountService;
@@ -42,23 +43,21 @@ public partial class DashboardService : ObservableObject, IDashboardService
         
     }
 
-
-    public async Task<double> GetRsiValue(string coinApiId)
+    public PortfolioContext GetContext()
     {
-        //*** RSI Calculation
-        //*** returns only the current RSI value for the given coinApiId, not a list of values
-        //*** the calculation is based on the last 14 days of data
-        //*** the calculation is based on the closing price of the coin
-
-        int period = 14;
-
-        MarketChartById marketChart = new();
-        await marketChart.LoadMarketChartJson(coinApiId);
-        var closingPrices = marketChart.Prices.TakeLast(2 * period + 50).Select(p => (double)p[1].Value).ToList();
-
-        return CalculateRSI(closingPrices, period);
+        return _portfolioService.Context;
     }
 
+    public async Task CalculateRsiAllCoins()
+    {
+        var coins = _portfolioService.Context.Coins.ToList();
+
+        foreach(var coin in coins)
+        {
+           await coin.CalculateRsi();
+        }
+    }
+   
     public double CalculateRSI(List<double> closingPrices, int period)
     {
         if (closingPrices == null || closingPrices.Count < period + 1)
@@ -113,43 +112,57 @@ public partial class DashboardService : ObservableObject, IDashboardService
         return rsiValues.Last();
     }
 
-    public ObservableCollection<Coin> GetTopWinners()
+    public async Task<List<Coin>> GetTopWinners()
     {
-        var topWinners = context.Assets
-            .Include(x => x.Coin)
-            .Where(x => x.Qty > 0 && x.Coin.Change24Hr > 0)
-            .GroupBy(x => x.Coin) // Group by Coin
-            .Select(g => g.First().Coin) // Select the first asset's Coin from each group
-            .ToList();
+        try
+        {
+            var context = _portfolioService.Context;
+            
+            var assets = await context.Assets
+                .Include(x => x.Coin)
+                .Where(x => x.Qty > 0 && x.Coin.Change24Hr > 0)
+                .ToListAsync();
 
-        if (topWinners is null)
+            List<Coin> topWinners = assets
+                .GroupBy(x => x.Coin) // Group by Coin
+                .Select(g => g.First().Coin) // Select the first asset's Coin from each group
+                .OrderByDescending(x => x.Change24Hr) // Order by Change24Hr descending
+                .Take(5) // Take the first 5
+                .ToList();
+
+            return topWinners ?? new();
+        }
+        catch (Exception ex)
         {
             return new();
         }
-        else
-        {
-            return new(topWinners.OrderByDescending(x => x.Change24Hr).Take(5));
-        }
-
+       
     }
-    public ObservableCollection<Coin> GetTopLosers()
+    public async Task<List<Coin>> GetTopLosers()
     {
-        var topLosers = context.Assets
-            .Include(x => x.Coin)
-            .Where(x => x.Qty > 0 && x.Coin.Change24Hr < 0)
-            .GroupBy(x => x.Coin) // Group by Coin
-            .Select(g => g.First().Coin) // Select the first asset's Coin from each group
-            .ToList();
-
-        if (topLosers is null)
+        try
         {
+            var context = _portfolioService.Context;
+            var assets = await context.Assets
+                .Include(x => x.Coin)
+                .Where(x => x.Qty > 0 && x.Coin.Change24Hr < 0)
+                .ToListAsync();
+
+            List<Coin> topLosers = assets
+                .GroupBy(x => x.Coin) // Group by Coin
+                .Select(g => g.First().Coin) // Select the first asset's Coin from each group
+                .OrderBy(x => x.Change24Hr)
+                .Take(5)
+                .ToList();
+
+            return topLosers ?? new();
+        }
+        catch (Exception ex)
+        {
+
             return new();
         }
-        else
-        {
-            return new(topLosers.OrderBy(x => x.Change24Hr).Take(5));
-        }
-
+        
     }
 
 
@@ -286,8 +299,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
     public async Task<List<CapitalFlowPoint>> GetYearlyMutationsByTransactionKind(TransactionKind transactionKind)
     {
-        //var startDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days)).Date;
-        //var endDate = DateTime.UtcNow.Date;
+        var context = _portfolioService.Context;
         var dataPoints = new List<CapitalFlowPoint>();
 
         var mutations = await context.Mutations
@@ -313,6 +325,10 @@ public partial class DashboardService : ObservableObject, IDashboardService
         return dataPoints;
     }
 
+    public Portfolio GetPortfolio()
+    {
+        return _portfolioService.CurrentPortfolio;
+    }
 }
 
 

@@ -5,10 +5,11 @@ using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
+using System;
 
 namespace CryptoPortfolioTracker.Views;
 [ObservableObject]
-public sealed partial class DashboardView : Page
+public partial class DashboardView : Page, IDisposable
 {
    private readonly DashboardViewModel _viewModel;
     public static DashboardView? Current;
@@ -30,6 +31,13 @@ public sealed partial class DashboardView : Page
 
     }
 
+
+    private void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
+        _viewModel.ViewLoading();
+    }
+
+
     private void SetupTeachingTips()
     {
         var teachingTipInitial = _viewModel._preferencesService.GetTeachingTip("TeachingTipBlank");
@@ -46,12 +54,6 @@ public sealed partial class DashboardView : Page
 
             MyTeachingTipPort.IsOpen = true;
         }
-    }
-
-    private void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        
-        _viewModel.Initialize();
     }
 
     private void OnGetItClickedPort(object sender, RoutedEventArgs e)
@@ -77,8 +79,21 @@ public sealed partial class DashboardView : Page
         _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipPortDash");
         _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipNarrDash");
     }
-    private void OnDismissClickedNarr(object sender, RoutedEventArgs e)
+    public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.Terminate();
+                //_viewModel = null;
+            }
+        }
     }
 }

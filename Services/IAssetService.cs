@@ -11,7 +11,7 @@ public interface IAssetService
 {
     bool IsHidingZeroBalances { get; set; }
     public Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccountFromContext(Coin coin, Account account);
-    void UpdatePricesAssetTotals(Coin coin, double oldPrice, double? newPrice);
+    Task UpdatePricesAssetTotals(Coin coin, double oldPrice, double? newPrice);
     Task CalculateAssetsTotalValues();
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList();
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account);
@@ -29,6 +29,6 @@ public interface IAssetService
     void ReloadValues();
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative);
-    //ObservableCollection<AssetTotals> GetAssetTotalsList();
+    Portfolio? GetPortfolio();
 }
 

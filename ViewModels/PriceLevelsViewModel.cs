@@ -23,7 +23,13 @@ public partial class PriceLevelsViewModel : BaseViewModel
 {
     public IPriceLevelService _priceLevelService { get; private set; }
     private readonly IPreferencesService _preferencesService;
+    [ObservableProperty] public string portfolioName = string.Empty;
+    [ObservableProperty] public Portfolio currentPortfolio;
 
+    partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    {
+        PortfolioName = newValue.Name;
+    }
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static PriceLevelsViewModel Current;
     [ObservableProperty] private string sortGroup;
@@ -37,14 +43,15 @@ public partial class PriceLevelsViewModel : BaseViewModel
         Current = this;
         _priceLevelService = priceLevelService;
         _preferencesService = preferencesService;
+        CurrentPortfolio = _priceLevelService.GetPortfolio();
 
         sortGroup = "Library";
         initialSortFunc = x => x.PriceLevels.Where(t => t.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
-        //initialSortFunc = x => x.Name;
         initialSortingOrder = SortingOrder.Descending;
     }
     public async Task Initialize()
     {
+        CurrentPortfolio = _priceLevelService.GetPortfolio();
         if (_priceLevelService.IsCoinsListEmpty())
         {
             await _priceLevelService.PopulateCoinsList(initialSortingOrder, initialSortFunc);

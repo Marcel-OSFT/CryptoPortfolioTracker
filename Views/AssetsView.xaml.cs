@@ -1,17 +1,17 @@
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using System;
 using System.Diagnostics;
 
 namespace CryptoPortfolioTracker.Views;
 
-public partial class AssetsView : Page
+public partial class AssetsView : Page, IDisposable
 {
     public AssetsViewModel _viewModel;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AssetsView Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 
     public AssetsView(AssetsViewModel viewModel)// ** DI of viewModel into View
     {
@@ -25,7 +25,6 @@ public partial class AssetsView : Page
     {
         MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
         await _viewModel.Initialize();
-        
     }
 
     private void View_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -46,6 +45,27 @@ public partial class AssetsView : Page
         MyAssetsListViewControl.AssetsListView.DataContext = null;
     }
 
+    //private void AddTransactionButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    //{
+    //    _viewModel.AddTransaction();
+    //}
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.Terminate();
+                _viewModel = null;
+            }
+        }
+    }
 }
 

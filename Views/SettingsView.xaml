@@ -38,9 +38,10 @@
             
             <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="2" Height="250" VerticalAlignment="Top"/>
             <RelativePanel>
-                <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock"/>
-                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,20,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock l:Uids.Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding PortfolioName}"  Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock l:Uids.Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="txtPortfolio" />
             </RelativePanel>
             <Border Grid.Row="2"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,0,0">
                 <ScrollViewer HorizontalAlignment="Stretch" Margin="0,0,0,0" Padding="0,0,20,0" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >

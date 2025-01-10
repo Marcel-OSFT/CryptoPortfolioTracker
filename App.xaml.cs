@@ -22,6 +22,10 @@ using System.Net.Http;
 using WinUI3Localizer;
 using Microsoft.UI.Xaml;
 using System.Diagnostics;
+using Microsoft.UI.Xaml.Controls;
+using CommunityToolkit.WinUI;
+using Newtonsoft.Json;
+using CommunityToolkit.Mvvm.Messaging;
 
 //using Microsoft.UI.Xaml.Markup;
 //using Microsoft.UI.Xaml;
@@ -47,7 +51,7 @@ public partial class App : Application
     public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
     public static bool isBusy;
     public static bool isAppInitializing;
-    public bool needFixFaultyMigration = false;
+    
 
     public static bool isLogWindowEnabled;
     private static ILogger? Logger;
@@ -57,6 +61,7 @@ public partial class App : Application
     //public Graph PortfolioGraph;
 
     public static bool initDone;
+    public static bool needFixFaultyMigration = false;
 
     public const string DbName = "sqlCPT.db";
     public const string PrefFileName = "prefs.xml";
@@ -65,21 +70,24 @@ public partial class App : Application
     public const string PrefixBackupName = "CPTbackup";
     public const string ExtentionBackup = "cpt";
     public const string IconsFolder = "LibraryIcons";
+    public const string PortfoliosFileName = "portfolios.json";
+    public const string PortfoliosPath = "Portfolios";
 
-
-    //public const string DbRestoreName = "sqlCPT_DevRestore.db";
-    //public const string DbName = "sqlCPT.db";
+    public List<Portfolio> portfolios = new List<Portfolio>();
 
 
     public App()
     {
         Current = this;
         InitializeComponent();
+        this.UnhandledException += OnUnhandledException;
+
         GetAppEnvironmentals();
         Container = RegisterServices();
         _preferencesService = Container.GetService<IPreferencesService>() ?? throw new InvalidOperationException("Failed to retrieve IPreferencesService from the service container.");
     }
 
+    
 
     /// <summary>
     /// Invoked when the application is launched.
@@ -97,8 +105,16 @@ public partial class App : Application
         
         InitializeLogger();
         await InitializeLocalizer();
-        await CheckDatabase();
-        await CacheLibraryIcons();
+
+        InitializePortfolioService();
+        
+        Logger?.Information("Start to CacheIcons.");
+        
+        CacheLibraryIconsAsync();
+        
+        Logger?.Information("CacheIcons done.");
+        
+        Logger?.Information("GetService<MainWindow>");
         Window = Container.GetService<MainWindow>();
         if (Window != null)
         {
@@ -108,9 +124,15 @@ public partial class App : Application
         {
             Logger?.Error("Failed to retrieve MainWindow from the service container.");
         }
+        Logger?.Information("MainWindow Activated");
+
     }
 
-    private async static Task CacheLibraryIcons()
+    private async void CacheLibraryIconsAsync()
+    {
+        await CacheLibraryIcons();
+    }
+    private async Task CacheLibraryIcons()
     {
         var iconsFolderPath = Path.Combine(appDataPath, IconsFolder);
         if (Directory.Exists(iconsFolderPath))
@@ -125,7 +147,11 @@ public partial class App : Application
             Directory.CreateDirectory(iconsFolderPath);
         }
 
-        var context = Container.GetService<PortfolioContext>();
+        var portfolioService = App.Container.GetService<PortfolioService>();
+
+        var context = portfolioService.Context;
+
+
         var coins = context?.Coins.Where(coin => !string.IsNullOrEmpty(coin.ImageUri)).ToList();
 
         if (coins != null)
@@ -149,7 +175,6 @@ public partial class App : Application
 
             await Task.WhenAll(tasks);
         }
-       
     }
 
     private async static Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
@@ -221,161 +246,11 @@ public partial class App : Application
         }
     }
 
-    private async Task CheckDatabase()
+
+    private async void InitializePortfolioService()
     {
-        try
-        {
-            var context = App.Container.GetService<PortfolioContext>();
-            if (context == null)
-            {
-                Logger?.Error("Failed to retrieve PortfolioContext from the service container.");
-                return;
-            }
-
-            var dbFilename = Path.Combine(appDataPath, DbName);
-
-            if (File.Exists(dbFilename))
-            {
-                BackupCptFiles(false);
-            }
-
-            var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-            var initPriceLevelsEntity = pendingMigrations.Any(m => m.Contains("AddPriceLevelsEntity"));
-            var initNarrativesEntity = pendingMigrations.Any(m => m.Contains("AddNarrativesEntity"));
-
-            if (pendingMigrations.Any())
-            {
-                foreach (var migration in pendingMigrations)
-                {
-                    Logger?.Information("Pending Migrations {0}", migration);
-                }
-
-                if (File.Exists(dbFilename)) BackupCptFiles(true);
-            }
-
-            needFixFaultyMigration = (await context.Database.GetAppliedMigrationsAsync()).Contains("20241228225250_AddNarrativesEntity");
-
-            await context.Database.MigrateAsync();
-
-            if (initPriceLevelsEntity)
-            {
-                SeedPriceLevelsTable(context);
-            }
-            if (initNarrativesEntity)
-            {
-                SeedNarrativesTable(context);
-            }
-
-            var appliedMigrations = await context.Database.GetAppliedMigrationsAsync();
-            foreach (var migration in appliedMigrations)
-            {
-                Logger?.Information("Applied Migrations {0}", migration);
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger?.Error(ex, "Checking Database failed!");
-        }
-    }
-
-
-    private static void BackupCptFiles(bool isMigration)
-    {
-        var dbFile = Path.Combine(appDataPath, DbName);
-        var preferencesFile = Path.Combine(appDataPath, PrefFileName);
-        var chartsFolder = Path.Combine(appDataPath, ChartsFolder);
-        var tempFolder = Path.Combine(appDataPath, "Temp");
-        var backupFolder = Path.Combine(appDataPath, BackupFolder);
-        string backUpName;
-
-        try
-        {
-            Directory.CreateDirectory(backupFolder);
-
-            if (isMigration)
-            {
-                if (Directory.GetFiles(backupFolder, "*" + ProductVersion.Replace(".", "-") + "*").Any())
-                {
-                    return;
-                }
-                backUpName = $"{PrefixBackupName}_m{ProductVersion.Replace(".", "-")}_{DateTime.Now:yyyyMMdd-HHmmss}.{ExtentionBackup}";
-            }
-            else
-            {
-                initDone = true;
-                var backupFiles = Directory.GetFiles(backupFolder, "*_s_*");
-                if (backupFiles.Length > 5)
-                {
-                    File.Delete(backupFiles[0]);
-                }
-                backUpName = $"{PrefixBackupName}_s_{DateTime.Now:yyyyMMdd-HHmmss}.{ExtentionBackup}";
-            }
-
-            Directory.CreateDirectory(tempFolder);
-            File.Copy(dbFile, Path.Combine(tempFolder, DbName));
-            File.Copy(preferencesFile, Path.Combine(tempFolder, PrefFileName));
-
-            Directory.CreateDirectory(chartsFolder);
-            DirectoryCopy(chartsFolder, Path.Combine(tempFolder, ChartsFolder), true);
-            ZipFile.CreateFromDirectory(tempFolder, Path.Combine(backupFolder, backUpName));
-            Directory.Delete(tempFolder, true);
-        }
-        catch (Exception ex)
-        {
-            Logger?.Error(ex, "BackUp CPT files failed!");
-        }
-    }
-
-    private async static void SeedPriceLevelsTable(PortfolioContext context)
-    {
-        if (!context.Coins.Any()) return;
-
-        var priceLevels = context.Coins.SelectMany(coin => new List<PriceLevel>
-        {
-            new() { Coin = coin, Type = PriceLevelType.TakeProfit, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty },
-            new() { Coin = coin, Type = PriceLevelType.Buy, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty },
-            new() { Coin = coin, Type = PriceLevelType.Stop, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty }
-        }).ToList();
-
-        context.PriceLevels.AddRange(priceLevels);
-        await context.SaveChangesAsync();
-    }
-
-    private async static void SeedNarrativesTable(PortfolioContext context)
-    {
-        if (context.Narratives.Count() > 1) return;
-
-        // Create a list of Narrative items with descriptions
-        var narratives = new List<Narrative>
-        {
-            //new Narrative { Id = 1, Name = "- Not Assigned -", About = "Default setting in case you don't want to assign narratives" },
-            new() { Name = "AI", About = "AI in crypto refers to the use of artificial intelligence to optimize trading, provide market insights, and enhance security." },
-            new() { Name = "Appchain", About = "Appchains are application-specific blockchains designed to optimize performance for particular decentralized applications (DApps)." },
-            new() { Name = "DeFI", About = "DeFi (Decentralized Finance) aims to recreate traditional financial systems using decentralized technologies like blockchain." },
-            new() { Name = "DEX", About = "DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly without an intermediary, leveraging smart contracts." },
-            new() { Name = "DePin", About = "DePin (Decentralized Physical Infrastructure Networks) combines blockchain with physical infrastructures like IoT to create decentralized networks." },
-            new() { Name = "Domains", About = "Blockchain domains offer decentralized, censorship-resistant alternatives to traditional domain names, enhancing ownership and control." },
-            new() { Name = "Gamble-Fi", About = "Gamble-Fi integrates decentralized finance principles with online gambling, providing transparent and secure gaming experiences." },
-            new() { Name = "Game-Fi", About = "Game-Fi combines gaming and decentralized finance, allowing players to earn cryptocurrency and trade in-game assets." },
-            new() { Name = "Social-Fi", About = "Social-Fi integrates social media with decentralized finance, enabling monetization and decentralized governance of social platforms." },
-            new() { Name = "Interoperability", About = "Interoperability focuses on enabling different blockchain networks to communicate and interact, facilitating seamless asset transfers and data exchange." },
-            new() { Name = "Layer 1s", About = "Layer 1s are the base layer blockchains like Bitcoin and Ethereum that provide the foundational security and consensus mechanisms." },
-            new() { Name = "Layer 2s", About = "Layer 2s are scaling solutions built on top of Layer 1 blockchains to improve transaction speed and reduce fees." },
-            new() { Name = "LSD", About = "LSD (Liquid Staking Derivatives) allow users to stake assets and receive liquid tokens that can be used in DeFi activities." },
-            new() { Name = "Meme", About = "Meme coins are cryptocurrencies inspired by internet memes, often characterized by high volatility and community-driven value." },
-            new() { Name = "NFT", About = "NFTs (Non-Fungible Tokens) are unique digital assets representing ownership of items like art, music, and virtual real estate." },
-            new() { Name = "Privacy", About = "Privacy coins and technologies aim to enhance transaction anonymity and data protection on the blockchain." },
-            new() { Name = "Real Yield", About = "Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing." },
-            new() { Name = "RWA", About = "RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment." },
-            new() { Name = "CEX", About = "CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity." },
-            new() { Name = "Stablecoins", About = "Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility." },
-            new() { Name = "Others", About = "Narrative for coins that you don't want to assign a specific Narrative" }
-        };
-
-        context.Narratives.AddRange(narratives);
-
-        await context.SaveChangesAsync();
-
+        var contextService = App.Container.GetService<PortfolioService>();
+        await contextService.InitializeAsync();
     }
 
 
@@ -406,6 +281,7 @@ public partial class App : Application
         services.AddScoped<DashboardView>();
         services.AddScoped<PriceLevelsView>();
         services.AddScoped<NarrativesView>();
+        services.AddScoped<SwitchPortfolioView>();
 
 
         services.AddScoped<AssetsViewModel>();
@@ -416,11 +292,24 @@ public partial class App : Application
         services.AddScoped<PriceLevelsViewModel>();
         services.AddScoped<BaseViewModel>();
         services.AddScoped<NarrativesViewModel>();
+        services.AddScoped<SwitchPortfolioViewModel>();
 
+
+
+        // Register the factory
+        services.AddSingleton<IPortfolioContextFactory, PortfolioContextFactory>();
+
+        // Register the DbContext with a dummy connection string to satisfy the DI requirements
         services.AddDbContext<PortfolioContext>(options =>
         {
-            options.UseSqlite("Data Source=|DataDirectory|" + DbName);
+            options.UseSqlite("Data Source=:memory:"); // Dummy connection string
         });
+
+
+        //services.AddDbContext<PortfolioContext>(options =>
+        //{
+        //    options.UseSqlite("Data Source=|DataDirectory|" + Current.DbName);
+        //});
 
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IAssetService, AssetService>();
@@ -434,6 +323,10 @@ public partial class App : Application
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<INarrativeService, NarrativeService>();
 
+        services.AddSingleton<IPreferencesService, PreferencesService>();
+
+        services.AddScoped<PortfolioService>();
+        services.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
         return services.BuildServiceProvider();
     }
@@ -472,45 +365,35 @@ public partial class App : Application
             Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
         }
     }
-    private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+
+    private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        DirectoryInfo dir = new (sourceDirName);
-        DirectoryInfo[] dirs = dir.GetDirectories();
+        // Log the exception details (optional)
+        Logger?.Error($"Unhandled exception: {e.Message}");
+        Logger?.Error(e.Exception.ToString());
 
-        // If the source directory does not exist, throw an exception.
-        if (!dir.Exists)
-        {
-            throw new DirectoryNotFoundException(
-                "Source directory does not exist or could not be found: "
-                + sourceDirName);
-        }
+        // Prevent the application from crashing
+        e.Handled = true;
 
-        // If the destination directory does not exist, create it.
-        if (!Directory.Exists(destDirName))
-        {
-            Directory.CreateDirectory(destDirName);
-        }
-
-        // Get the file contents of the directory to copy.
-        FileInfo[] files = dir.GetFiles();
-        foreach (FileInfo file in files)
-        {
-            string temppath = Path.Combine(destDirName, file.Name);
-            file.CopyTo(temppath, false);
-        }
-
-        // If copying subdirectories, copy them and their contents to new location.
-        if (copySubDirs)
-        {
-            foreach (DirectoryInfo subdir in dirs)
-            {
-                string temppath = Path.Combine(destDirName, subdir.Name);
-                DirectoryCopy(subdir.FullName, temppath, copySubDirs);
-            }
-        }
+        // Show a user-friendly message
+        ShowErrorMessage(e.Message);
     }
-    
-    
 
+    public void ShowErrorMessage(string message)
+    {
+        // Ensure execution on the UI thread
+        MainPage.Current.DispatcherQueue.TryEnqueue(async () =>
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "An error occurred",
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = MainPage.Current.XamlRoot
+            };
+
+            await dialog.ShowAsync();
+        });
+    }
 
 }

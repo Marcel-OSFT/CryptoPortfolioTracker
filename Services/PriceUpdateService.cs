@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Converters;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
+using CryptoPortfolioTracker.Views;
 using LanguageExt;
 using LanguageExt.Common;
 using LanguageExt.Pipes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
@@ -26,20 +30,29 @@ public class PriceUpdateService : IPriceUpdateService
     private readonly PeriodicTimer timer;
     private readonly CancellationTokenSource cts = new();
     private Task? timerTask;
-    private readonly PortfolioContext coinContext;
+    private readonly PortfolioService _portfolioService;
     private readonly IPreferencesService _preferencesService;
     private readonly IPriceLevelService _priceLevelService;
     private readonly IAssetService _assetService;
-    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceUpdateService).Name.PadRight(22));
-    public bool IsPaused { get; set; }
-    private bool IsInit;
+    private readonly IMessenger _messenger;
 
-    public PriceUpdateService(PortfolioContext portfolioContext, IAssetService assetService, IPriceLevelService priceLevelService, IPreferencesService preferencesService)
+    private PortfolioContext currentContext;
+    private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceUpdateService).Name.PadRight(22));
+    public bool IsPausRequested { get; private set; }
+    public bool IsUpdating { get; private set; }
+    private bool IsInit { get; set; }
+
+    public PriceUpdateService(PortfolioService portfolioService, IAssetService assetService, IPriceLevelService priceLevelService, IMessenger messenger, IPreferencesService preferencesService)
     {
-        coinContext = portfolioContext;
+        _portfolioService = portfolioService;
+        currentContext = _portfolioService.Context;
+
         _preferencesService = preferencesService;
         _priceLevelService = priceLevelService;
         _assetService = assetService;
+        _messenger = messenger;
+
+        IsPausRequested = false;
         timer = new(System.TimeSpan.FromMinutes(_preferencesService.GetRefreshIntervalMinutes()));
     }
 
@@ -58,10 +71,12 @@ public class PriceUpdateService : IPriceUpdateService
             IsInit = false;
             while (await timer.WaitForNextTickAsync(cts.Token))
             {
-                if (!IsPaused)
+                if (!IsPausRequested)
                 {
+                    IsUpdating = true;
                     Logger.Information("NextTick received");
                     await UpdatePricesAllCoins();
+                    IsUpdating = false;
                 }
                 else
                 {
@@ -71,7 +86,7 @@ public class PriceUpdateService : IPriceUpdateService
         }
         catch (OperationCanceledException)
         {
-            Logger.Information("PriceUpdateService canceled");
+            Logger.Information("PriceUpdateService cancelled");
         }
         catch (System.Exception ex)
         {
@@ -87,24 +102,38 @@ public class PriceUpdateService : IPriceUpdateService
         }
         cts.Cancel();
         cts.Dispose();
+        IsUpdating = false;
         Logger.Information("PriceUpdateService stopped");
     }
 
     public void Pause()
     {
-        IsPaused = true;
+        IsPausRequested = true;
         Logger.Information("PriceUpdateService Paused");
     }
 
-    public void Continue()
+    public async Task Resume()
     {
-        IsPaused = false;
-        Logger.Information("PriceUpdateService Continued");
+            if (currentContext != _portfolioService.Context)
+            {
+                Logger.Information("PriceUpdateService continued with new context");
+                currentContext = _portfolioService.Context;
+                IsInit = true;
+                await UpdatePricesAllCoins();
+                IsInit = false;
+            }
+            else
+            {
+                Logger.Information("PriceUpdateService continued with existing context");
+            }
+
+        IsPausRequested = false;
     }
 
     private async Task UpdatePricesAllCoins()
     {
-        var coinIdsTemp = await coinContext.Coins
+        var context = _portfolioService.Context;
+        var coinIdsTemp = await context.Coins
             .Include(x => x.PriceLevels)
             .Where(x => x.Name.Length <= 12 || (x.Name.Length > 12 && x.Name.Substring(x.Name.Length - 12) != "_pre-listing"))
             .Select(c => c.ApiId).ToListAsync();
@@ -123,7 +152,7 @@ public class PriceUpdateService : IPriceUpdateService
 
         for (var pageNr = 1; pageNr <= nrOfPages; pageNr++)
         {
-            if (cts.IsCancellationRequested || IsPaused)
+            if (cts.IsCancellationRequested || IsPausRequested)
             {
                 return;
             }
@@ -136,7 +165,7 @@ public class PriceUpdateService : IPriceUpdateService
                 await Task.Delay(TimeSpan.FromSeconds(30));
             }
 
-            await coinContext.SaveChangesAsync();
+            await context.SaveChangesAsync();
             _assetService.SortList();
             await _assetService.CalculateAssetsTotalValues();
         }
@@ -198,7 +227,7 @@ public class PriceUpdateService : IPriceUpdateService
 
         var tokenSource2 = new CancellationTokenSource();
         var cancellationToken = tokenSource2.Token;
-        while (!cancellationToken.IsCancellationRequested && !IsPaused)
+        while (!cancellationToken.IsCancellationRequested && !IsPausRequested)
         {
             totalRequests++;
             try
@@ -253,7 +282,9 @@ public class PriceUpdateService : IPriceUpdateService
     {
         try
         {
-            var coin = await coinContext.Coins
+            await Task.Delay(100);
+            var context = _portfolioService.Context;
+            var coin = await context.Coins
                 .Include(x => x.PriceLevels)
                 .SingleAsync(c => c.ApiId.ToLower() == coinData.Id.ToLower());
 
@@ -270,14 +301,10 @@ public class PriceUpdateService : IPriceUpdateService
             coin.Change1Month = coinData.PriceChangePercentage30DInCurrency ?? 0;
             coin.Change52Week = coinData.PriceChangePercentage1YInCurrency ?? 0;
 
-            coinContext.Coins.Update(coin);
+            context.Coins.Update(coin);
             Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
 
-            if (AssetsViewModel.Current != null)
-            {
-                Logger.Information("Updating Assets Overview");
-                _assetService.UpdatePricesAssetTotals(coin, oldPrice, newPrice);
-            }
+            _messenger.Send(new UpdatePricesMessage(coin, oldPrice, newPrice));    
 
             return coin;
         }

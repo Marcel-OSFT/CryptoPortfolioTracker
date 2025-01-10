@@ -15,7 +15,8 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3" xmlns:models="using:CryptoPortfolioTracker.Models"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Loaded="Control_Loaded"
+    Loading="Control_Loading"
+    Unloaded="Control_Unloaded"
     mc:Ignorable="d">
 
 
@@ -39,7 +40,7 @@
             HorizontalAlignment="Left"/>
         <StackPanel Grid.Row="1">
             <GridView x:Name="TopWinnersView" x:FieldModifier="public" 
-                ItemsSource="{Binding TopWinners, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
+                ItemsSource="{Binding TopWinners, Mode=OneWay}" BorderBrush="Transparent" BorderThickness="1"                             
                 IsItemClickEnabled="False" SelectionMode="None" 
                 
                 ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollMode="Auto"
@@ -79,6 +80,8 @@
                                             </TextBlock>
                                         </Viewbox>
 
+                                        
+
                                         <TextBlock x:Name="txtPerc" 
                                             Text="{Binding Change24Hr, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.00} %'}"
                                             Foreground="DarkGoldenrod"
@@ -105,7 +108,7 @@
             </GridView>
 
             <GridView x:Name="TopLosersView" x:FieldModifier="public" 
-                ItemsSource="{Binding TopLosers, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
+                ItemsSource="{Binding TopLosers, Mode=OneWay}" BorderBrush="Transparent" BorderThickness="1"                             
                 IsItemClickEnabled="False" SelectionMode="None" ScrollViewer.HorizontalScrollMode="Enabled"
                
                 ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -144,7 +147,7 @@
                                                 HorizontalAlignment="Center">
                                             </TextBlock>
                                         </Viewbox>
-
+                                        
                                         <TextBlock x:Name="txtPerc" 
                                             Text="{Binding Change24Hr, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.00} %'}"
                                             Foreground="DarkGoldenrod"

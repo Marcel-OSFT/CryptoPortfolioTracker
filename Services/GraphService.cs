@@ -24,27 +24,28 @@ public partial class GraphService : ObservableObject, IGraphService
     private List<HistoricalDataByIdRev> HistoricalDataByIdsBufferList { get; set; } = new();
     [ObservableProperty] private bool isLoadingFromJson;
     
-    private readonly string chartsFolder = Path.Combine(App.appDataPath, App.ChartsFolder);
+    //private readonly string chartsFolder = Path.Combine(App.appDataPath, App.ChartsFolder);
 
     public GraphService() 
     {
         HistoricalDataByIdsBufferList = new();
     }
 
-    public async Task LoadGraphFromJson()
+    public async Task LoadGraphFromJson(string portfolioPath)
     {
         try
         {
             IsLoadingFromJson = true;
-            
-            Directory.CreateDirectory(chartsFolder);
-            await LoadGraphDataAsync(chartsFolder + "\\graph.json", async stream =>
+            var graphPath = Path.Combine(App.appDataPath, portfolioPath);
+
+            Directory.CreateDirectory(graphPath); // if not exists
+            await LoadGraphDataAsync(Path.Combine(graphPath, "graph.json"), async stream =>
             {
                 graph = await JsonSerializer.DeserializeAsync<Graph>(stream);
                 Logger.Information("Graph data de-serialized successfully ({0} data points)", graph.DataPointsPortfolio.Count);
             });
 
-            await LoadGraphDataAsync(chartsFolder + "\\HistoryBuffer.json", async stream =>
+            await LoadGraphDataAsync(Path.Combine(graphPath, "HistoryBuffer.json"), async stream =>
             {
                 HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(stream);
                 if (HistoricalDataByIdsBufferList?.Count > 0)
@@ -59,13 +60,13 @@ public partial class GraphService : ObservableObject, IGraphService
             }
             else
             {
-                await CleanUpGraph();
+                await CleanUpGraph(portfolioPath);
             }
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to de-serialize Graph data");
-            RestoreBackupGraph();
+            RestoreBackupGraph(portfolioPath);
         }
         finally
         {
@@ -89,12 +90,13 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    private void RestoreBackupGraph()
+    private void RestoreBackupGraph(string portfolioPath)
     {
-        var backupFileName = chartsFolder + "\\graph.json.bak";
+        var graphPath = Path.Combine(App.appDataPath, portfolioPath);
+        var backupFileName = Path.Combine(graphPath, "graph.json.bak");
         if (File.Exists(backupFileName))
         {
-            File.Copy(backupFileName, chartsFolder + "\\graph.json", true);
+            File.Copy(backupFileName, Path.Combine(graphPath, "graph.json"), true);
             Logger.Information("Restored backup graph.json file");
         }
     }
@@ -110,7 +112,7 @@ public partial class GraphService : ObservableObject, IGraphService
     }
 
 
-    private async Task CleanUpGraph()
+    private async Task CleanUpGraph(string portfolioPath)
     {
         // Remove duplicate entries
         graph.DataPointsInFlow = RemoveDuplicates(graph.DataPointsInFlow);
@@ -130,7 +132,7 @@ public partial class GraphService : ObservableObject, IGraphService
             graph.DataPointsInFlow = RemoveLeadingZeros(graph.DataPointsInFlow, date, sumInFlow);
             graph.DataPointsOutFlow = RemoveLeadingZeros(graph.DataPointsOutFlow, date, sumOutFlow);
 
-            await SaveGraphToJson();
+            await SaveGraphToJson(portfolioPath);
         }
     }
 
@@ -148,12 +150,13 @@ public partial class GraphService : ObservableObject, IGraphService
         filteredDataPoints.Add(new DataPoint { Date = date.AddDays(-1), Value = initialValue });
         return filteredDataPoints.OrderBy(x => x.Date).ToList();
     }
-    public async Task SaveGraphToJson()
+    public async Task SaveGraphToJson(string portfolioPath)
     {
         try
         {
-            var backupFileName = Path.Combine(chartsFolder, "graph.json.bak");
-            var fileName = Path.Combine(chartsFolder, "graph.json");
+            var graphPath = Path.Combine(App.appDataPath, portfolioPath);
+            var backupFileName = Path.Combine(graphPath, "graph.json.bak");
+            var fileName = Path.Combine(graphPath, "graph.json");
 
             if (File.Exists(fileName))
             {
@@ -173,7 +176,8 @@ public partial class GraphService : ObservableObject, IGraphService
     {
         if (HistoricalDataByIdsBufferList.Count > 0)
         {
-            var fileName = Path.Combine(chartsFolder, "HistoryBuffer.json");
+            var chartsPath = Path.Combine(App.appDataPath, App.ChartsFolder);
+            var fileName = Path.Combine(chartsPath, "HistoryBuffer.json");
             try
             {
                 await using FileStream createStream = File.Create(fileName);
@@ -190,7 +194,8 @@ public partial class GraphService : ObservableObject, IGraphService
     {
         HistoricalDataByIdsBufferList.Clear();
 
-        var historyBufferFile = Path.Combine(chartsFolder, "HistoryBuffer.json");
+        var chartsPath = Path.Combine(App.appDataPath, App.ChartsFolder);
+        var historyBufferFile = Path.Combine(chartsPath, "HistoryBuffer.json");
         if (File.Exists(historyBufferFile))
         {
             File.Delete(historyBufferFile);
@@ -232,7 +237,7 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    public async Task ApplyModification()
+    public async Task ApplyModification(string portfolioPath)
     {
         try
         {
@@ -243,7 +248,7 @@ public partial class GraphService : ObservableObject, IGraphService
             RemoveDataPointsFromDate(graph.DataPointsInFlow, modDate);
             RemoveDataPointsFromDate(graph.DataPointsOutFlow, modDate);
 
-            await SaveGraphToJson();
+            await SaveGraphToJson(portfolioPath);
 
             graph.ModifyFromDate = DateOnly.MinValue;
             graph.IsModificationRequested = false;

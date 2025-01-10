@@ -64,6 +64,7 @@
     <None Remove="Controls\GraphControl.xaml" />
     <None Remove="Controls\HeatMapControl.xaml" />
     <None Remove="Controls\PriceLevelsListViewControl.xaml" />
+    <None Remove="Controls\UserControl1.xaml" />
     <None Remove="Dialogs\AboutDialog.xaml" />
     <None Remove="Dialogs\AccountDialog.xaml" />
     <None Remove="Controls\AccountsListViewControl.xaml" />
@@ -85,7 +86,7 @@
     <PackageReference Include="AK.Toolkit.WinUI3.ScrollBarExtensions" Version="1.0.5" />
     <PackageReference Include="CoinGeckoFluentApi.Client" Version="1.0.0-preview.1" />
     <PackageReference Include="ColorCode.WinUI" Version="2.0.15" />
-    <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
+    <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="CommunityToolkit.WinUI" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
@@ -368,9 +369,15 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Controls\UserControl1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Update="Fonts\Segoe Fluent Icons.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\SwitchPortfolioView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\PriceLevelsView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
