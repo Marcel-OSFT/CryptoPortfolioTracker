@@ -283,7 +283,7 @@ public class GraphUpdateService : IGraphUpdateService
             });
             getDataResult.IfFail(err => { failed = true; });
 
-            await _graphService.SaveHistoricalDataBufferToJson();
+            await _graphService.SaveHistoricalDataBufferToJson(_portfolioService.CurrentPortfolio.Path);
             if (failed)
             {
                 return;
@@ -401,7 +401,7 @@ public class GraphUpdateService : IGraphUpdateService
         finally
         {
             await _graphService.SaveGraphToJson(_portfolioService.CurrentPortfolio.Path);
-            _graphService.ClearHistoricalDataBuffer();
+            _graphService.ClearHistoricalDataBuffer(_portfolioService.CurrentPortfolio.Path);
             Logger.Information("Historical Data updated and saved");
             _messenger.Send(new IsUpdatingGraphMessage(false));
         }

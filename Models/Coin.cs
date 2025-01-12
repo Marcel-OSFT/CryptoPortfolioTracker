@@ -186,7 +186,8 @@ public partial class Coin : BaseModel
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
-            return 0;
+            Rsi = 0;
+            return Rsi;
         }
     }
 }

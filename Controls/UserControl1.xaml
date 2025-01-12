@@ -63,6 +63,8 @@
             ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
             CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
 
+        
+        
         <ListView.Header>
             <Grid>
                 <Grid.RowDefinitions>
@@ -85,37 +87,14 @@
         </ListView.Header>
         <ListView.ItemTemplate>
             <DataTemplate x:DataType="models:Portfolio">
-                <UserControl PointerEntered="ListViewItem_PointerEntered" PointerExited="ListViewItem_PointerExited" >
-                    <Grid>
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="Notes">
-                                <VisualState x:Name="Normal" />
-                                <VisualState x:Name="ShowGreen" >
-                                    <Storyboard>
-                                        <StaticResource ResourceKey="SelectAnimation1"/>
-                                    </Storyboard>
-                                    <!--<VisualState.Setters>
-                                        <Setter Target="ItemPanel.Background" Value="Green" />
-                                    </VisualState.Setters>-->
-                                </VisualState>
-                                <VisualState x:Name="ShowTransparent" >
-                                    <Storyboard>
-                                        <StaticResource ResourceKey="DeselectAnimation1"/>
-                                    </Storyboard>
-                                    <!--<VisualState.Setters>
-                                        <Setter Target="ItemPanel.Background" Value="Transparent" />
-                                    </VisualState.Setters>-->
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        <Border x:Name="ItemBorder">
-                            <StackPanel>
-                                <TextBlock x:Name="txt1" Text="{Binding Name}"  FontSize="20" Margin="0,5,0,5"/>
-                                <TextBlock x:Name="txt2" Text="{Binding LastAccess}" FontSize="12" Margin="0,5,0,5" HorizontalAlignment="Right"/>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </UserControl>
+                
+                <Border x:Name="ItemBorder">
+                    <StackPanel>
+                        <TextBlock x:Name="txt1" Text="{Binding Name}"  FontSize="20" Margin="0,5,0,5"/>
+                        <TextBlock x:Name="txt2" Text="{Binding LastAccess}" FontSize="12" Margin="0,5,0,5" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Border>
+                   
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>

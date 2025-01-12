@@ -13,27 +13,44 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <!-- Define the animations -->
-        
+        <Style x:Key="CustomListViewItemsStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+            <Setter Property="MinHeight" Value="60"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <ListViewItemPresenter x:Name="Root" ContentTransitions="{TemplateBinding ContentTransitions}" Control.IsTemplateFocusTarget="True" FocusVisualMargin="{TemplateBinding FocusVisualMargin}" FocusVisualPrimaryBrush="{TemplateBinding FocusVisualPrimaryBrush}" FocusVisualPrimaryThickness="{TemplateBinding FocusVisualPrimaryThickness}" FocusVisualSecondaryBrush="{TemplateBinding FocusVisualSecondaryBrush}" FocusVisualSecondaryThickness="{TemplateBinding FocusVisualSecondaryThickness}" SelectionCheckMarkVisualEnabled="{ThemeResource ListViewItemSelectionCheckMarkVisualEnabled}" CheckBrush="{ThemeResource ListViewItemCheckBrush}" CheckBoxBrush="{ThemeResource ListViewItemCheckBoxBrush}" DragBackground="{ThemeResource ListViewItemDragBackground}" DragForeground="{ThemeResource ListViewItemDragForeground}" FocusBorderBrush="{ThemeResource ListViewItemFocusBorderBrush}" FocusSecondaryBorderBrush="{ThemeResource ListViewItemFocusSecondaryBorderBrush}" PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackground}" PointerOverBackground="{ThemeResource ListViewItemBackgroundPointerOver}" PointerOverForeground="{ThemeResource ListViewItemForegroundPointerOver}" SelectedBackground="{ThemeResource ListViewItemBackgroundSelected}" SelectedForeground="{ThemeResource ListViewItemForegroundSelected}" SelectedPointerOverBackground="{ThemeResource ListViewItemBackgroundSelectedPointerOver}" PressedBackground="{ThemeResource ListViewItemBackgroundPressed}" SelectedPressedBackground="{ThemeResource ListViewItemBackgroundSelectedPressed}" DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}" DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}" ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" ContentMargin="{TemplateBinding Padding}" CheckMode="{ThemeResource ListViewItemCheckMode}" CornerRadius="{ThemeResource ListViewItemCornerRadius}" CheckPressedBrush="{ThemeResource ListViewItemCheckPressedBrush}" CheckDisabledBrush="{ThemeResource ListViewItemCheckDisabledBrush}" CheckBoxPointerOverBrush="{ThemeResource ListViewItemCheckBoxPointerOverBrush}" CheckBoxPressedBrush="{ThemeResource ListViewItemCheckBoxPressedBrush}" CheckBoxDisabledBrush="{ThemeResource ListViewItemCheckBoxDisabledBrush}" CheckBoxSelectedBrush="{ThemeResource ListViewItemCheckBoxSelectedBrush}" CheckBoxSelectedPointerOverBrush="{ThemeResource ListViewItemCheckBoxSelectedPointerOverBrush}" CheckBoxSelectedPressedBrush="{ThemeResource ListViewItemCheckBoxSelectedPressedBrush}" CheckBoxSelectedDisabledBrush="{ThemeResource ListViewItemCheckBoxSelectedDisabledBrush}" CheckBoxBorderBrush="{ThemeResource ListViewItemCheckBoxBorderBrush}" CheckBoxPointerOverBorderBrush="{ThemeResource ListViewItemCheckBoxPointerOverBorderBrush}" CheckBoxPressedBorderBrush="{ThemeResource ListViewItemCheckBoxPressedBorderBrush}" CheckBoxDisabledBorderBrush="{ThemeResource ListViewItemCheckBoxDisabledBorderBrush}" CheckBoxCornerRadius="{ThemeResource ListViewItemCheckBoxCornerRadius}" SelectionIndicatorCornerRadius="{ThemeResource ListViewItemSelectionIndicatorCornerRadius}" 
+                            SelectionIndicatorVisualEnabled="false" SelectionIndicatorBrush="{ThemeResource ListViewItemSelectionIndicatorBrush}" SelectionIndicatorPointerOverBrush="{ThemeResource ListViewItemSelectionIndicatorPointerOverBrush}" SelectionIndicatorPressedBrush="{ThemeResource ListViewItemSelectionIndicatorPressedBrush}" SelectionIndicatorDisabledBrush="{ThemeResource ListViewItemSelectionIndicatorDisabledBrush}" SelectedDisabledBackground="{ThemeResource ListViewItemBackgroundSelectedDisabled}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         
         <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-              Margin="0,0,5,10" VerticalAlignment="Stretch">
+              Margin="0,0,5,10" VerticalAlignment="Stretch" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="100"/>
-                <RowDefinition Height="110"/>
+                <RowDefinition Height="100"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <!-- General Header -->
-            <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="3" Height="265" VerticalAlignment="Top"/>
+            <controls:HomePageHeaderImage x:Name="HeaderImage" Grid.Row="0" Grid.RowSpan="3" Height="265" VerticalAlignment="Top"/>
             <RelativePanel>
                 <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod"
                            Margin="36,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
                 <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding SelectedPortfolio.Name}"
-                           Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" 
-                           RelativePanel.Below="smallHeaderText"/>
+                    Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" 
+                    RelativePanel.Below="smallHeaderText">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform x:Name="TextBlockTransform" x:FieldModifier="public"/>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
                 <TextBlock l:Uids.Uid="SwitchPortfolio_Title" x:Name="txtSwitchPortfolio" Margin="36,5,0,0"
                            Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" 
                            RelativePanel.Below="txtPortfolio" RelativePanel.AlignBottomWithPanel="True"/>
@@ -41,13 +58,55 @@
             <TextBlock l:Uids.Uid="SwitchPortfolio_Explainer" Grid.Row="1" VerticalAlignment="Bottom"
                        Style="{StaticResource ExplainerTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"/>
             <!-- End of General Header -->
-            <Border Grid.Row="2" VerticalAlignment="Stretch" Margin="10,50,0,0">
+            <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="10,50,0,0">
                 <Grid Name="SwitchPortfolioContent">
+                    <ListView x:Name="PortfoliosLV" BorderThickness="0"
+                        BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
+                        DoubleTapped="PortfoliosListView_DoubleTapped" IsDoubleTapEnabled="True" IsTapEnabled="False"
+                        Width="650"  HorizontalAlignment="Left" 
+                        ItemsSource="{Binding _portfolioService.Portfolios}"
+                        IsItemClickEnabled="False" SelectionMode="Single" Loaded="ListView_Loaded"
+                        ItemContainerStyle="{StaticResource CustomListViewItemsStyle}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                        CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10"  >
 
-
-                    <controls:TestUserControlWorking x:Name="ctrl" x:FieldModifier="public"/>
-
-
+                        <ListView.Header>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.6*"/>
+                                    <ColumnDefinition Width="0.4*"/>
+                                    <ColumnDefinition Width="10"/>
+                                </Grid.ColumnDefinitions>
+                                <RichTextBlock Grid.Row="0" Grid.Column="0" Margin="10,0,0,5" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                                    <Paragraph TextAlignment="Left">
+                                        <Run l:Uids.Uid="SwitchPortfolioLV_Title" FontSize="20" FontStyle="Italic"/>
+                                    </Paragraph>
+                                </RichTextBlock>
+                                <RichTextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,0,5" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                                    <Paragraph TextAlignment="Left">
+                                        <Run l:Uids.Uid="SwitchPortfolioLV_LastAccess" FontSize="14" FontStyle="Italic"/>
+                                    </Paragraph>
+                                </RichTextBlock>
+                                <Rectangle Grid.Row="1" Grid.ColumnSpan="3" Fill="#eebc3f" Height="2" Margin="5,0,8,10"/>
+                            </Grid>
+                        </ListView.Header>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Portfolio">
+                                <Border x:Name="ItemBorder" Background="Transparent" Margin="0,0,0,0">
+                                    <RelativePanel x:Name="ItemPanel" VerticalAlignment="Stretch">
+                                        <TextBlock x:Name="txt1" Text="{Binding Name}" FontSize="20" Margin="20,0,0,5" 
+                                                   RelativePanel.AlignVerticalCenterWithPanel="True"/>
+                                        <TextBlock x:Name="txt2" Text="{Binding LastAccess}" FontSize="12" Margin="0,0,10,10" 
+                                                  RelativePanel.RightOf="txt1"  RelativePanel.AlignRightWithPanel="True"
+                                                   HorizontalTextAlignment="Right" RelativePanel.AlignBottomWithPanel="True"  />
+                                    </RelativePanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </Grid>
             </Border>
         </Grid>

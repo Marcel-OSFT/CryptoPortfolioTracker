@@ -56,9 +56,7 @@ public partial class DashboardViewModel : BaseViewModel
     {
         if (!IsUpdatingGraph) // && !_isInitializing)
         {
-            GetValuesGraph();
             SetValuesGraph();
-            //SetSeriesGraph();
         }
     }
 
@@ -78,9 +76,9 @@ public partial class DashboardViewModel : BaseViewModel
         try
         {
             await WaitForJsonToLoad();
+            
             if (_graphService.HasDataPoints())
             {
-                GetValuesGraph();
                 SetSeriesGraph();
             }
             // re-set the labels because language settings might have changed
@@ -98,20 +96,16 @@ public partial class DashboardViewModel : BaseViewModel
         while (_graphService.IsLoadingFromJson)
         {
             IsLoadingFromJsonGraph = true;
-            await Task.Delay(1000);
+            await Task.Delay(100);
         }
         IsLoadingFromJsonGraph = false;
     }
 
-    private void GetValuesGraph()
+    
+    private void UpdateSeriesValues()
     {
-        valuesPortfolio = new ObservableCollection<DateTimePoint>(_graphService.GetPortfolioValues());
-        valuesInFlow = new ObservableCollection<DateTimePoint>(_graphService.GetInFlowValues());
-        valuesOutFlow = new ObservableCollection<DateTimePoint>(_graphService.GetOutFlowValues());
-    }
+        GetValuesGraph();
 
-    private void SetValuesGraph()
-    {
         SeriesGraph[0].Values = valuesPortfolio;
         SeriesGraph[1].Values = valuesInFlow;
         SeriesGraph[2].Values = valuesOutFlow;
@@ -120,6 +114,8 @@ public partial class DashboardViewModel : BaseViewModel
     private void SetSeriesGraph()
     {
         var loc = Localizer.Get();
+
+        GetValuesGraph();
 
         if (SeriesGraph is not null) 
         { 
@@ -156,6 +152,25 @@ public partial class DashboardViewModel : BaseViewModel
             }
         };
         
+    }
+
+    private void GetValuesGraph()
+    {
+        valuesPortfolio = new ObservableCollection<DateTimePoint>(_graphService.GetPortfolioValues());
+        valuesInFlow = new ObservableCollection<DateTimePoint>(_graphService.GetInFlowValues());
+        valuesOutFlow = new ObservableCollection<DateTimePoint>(_graphService.GetOutFlowValues());
+    }
+
+    private void SetValuesGraph()
+    {
+        if (!SeriesGraph.Any())
+        {
+            SetSeriesGraph();
+        }
+        else
+        {
+            UpdateSeriesValues();
+        }
     }
 
     private void SetXAxesGraph()

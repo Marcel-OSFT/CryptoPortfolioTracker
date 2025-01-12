@@ -1410,6 +1410,26 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>New Feature: daily RSI bubbles</source>
           <target state="translated">Nieuwe functie: dagelijkse RSI</target>
         </trans-unit>
+        <trans-unit id="SwitchPortfolio_Title.Text" translate="yes" xml:space="preserve">
+          <source>Switch Portfolio</source>
+          <target state="translated">Wissel Portefeuille</target>
+        </trans-unit>
+        <trans-unit id="SwitchPortfolio_Explainer" translate="yes" xml:space="preserve">
+          <source>The Crypto Portfolio Tracker supports multiple portfolios. Go to the Portfolio Admin view to manage and setup your portfolio(s).</source>
+          <target state="translated">De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuille(s) te beheren en in te stellen.</target>
+        </trans-unit>
+        <trans-unit id="SwitchPortfolioLV_Title.Text" translate="yes" xml:space="preserve">
+          <source>Portfolios</source>
+          <target state="translated">Portefeuille</target>
+        </trans-unit>
+        <trans-unit id="SwitchPortfolioLV_LastAccess" translate="yes" xml:space="preserve">
+          <source>last access</source>
+          <target state="translated">laatst geopend</target>
+        </trans-unit>
+        <trans-unit id="Navigation_SwitchPortfolio.Content" translate="yes" xml:space="preserve">
+          <source>Switch Portfolio</source>
+          <target state="translated">Wissel portefeuille</target>
+        </trans-unit>
       </group>
     </body>
   </file>

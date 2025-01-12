@@ -1,5 +1,7 @@
 ﻿
 using CryptoPortfolioTracker.Models;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -137,6 +139,108 @@ public class MkOsft
         }
     }
 
+    public static void FileMove(string fileName, string path, string newPath)
+    {
+        var file = Path.Combine(path, fileName);
+        var newFile = Path.Combine(newPath, fileName);
+        if (File.Exists(file))
+        {
+            File.Move(file, newFile);
+        }
+    }
+
+    public static void FilesDelete(string searchPattern, string path)
+    {
+        var filesToDelete = Directory.GetFiles(path, searchPattern);
+        foreach (var file in filesToDelete)
+        {
+            File.Delete(file);
+        }
+    }
+
+    /// <summary>
+    /// Creates a directory if not exist. Set forceDelete to true to ensure an empty directory 
+    /// </summary>
+    /// <param name="path">Path of directory to create</param>
+    /// <param name="forceDelete">'true' will Delete directory prior to creating a new one</param>
+    public static void CreateDirectory(string path, bool forceDelete = false)
+    {
+        if (forceDelete && Directory.Exists(path))
+        {
+            Directory.Delete(path,true);
+        }
+        Directory.CreateDirectory(path);
+    }
+
+
+    public static void MakeFileHidden(string path)
+    {
+        // Check if the file exists
+        if (File.Exists(path))
+        {
+            // Get the current attributes of the file
+            FileAttributes attributes = File.GetAttributes(path);
+
+            // Add the Hidden attribute
+            attributes |= FileAttributes.Hidden;
+
+            // Set the updated attributes
+            File.SetAttributes(path, attributes);
+        }
+    }
+
+    /// <summary>
+    /// Retrieves an element of type T from a UI element by name.
+    /// </summary>
+    /// <param name="element">The UI Element to be searched.</param>
+    /// <param name="name">The Name of the element to search for.</param>
+    public static T? GetElementFromUiElement<T>(UIElement element, string name) where T : FrameworkElement
+    {
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(element, i);
+            if (child is T targetElement && targetElement.Name == name)
+            {
+                return targetElement;
+            }
+            else
+            {
+                T? descendant = GetElementFromUiElement<T>(child, name);
+                if (descendant != null)
+                {
+                    return descendant;
+                }
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Retrieves an element from a UI element by name.
+    /// </summary>
+    /// <typeparam name="T">The type of the element to search for.</typeparam>
+    /// <param name="element">The UI Element to be searched.</param>
+    /// <param name="name">The Name of the element to search for.</param>
+    private static T? GetElementFromUiElement<T>(DependencyObject element, string name) where T : FrameworkElement
+    {
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(element, i);
+            if (child is T targetElement && targetElement.Name == name)
+            {
+                return targetElement;
+            }
+            else
+            {
+                T? descendant = GetElementFromUiElement<T>(child, name);
+                if (descendant != null)
+                {
+                    return descendant;
+                }
+            }
+        }
+        return null;
+    }
 
 
 }

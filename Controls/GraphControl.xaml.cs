@@ -24,14 +24,12 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
         DataContext = _viewModel;
         InitializeComponent();
         _viewModel.ConstructGraph();
-        
     }
-
-    // ... other code ...
 
     private async void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
         await _viewModel.GraphControlLoading();
+       // this.UpdateLayout();
     }
 
     private void Graph_SizeChanged(object sender, SizeChangedEventArgs e)

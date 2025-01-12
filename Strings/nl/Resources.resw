@@ -1058,4 +1058,19 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="HeatMap_TeachRsi.Title" xml:space="preserve">
     <value>Nieuwe functie: dagelijkse RSI</value>
   </data>
+  <data name="SwitchPortfolio_Title.Text" xml:space="preserve">
+    <value>Wissel Portefeuille</value>
+  </data>
+  <data name="SwitchPortfolio_Explainer" xml:space="preserve">
+    <value>De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuille(s) te beheren en in te stellen.</value>
+  </data>
+  <data name="SwitchPortfolioLV_Title.Text" xml:space="preserve">
+    <value>Portefeuille</value>
+  </data>
+  <data name="SwitchPortfolioLV_LastAccess" xml:space="preserve">
+    <value>laatst geopend</value>
+  </data>
+  <data name="Navigation_SwitchPortfolio.Content" xml:space="preserve">
+    <value>Wissel portefeuille</value>
+  </data>
 </root>
