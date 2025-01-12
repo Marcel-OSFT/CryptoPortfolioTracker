@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
+using LanguageExt.Common;
 using LiveChartsCore.Defaults;
 using Serilog;
 using Serilog.Core;
@@ -50,9 +51,10 @@ public partial class GraphService : ObservableObject, IGraphService
                 HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(stream);
                 if (HistoricalDataByIdsBufferList?.Count > 0)
                 {
-                    CheckValidityHistoricalDataBuffer();
+                    CheckValidityHistoricalDataBuffer(graphPath);
                 }
             });
+
 
             if (graph == null)
             {
@@ -66,7 +68,8 @@ public partial class GraphService : ObservableObject, IGraphService
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to de-serialize Graph data");
-            RestoreBackupGraph(portfolioPath);
+            var restoreResult = await RestoreAndLoadBackupGraph(portfolioPath);
+            restoreResult.IfFail(ex => graph = new());
         }
         finally
         {
@@ -90,28 +93,81 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    private void RestoreBackupGraph(string portfolioPath)
+    private async Task<Result<bool>> RestoreAndLoadBackupGraph(string portfolioPath)
     {
         var graphPath = Path.Combine(App.appDataPath, portfolioPath);
         var backupFileName = Path.Combine(graphPath, "graph.json.bak");
         if (File.Exists(backupFileName))
         {
-            File.Copy(backupFileName, Path.Combine(graphPath, "graph.json"), true);
-            Logger.Information("Restored backup graph.json file");
+            try
+            {
+                File.Copy(backupFileName, Path.Combine(graphPath, "graph.json"), true);
+                Logger.Information("Restored backup graph.json file");
+                await LoadGraphDataAsync(Path.Combine(graphPath, "graph.json"), async stream =>
+                {
+                    graph = await JsonSerializer.DeserializeAsync<Graph>(stream);
+                    Logger.Information("Graph data de-serialized successfully ({0} data points)", graph.DataPointsPortfolio.Count);
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Restoring and de-serializing backup graph failed");
+                return new Result<bool>(false);
+            }
+            return new Result<bool>(true); ;
         }
+        Logger.Error("No backup graph available");
+        return new Result<bool>(false);
     }
-    private void CheckValidityHistoricalDataBuffer()
+    private void CheckValidityHistoricalDataBuffer(string path)
     {
         if (HistoricalDataByIdsBufferList?.Count > 0 && graph?.DataPointsPortfolio?.Count > 0)
         {
             if (GetHistoricalDataBufferOldestDate() != GetLatestDataPointDate().AddDays(1))
             {
-                ClearHistoricalDataBuffer();
+                ClearHistoricalDataBuffer(path);
             }
         }
     }
 
 
+   public async Task SaveGraphToJson(string portfolioPath)
+    {
+        try
+        {
+            var fileName = Path.Combine(App.appDataPath, portfolioPath, "graph.json");
+            var backupFileName = fileName + ".bak";
+
+            if (File.Exists(fileName))
+            {
+                File.Copy(fileName, backupFileName, true);
+            }
+
+            await using FileStream createStream = File.Create(fileName);
+            await JsonSerializer.SerializeAsync(createStream, graph);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to serialize Graph data");
+        }
+    }
+
+    public async Task SaveHistoricalDataBufferToJson(string portfolioPath)
+    {
+        if (HistoricalDataByIdsBufferList.Count > 0)
+        {
+            var fileName = Path.Combine(App.appDataPath, portfolioPath, "HistoryBuffer.json");
+            try
+            {
+                await using FileStream createStream = File.Create(fileName);
+                await JsonSerializer.SerializeAsync(createStream, HistoricalDataByIdsBufferList);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to serialize HistoricalDataBuffer data");
+            }
+        }
+    }
     private async Task CleanUpGraph(string portfolioPath)
     {
         // Remove duplicate entries
@@ -150,52 +206,12 @@ public partial class GraphService : ObservableObject, IGraphService
         filteredDataPoints.Add(new DataPoint { Date = date.AddDays(-1), Value = initialValue });
         return filteredDataPoints.OrderBy(x => x.Date).ToList();
     }
-    public async Task SaveGraphToJson(string portfolioPath)
-    {
-        try
-        {
-            var graphPath = Path.Combine(App.appDataPath, portfolioPath);
-            var backupFileName = Path.Combine(graphPath, "graph.json.bak");
-            var fileName = Path.Combine(graphPath, "graph.json");
 
-            if (File.Exists(fileName))
-            {
-                File.Copy(fileName, backupFileName, true);
-            }
-
-            await using FileStream createStream = File.Create(fileName);
-            await JsonSerializer.SerializeAsync(createStream, graph);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(ex, "Failed to serialize Graph data");
-        }
-    }
-
-    public async Task SaveHistoricalDataBufferToJson()
-    {
-        if (HistoricalDataByIdsBufferList.Count > 0)
-        {
-            var chartsPath = Path.Combine(App.appDataPath, App.ChartsFolder);
-            var fileName = Path.Combine(chartsPath, "HistoryBuffer.json");
-            try
-            {
-                await using FileStream createStream = File.Create(fileName);
-                await JsonSerializer.SerializeAsync(createStream, HistoricalDataByIdsBufferList);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Failed to serialize HistoricalDataBuffer data");
-            }
-        }
-    }
-
-    public void ClearHistoricalDataBuffer()
+    public void ClearHistoricalDataBuffer(string portfolioPath)
     {
         HistoricalDataByIdsBufferList.Clear();
 
-        var chartsPath = Path.Combine(App.appDataPath, App.ChartsFolder);
-        var historyBufferFile = Path.Combine(chartsPath, "HistoryBuffer.json");
+        var historyBufferFile = Path.Combine(App.appDataPath, portfolioPath, "HistoryBuffer.json");
         if (File.Exists(historyBufferFile))
         {
             File.Delete(historyBufferFile);

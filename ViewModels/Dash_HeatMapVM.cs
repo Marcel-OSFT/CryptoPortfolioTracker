@@ -27,10 +27,10 @@ public partial class DashboardViewModel : BaseViewModel
 
     [ObservableProperty] public int selectedHeatMapIndex = -1;
 
-    partial void OnSelectedHeatMapIndexChanged(int oldValue, int newValue)
+    async partial void OnSelectedHeatMapIndexChanged(int oldValue, int newValue)
     {
         if (newValue == -1) return;
-        ChangeHeatMapType(newValue);
+        await ChangeHeatMapType(newValue);
     }
 
     [ObservableProperty] string heatMapTitle = string.Empty;
@@ -170,7 +170,7 @@ public partial class DashboardViewModel : BaseViewModel
     /// <summary>   
     /// This method is called by the HeatMapControl_Loading event.  
     /// </summary>
-    public void HeatMapControlLoading()
+    public async void HeatMapControlLoading()
     {
         try
         {
@@ -178,7 +178,7 @@ public partial class DashboardViewModel : BaseViewModel
             bubbleSizeMin = 1;
             SetCustomSeparators();
             SelectedHeatMapIndex = _preferencesService.GetHeatMapIndex();
-            SetSeriesHeatMap(SelectedHeatMapIndex);
+            await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
         catch (Exception ex)
         {
@@ -190,10 +190,16 @@ public partial class DashboardViewModel : BaseViewModel
 
     private async Task RefreshHeatMapPoints()
     {
-        HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(SelectedHeatMapIndex));
-
-        SeriesHeatMap[0].Values = HeatMapPoints;
-
+        
+        if (!SeriesHeatMap.Any())
+        {
+            await SetSeriesHeatMap(SelectedHeatMapIndex);
+        }
+        else
+        {
+            HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(SelectedHeatMapIndex));
+            SeriesHeatMap[0].Values = HeatMapPoints;
+        }
     }
 
     private async Task SetSeriesHeatMap(int selectedHeatMapIndex)
@@ -310,7 +316,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
     }
 
-    public void ChangeHeatMapType(int index)
+    public async Task ChangeHeatMapType(int index)
     {
         _preferencesService.SetHeatMapIndex(index);
         SelectedHeatMapIndex = index;
@@ -320,14 +326,14 @@ public partial class DashboardViewModel : BaseViewModel
             HeatMapTitle = "Target Bubbles";
             SectionsHeatMap = sectionsTarget;
             YAxesHeatMap = yAxesTarget;
-            SetSeriesHeatMap(SelectedHeatMapIndex);
+            await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
         else
         {
             HeatMapTitle = "RSI Bubbles";
             SectionsHeatMap = sectionsRsi;
             YAxesHeatMap = yAxesRsi;
-            SetSeriesHeatMap(SelectedHeatMapIndex);
+            await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
     }
 

@@ -3,7 +3,6 @@ using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Helpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
 using System;
@@ -12,11 +11,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Windows.Storage;
 using CryptoPortfolioTracker.Enums;
 using System.Text.Json;
-using System.Security.AccessControl;
+using LanguageExt.Common;
+using LanguageExt;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -24,20 +23,18 @@ namespace CryptoPortfolioTracker.Services
     /// Invoked when the application is launched.
     /// Needs to call InitializeAsync to get the portfolios and connect to the database.
     /// </summary>
-    public class PortfolioService
+    public partial class PortfolioService : ObservableObject
     {
         private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PortfolioService).Name.PadRight(22));
         private readonly IPreferencesService _preferenceService;
         private readonly IPortfolioContextFactory _contextFactory;
         public PortfolioContext Context { get; private set; }
         public string DatabasePath { get; private set; }
-        public Portfolio CurrentPortfolio { get; private set; }
-        public List<Portfolio> Portfolios { get; set; } = new();
+        [ObservableProperty] private Portfolio currentPortfolio;
+        [ObservableProperty] private List<Portfolio> portfolios = new();
 
-        private Task getPortfolioTask;
+        public bool IsInitialPortfolioLoaded { get; private set; } = false;
 
-
-        
         public PortfolioService(IPortfolioContextFactory contextFactory, IPreferencesService preferencesService)
         {
             _contextFactory = contextFactory;
@@ -50,14 +47,23 @@ namespace CryptoPortfolioTracker.Services
         public async Task InitializeAsync()
         {
             await GetPortfolios();
-            await LoadInitialPortfolio();
+            IsInitialPortfolioLoaded = await LoadInitialPortfolio();
         }
 
-        public async Task SwitchPortfolio(Portfolio portfolio)
+        public async Task<Result<bool>> SwitchPortfolio(Portfolio portfolio)
         {
-            await ConnectPortfolioDatabase(portfolio);
-
-            Logger?.Information($"Switched to Database {DatabasePath}");
+            var result = await ConnectPortfolioDatabase(portfolio);
+            return result.Match(
+                Succ: succ =>
+                {
+                    Logger?.Information($"Switched to Database {DatabasePath}");
+                    return new Result<bool>(true);
+                },
+                Fail: err =>
+                {
+                    Logger?.Error(err, $"Failed to switch to Database {DatabasePath}");
+                    return new Result<bool>(err);
+                });
         }
 
         private async Task GetPortfolios()
@@ -74,8 +80,7 @@ namespace CryptoPortfolioTracker.Services
             }
             else
             {
-                bool alreadyMigrated = await MigrateFolderStructureIfNeeded();
-                if (alreadyMigrated)
+                if (await MigrateFolderStructureIfNeeded())
                 {
                     Portfolios = GetPortfoliosFromFolders();
                     await SavePortfoliosAsync(portfoliosFile, async stream =>
@@ -87,97 +92,128 @@ namespace CryptoPortfolioTracker.Services
             }
         }
 
-        private async Task LoadInitialPortfolio()
-        {
-            var portfolio = _preferenceService.GetLastPortfolio() ?? Portfolios.FirstOrDefault();
-            if (portfolio == null)
-            {
-                Logger?.Error("No Portfolio found. Creating a new one.");
-                portfolio = new Portfolio { Name = "Default", Path = Path.Combine(App.PortfoliosPath, "Default") };
-                Portfolios.Add(portfolio);
-                _preferenceService.SetLastPortfolio(portfolio);
-            }
-            await ConnectPortfolioDatabase(portfolio);
-
-            Logger?.Information($"Connected to Database {DatabasePath}");
-        }
-
-        private async Task ConnectPortfolioDatabase(Portfolio portfolio)
-        {
-            DatabasePath = portfolio.Path;
-            CurrentPortfolio = portfolio;
-            portfolio.LastAccess = DateTime.Now;
-            var fullPath = Path.Combine(portfolio.Path, App.DbName);
-            Context = _contextFactory.Create("Data Source=|DataDirectory|" + fullPath);
-            await CheckDatabase();
-        }
-
-        private async Task CheckDatabase()
+        private async Task<bool> LoadInitialPortfolio()
         {
             try
             {
-                Logger?.Information($"Checking Database for portfolio {DatabasePath}");
-
-                if (Context == null)
+                var portfolio = _preferenceService.GetLastPortfolio() ?? Portfolios.FirstOrDefault();
+                if (portfolio == null)
                 {
-                    Logger?.Error("Failed to retrieve PortfolioContext from the service container.");
-                    return;
+                    Logger?.Error("No portfolio found to load.");
+                    return false;
                 }
 
-                var dbFilename = Path.Combine(App.appDataPath, DatabasePath, App.DbName);
-
-                if (File.Exists(dbFilename))
+                var result = await ConnectPortfolioDatabase(portfolio);
+                if (result.IsSuccess)
                 {
-                    BackupCptFiles(false);
+                    Logger?.Information($"Connected to Database {portfolio.Path}");
+                    return true;
                 }
-
-                var pendingMigrations = await Context.Database.GetPendingMigrationsAsync();
-                var initPriceLevelsEntity = pendingMigrations.Any(m => m.Contains("AddPriceLevelsEntity"));
-                var initNarrativesEntity = pendingMigrations.Any(m => m.Contains("AddNarrativesEntity"));
-
-                if (pendingMigrations.Any())
+                else
                 {
-                    foreach (var migration in pendingMigrations)
-                    {
-                        Logger?.Information("Pending Migrations {0}", migration);
-                    }
-
-                    if (File.Exists(dbFilename)) BackupCptFiles(true);
-                }
-
-                App.needFixFaultyMigration = (await Context.Database.GetAppliedMigrationsAsync()).Contains("20241228225250_AddNarrativesEntity");
-
-                await Context.Database.MigrateAsync();
-
-                if (initPriceLevelsEntity)
-                {
-                    await SeedPriceLevelsTable(Context);
-                }
-                if (initNarrativesEntity)
-                {
-                    await SeedNarrativesTable(Context);
-                }
-
-                var appliedMigrations = await Context.Database.GetAppliedMigrationsAsync();
-                foreach (var migration in appliedMigrations)
-                {
-                    Logger?.Information("Applied Migrations {0}", migration);
+                    Logger?.Error($"Failed to connect to Database {portfolio.Path}");
+                    return false;
                 }
             }
             catch (Exception ex)
             {
-                Logger?.Error(ex, "Checking Database failed!");
+                Logger?.Error(ex, "Failed to connect to Database");
+                return false;
             }
         }
 
-        private void BackupCptFiles(bool isMigration)
+        private async Task<Result<bool>> ConnectPortfolioDatabase(Portfolio portfolio)
         {
-            var dbFile = Path.Combine(App.appDataPath, DatabasePath, App.DbName);
+            var previousContext = Context;
+            try
+            {
+                var fullPath = Path.Combine(portfolio.Path, App.DbName);
+                Context = _contextFactory.Create($"Data Source=|DataDirectory|{fullPath}");
+                await CheckDatabase(portfolio.Path);
+                DatabasePath = portfolio.Path;
+                CurrentPortfolio = portfolio;
+
+                var pf = Portfolios.FirstOrDefault(p => p.Name == portfolio.Name);
+                if (pf != null)
+                {
+                    pf.LastAccess = DateTime.Now;
+                    _preferenceService.SetLastPortfolio(pf);
+                }
+
+                string portfoliosFile = Path.Combine(App.appDataPath, App.PortfoliosPath, App.PortfoliosFileName);
+                await SavePortfoliosAsync(portfoliosFile, async stream =>
+                {
+                    await JsonSerializer.SerializeAsync(stream, Portfolios);
+                    Logger.Information("Portfolios data serialized successfully. {0} portfolios)", Portfolios?.Count);
+                });
+            }
+            catch (Exception ex)
+            {
+                Context = previousContext;
+                return new Result<bool>(ex);
+            }
+            return true;
+        }
+
+        private async Task CheckDatabase(string databasePath)
+        {
+            Logger?.Information($"Checking Database for portfolio {databasePath}");
+
+            if (Context == null)
+            {
+                Logger?.Error("Failed to retrieve PortfolioContext from the service container.");
+                return;
+            }
+
+            var dbFilename = Path.Combine(App.appDataPath, databasePath, App.DbName);
+
+            if (File.Exists(dbFilename))
+            {
+                BackupCptFiles(databasePath, false);
+            }
+
+            var pendingMigrations = await Context.Database.GetPendingMigrationsAsync();
+            var initPriceLevelsEntity = pendingMigrations.Any(m => m.Contains("AddPriceLevelsEntity"));
+            var initNarrativesEntity = pendingMigrations.Any(m => m.Contains("AddNarrativesEntity"));
+
+            if (pendingMigrations.Any())
+            {
+                foreach (var migration in pendingMigrations)
+                {
+                    Logger?.Information("Pending Migrations {0}", migration);
+                }
+
+                if (File.Exists(dbFilename)) BackupCptFiles(databasePath, true);
+            }
+
+            App.needFixFaultyMigration = (await Context.Database.GetAppliedMigrationsAsync()).Contains("20241228225250_AddNarrativesEntity");
+
+            await Context.Database.MigrateAsync();
+
+            if (initPriceLevelsEntity)
+            {
+                await SeedPriceLevelsTable(Context);
+            }
+            if (initNarrativesEntity)
+            {
+                await SeedNarrativesTable(Context);
+            }
+
+            var appliedMigrations = await Context.Database.GetAppliedMigrationsAsync();
+            foreach (var migration in appliedMigrations)
+            {
+                Logger?.Information("Applied Migrations {0}", migration);
+            }
+        }
+
+        private void BackupCptFiles(string databasePath, bool isMigration)
+        {
+            var dbFile = Path.Combine(App.appDataPath, databasePath, App.DbName);
             var preferencesFile = Path.Combine(App.appDataPath, App.PrefFileName);
-            var graphFile = Path.Combine(App.appDataPath, DatabasePath, "graph.json");
+            var graphFile = Path.Combine(App.appDataPath, databasePath, "graph.json");
             var chartsFolder = Path.Combine(App.appDataPath, App.ChartsFolder);
             var tempFolder = Path.Combine(App.appDataPath, App.PortfoliosPath, "Temp");
-            var backupFolder = Path.Combine(App.appDataPath, DatabasePath, App.BackupFolder);
+            var backupFolder = Path.Combine(App.appDataPath, databasePath, App.BackupFolder);
             string backUpName;
 
             try
@@ -203,7 +239,7 @@ namespace CryptoPortfolioTracker.Services
                     backUpName = $"{App.PrefixBackupName}_s_{DateTime.Now:yyyyMMdd-HHmmss}.{App.ExtentionBackup}";
                 }
 
-                Directory.CreateDirectory(tempFolder);
+                MkOsft.CreateDirectory(tempFolder, true);
                 File.Copy(dbFile, Path.Combine(tempFolder, App.DbName));
                 File.Copy(preferencesFile, Path.Combine(tempFolder, App.PrefFileName));
                 File.Copy(graphFile, Path.Combine(tempFolder, "graph.json"));
@@ -224,11 +260,11 @@ namespace CryptoPortfolioTracker.Services
             if (!context.Coins.Any()) return;
 
             var priceLevels = context.Coins.SelectMany(coin => new List<PriceLevel>
-            {
-                new() { Coin = coin, Type = PriceLevelType.TakeProfit, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty },
-                new() { Coin = coin, Type = PriceLevelType.Buy, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty },
-                new() { Coin = coin, Type = PriceLevelType.Stop, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty }
-            }).ToList();
+                {
+                    new() { Coin = coin, Type = PriceLevelType.TakeProfit, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty },
+                    new() { Coin = coin, Type = PriceLevelType.Buy, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty },
+                    new() { Coin = coin, Type = PriceLevelType.Stop, Value = 0, Status = PriceLevelStatus.NotWithinRange, Note = string.Empty }
+                }).ToList();
 
             context.PriceLevels.AddRange(priceLevels);
             await context.SaveChangesAsync();
@@ -239,29 +275,29 @@ namespace CryptoPortfolioTracker.Services
             if (context.Narratives.Count() > 1) return;
 
             var narratives = new List<Narrative>
-            {
-                new() { Name = "AI", About = "AI in crypto refers to the use of artificial intelligence to optimize trading, provide market insights, and enhance security." },
-                new() { Name = "Appchain", About = "Appchains are application-specific blockchains designed to optimize performance for particular decentralized applications (DApps)." },
-                new() { Name = "DeFI", About = "DeFi (Decentralized Finance) aims to recreate traditional financial systems using decentralized technologies like blockchain." },
-                new() { Name = "DEX", About = "DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly without an intermediary, leveraging smart contracts." },
-                new() { Name = "DePin", About = "DePin (Decentralized Physical Infrastructure Networks) combines blockchain with physical infrastructures like IoT to create decentralized networks." },
-                new() { Name = "Domains", About = "Blockchain domains offer decentralized, censorship-resistant alternatives to traditional domain names, enhancing ownership and control." },
-                new() { Name = "Gamble-Fi", About = "Gamble-Fi integrates decentralized finance principles with online gambling, providing transparent and secure gaming experiences." },
-                new() { Name = "Game-Fi", About = "Game-Fi combines gaming and decentralized finance, allowing players to earn cryptocurrency and trade in-game assets." },
-                new() { Name = "Social-Fi", About = "Social-Fi integrates social media with decentralized finance, enabling monetization and decentralized governance of social platforms." },
-                new() { Name = "Interoperability", About = "Interoperability focuses on enabling different blockchain networks to communicate and interact, facilitating seamless asset transfers and data exchange." },
-                new() { Name = "Layer 1s", About = "Layer 1s are the base layer blockchains like Bitcoin and Ethereum that provide the foundational security and consensus mechanisms." },
-                new() { Name = "Layer 2s", About = "Layer 2s are scaling solutions built on top of Layer 1 blockchains to improve transaction speed and reduce fees." },
-                new() { Name = "LSD", About = "LSD (Liquid Staking Derivatives) allow users to stake assets and receive liquid tokens that can be used in DeFi activities." },
-                new() { Name = "Meme", About = "Meme coins are cryptocurrencies inspired by internet memes, often characterized by high volatility and community-driven value." },
-                new() { Name = "NFT", About = "NFTs (Non-Fungible Tokens) are unique digital assets representing ownership of items like art, music, and virtual real estate." },
-                new() { Name = "Privacy", About = "Privacy coins and technologies aim to enhance transaction anonymity and data protection on the blockchain." },
-                new() { Name = "Real Yield", About = "Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing." },
-                new() { Name = "RWA", About = "RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment." },
-                new() { Name = "CEX", About = "CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity." },
-                new() { Name = "Stablecoins", About = "Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility." },
-                new() { Name = "Others", About = "Narrative for coins that you don't want to assign a specific Narrative" }
-            };
+                {
+                    new() { Name = "AI", About = "AI in crypto refers to the use of artificial intelligence to optimize trading, provide market insights, and enhance security." },
+                    new() { Name = "Appchain", About = "Appchains are application-specific blockchains designed to optimize performance for particular decentralized applications (DApps)." },
+                    new() { Name = "DeFI", About = "DeFi (Decentralized Finance) aims to recreate traditional financial systems using decentralized technologies like blockchain." },
+                    new() { Name = "DEX", About = "DEX (Decentralized Exchange) allows users to trade cryptocurrencies directly without an intermediary, leveraging smart contracts." },
+                    new() { Name = "DePin", About = "DePin (Decentralized Physical Infrastructure Networks) combines blockchain with physical infrastructures like IoT to create decentralized networks." },
+                    new() { Name = "Domains", About = "Blockchain domains offer decentralized, censorship-resistant alternatives to traditional domain names, enhancing ownership and control." },
+                    new() { Name = "Gamble-Fi", About = "Gamble-Fi integrates decentralized finance principles with online gambling, providing transparent and secure gaming experiences." },
+                    new() { Name = "Game-Fi", About = "Game-Fi combines gaming and decentralized finance, allowing players to earn cryptocurrency and trade in-game assets." },
+                    new() { Name = "Social-Fi", About = "Social-Fi integrates social media with decentralized finance, enabling monetization and decentralized governance of social platforms." },
+                    new() { Name = "Interoperability", About = "Interoperability focuses on enabling different blockchain networks to communicate and interact, facilitating seamless asset transfers and data exchange." },
+                    new() { Name = "Layer 1s", About = "Layer 1s are the base layer blockchains like Bitcoin and Ethereum that provide the foundational security and consensus mechanisms." },
+                    new() { Name = "Layer 2s", About = "Layer 2s are scaling solutions built on top of Layer 1 blockchains to improve transaction speed and reduce fees." },
+                    new() { Name = "LSD", About = "LSD (Liquid Staking Derivatives) allow users to stake assets and receive liquid tokens that can be used in DeFi activities." },
+                    new() { Name = "Meme", About = "Meme coins are cryptocurrencies inspired by internet memes, often characterized by high volatility and community-driven value." },
+                    new() { Name = "NFT", About = "NFTs (Non-Fungible Tokens) are unique digital assets representing ownership of items like art, music, and virtual real estate." },
+                    new() { Name = "Privacy", About = "Privacy coins and technologies aim to enhance transaction anonymity and data protection on the blockchain." },
+                    new() { Name = "Real Yield", About = "Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing." },
+                    new() { Name = "RWA", About = "RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment." },
+                    new() { Name = "CEX", About = "CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity." },
+                    new() { Name = "Stablecoins", About = "Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility." },
+                    new() { Name = "Others", About = "Narrative for coins that you don't want to assign a specific Narrative" }
+                };
 
             context.Narratives.AddRange(narratives);
             await context.SaveChangesAsync();
@@ -289,21 +325,24 @@ namespace CryptoPortfolioTracker.Services
             {
                 using FileStream createStream = File.Create(fileName);
                 await processStream(createStream);
+                Logger.Information("Portfolios data serialized successfully.");
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Failed to serialize data from {0}", fileName);
+                Logger.Error(ex, "Failed to serialize Portfolio data to {0}", fileName);
             }
         }
 
         private List<Portfolio> GetPortfoliosFromFolders()
         {
-            var portfoliosPath = Path.Combine(App.appDataPath, App.PortfoliosPath);
-            var dirs = Directory.GetDirectories(portfoliosPath);
+            var fullPortfoliosPath = Path.Combine(App.appDataPath, App.PortfoliosPath);
+            var dirs = Directory.GetDirectories(fullPortfoliosPath);
+            var portfolios = new List<Portfolio>();
+
             foreach (var dir in dirs)
             {
                 var pidFilePath = Path.Combine(dir, "pid.json");
-                string portfolioName = Path.GetRelativePath(Path.Combine(App.appDataPath, App.PortfoliosPath), dir);
+                string portfolioName = Path.GetRelativePath(fullPortfoliosPath, dir);
 
                 if (File.Exists(pidFilePath))
                 {
@@ -322,79 +361,83 @@ namespace CryptoPortfolioTracker.Services
                     }
                 }
 
-                var portfolio = new Portfolio
+                portfolios.Add(new Portfolio
                 {
                     Name = portfolioName,
                     Path = Path.GetRelativePath(App.appDataPath, dir)
-                };
-                Portfolios.Add(portfolio);
+                });
             }
-            return Portfolios;
+            return portfolios;
         }
 
         private async Task<bool> MigrateFolderStructureIfNeeded()
         {
             bool alreadyMigrated = true;
-            if (!Directory.Exists(Path.Combine(App.appDataPath, App.PortfoliosPath)))
+            string portfoliosPath = Path.Combine(App.appDataPath, App.PortfoliosPath);
+
+            if (!Directory.Exists(portfoliosPath))
             {
+                string initialPortfolioFolder = Guid.NewGuid().ToString();
+                string fullPortfolioPath = Path.Combine(portfoliosPath, initialPortfolioFolder);
+                string fullChartsPath = Path.Combine(App.appDataPath, App.ChartsFolder);
+                string fullBackupPath = Path.Combine(App.appDataPath, App.BackupFolder);
+                string newBackupPath = Path.Combine(fullPortfolioPath, "Backup");
+
                 alreadyMigrated = false;
-                var newPath = Path.Combine(App.appDataPath, App.PortfoliosPath, "Default Portfolio");
-                Directory.CreateDirectory(newPath);
 
-                var dbFile = Path.Combine(App.appDataPath, App.DbName);
-                var newDbFile = Path.Combine(App.appDataPath, App.PortfoliosPath, "Default Portfolio\\sqlCPT.db");
-                if (File.Exists(dbFile))
+                Directory.CreateDirectory(fullPortfolioPath);
+                Directory.CreateDirectory(fullChartsPath);
+                Directory.CreateDirectory(newBackupPath);
+
+                if (!IsBlankInstall())
                 {
-                    File.Move(dbFile, newDbFile);
+                    MkOsft.FileMove("sqlCPT.db", App.appDataPath, fullPortfolioPath);
+                    MkOsft.FileMove("graph.json", fullChartsPath, fullPortfolioPath);
+                    MkOsft.FileMove("graph.json.bak", fullChartsPath, fullPortfolioPath);
+                    MkOsft.DirectoryMove(fullBackupPath, newBackupPath, true);
+                    MkOsft.FilesDelete("*_backup_*", App.appDataPath);
                 }
-
-                var graphFile = Path.Combine(App.appDataPath, App.ChartsFolder, "graph.json");
-                var newGraphFile = Path.Combine(App.appDataPath, App.PortfoliosPath, "Default Portfolio\\graph.json");
-                if (File.Exists(graphFile))
-                {
-                    File.Move(graphFile, newGraphFile);
-                }
-
-                var backupGraphFile = Path.Combine(App.appDataPath, App.ChartsFolder, "graph.json.bak");
-                var newBackupGraphFile = Path.Combine(App.appDataPath, App.PortfoliosPath, "Default Portfolio\\graph.json.bak");
-                if (File.Exists(backupGraphFile))
-                {
-                    File.Move(backupGraphFile, newBackupGraphFile);
-                }
-
-                var backupFolder = Path.Combine(App.appDataPath, App.BackupFolder);
-                var newBackupFolder = Path.Combine(App.appDataPath, App.PortfoliosPath, "Default Portfolio\\Backup");
-
-                MkOsft.DirectoryMove(backupFolder, newBackupFolder, true);
 
                 var portfolio = new Portfolio
                 {
                     Name = "Default Portfolio",
-                    Path = Path.Combine(App.PortfoliosPath, "Default Portfolio")
+                    Path = Path.Combine(App.PortfoliosPath, initialPortfolioFolder)
                 };
                 Portfolios.Add(portfolio);
 
-                try
-                {
-                    var portfoliosFile = Path.Combine(App.appDataPath, App.PortfoliosPath, App.PortfoliosFileName);
-                    await SavePortfoliosAsync(portfoliosFile, async stream =>
-                    {
-                        await JsonSerializer.SerializeAsync(stream, Portfolios);
-                        Logger.Information("Portfolios data serialized successfully. {0} portfolios)", Portfolios?.Count);
-                    });
+                SavePidToJson(portfolio.Name, fullPortfolioPath, true);
 
-                    var oldFiles = Directory.GetFiles(App.appDataPath, "*_backup_*");
-                    foreach (var file in oldFiles)
-                    {
-                        File.Delete(file);
-                    }
-                }
-                catch (Exception ex)
+                string portfoliosFile = Path.Combine(portfoliosPath, App.PortfoliosFileName);
+                await SavePortfoliosAsync(portfoliosFile, async stream =>
                 {
-                    Logger.Information("Portfolios data serialization failed.");
-                }
+                    await JsonSerializer.SerializeAsync(stream, Portfolios);
+                });
             }
             return alreadyMigrated;
+        }
+
+        private void SavePidToJson(string pIdName, string path, bool isHidden = false)
+        {
+            var portfolioNameObject = new { PortfolioName = pIdName };
+            string jsonString = JsonSerializer.Serialize(portfolioNameObject, new JsonSerializerOptions { WriteIndented = true });
+            string filePath = Path.Combine(path, "pid.json");
+
+            try
+            {
+                File.WriteAllText(filePath, jsonString);
+                if (isHidden) MkOsft.MakeFileHidden(filePath);
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error(ex, "Failed to save pid.json file at {0}", filePath);
+            }
+        }
+
+        private bool IsBlankInstall()
+        {
+            var portfoliosPath = Path.Combine(App.appDataPath, App.PortfoliosPath);
+            var dbFilePath = Path.Combine(App.appDataPath, App.DbName);
+            return !Directory.Exists(portfoliosPath) && !File.Exists(dbFilePath);
         }
     }
 }

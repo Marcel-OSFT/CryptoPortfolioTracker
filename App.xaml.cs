@@ -26,6 +26,7 @@ using Microsoft.UI.Xaml.Controls;
 using CommunityToolkit.WinUI;
 using Newtonsoft.Json;
 using CommunityToolkit.Mvvm.Messaging;
+using System.Threading;
 
 //using Microsoft.UI.Xaml.Markup;
 //using Microsoft.UI.Xaml;
@@ -35,6 +36,9 @@ namespace CryptoPortfolioTracker;
 public partial class App : Application
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+    private Mutex _mutex;
+    private const string MutexName = "MyUniqueWinUIMutex";
 
     public static App Current;
     
@@ -75,7 +79,6 @@ public partial class App : Application
 
     public List<Portfolio> portfolios = new List<Portfolio>();
 
-
     public App()
     {
         Current = this;
@@ -98,6 +101,22 @@ public partial class App : Application
         Splash = new SplashScreen();
         Splash.Activate();
         await Task.Delay(1000);
+
+        // Create or open the mutex
+        _mutex = new Mutex(false, MutexName, out bool createdNew);
+
+        // Check if a new mutex was created
+        if (!createdNew)
+        {
+            // Another instance is already running
+            await ShowErrorMessage("Another instance of the application is already running.");
+            _mutex.Close();
+            _mutex = null;
+
+            // Exit the current application
+            Application.Current.Exit();
+            return;
+        }
 
         _preferencesService.LoadUserPreferencesFromXml();
 
@@ -379,21 +398,35 @@ public partial class App : Application
         ShowErrorMessage(e.Message);
     }
 
-    public void ShowErrorMessage(string message)
+    public async Task ShowErrorMessage(string message)
     {
-        // Ensure execution on the UI thread
-        MainPage.Current.DispatcherQueue.TryEnqueue(async () =>
+        Window? tempWindow= null;
+        var xamlRoot = MainPage.Current?.XamlRoot;
+        if ( xamlRoot is null && Splash is not null)
         {
-            var dialog = new ContentDialog
-            {
-                Title = "An error occurred",
-                Content = message,
-                CloseButtonText = "OK",
-                XamlRoot = MainPage.Current.XamlRoot
-            };
+            xamlRoot= Splash.Content.XamlRoot;
+        }
+        else 
+        {
+            tempWindow = new SplashScreen();
+            tempWindow.Activate();
+            await Task.Delay(1000);
+            xamlRoot = tempWindow?.Content.XamlRoot;
+        }
+        // Create a ContentDialog for the message box
+        var dialog = new ContentDialog
+        {
+            Title = "Error",
+            Content = message,
+            CloseButtonText = "OK",
+            XamlRoot = xamlRoot
+        };
 
-            await dialog.ShowAsync();
-        });
+        await dialog.ShowAsync();
+
+        // Close the temporary window
+        tempWindow?.Close();
+
     }
 
 }

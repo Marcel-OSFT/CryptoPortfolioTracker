@@ -18,17 +18,13 @@ public partial class DashboardView : Page, IDisposable
     public DashboardView(DashboardViewModel dashboardVm)
     {
         Current = this;
-
         InitializeComponent();
         _viewModel = dashboardVm;
         DataContext = _viewModel;
-
         Portfolio.pieHeader.Tag = "Portfolio";
         Accounts.pieHeader.Tag = "Accounts";
         Narratives.pieHeader.Tag = "Narratives";
-
         SetupTeachingTips();
-
     }
 
 

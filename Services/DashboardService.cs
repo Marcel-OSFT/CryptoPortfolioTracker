@@ -54,7 +54,8 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
         foreach(var coin in coins)
         {
-           await coin.CalculateRsi();
+            await coin.CalculateRsi();
+            await Task.Delay(10);
         }
     }
    

@@ -1169,4 +1169,19 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="HeatMap_TeachRsi.Title" xml:space="preserve">
     <value>New Feature: daily RSI bubbles</value>
   </data>
+  <data name="SwitchPortfolio_Title.Text" xml:space="preserve">
+    <value>Switch Portfolio</value>
+  </data>
+  <data name="SwitchPortfolio_Explainer" xml:space="preserve">
+    <value>The Crypto Portfolio Tracker supports multiple portfolios. Go to the Portfolio Admin view to manage and setup your portfolio(s).</value>
+  </data>
+  <data name="SwitchPortfolioLV_Title.Text" xml:space="preserve">
+    <value>Portfolios</value>
+  </data>
+  <data name="SwitchPortfolioLV_LastAccess" xml:space="preserve">
+    <value>last access</value>
+  </data>
+  <data name="Navigation_SwitchPortfolio.Content" xml:space="preserve">
+    <value>Switch Portfolio</value>
+  </data>
 </root>
