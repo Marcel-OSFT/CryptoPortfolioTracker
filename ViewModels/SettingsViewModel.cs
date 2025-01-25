@@ -140,10 +140,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
                 {
                     //*** wait till there is no other dialog box open
-                    while (App.isBusy)
-                    {
-                        await Task.Delay(5000);
-                    }
+                    await App.DialogCompletionTask;
                     Logger.Information("Download Succesfull");
                     var installRequest = await ShowMessageDialog(
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesTitle"),

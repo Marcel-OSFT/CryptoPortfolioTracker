@@ -26,48 +26,27 @@ public partial class MainPage : Page, INotifyPropertyChanged
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static MainPage Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private IServiceScope? _currentServiceScope;
     public IGraphUpdateService _graphUpdateService;
     public IPriceUpdateService _priceUpdateService;
     private readonly IPreferencesService _preferencesService;
-    private readonly PortfolioService _portfolioService;
 
-    public LogWindow? logWindow;
     private Type lastPageType;
     private NavigationViewItem lastSelectedNavigationItem;
-    private ILogger Logger { get; set; }
-    private bool isChartLoaded;
-    public bool IsChartLoaded
-    {
-        get { return isChartLoaded; }
-        set
-        {
-            if (value != isChartLoaded)
-            {
-                isChartLoaded = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    private ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
+    
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IPreferencesService preferencesService)
     {
-        ConfigureLogger();
         Logger.Information("start MainPage Constructor");
         InitializeComponent();
         Current = this;
         DataContext = this;
-
-        _portfolioService = portfolioService;
 
         _preferencesService = preferencesService;
         _graphUpdateService = graphUpdateService;
         _priceUpdateService = priceUpdateService;
         SetupTeachingTips();
         Logger.Information("End MainPage Constructor");
-
-
     }
 
     private void SetupTeachingTips()
@@ -85,20 +64,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
             MyTeachingTipNarr.IsOpen = true;
         }
     }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-    private void ConfigureLogger()
-    {
-        if (App.isLogWindowEnabled)
-        {
-            logWindow = App.Container.GetService<LogWindow>();
-
-            logWindow.Title = Assembly.GetExecutingAssembly().GetName().Name + " Event Log";
-            
-            logWindow.Activate();
-        }
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
-    }
 
     public async Task CheckUpdateNow()
     {
@@ -111,15 +76,11 @@ public partial class MainPage : Page, INotifyPropertyChanged
         {
             Logger.Information("Update Available");
 
-           // App.Splash?.Close();
-           // App.Splash = null;
-
             var dlgResult = await ShowMessageDialog(
                 loc.GetLocalizedString("Messages_UpdateChecker_NewVersionTitle"),
                 loc.GetLocalizedString("Messages_UpdateChecker_NewVersionMsg"),
                 loc.GetLocalizedString("Common_DownloadButton"),
                 loc.GetLocalizedString("Common_CancelButton"));
-
 
             if (dlgResult == ContentDialogResult.Primary)
             {
@@ -129,11 +90,7 @@ public partial class MainPage : Page, INotifyPropertyChanged
                 if (downloadResult == AppUpdaterResult.DownloadSuccesfull)
                 {
                     //*** Download is doen, wait till there is no other dialog box open
-                    while (App.isBusy)
-                    {
-                        await Task.Delay(5000);
-                        ;
-                    }
+                    await App.DialogCompletionTask;
                     Logger.Information("Download Succesfull");
                     var installRequest = await ShowMessageDialog(
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesTitle"),
@@ -299,6 +256,8 @@ public partial class MainPage : Page, INotifyPropertyChanged
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
     {
         Logger.Information("start MainPage_Loaded");
+        _graphUpdateService.Start();
+        _priceUpdateService.Start();
 
         navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
         App.Splash?.Close();
@@ -308,8 +267,8 @@ public partial class MainPage : Page, INotifyPropertyChanged
         { 
             await CheckUpdateNow(); 
         }
-        _graphUpdateService.Start();
-        _priceUpdateService.Start();
+        //_graphUpdateService.Start();
+        //_priceUpdateService.Start();
         Logger.Information("End MainPage_Loaded");
 
     }

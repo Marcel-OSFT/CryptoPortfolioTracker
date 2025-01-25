@@ -5,6 +5,7 @@ using CryptoPortfolioTracker.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
@@ -12,40 +13,35 @@ namespace CryptoPortfolioTracker.Dialogs;
 [ObservableObject]
 public sealed partial class AddPriceLevelsDialog : ContentDialog
 {
-    public ICollection<PriceLevel> newPriceLevels { get; set; }
     private readonly ILocalizer loc = Localizer.Get();
     private readonly IPreferencesService _preferencesService;
 
-
     [ObservableProperty] private double tpValue;
-    [ObservableProperty] private string tpNote;
+    [ObservableProperty] private string tpNote = string.Empty;
 
     [ObservableProperty] private double buyValue;
-    [ObservableProperty] private string buyNote;
+    [ObservableProperty] private string buyNote =string.Empty;
 
     [ObservableProperty] private double stopValue;
-    [ObservableProperty] private string stopNote;
+    [ObservableProperty] private string stopNote = string.Empty;
 
 
     [ObservableProperty] private bool isValidTest = false;
    // [ObservableProperty] private Validator validator;
     [ObservableProperty] private string decimalSeparator;
 
-
+    public ICollection<PriceLevel> newPriceLevels { get; set; }
+     
 
     public AddPriceLevelsDialog(Coin coin, IPreferencesService preferencesService)
     {
         InitializeComponent();
+       // DataContext = this;
         _preferencesService = preferencesService;
 
         DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
         newPriceLevels = new List<PriceLevel>(); // Initialize newPriceLevels
         InitializeFields(coin.PriceLevels);
-
-        TpNote = string.Empty; // Initialize tpNote
-        BuyNote = string.Empty; // Initialize buyNote
-        StopNote = string.Empty; // Initialize stopNote
-       // Validator = new Validator(); // Initialize validator
 
         SetDialogTitleAndButtons(coin);
     }
@@ -75,11 +71,9 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
         }
     }
 
-
-
     private void SetDialogTitleAndButtons(Coin coin)
     {
-        Title = loc.GetLocalizedString("PriceLevelsDialog_Title") + " " + coin.Name;
+        Title = loc.GetLocalizedString("PriceLevelsDialog_AddTitle") + " " + coin.Name;
         PrimaryButtonText = loc.GetLocalizedString("PriceLevelsDialog_PrimaryButton");
         CloseButtonText = loc.GetLocalizedString("PriceLevelsDialog_CloseButton");
     }

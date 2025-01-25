@@ -21,8 +21,8 @@ public sealed partial class StringFormatConverter : IValueConverter
         }
 
 
-        var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App._preferencesService.GetNumberFormat();
+        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
+        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
 
         if (value is double)
         {
@@ -48,8 +48,8 @@ public sealed partial class StringFormatConverter : IValueConverter
         try
         {
             
-            var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
-            ci.NumberFormat = App._preferencesService.GetNumberFormat();
+            var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
+            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
 
             if (targetType == typeof(double))
             {

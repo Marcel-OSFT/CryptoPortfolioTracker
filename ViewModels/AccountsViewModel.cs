@@ -93,9 +93,11 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
     /// <returns></returns>
-    public async Task Initialize()
+    public async Task ViewLoading()
     {
         CurrentPortfolio = _assetService.GetPortfolio();
+        PortfolioName = CurrentPortfolio.Name;
+
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
        // IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
         await _accountService.PopulateAccountsList();
@@ -215,7 +217,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
     public async Task ShowAccountDialogToAdd()
     {
-        App.isBusy = true;
+       
         var loc = Localizer.Get();
         try
         {
@@ -224,7 +226,8 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
             {
                 XamlRoot = AccountsView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (result == ContentDialogResult.Primary)
             {
@@ -250,7 +253,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
+        
     }
     private bool CanShowAccountDialogToAdd()
     {
@@ -260,7 +263,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     [RelayCommand]
     public async Task ShowAccountDialogToEdit(Account account)
     {
-        App.isBusy = true;
+      
         var loc = Localizer.Get();
         try
         {
@@ -269,7 +272,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
             {
                 XamlRoot = AccountsView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (result == ContentDialogResult.Primary && dialog.newAccount is not null)
             {
@@ -293,13 +296,12 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
+       
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteAccount))]
     public async Task DeleteAccount(Account account)
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         // *** Delete option normally never available when an Account contains assets
         //*** but nevertheless lets check it...
@@ -341,7 +343,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
                             ex.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
+       
     }
     private bool CanDeleteAccount(Account account)
     {

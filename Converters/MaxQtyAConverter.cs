@@ -14,15 +14,15 @@ public partial class MaxQtyAConverter : IValueConverter
         var _double = (double)value;
 
         CultureInfo ci;
-        if (App._preferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
+        if (App.PreferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
         {
             ci = new CultureInfo("nl-NL");
-            ci.NumberFormat = App._preferencesService.GetNumberFormat();
+            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
         }
         else
         {
             ci = new CultureInfo("en-US");
-            ci.NumberFormat = App._preferencesService.GetNumberFormat();
+            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
         }
 
         var maxQty = _double.ToString("0.########", ci);

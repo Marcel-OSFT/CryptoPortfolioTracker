@@ -1,6 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using CryptoPortfolioTracker.Infrastructure;
+using CryptoPortfolioTracker.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Data.Entity.Infrastructure;
+using System.Linq;
 
 
 #nullable disable
@@ -13,21 +18,31 @@ namespace CryptoPortfolioTracker.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (App.initDone) { return; }
+            // check if the database has already been created
+            // it could be that the initdb migration isn't properly registered
+
+            // check if Coins tabel exist
+            var service = App.Container.GetService<PortfolioService>();
+
+            string tableName = "Coins";
+            var query = $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';";
+            bool tablesExists = service.Context.Database.ExecuteSqlRaw(query) > 0;
+
+            if (tablesExists) return;
 
             migrationBuilder.CreateTable(
-                name: "Accounts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    About = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Accounts", x => x.Id);
-                });
+            name: "Accounts",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Name = table.Column<string>(type: "TEXT", nullable: false),
+                About = table.Column<string>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Accounts", x => x.Id);
+            });
 
             migrationBuilder.CreateTable(
                 name: "Coins",

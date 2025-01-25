@@ -51,6 +51,7 @@ namespace CryptoPortfolioTracker.Views
             await AnimatePortfolio(Colors.Transparent, listView, deselectedPortfolio);
 
             var switchResult = await _viewModel.SwitchPortfolioAsync(selectedPortfolio);
+
             await switchResult.Match(
                 Succ: async _ =>
                 {

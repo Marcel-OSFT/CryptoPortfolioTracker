@@ -1,0 +1,237 @@
+<Page
+    x:Class="CryptoPortfolioTracker.Views.AdminView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:CryptoPortfolioTracker.Models"
+    xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"
+    xmlns:converters="using:CryptoPortfolioTracker.Converters"
+    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"
+    xmlns:controls="using:CryptoPortfolioTracker.Controls"
+    xmlns:l="using:WinUI3Localizer"
+    xmlns:toolkit="using:AK.Toolkit.WinUI3"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DataContext="{d:DesignInstance Type=viewmodels:AdminViewModel}"
+    Loading="Page_Loading"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+        <Style x:Key="CustomListViewItemsStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+       
+        <Style x:Key="myAppBarButton" TargetType="AppBarButton">
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="LabelPosition" Value="Default"/>
+            <Setter Property="IsCompact" Value="False"/>
+        </Style>
+    </Page.Resources>
+
+
+    <Grid x:Name="MainGrid" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="300"/>
+            <RowDefinition Height="*" x:Name="Row1"/>
+            <RowDefinition Height="0" x:Name="Row2"/>
+        </Grid.RowDefinitions>
+        
+        <!-- General Header -->
+        <Grid x:Name="GeneralHeaderGrid" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="130"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <controls:HomePageHeaderImage x:Name="HeaderImage" Grid.Row="0" Grid.RowSpan="3" Height="265" VerticalAlignment="Top"/>
+            <RelativePanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="0">
+                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod"
+                    Margin="36,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding _portfolioService.CurrentPortfolio.Name}"  Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock l:Uids.Uid="PortfolioAdmin_Title" x:Name="txtPortfolioAdmin" Margin="36,5,0,0"
+                    Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" 
+                    RelativePanel.Below="txtPortfolio" RelativePanel.AlignBottomWithPanel="True"/>
+            </RelativePanel>
+            <TextBlock l:Uids.Uid="PortfolioAdmin_Explainer" Grid.Row="1" VerticalAlignment="Bottom"
+                Style="{StaticResource ExplainerTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"/>
+        </Grid>
+        <!-- End of General Header -->
+
+        <!-- Portfolio Section -->
+        <Grid Grid.Row="1" Margin="10,-60,0,0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <CommandBar Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" IsDynamicOverflowEnabled="True" DefaultLabelPosition="Right" Background="Transparent"  HorizontalAlignment="Right" Margin="0,0,0,0">
+                <AppBarButton Icon="Add" l:Uids.Uid="PortfolioAdmin_AddButton" Style="{StaticResource myAppBarButton}" 
+                              Command="{Binding AddPortfolioCommand}" CommandParameter="{Binding SelectedItem, ElementName=PortfolioListView}"/>
+                <AppBarButton Icon="Edit" l:Uids.Uid="PortfolioAdmin_RenameButton" Style="{StaticResource myAppBarButton}"
+                              Command="{Binding RenamePortfolioCommand}" CommandParameter="{Binding SelectedItem, ElementName=PortfolioListView}"/>
+                <AppBarButton Icon="Copy" l:Uids.Uid="PortfolioAdmin_CopyButton" Style="{StaticResource myAppBarButton}"
+                              Command="{Binding CopyPortfolioCommand}" CommandParameter="{Binding SelectedItem, ElementName=PortfolioListView}"/>
+                <AppBarButton x:Name="DeleteFlyoutAbb" Icon="Delete" l:Uids.Uid="PortfolioAdmin_DeleteButton" 
+                              Command="{Binding DeletePortfolioDummyCommand}" CommandParameter="{Binding SelectedPortfolio}">
+                    <AppBarButton.Flyout>
+                        <Flyout x:Name="DeleteFlyout" x:FieldModifier="public">
+                            <StackPanel>
+                                <Grid MaxWidth="300">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" l:Uids.Uid="PortfolioAdmin_PreName" Margin="0,0,3,12" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="1" Style="{ThemeResource BaseTextBlockStyle}" FontStyle="Oblique" Text="{Binding SelectedPortfolio.Name}" Margin="0,0,3,12"  />
+                                    <TextBlock Grid.Row="2" Style="{ThemeResource BaseTextBlockStyle}" l:Uids.Uid="PortfolioAdmin_PostName" Margin="0,0,0,12" TextWrapping="Wrap"/>
+                                </Grid>
+                                <Button x:Name="btnDelete"  Command="{Binding DeletePortfolioCommand}" CommandParameter="{Binding SelectedPortfolio}"
+                                        l:Uids.Uid="PortfolioAdmin_DeleteConfirm" HorizontalAlignment="Center"
+                                        Click="CloseFlyoutDelete"/>
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+                <AppBarSeparator />
+                <AppBarButton x:Name="tbSaveBackup"  Icon="Save" l:Uids.Uid="PortfolioAdmin_SaveBackupButton" Style="{StaticResource myAppBarButton}"
+                    Command="{Binding BackupPortfolioCommand}"  CommandParameter="{Binding SelectedPortfolio}"/>
+                <AppBarButton x:Name="tbRestoreBackup"  Icon="OpenFile" l:Uids.Uid="PortfolioAdmin_RestoreBackupButton" Style="{StaticResource myAppBarButton}"
+                    Command="{Binding BrowseAndRestorePortfolioCommand}"/>
+                <AppBarToggleButton x:Name="tbShowRestore" Icon="Bullets" l:Uids.Uid="PortfolioAdmin_ShowRestoreButton" />
+            </CommandBar>
+            <TextBlock Text="Portfolios" Grid.Row="0" Grid.Column="0" FontWeight="Bold" FontSize="16" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            <ListView x:Name="PortfolioListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                      ItemsSource="{Binding _portfolioService.Portfolios}" SelectedItem="{Binding SelectedPortfolio, Mode=TwoWay}"
+                Loaded="PortfolioListView_Loaded" SelectionChanged="PortfolioListView_SelectionChanged" 
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollMode="Enabled"
+                toolkit:ScrollBarExtensions.KeepVerticalExpanded="True"
+                BorderThickness="0"
+                BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
+                ItemContainerStyle="{StaticResource CustomListViewItemsStyle}"
+                IsItemClickEnabled="False" SelectionMode="Single" 
+                
+                CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" 
+                          >
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Portfolio">
+                        <Border x:Name="PortfolioItem" Background="Transparent">
+                            <TextBlock Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center" Margin="15,0,20,0"/>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+        <!-- Restore Points Section -->
+        <Grid Grid.Row="2" Visibility="{Binding IsChecked, ElementName=tbShowRestore, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='invert'}"
+              Margin="10,10,0,5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <CommandBar Grid.Row="0" Grid.Column="1" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right" Margin="0,0,0,5" HorizontalAlignment="Right">
+                <AppBarButton x:Name="RestoreFlyoutAbb" Icon="Repair" l:Uids.Uid="PortfolioAdmin_RestoreButton"
+                            Command="{Binding RestorePortfolioDummyCommand}" CommandParameter="{Binding SelectedItem, ElementName=PortfolioListView}">
+                <AppBarButton.Flyout>
+                    <Flyout x:Name="RestoreFlyoutDelete" x:FieldModifier="public">
+                        <StackPanel>
+                            <Grid MaxWidth="300">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="1" Style="{ThemeResource BaseTextBlockStyle}" FontStyle="Oblique" Text="{Binding SelectedPortfolio.Name}" Margin="0,0,3,12"  />
+                                <TextBlock Grid.Row="2" Style="{ThemeResource BaseTextBlockStyle}" l:Uids.Uid="PortfolioAdmin_RestoreMidName" Margin="0,0,3,12" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="3" Style="{ThemeResource BaseTextBlockStyle}" FontStyle="Oblique" Text="{Binding SelectedBackup.FileName}" Margin="0,0,3,12"  />
+                                <TextBlock Grid.Row="4" Style="{ThemeResource BaseTextBlockStyle}" l:Uids.Uid="PortfolioAdmin_RestorePostName" Margin="0,0,0,12" TextWrapping="Wrap"/>
+                            </Grid>
+                            <Button Command="{Binding RestorePortfolioCommand}" CommandParameter="{Binding SelectedPortfolio}"
+                            l:Uids.Uid="PortfolioAdmin_RestoreConfirm" HorizontalAlignment="Center"
+                            Click="CloseFlyoutRestore"/>
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+                <AppBarButton Icon="Delete" l:Uids.Uid="PortfolioAdmin_DeleteRestoreButton" Command="{Binding DeleteRestorePointCommand}" CommandParameter="{Binding SelectedItem, ElementName=BackupListView}"/>
+
+            </CommandBar>
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0">
+                <TextBlock l:Uids.Uid="PortfolioAdmin_RestoreTitle" FontWeight="Bold" Margin="10,0,3,10" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding SelectedItem.Name, ElementName=PortfolioListView}" FontWeight="Bold" Margin="0,0,0,10" VerticalAlignment="Center"/>
+            </StackPanel>
+            <ListView x:Name="BackupListView" Grid.Row="1" ItemsSource="{Binding Backups}" SelectedItem="{Binding SelectedBackup, Mode=TwoWay}"
+                        Loading="BackupListView_Loading" Loaded="BackupListView_Loaded"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollMode="Enabled" 
+                        BorderThickness="0" 
+                        BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
+                        ItemContainerStyle="{StaticResource CustomListViewItemsStyle}"
+                        IsItemClickEnabled="False" SelectionMode="Single" 
+                        toolkit:ScrollBarExtensions.KeepVerticalExpanded="True"
+                        CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:Backup">
+                        <Border x:Name="BackupItem" Background="Transparent">
+                            <RelativePanel>
+                                <TextBlock x:Name="txtName" Text="{Binding FileName, Mode=OneWay}" Margin="15,0,0,0"/>
+                                <TextBlock Text="{Binding BackupDate, Mode=OneWay}" HorizontalAlignment="Right" Margin="15,0,20,0"
+                                            RelativePanel.RightOf="txtName" RelativePanel.AlignRightWithPanel="True"/>
+                            </RelativePanel>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </Grid>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Unchecked">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{Binding ElementName=tbShowRestore, Path=IsChecked, Converter={StaticResource InvertBoolConverter}}"/>
+                    </VisualState.StateTriggers>
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Row1" Storyboard.TargetProperty="Height">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="*"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Row2" Storyboard.TargetProperty="Height">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Checked">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{Binding ElementName=tbShowRestore, Path=IsChecked}"/>
+                    </VisualState.StateTriggers>
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Row1" Storyboard.TargetProperty="Height">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="0.33*"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Row2" Storyboard.TargetProperty="Height">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="0.67*"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+
+
+    </Grid>
+</Page>

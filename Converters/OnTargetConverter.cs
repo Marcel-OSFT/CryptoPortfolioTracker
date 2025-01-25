@@ -17,7 +17,7 @@ public partial class OnTargetConverter : IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        bool isDarkTheme = App._preferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark;
+        bool isDarkTheme = App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark;
 
         SolidColorBrush atTpColor = isDarkTheme ? new SolidColorBrush(Colors.LimeGreen) : new SolidColorBrush(Colors.DarkGreen);
         SolidColorBrush atBuyColor = isDarkTheme ? new SolidColorBrush(Colors.LightBlue) : new SolidColorBrush(Colors.Blue);

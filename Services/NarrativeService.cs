@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Controls;
-using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using LanguageExt;
 using LanguageExt.Common;
@@ -31,56 +30,40 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     public NarrativeService(PortfolioService portfolioService)
     {
         _portfolioService = portfolioService;
-
         currentSortFunc = x => x.TotalValue;
         currentSortingOrder = SortingOrder.Descending;
-
     }
+
     public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(bool onlyAssets = false)
     {
-        var getNarrativesResult = await GetNarratives(onlyAssets);
-        getNarrativesResult.IfSucc(list =>
-        {
-            if (currentSortingOrder == SortingOrder.Ascending)
-            {
-                ListNarratives = new(list.OrderBy(currentSortFunc).ThenByDescending(x => x.Coins.Count));
-            }
-            else
-            {
-                ListNarratives = new(list.OrderByDescending(currentSortFunc).ThenByDescending(x => x.Coins.Count));
-            }
+        var getResult = await GetNarratives(onlyAssets);
 
-            //ListNarratives = new ObservableCollection<Narrative>(s
-            //    .OrderByDescending(x => x.TotalValue)
-            //    .ThenByDescending(x => x.Coins.Count));
-        });
-        getNarrativesResult.IfFail(err => ListNarratives = new());
+        ListNarratives = getResult.Match(
+            list => SortedList(list),
+            err => new ObservableCollection<Narrative>());
         return ListNarratives;
     }
 
     public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false)
     {
-        var getNarrativesResult = await GetNarratives(onlyAssets);
-        getNarrativesResult.IfSucc(list =>
-        {
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListNarratives = new(list.OrderBy(sortFunc));
-            }
-            else
-            {
-                ListNarratives = new(list.OrderByDescending(sortFunc));
-            }
-            currentSortFunc = sortFunc;
-            currentSortingOrder = sortingOrder;
-
-        });
-        getNarrativesResult.IfFail(err => ListNarratives = new());
+        var getResult = await GetNarratives(onlyAssets);
+        ListNarratives = getResult.Match(
+            list => SortedList(list, sortingOrder, sortFunc),
+            err => new ObservableCollection<Narrative>()); 
         return ListNarratives;
     }
 
-
-
+    private ObservableCollection<Narrative> SortedList(List<Narrative> list, SortingOrder sortingOrder = SortingOrder.None, Func<Narrative, object>? sortFunc = null)
+    {
+        if (sortingOrder != SortingOrder.None && sortFunc != null)
+        {
+            currentSortFunc = sortFunc;
+            currentSortingOrder = sortingOrder;
+        }
+        return currentSortingOrder == SortingOrder.Ascending
+            ? new ObservableCollection<Narrative>(list.OrderBy(currentSortFunc))
+            : new ObservableCollection<Narrative>(list.OrderByDescending(currentSortFunc));
+    }
 
     public void ReloadValues()
     {
@@ -91,7 +74,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public bool IsNarrativeHoldingCoins(Narrative Narrative)
     {
-        if (Narrative is null || ListNarratives is null) { return false; }
+        if (Narrative is null || ListNarratives is null || !ListNarratives.Any()) { return false; }
         var result = false;
         try
         {
@@ -105,7 +88,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public Task RemoveFromListNarratives(int NarrativeId)
     {
-        if (ListNarratives is null) { return Task.FromResult(false); }
+        if (ListNarratives is null || !ListNarratives.Any()) { return Task.FromResult(false); }
         try
         {
             var Narrative = ListNarratives.Where(x => x.Id == NarrativeId).Single();
@@ -307,14 +290,14 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     public bool DoesNarrativeNameExist(string name)
     {
         var context = _portfolioService.Context;
-        Narrative narrative;
+        Narrative? narrative;
         try
         {
             narrative = context.Narratives.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefault();
         }
         catch (Exception)
         {
-            narrative = new Narrative();
+            narrative = null;
         }
         return narrative != null;
     }
@@ -326,23 +309,13 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         if (newNarrative == null || coin == null) { return false; }
         try
         {
-            //var previousNarrative = context.Narratives.Where(x => x.Coins.Contains(coin)).Single();
-            //if (previousNarrative == newNarrative) return true;
-
-            //previousNarrative.Coins.Remove(coin);
-            //newNarrative.Coins.Add(coin);
-            //result = await context.SaveChangesAsync() > 0;
-
             var coinToUpdate = await context.Coins
                 .Where(x => x.Id == coin.Id)
                 .SingleAsync();
 
             coinToUpdate.Narrative = newNarrative;
 
-
             result = await context.SaveChangesAsync() > 0;
-
-
         }
         catch (Exception ex)
         {
@@ -374,7 +347,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public void SortList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc)
     {
-        if (ListNarratives is not null)
+        if (ListNarratives is not null || !ListNarratives.Any())
         {
             if (sortingOrder == SortingOrder.Ascending)
             {
@@ -393,7 +366,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     /// </summary>
     public void SortList()
     {
-        if (ListNarratives is not null)
+        if (ListNarratives is not null || !ListNarratives.Any())
         {
             if (currentSortingOrder == SortingOrder.Ascending)
             {

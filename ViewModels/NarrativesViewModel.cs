@@ -94,9 +94,11 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
     /// <returns></returns>
-    public async Task Initialize()
+    public async Task ViewLoading()
     {
         CurrentPortfolio = _assetService.GetPortfolio();
+        PortfolioName = CurrentPortfolio.Name;
+
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
         await _narrativeService.PopulateNarrativesList(currentSortingOrderNarr, currentSortFuncNarr, _narrativeService.ShowOnlyAssets);
     }
@@ -206,117 +208,11 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         _narrativeService.ShowOnlyAssets = param;
     }
 
-    //[RelayCommand]
-    //public void SortOnNameNarr(SortingOrder sortingOrder)
-    //{
-    //    Func<Narrative, object> sortFunc = x => x.Name;
-    //    currentSortFuncNarr = sortFunc;
-    //    currentSortingOrderNarr = sortingOrder;
-    //    _narrativeService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnMarketValueNarr(SortingOrder sortingOrder)
-    //{
-    //    Func<Narrative, object> sortFunc = x => x.TotalValue;
-    //    currentSortFuncNarr = sortFunc;
-    //    currentSortingOrderNarr = sortingOrder;
-    //    _narrativeService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnCostBaseNarr(SortingOrder sortingOrder)
-    //{
-    //    Func<Narrative, object> sortFunc = x => x.CostBase;
-    //    currentSortFuncNarr = sortFunc;
-    //    currentSortingOrderNarr = sortingOrder;
-    //    _narrativeService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnPnLNarr(SortingOrder sortingOrder)
-    //{
-    //    Func<Narrative, object> sortFunc = x => x.ProfitLoss;
-    //    currentSortFuncNarr = sortFunc;
-    //    currentSortingOrderNarr = sortingOrder;
-    //    _narrativeService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnPnLPercNarr(SortingOrder sortingOrder)
-    //{
-    //    Func<Narrative, object> sortFunc = x => x.ProfitLossPerc;
-    //    currentSortFuncNarr = sortFunc;
-    //    currentSortingOrderNarr = sortingOrder;
-    //    _narrativeService.SortList(sortingOrder, sortFunc);
-    //}
-
-    //[RelayCommand]
-    //public void SortOnName(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Name;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOn24Hour(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOn1Month(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-
-
-    //[RelayCommand]
-    //public void SortOnMarketValue(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.MarketValue;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnCostBase(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.CostBase;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnPnL(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnPnLPerc(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-
-
-
-
-
-
-
+   
 
     [RelayCommand(CanExecute = nameof(CanShowNarrativeDialogToAdd))]
     public async Task ShowNarrativeDialogToAdd()
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         try
         {
@@ -325,7 +221,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
             {
                 XamlRoot = NarrativesView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (result == ContentDialogResult.Primary)
             {
@@ -351,7 +247,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
     }
     private bool CanShowNarrativeDialogToAdd()
     {
@@ -361,7 +256,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     [RelayCommand (CanExecute = nameof(CanEditNarrative))]
     public async Task ShowNarrativeDialogToEdit(Narrative Narrative)
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         try
         {
@@ -370,7 +264,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
             {
                 XamlRoot = NarrativesView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (result == ContentDialogResult.Primary && dialog.newNarrative is not null)
             {
@@ -394,7 +288,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
     }
     private static bool CanEditNarrative(Narrative narrative)
     {
@@ -405,7 +298,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     [RelayCommand(CanExecute = nameof(CanDeleteNarrative))]
     public async Task DeleteNarrative(Narrative Narrative)
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         // *** Delete option normally never available when an Narrative contains assets
         //*** but nevertheless lets check it...
@@ -447,7 +339,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
                             ex.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
     }
     private bool CanDeleteNarrative(Narrative narrative)
     {

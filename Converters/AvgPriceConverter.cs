@@ -40,8 +40,8 @@ public sealed partial class AvgPriceConverter : IValueConverter
             }
         }
 
-        var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App._preferencesService.GetNumberFormat();
+        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
+        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
 
         return string.Format(ci, (string)parameter, avgCost);
         
@@ -53,8 +53,8 @@ public sealed partial class AvgPriceConverter : IValueConverter
         try
         {
             
-            var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
-            ci.NumberFormat = App._preferencesService.GetNumberFormat();
+            var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
+            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
 
             if (targetType == typeof(double))
             {

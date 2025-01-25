@@ -48,7 +48,7 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
             ApiId = CoinName.Text + CoinSymbol.Text,
             About = CoinAbout.Text,
             Price = Convert.ToDouble(CoinPrice.Text),
-            ImageUri = App.appPath + "\\Assets\\QuestionMarkBlue.png",
+            ImageUri = App.AppPath + "\\Assets\\QuestionMarkBlue.png",
             Rank = 999999
         };
 

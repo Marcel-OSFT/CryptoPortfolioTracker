@@ -20,30 +20,29 @@ namespace CryptoPortfolioTracker.Services;
 
 public partial class GraphService : ObservableObject, IGraphService
 {
-    private Graph graph = new();
+    private Graph PortfolioGraph { get; set; } = new();
     private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
     private List<HistoricalDataByIdRev> HistoricalDataByIdsBufferList { get; set; } = new();
     [ObservableProperty] private bool isLoadingFromJson;
     
-    //private readonly string chartsFolder = Path.Combine(App.appDataPath, App.ChartsFolder);
-
     public GraphService() 
     {
         HistoricalDataByIdsBufferList = new();
     }
 
-    public async Task LoadGraphFromJson(string portfolioPath)
+    public async Task LoadGraphFromJson(string portfolioSignature)
     {
         try
         {
+            PortfolioGraph = new();
             IsLoadingFromJson = true;
-            var graphPath = Path.Combine(App.appDataPath, portfolioPath);
+            var graphPath = Path.Combine(App.PortfoliosPath, portfolioSignature);
 
             Directory.CreateDirectory(graphPath); // if not exists
             await LoadGraphDataAsync(Path.Combine(graphPath, "graph.json"), async stream =>
             {
-                graph = await JsonSerializer.DeserializeAsync<Graph>(stream);
-                Logger.Information("Graph data de-serialized successfully ({0} data points)", graph.DataPointsPortfolio.Count);
+                PortfolioGraph = await JsonSerializer.DeserializeAsync<Graph>(stream);
+                Logger.Information("Graph data de-serialized successfully ({0} data points)", PortfolioGraph.DataPointsPortfolio.Count);
             });
 
             await LoadGraphDataAsync(Path.Combine(graphPath, "HistoryBuffer.json"), async stream =>
@@ -56,20 +55,20 @@ public partial class GraphService : ObservableObject, IGraphService
             });
 
 
-            if (graph == null)
+            if (PortfolioGraph == null)
             {
-                graph = new();
+                PortfolioGraph = new();
             }
             else
             {
-                await CleanUpGraph(portfolioPath);
+                await CleanUpGraph(portfolioSignature);
             }
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to de-serialize Graph data");
-            var restoreResult = await RestoreAndLoadBackupGraph(portfolioPath);
-            restoreResult.IfFail(ex => graph = new());
+            var restoreResult = await RestoreAndLoadBackupGraph(portfolioSignature);
+            restoreResult.IfFail(ex => PortfolioGraph = new());
         }
         finally
         {
@@ -93,9 +92,9 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    private async Task<Result<bool>> RestoreAndLoadBackupGraph(string portfolioPath)
+    private async Task<Result<bool>> RestoreAndLoadBackupGraph(string portfolioSignature)
     {
-        var graphPath = Path.Combine(App.appDataPath, portfolioPath);
+        var graphPath = Path.Combine(App.PortfoliosPath, portfolioSignature);
         var backupFileName = Path.Combine(graphPath, "graph.json.bak");
         if (File.Exists(backupFileName))
         {
@@ -105,8 +104,8 @@ public partial class GraphService : ObservableObject, IGraphService
                 Logger.Information("Restored backup graph.json file");
                 await LoadGraphDataAsync(Path.Combine(graphPath, "graph.json"), async stream =>
                 {
-                    graph = await JsonSerializer.DeserializeAsync<Graph>(stream);
-                    Logger.Information("Graph data de-serialized successfully ({0} data points)", graph.DataPointsPortfolio.Count);
+                    PortfolioGraph = await JsonSerializer.DeserializeAsync<Graph>(stream);
+                    Logger.Information("Graph data de-serialized successfully ({0} data points)", PortfolioGraph.DataPointsPortfolio.Count);
                 });
             }
             catch (Exception ex)
@@ -121,7 +120,7 @@ public partial class GraphService : ObservableObject, IGraphService
     }
     private void CheckValidityHistoricalDataBuffer(string path)
     {
-        if (HistoricalDataByIdsBufferList?.Count > 0 && graph?.DataPointsPortfolio?.Count > 0)
+        if (HistoricalDataByIdsBufferList?.Count > 0 && PortfolioGraph?.DataPointsPortfolio?.Count > 0)
         {
             if (GetHistoricalDataBufferOldestDate() != GetLatestDataPointDate().AddDays(1))
             {
@@ -131,11 +130,11 @@ public partial class GraphService : ObservableObject, IGraphService
     }
 
 
-   public async Task SaveGraphToJson(string portfolioPath)
+   public async Task SaveGraphToJson(string portfolioSignature)
     {
         try
         {
-            var fileName = Path.Combine(App.appDataPath, portfolioPath, "graph.json");
+            var fileName = Path.Combine(App.PortfoliosPath, portfolioSignature, "graph.json");
             var backupFileName = fileName + ".bak";
 
             if (File.Exists(fileName))
@@ -144,7 +143,7 @@ public partial class GraphService : ObservableObject, IGraphService
             }
 
             await using FileStream createStream = File.Create(fileName);
-            await JsonSerializer.SerializeAsync(createStream, graph);
+            await JsonSerializer.SerializeAsync(createStream, PortfolioGraph);
         }
         catch (Exception ex)
         {
@@ -152,11 +151,11 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    public async Task SaveHistoricalDataBufferToJson(string portfolioPath)
+    public async Task SaveHistoricalDataBufferToJson(string portfolioSignature)
     {
         if (HistoricalDataByIdsBufferList.Count > 0)
         {
-            var fileName = Path.Combine(App.appDataPath, portfolioPath, "HistoryBuffer.json");
+            var fileName = Path.Combine(App.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
             try
             {
                 await using FileStream createStream = File.Create(fileName);
@@ -168,27 +167,27 @@ public partial class GraphService : ObservableObject, IGraphService
             }
         }
     }
-    private async Task CleanUpGraph(string portfolioPath)
+    private async Task CleanUpGraph(string portfolioSignature)
     {
         // Remove duplicate entries
-        graph.DataPointsInFlow = RemoveDuplicates(graph.DataPointsInFlow);
-        graph.DataPointsOutFlow = RemoveDuplicates(graph.DataPointsOutFlow);
-        graph.DataPointsPortfolio = RemoveDuplicates(graph.DataPointsPortfolio);
+        PortfolioGraph.DataPointsInFlow = RemoveDuplicates(PortfolioGraph.DataPointsInFlow);
+        PortfolioGraph.DataPointsOutFlow = RemoveDuplicates(PortfolioGraph.DataPointsOutFlow);
+        PortfolioGraph.DataPointsPortfolio = RemoveDuplicates(PortfolioGraph.DataPointsPortfolio);
 
         // Remove leading zeros
-        var firstValuePoint = graph.DataPointsPortfolio.FirstOrDefault(x => x.Value > 0);
+        var firstValuePoint = PortfolioGraph.DataPointsPortfolio.FirstOrDefault(x => x.Value > 0);
 
         if (firstValuePoint != null)
         {
             var date = firstValuePoint.Date;
-            var sumInFlow = graph.DataPointsInFlow.Where(x => x.Date < date).Sum(x => x.Value);
-            var sumOutFlow = graph.DataPointsOutFlow.Where(x => x.Date < date).Sum(x => x.Value);
+            var sumInFlow = PortfolioGraph.DataPointsInFlow.Where(x => x.Date < date).Sum(x => x.Value);
+            var sumOutFlow = PortfolioGraph.DataPointsOutFlow.Where(x => x.Date < date).Sum(x => x.Value);
 
-            graph.DataPointsPortfolio = RemoveLeadingZeros(graph.DataPointsPortfolio, date, sumInFlow - sumOutFlow);
-            graph.DataPointsInFlow = RemoveLeadingZeros(graph.DataPointsInFlow, date, sumInFlow);
-            graph.DataPointsOutFlow = RemoveLeadingZeros(graph.DataPointsOutFlow, date, sumOutFlow);
+            PortfolioGraph.DataPointsPortfolio = RemoveLeadingZeros(PortfolioGraph.DataPointsPortfolio, date, sumInFlow - sumOutFlow);
+            PortfolioGraph.DataPointsInFlow = RemoveLeadingZeros(PortfolioGraph.DataPointsInFlow, date, sumInFlow);
+            PortfolioGraph.DataPointsOutFlow = RemoveLeadingZeros(PortfolioGraph.DataPointsOutFlow, date, sumOutFlow);
 
-            await SaveGraphToJson(portfolioPath);
+            await SaveGraphToJson(portfolioSignature);
         }
     }
 
@@ -207,11 +206,11 @@ public partial class GraphService : ObservableObject, IGraphService
         return filteredDataPoints.OrderBy(x => x.Date).ToList();
     }
 
-    public void ClearHistoricalDataBuffer(string portfolioPath)
+    public void ClearHistoricalDataBuffer(string portfolioSignature)
     {
         HistoricalDataByIdsBufferList.Clear();
 
-        var historyBufferFile = Path.Combine(App.appDataPath, portfolioPath, "HistoryBuffer.json");
+        var historyBufferFile = Path.Combine(App.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
         if (File.Exists(historyBufferFile))
         {
             File.Delete(historyBufferFile);
@@ -222,9 +221,9 @@ public partial class GraphService : ObservableObject, IGraphService
     {
         try
         {
-            DateOnly modDate = graph.ModifyFromDate;
+            DateOnly modDate = PortfolioGraph.ModifyFromDate;
 
-            while (graph.GraphStatus == GraphStatus.Modifying)
+            while (PortfolioGraph.GraphStatus == GraphStatus.Modifying)
             {
                 await Task.Delay(1000);
             }
@@ -245,7 +244,7 @@ public partial class GraphService : ObservableObject, IGraphService
                 modDate = earliestDate.CompareTo(modDate) <= 0 ? earliestDate : modDate;
             }
 
-            graph.ModifyFromDate = modDate;
+            PortfolioGraph.ModifyFromDate = modDate;
         }
         catch (Exception ex)
         {
@@ -253,22 +252,22 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    public async Task ApplyModification(string portfolioPath)
+    public async Task ApplyModification(string portfolioSignature)
     {
         try
         {
-            graph.GraphStatus = GraphStatus.Modifying;
-            var modDate = graph.ModifyFromDate;
+            PortfolioGraph.GraphStatus = GraphStatus.Modifying;
+            var modDate = PortfolioGraph.ModifyFromDate;
 
-            RemoveDataPointsFromDate(graph.DataPointsPortfolio, modDate);
-            RemoveDataPointsFromDate(graph.DataPointsInFlow, modDate);
-            RemoveDataPointsFromDate(graph.DataPointsOutFlow, modDate);
+            RemoveDataPointsFromDate(PortfolioGraph.DataPointsPortfolio, modDate);
+            RemoveDataPointsFromDate(PortfolioGraph.DataPointsInFlow, modDate);
+            RemoveDataPointsFromDate(PortfolioGraph.DataPointsOutFlow, modDate);
 
-            await SaveGraphToJson(portfolioPath);
+            await SaveGraphToJson(portfolioSignature);
 
-            graph.ModifyFromDate = DateOnly.MinValue;
-            graph.IsModificationRequested = false;
-            graph.GraphStatus = GraphStatus.Idle;
+            PortfolioGraph.ModifyFromDate = DateOnly.MinValue;
+            PortfolioGraph.IsModificationRequested = false;
+            PortfolioGraph.GraphStatus = GraphStatus.Idle;
         }
         catch (Exception ex)
         {
@@ -286,9 +285,9 @@ public partial class GraphService : ObservableObject, IGraphService
     {
         var values = new ObservableCollection<DateTimePoint>();
 
-        if (graph == null) return values;
+        if (PortfolioGraph == null) return values;
 
-        foreach (var dataPoint in graph.DataPointsPortfolio)
+        foreach (var dataPoint in PortfolioGraph.DataPointsPortfolio)
         {
             var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.Value);
             values.Add(dateTimePoint);
@@ -299,9 +298,9 @@ public partial class GraphService : ObservableObject, IGraphService
     public ObservableCollection<DateTimePoint> GetInFlowValues()
     {
         var values = new ObservableCollection<DateTimePoint>();
-        if (graph == null) return values;
+        if (PortfolioGraph == null) return values;
 
-        foreach (var dataPoint in graph.DataPointsInFlow)
+        foreach (var dataPoint in PortfolioGraph.DataPointsInFlow)
         {
             var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.Value);
             values.Add(dateTimePoint);
@@ -312,9 +311,9 @@ public partial class GraphService : ObservableObject, IGraphService
     public ObservableCollection<DateTimePoint> GetOutFlowValues()
     {
         var values = new ObservableCollection<DateTimePoint>();
-        if (graph is null) return values;
+        if (PortfolioGraph is null) return values;
 
-        foreach (var dataPoint in graph.DataPointsOutFlow)
+        foreach (var dataPoint in PortfolioGraph.DataPointsOutFlow)
         {
             var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.Value);
             values.Add(dateTimePoint);
@@ -324,33 +323,33 @@ public partial class GraphService : ObservableObject, IGraphService
 
     public bool IsModificationRequested()
     {
-        return graph?.IsModificationRequested ?? false;
+        return PortfolioGraph?.IsModificationRequested ?? false;
     }
 
     public DateOnly GetModifyFromDate()
     {
-        return graph?.ModifyFromDate ?? DateOnly.MinValue;
+        return PortfolioGraph?.ModifyFromDate ?? DateOnly.MinValue;
     }
 
     public void AddDataPointInFlow(DataPoint dataPoint)
     {
         if (dataPoint != null)
         {
-            graph.DataPointsInFlow.Add(dataPoint);
+            PortfolioGraph.DataPointsInFlow.Add(dataPoint);
         }
     }
     public void AddDataPointOutFlow(DataPoint dataPoint)
     {
         if (dataPoint != null)
         {
-            graph.DataPointsOutFlow.Add(dataPoint);
+            PortfolioGraph.DataPointsOutFlow.Add(dataPoint);
         }
     }
     public void AddDataPointPortfolio(DataPoint dataPoint)
     {
         if (dataPoint != null)
         {
-            graph.DataPointsPortfolio.Add(dataPoint);
+            PortfolioGraph.DataPointsPortfolio.Add(dataPoint);
         }
     }
 
@@ -369,20 +368,20 @@ public partial class GraphService : ObservableObject, IGraphService
 
     public DateOnly GetLatestDataPointDate()
     {
-        return graph.DataPointsPortfolio.MaxBy(x => x.Date)?.Date ?? DateOnly.MinValue;
+        return PortfolioGraph.DataPointsPortfolio.MaxBy(x => x.Date)?.Date ?? DateOnly.MinValue;
     }
 
     public DataPoint GetLatestDataPointInFlow()
     {
-        return graph.DataPointsInFlow.MaxBy(x => x.Date);
+        return PortfolioGraph.DataPointsInFlow.MaxBy(x => x.Date);
     }
     public DataPoint GetLatestDataPointOutFlow()
     {
-        return graph.DataPointsOutFlow.MaxBy(x => x.Date);
+        return PortfolioGraph.DataPointsOutFlow.MaxBy(x => x.Date);
     }
     public bool HasDataPoints()
     {
-        return graph?.DataPointsPortfolio.Count > 0;
+        return PortfolioGraph?.DataPointsPortfolio.Count > 0;
     }
     public bool HasHistoricalDataBuffer()
     {

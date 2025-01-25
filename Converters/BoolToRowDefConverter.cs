@@ -38,7 +38,7 @@ public partial class BoolToRowDefConverter : IValueConverter
         {
             
             //** adjust return value for selected app font
-            switch (App._preferencesService.GetFontSize().ToString())
+            switch (App.PreferencesService.GetFontSize().ToString())
             {
                 case "Small":
                     {

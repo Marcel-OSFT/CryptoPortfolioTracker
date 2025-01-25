@@ -75,7 +75,6 @@
     <None Remove="Dialogs\AddPriceLevelsDialog.xaml" />
     <None Remove="Dialogs\BlankWindow1.xaml" />
     <None Remove="Dialogs\TransactionDialog.xaml" />
-    <None Remove="LogWindow.xaml" />
     <None Remove="MK_Styles.xaml" />
     <None Remove="SplashScreen.xaml" />
     <None Remove="Views\DashboardView.xaml" />
@@ -167,6 +166,17 @@
     <Page Update="Controls\ValueGainsControl.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Dialogs\RestorePortfolioDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Dialogs\CopyPortfolioDialog.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Dialogs\PortfolioDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Dialogs\AssignNarrativeDialog.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
@@ -213,6 +223,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Behaviors\" />
     <Folder Include="Fonts\" />
     <Folder Include="Resources\" />
   </ItemGroup>
@@ -400,9 +411,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Page Update="SplashScreen.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="LogWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

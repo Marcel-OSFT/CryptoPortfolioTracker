@@ -10,6 +10,7 @@ using CryptoPortfolioTracker.Helpers;
 using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
+using LanguageExt.ClassInstances;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -27,11 +28,10 @@ public partial class AccountService : ObservableObject, IAccountService
     public async Task<ObservableCollection<Account>> PopulateAccountsList()
     {
         var getAccountsResult = await GetAccounts();
-        getAccountsResult.IfSucc(s =>
-        {
-            ListAccounts = new ObservableCollection<Account>(s.OrderByDescending(x => x.TotalValue));
-        });
-
+        ListAccounts = getAccountsResult.Match(
+            list => new ObservableCollection<Account>(list.OrderByDescending(x => x.TotalValue)),
+            err => new ObservableCollection<Account>() 
+        );
         return ListAccounts;
     }
 
@@ -43,26 +43,28 @@ public partial class AccountService : ObservableObject, IAccountService
     }
 
 
-
-
     public async Task<ObservableCollection<AssetAccount>> PopulateAccountsByAssetList(int coinId)
     {
         var getResult = await GetAccountsByAsset(coinId);
-        getResult.IfSucc(list => ListAssetAccounts = new(list.OrderByDescending(x => x.Qty))); 
-        getResult.IfFail(err =>  ListAssetAccounts = new());
+        ListAssetAccounts = getResult.Match(
+            list => new ObservableCollection<AssetAccount>(list.OrderByDescending(x => x.Qty)),
+            err => new ObservableCollection<AssetAccount>()
+        );
 
         return ListAssetAccounts;
     }
+
+
     public void ClearAccountsByAssetList()
     {
-        if (ListAssetAccounts is not null)
+        if (ListAssetAccounts != null && ListAssetAccounts.Any())
         {
             ListAssetAccounts.Clear(); 
         }
     }
     public AssetAccount GetAffectedAccount(Transaction transaction)
     {
-        if (ListAssetAccounts == null || transaction.RequestedAsset == null)
+        if (ListAssetAccounts == null && transaction.RequestedAsset == null)
         {
             throw new InvalidOperationException("ListAssetAccounts or RequestedAsset is null");
         }
@@ -71,7 +73,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public bool IsAccountHoldingAssets(Account account)
     {
-        if (account is null || ListAccounts is null) { return false; }
+        if (account is null || ListAccounts is null || !ListAccounts.Any()) { return false; }
         var result = false;
         try
         {
@@ -85,7 +87,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public Task RemoveFromListAccounts(int accountId)
     {
-        if (ListAccounts is null) { return Task.FromResult(false); }
+        if (ListAccounts is null || !ListAccounts.Any()) { return Task.FromResult(false); }
         try
         {
             var account = ListAccounts.Where(x => x.Id == accountId).Single();
@@ -99,7 +101,7 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public Task AddToListAccounts(Account? newAccount)
     {
-        if (ListAccounts is null || newAccount is null) { return Task.FromResult(false); }
+        if (ListAccounts is null || !ListAccounts.Any() || newAccount is null) { return Task.FromResult(false); }
         try
         {
             ListAccounts.Add(newAccount);
@@ -110,38 +112,18 @@ public partial class AccountService : ObservableObject, IAccountService
     }
     public async Task UpdateListAssetAccount(AssetAccount accountAffected)
     {
+        if (ListAssetAccounts is null || !ListAssetAccounts.Any()) return;
 
-        if (ListAssetAccounts is null)
-        {
-            return;
-        }
-        (await GetAccountByAsset(accountAffected.AssetId))
-            .IfSucc(s =>
-            {
-                var index = -1;
+        var result = await GetAccountByAsset(accountAffected.AssetId);
+        if (result.IsFaulted) return;
 
-                for (var i = 0; i < ListAssetAccounts.Count; i++)
-                {
-                    if (ListAssetAccounts[i].Name == accountAffected.Name)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                if (index == -1)
-                {
-                    return;
-                }
+        var updatedAccount = result.IfFail(new AssetAccount());
+        if (updatedAccount == null || string.IsNullOrEmpty(updatedAccount.Name)) return;
 
-                if (s != null && s.Name != string.Empty)
-                {
-                    ListAssetAccounts[index] = s;
-                }
-                else
-                {
-                    ListAssetAccounts.RemoveAt(index);
-                }
-            });
+        var index = ListAssetAccounts.IndexOf(ListAssetAccounts.FirstOrDefault(a => a.Name == accountAffected.Name));
+        if (index == -1) return;
+
+        ListAssetAccounts[index] = updatedAccount;
     }
     public async Task<Result<AssetAccount>> GetAccountByAsset(int assetId)
     {
@@ -323,16 +305,14 @@ public partial class AccountService : ObservableObject, IAccountService
     public bool DoesAccountNameExist(string name)
     {
         var context = _portfolioService.Context;
-        Account account;
         try
         {
-            account = context.Accounts.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefault();
+            return context.Accounts.Any(x => x.Name.ToLower() == name.ToLower());
         }
         catch (Exception)
         {
-            account = new Account();
+            return false;
         }
-        return account != null;
     }
 }
 

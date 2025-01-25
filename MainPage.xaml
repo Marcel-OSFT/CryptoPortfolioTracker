@@ -38,7 +38,16 @@
                 IsTabStop="False">
             
             <NavigationView.MenuItems>
-                
+
+                <NavigationViewItem l:Uids.Uid="Navigation_Dashboard" Tag="DashboardView" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
+
+
                 <NavigationViewItem x:Name="AssetsView" l:Uids.Uid="Navigation_Assets" Tag="AssetsView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE825;"/>
@@ -70,22 +79,19 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
-
-                <NavigationViewItem l:Uids.Uid="Navigation_Dashboard" Tag="DashboardView" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
+                 <NavigationViewItemSeparator  Margin="0,5,0,5"/>
 
                 <NavigationViewItem l:Uids.Uid="Navigation_SwitchPortfolio" Tag="SwitchPortfolioView" >
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8AB;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
+                <NavigationViewItem l:Uids.Uid="Navigation_Admin" Tag="AdminView" >
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE912;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
 
 
 

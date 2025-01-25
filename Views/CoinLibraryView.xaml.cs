@@ -23,7 +23,7 @@ public partial class CoinLibraryView : Page, IDisposable
 
     private async void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        await _viewModel.Initialize();
+        await _viewModel.ViewLoading();
         await _viewModel.RetrieveAllCoinData();
     }
 

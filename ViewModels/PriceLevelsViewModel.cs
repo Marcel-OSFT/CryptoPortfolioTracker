@@ -49,9 +49,11 @@ public partial class PriceLevelsViewModel : BaseViewModel
         initialSortFunc = x => x.PriceLevels.Where(t => t.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
         initialSortingOrder = SortingOrder.Descending;
     }
-    public async Task Initialize()
+    public async Task ViewLoading()
     {
         CurrentPortfolio = _priceLevelService.GetPortfolio();
+        PortfolioName = CurrentPortfolio.Name;
+
         if (_priceLevelService.IsCoinsListEmpty())
         {
             await _priceLevelService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
@@ -96,7 +98,6 @@ public partial class PriceLevelsViewModel : BaseViewModel
     [RelayCommand]
     public async Task ShowAddLevelsDialog(Coin coin)
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         Logger.Information("Showing Note Dialog");
         try
@@ -105,7 +106,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
             {
                 XamlRoot = PriceLevelsView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
             if (result == ContentDialogResult.Primary)
             {
                 Logger.Information("Adding Price Levels for {0}", coin.Name);
@@ -130,7 +131,6 @@ public partial class PriceLevelsViewModel : BaseViewModel
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
     }
 
     [RelayCommand(CanExecute = nameof(CanDeletePriceLevels))]

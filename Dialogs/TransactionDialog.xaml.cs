@@ -202,7 +202,8 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         else
         {
             MaxQtyA = -1;
-            ActualPriceA = PriceA = (await _transactionService.GetPriceFromLibrary(CoinA)).Match(Succ: price => price, Fail: err => 0);
+            ActualPriceA = PriceA = (await _transactionService.GetPriceFromLibrary(CoinA))
+                .Match(Succ: price => price, Fail: err => 0);
         }
     }
     private async Task<Transaction> WrapUpTransactionData()
@@ -403,7 +404,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         }
 
     }
-    private string ClearStringIfNoMatchWithList(string _string, List<string> list)
+    private static string ClearStringIfNoMatchWithList(string _string, List<string> list)
     {
         if (!list.Contains(_string))
         {

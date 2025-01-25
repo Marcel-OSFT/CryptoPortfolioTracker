@@ -1,0 +1,20 @@
+<muxc:ContentDialog
+    x:Class="CryptoPortfolioTracker.Dialogs.PortfolioDialog"
+    Title="Rename Portfolio"
+    PrimaryButtonText="Save"
+    PrimaryButtonClick="Button_Click_AcceptAccount"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:l="using:WinUI3Localizer"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loading="Dialog_Loading"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="10">
+        <TextBox x:Name="txtName" l:Uids.Uid="PortfolioDialog_Name"
+                 Margin="0,10,0,10" 
+                 LosingFocus="PortfolioName_LosingFocus" TextChanging="PortfolioName_TextChanging"/>
+    </StackPanel>
+</muxc:ContentDialog>

@@ -144,6 +144,8 @@ public partial class DashboardViewModel : BaseViewModel
     public void ViewLoading()
     {
         CurrentPortfolio = _dashboardService.GetPortfolio();
+        PortfolioName = CurrentPortfolio.Name;
+
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
     }
 

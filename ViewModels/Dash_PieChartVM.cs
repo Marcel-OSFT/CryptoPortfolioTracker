@@ -34,9 +34,8 @@ public partial class DashboardViewModel : BaseViewModel
             
             SetSeriesPie(pieChart);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Debug.WriteLine(ex);
         }
     }
 
@@ -63,6 +62,7 @@ public partial class DashboardViewModel : BaseViewModel
         );
 
         pieChart.isFillSet = false;
+
     }
 
     private double GetLabelAngle(double sliceValue, double totalValue, ref double sumSlice)

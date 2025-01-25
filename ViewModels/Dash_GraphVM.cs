@@ -85,9 +85,9 @@ public partial class DashboardViewModel : BaseViewModel
             XAxesGraph[0].Labeler = value => value.AsDate().ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci);
             YAxesGraph[0].Name = loc.GetLocalizedString("GraphicView_PortfolioSeriesTitle");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Debug.WriteLine(ex);
+            
         }
     }
 
@@ -101,7 +101,7 @@ public partial class DashboardViewModel : BaseViewModel
         IsLoadingFromJsonGraph = false;
     }
 
-    
+
     private void UpdateSeriesValues()
     {
         GetValuesGraph();
@@ -176,7 +176,7 @@ public partial class DashboardViewModel : BaseViewModel
     private void SetXAxesGraph()
     {
         var loc = Localizer.Get();
-        var ci = new CultureInfo(App.Localizer.GetCurrentLanguage());
+        var ci = new CultureInfo(_preferencesService.GetAppCultureLanguage());   // App.Localizer.GetCurrentLanguage());
 
         if (XAxesGraph is not null)
         {

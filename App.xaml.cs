@@ -39,45 +39,38 @@ public partial class App : Application
 
     private Mutex _mutex;
     private const string MutexName = "MyUniqueWinUIMutex";
+    private static ILogger? Logger;
+    public static readonly SemaphoreSlim UpdateSemaphore = new SemaphoreSlim(1, 1);
+    public static IPreferencesService PreferencesService { get; private set; }
 
-    public static App Current;
-    
+    public static App Current { get; private set; }
     public static MainWindow? Window { get; private set; }
-    public static Window? Splash;
-    public const string CoinGeckoApiKey = "";
-    public static string ApiPath = "https://api.coingecko.com/api/v3/";
-    public static string appPath = string.Empty;
-    public static string appDataPath = string.Empty;
-    public static string ProductVersion = string.Empty;
-    public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
-    
+    public static Window? Splash { get; set; }
+    public static string AppPath { get; private set; } = string.Empty;
+    public static string AppDataPath { get; private set; } = string.Empty;
+    public static string ProductVersion { get; private set; } = string.Empty;
+    public static ILocalizer? Localizer { get; private set; }
+    public static IServiceProvider Container { get; private set; }
+
+    private static TaskCompletionSource<bool> dialogCompletionSource = new TaskCompletionSource<bool>();
+    public static Task DialogCompletionTask => dialogCompletionSource.Task;
+
     //public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version_onedrive.txt";
     public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
-    public static bool isBusy;
-    public static bool isAppInitializing;
-    
-
-    public static bool isLogWindowEnabled;
-    private static ILogger? Logger;
-    public static ILocalizer? Localizer;
-    public static IPreferencesService _preferencesService;
-    public static IServiceProvider Container  { get; private set;  }
-    //public Graph PortfolioGraph;
-
-    public static bool initDone;
-    public static bool needFixFaultyMigration = false;
+    public const string CoinGeckoApiKey = "";
+    public const string ApiPath = "https://api.coingecko.com/api/v3/";
+    public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
+    public const string DefaultPortfolioGuid = "f52ee1a8-ea8d-4f21-849c-6e6429f88256";
 
     public const string DbName = "sqlCPT.db";
     public const string PrefFileName = "prefs.xml";
-    public const string ChartsFolder = "MarketCharts";
     public const string BackupFolder = "Backup";
-    public const string PrefixBackupName = "CPTbackup";
+    public const string PrefixBackupName = "RestorePoint";
     public const string ExtentionBackup = "cpt";
     public const string IconsFolder = "LibraryIcons";
     public const string PortfoliosFileName = "portfolios.json";
-    public const string PortfoliosPath = "Portfolios";
-
-    public List<Portfolio> portfolios = new List<Portfolio>();
+    public static string PortfoliosPath { get; private set; }
+    public static string ChartsFolder { get; private set; }
 
     public App()
     {
@@ -87,10 +80,8 @@ public partial class App : Application
 
         GetAppEnvironmentals();
         Container = RegisterServices();
-        _preferencesService = Container.GetService<IPreferencesService>() ?? throw new InvalidOperationException("Failed to retrieve IPreferencesService from the service container.");
+        PreferencesService = Container.GetService<IPreferencesService>() ?? throw new InvalidOperationException("Failed to retrieve IPreferencesService from the service container.");
     }
-
-    
 
     /// <summary>
     /// Invoked when the application is launched.
@@ -118,7 +109,7 @@ public partial class App : Application
             return;
         }
 
-        _preferencesService.LoadUserPreferencesFromXml();
+        PreferencesService.LoadUserPreferencesFromXml();
 
         AddNewTeachingTips();
         
@@ -147,13 +138,13 @@ public partial class App : Application
 
     }
 
-    private async void CacheLibraryIconsAsync()
+    private static async void CacheLibraryIconsAsync()
     {
         await CacheLibraryIcons();
     }
-    private async Task CacheLibraryIcons()
+    private static async Task CacheLibraryIcons()
     {
-        var iconsFolderPath = Path.Combine(appDataPath, IconsFolder);
+        var iconsFolderPath = Path.Combine(AppDataPath, IconsFolder);
         if (Directory.Exists(iconsFolderPath))
         {
             foreach (var file in Directory.GetFiles(iconsFolderPath))
@@ -240,7 +231,7 @@ public partial class App : Application
 
         };
 
-        _preferencesService.AddTeachingTipsIfNotExist(tips);
+        PreferencesService.AddTeachingTipsIfNotExist(tips);
     }
 
     private async static Task InitializeLocalizer()
@@ -251,7 +242,7 @@ public partial class App : Application
             .AddStringResourcesFolderForLanguageDictionaries(stringsFolderPath)
             .Build();
 
-        var culture = _preferencesService.GetAppCultureLanguage();
+        var culture = PreferencesService.GetAppCultureLanguage();
         Logger?.Information("Setting Language to {0}", culture);
 
         try
@@ -266,7 +257,7 @@ public partial class App : Application
     }
 
 
-    private async void InitializePortfolioService()
+    private static async void InitializePortfolioService()
     {
         var contextService = App.Container.GetService<PortfolioService>();
         await contextService.InitializeAsync();
@@ -275,16 +266,21 @@ public partial class App : Application
 
     private static void GetAppEnvironmentals()
     {
-        appPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
-        appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
-        if (!Directory.Exists(appDataPath))
+        AppPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
+        AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
+        if (!Directory.Exists(AppDataPath))
         {
-            Directory.CreateDirectory(appDataPath);
+            Directory.CreateDirectory(AppDataPath);
         }
 
-        AppDomain.CurrentDomain.SetData("DataDirectory", appDataPath);
+        AppDomain.CurrentDomain.SetData("DataDirectory", AppDataPath);
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         ProductVersion = version is not null ? version.ToString() : string.Empty ;
+
+        PortfoliosPath = Path.Combine(AppDataPath, "Portfolios");
+        ChartsFolder = Path.Combine(AppDataPath, "MarketCharts");
+
+
     }
     private static IServiceProvider RegisterServices()
     {
@@ -295,12 +291,12 @@ public partial class App : Application
         services.AddScoped<CoinLibraryView>();
         services.AddScoped<SettingsView>();
         services.AddScoped<MainPage>();
-        services.AddScoped<LogWindow>();
         services.AddScoped<MainWindow>();
         services.AddScoped<DashboardView>();
         services.AddScoped<PriceLevelsView>();
         services.AddScoped<NarrativesView>();
         services.AddScoped<SwitchPortfolioView>();
+        services.AddScoped<AdminView>();
 
 
         services.AddScoped<AssetsViewModel>();
@@ -312,14 +308,21 @@ public partial class App : Application
         services.AddScoped<BaseViewModel>();
         services.AddScoped<NarrativesViewModel>();
         services.AddScoped<SwitchPortfolioViewModel>();
+        services.AddScoped<AdminViewModel>();
 
 
 
         // Register the factory
         services.AddSingleton<IPortfolioContextFactory, PortfolioContextFactory>();
+        services.AddSingleton<IUpdateContextFactory, UpdateContextFactory>();
 
         // Register the DbContext with a dummy connection string to satisfy the DI requirements
         services.AddDbContext<PortfolioContext>(options =>
+        {
+            options.UseSqlite("Data Source=:memory:"); // Dummy connection string
+        });
+
+        services.AddDbContext<UpdateContext>(options =>
         {
             options.UseSqlite("Data Source=:memory:"); // Dummy connection string
         });
@@ -352,37 +355,29 @@ public partial class App : Application
 
     private static void InitializeLogger()
     {
-        var commandLineArgs = Environment.GetCommandLineArgs();
-
-        if (commandLineArgs.Length > 1 && commandLineArgs[1][1..].ToLower() == "log")
-        {
-            isLogWindowEnabled = true; // the Logger window is created in MainPage...
-        }
-        else
-        {
 #if DEBUG
-            Log.Logger = new LoggerConfiguration()
-               .WriteTo.Debug(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
-               .WriteTo.File(App.appDataPath + "\\log.txt",
-                       rollingInterval: RollingInterval.Day,
-                       retainedFileCountLimit: 3,
-                       outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
-               //.MinimumLevel.Is(Serilog.Events.LogEventLevel.Verbose)
-               .CreateLogger();
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Debug(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
+            .WriteTo.File(App.AppDataPath + "\\log.txt",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 3,
+                    outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
+            //.MinimumLevel.Is(Serilog.Events.LogEventLevel.Verbose)
+            .CreateLogger();
 #else
 
-            Log.Logger = new LoggerConfiguration()
-                        .WriteTo.File(App.appDataPath + "\\log.txt",
-                           rollingInterval: RollingInterval.Day,
-                           retainedFileCountLimit: 3,
-                           outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
-                  .CreateLogger();
+        Log.Logger = new LoggerConfiguration()
+                    .WriteTo.File(App.AppDataPath + "\\log.txt",
+                        rollingInterval: RollingInterval.Day,
+                        retainedFileCountLimit: 3,
+                        outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
+                .CreateLogger();
 #endif
-            _preferencesService.AttachLogger();
-            Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
-            Logger.Information("------------------------------------");
-            Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
-        }
+        PreferencesService.AttachLogger();
+        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
+        Logger.Information("------------------------------------");
+        Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
+        
     }
 
     private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -398,7 +393,7 @@ public partial class App : Application
         ShowErrorMessage(e.Message);
     }
 
-    public async Task ShowErrorMessage(string message)
+    public static async Task ShowErrorMessage(string message)
     {
         Window? tempWindow= null;
         var xamlRoot = MainPage.Current?.XamlRoot;
@@ -426,7 +421,15 @@ public partial class App : Application
 
         // Close the temporary window
         tempWindow?.Close();
+    }
 
+    public static async Task<ContentDialogResult> ShowContentDialogAsync(ContentDialog dialog)
+    {
+        dialogCompletionSource.TrySetResult(false); // Reset the completion source
+        dialog.Opened += (s, e) => dialogCompletionSource = new TaskCompletionSource<bool>();
+        dialog.Closed += (s, e) => dialogCompletionSource.TrySetResult(true);
+
+        return await dialog.ShowAsync();
     }
 
 }

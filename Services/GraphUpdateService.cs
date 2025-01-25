@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
@@ -15,14 +12,12 @@ using LanguageExt;
 using LanguageExt.Common;
 using LanguageExt.Pipes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
 using Serilog.Core;
-using Windows.Devices.WiFi;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
 using HttpClient = System.Net.Http.HttpClient;
 
@@ -34,12 +29,13 @@ public class GraphUpdateService : IGraphUpdateService
     private readonly PeriodicTimer timer;
     private readonly CancellationTokenSource cts = new();
     private Task? timerTask;
+    private Task? resumeTask;
     private readonly PortfolioService _portfolioService;
     private readonly IGraphService _graphService;
     private double progressCounter;
     private double progressInterval;
 
-    private PortfolioContext currentContext;
+    private UpdateContext currentContext;
 
     private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphUpdateService).Name.PadRight(22));
     public bool IsPausRequested { get; private set; }
@@ -58,27 +54,37 @@ public class GraphUpdateService : IGraphUpdateService
     public void  Start()
     {
         Logger.Information("GraphUpdateService started");
+        currentContext = _portfolioService.UpdateContext;
         timerTask = DoWorkAsync();
     }
     private async Task DoWorkAsync()
     {
         try
         {
-            await _graphService.LoadGraphFromJson(_portfolioService.CurrentPortfolio.Path);
+            await _graphService.LoadGraphFromJson(_portfolioService.CurrentPortfolio.Signature);
 
             while (await timer.WaitForNextTickAsync(cts.Token))
             {
                 if (!IsPausRequested)
                 {
-                    IsUpdating = true;
-                    Logger.Information("NextTick received");
-                    await CheckForNewGraphData();
-                    IsUpdating = false;
+                    if (resumeTask == null || resumeTask.IsCompleted )
+                    {
+                        resumeTask = null;
+                        IsUpdating = true;
+                        Logger.Information("NextTick received");
+                        await CheckForNewGraphData();
+                        IsUpdating = false;
+                    }
+                    else
+                    {
+                        Logger.Information("NextTick received => service waiting for resumeTask to complete");
+                    };
                 }
                 else
                 {
                     Logger.Information("NextTick received => service paused");
                 }
+                
             }
         }
         catch (OperationCanceledException)
@@ -90,7 +96,7 @@ public class GraphUpdateService : IGraphUpdateService
             Logger.Error(ex, "GraphUpdateService stopped unexpected");
         }
     }
-    public async Task Stop()
+    public void Stop()
     {
         if (timerTask is null)
         {
@@ -102,170 +108,208 @@ public class GraphUpdateService : IGraphUpdateService
 
         Logger.Information("GraphUpdateService stopped");
     }
-    public void Pause()
+    public void Pause(bool isDisconnecting = false)
     {
         IsPausRequested = true;
         Logger.Information("GraphUpdateService Paused");
     }
-    public async Task Resume()
+
+    public void Resume()
     {
-        if (currentContext != _portfolioService.Context)
-        {
-            Logger.Information("GraphUpdateService continued with new context");
-            currentContext = _portfolioService.Context;
-            await _graphService.LoadGraphFromJson(_portfolioService.CurrentPortfolio.Path);
+        IsPausRequested = false;
+        if (currentContext != _portfolioService.UpdateContext)
+        {   
+            resumeTask = Task.Run(async () =>
+            {
+                Logger.Information("GraphUpdateService continued with new context");
+                currentContext = _portfolioService.UpdateContext;
+                await _graphService.LoadGraphFromJson(_portfolioService.CurrentPortfolio.Signature);
+            });
         }
         else
         {
             Logger.Information("PriceUpdateService continued with existing context");
         }
-
-        IsPausRequested = false;
     }
     private async Task<Result<bool>> CheckForNewGraphData()
     {
         int days;
         List<AssetTotals> assets;
-
-        if (_graphService.HasHistoricalDataBuffer())
+        IsUpdating = true;
+        try
         {
-            days = GetDaysFromBuffer();
-            assets = await GetRemainingAssets();
-        }
-        else
-        {
-            if (_graphService.IsModificationRequested())
+            if (_graphService.HasHistoricalDataBuffer())
             {
-                Logger.Information("Applying Modification => FromDate: {0}", _graphService.GetModifyFromDate());
-                await _graphService.ApplyModification(_portfolioService.CurrentPortfolio.Path);
-            }
-
-            if (_graphService.HasDataPoints())
-            {
-                days = GetDaysBasedOnLatestDataPoint();
+                days = GetDaysFromBuffer();
+                assets = await GetRemainingAssets();
             }
             else
             {
-                days = await GetDaysBasedOnOldestTransaction();
-
-                //*** CoinGecko provides data for 'only' the last 365 days. If oldest Transaction is beyond 365 days 
-                //*** an initial starting Point needs to be set as first portfolio value
-                if (days>365)
+                if (_graphService.IsModificationRequested())
                 {
-                    ObtainFirstPortfolioValue();
-                    days = 365;
+                    Logger.Information("Applying Modification => FromDate: {0}", _graphService.GetModifyFromDate());
+                    await _graphService.ApplyModification(_portfolioService.CurrentPortfolio.Signature);
                 }
 
+                if (_graphService.HasDataPoints())
+                {
+                    days = GetDaysBasedOnLatestDataPoint();
+                }
+                else
+                {
+                    days = await GetDaysBasedOnOldestTransaction();
 
+                    //*** CoinGecko provides data for 'only' the last 365 days. If oldest Transaction is beyond 365 days 
+                    //*** an initial starting Point needs to be set as first portfolio value
+                    if (days > 365)
+                    {
+                        ObtainFirstPortfolioValue();
+                        days = 365;
+                    }
+                }
+                assets = await GetAssets();
             }
-            assets = await GetAssets();
-        }
 
-        if (days == 0 || !assets.Any())
+            if (days == 0 || !assets.Any())
+            {
+                Logger.Information("Historical Data up-to-date");
+                return true;
+            }
+            Logger.Information("Historical Data Settings; days {0}, assets {1}", days, assets.Count);
+
+            await AddInFlowData(days);
+            await AddOutFlowData(days);
+            await AddPortfolioValueData(assets, days);
+            return true;
+        }
+        catch (Exception ex)
         {
-            Logger.Information("Historical Data up-to-date");
-            return false;
+            Logger.Error(ex, "CheckForNewGraphData failed.");
+            return new Result<bool>(ex);
         }
-        Logger.Information("Historical Data Settings; days {0}, assets {1}", days, assets.Count);
-
-        await AddInFlowData(days);
-        await AddOutFlowData(days);
-        await AddPortfolioValueData(assets, days);
-        return true;
+        finally
+        {
+            IsUpdating = false;
+        }
     }
+
     private async Task AddInFlowData(int days)
     {
-        if (days == 0) { return; }
-        var startDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days)).Date;
-
-        //*** In case adding new values to PortfolioValues has failed during a previous loop, then
-        //*** it might be that InflowData already has been added in the previous loop and
-        //*** will be out-of-sync 
-        //*** so, check also latest date and add starting from that date instead of the expected 'startdate' 
-
-        var lastEntry = _graphService.GetLatestDataPointInFlow();
-        var lastEntryDate = DateOnly.MinValue;
-
-        if (lastEntry is not null)
+        await App.UpdateSemaphore.WaitAsync();
+        try
         {
-            lastEntryDate = lastEntry.Date;
-        }
+            if (days == 0) { return; }
+            var startDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days)).Date;
 
-        startDate = lastEntryDate > DateOnly.FromDateTime(startDate.Date) ? lastEntryDate.ToDateTime(new TimeOnly(1,0)).Date : startDate;
+            //*** In case adding new values to PortfolioValues has failed during a previous loop, then
+            //*** it might be that InflowData already has been added in the previous loop and
+            //*** will be out-of-sync 
+            //*** so, check also latest date and add starting from that date instead of the expected 'startdate' 
 
-        // var endDate = DateTime.UtcNow.Date;
-        var context = _portfolioService.Context;
-        var deposits = await context.Mutations
-            .Include(t => t.Transaction)
-            .Where(x => x.Transaction.TimeStamp.Date >= startDate
-                //&& x.Transaction.TimeStamp.Date <= endDate
-                && x.Type == Enums.TransactionKind.Deposit)
-            .GroupBy(g => g.Transaction.TimeStamp.Date)
-            .Select(grouped => new
+            var lastEntry = _graphService.GetLatestDataPointInFlow();
+            var lastEntryDate = DateOnly.MinValue;
+
+            if (lastEntry is not null)
             {
-                Date = grouped.Key,
-                InFlow = grouped.Sum(m => m.Qty * m.Price),
-            })
-            .OrderBy(t => t.Date)
-            .ToListAsync();
+                lastEntryDate = lastEntry.Date;
+            }
 
-        foreach (var deposit in deposits)
-        {
-            var dataPoint = new DataPoint();
-            dataPoint.Date = DateOnly.FromDateTime(deposit.Date);
-            dataPoint.Value = deposit.InFlow;
-            _graphService.AddDataPointInFlow(dataPoint);
+            startDate = lastEntryDate > DateOnly.FromDateTime(startDate.Date) ? lastEntryDate.ToDateTime(new TimeOnly(1, 0)).Date : startDate;
+
+            // var endDate = DateTime.UtcNow.Date;
+            var context = _portfolioService.UpdateContext;
+            var deposits = await context.Mutations
+                .Include(t => t.Transaction)
+                .Where(x => x.Transaction.TimeStamp.Date >= startDate
+                    //&& x.Transaction.TimeStamp.Date <= endDate
+                    && x.Type == Enums.TransactionKind.Deposit)
+                .GroupBy(g => g.Transaction.TimeStamp.Date)
+                .Select(grouped => new
+                {
+                    Date = grouped.Key,
+                    InFlow = grouped.Sum(m => m.Qty * m.Price),
+                })
+                .OrderBy(t => t.Date)
+                .ToListAsync();
+
+            foreach (var deposit in deposits)
+            {
+                var dataPoint = new DataPoint();
+                dataPoint.Date = DateOnly.FromDateTime(deposit.Date);
+                dataPoint.Value = deposit.InFlow;
+                _graphService.AddDataPointInFlow(dataPoint);
+            }
         }
-        //await _graphService.SaveGraphToJson();
+        catch (Exception ex)
+        {
+            Logger.Warning(ex,"AddInflowData failed.");
+        }
+        finally
+        {
+            App.UpdateSemaphore.Release();
+        }
+        
     }
     private async Task AddOutFlowData(int days)
     {
-        if (days == 0) { return; }
-        var startDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days)).Date;
-        // var endDate = DateTime.UtcNow.Date;
-
-        //*** In case adding new values to PortfolioValues has failed during a previous loop, then
-        //*** it might be that InflowData already has been added in the previous loop and
-        //*** will be out-of-sync 
-        //*** so, check also latest date and add starting from that date instead of the expected 'startdate' 
-
-        var lastEntry = _graphService.GetLatestDataPointOutFlow();
-        var lastEntryDate = DateOnly.MinValue;
-
-        if (lastEntry is not null)
+        await App.UpdateSemaphore.WaitAsync();
+        try
         {
-            lastEntryDate = lastEntry.Date;
-        }
-        startDate = lastEntryDate > DateOnly.FromDateTime(startDate.Date) ? lastEntryDate.ToDateTime(new TimeOnly(1, 0)).Date : startDate;
+            if (days == 0) { return; }
+            var startDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days)).Date;
+            // var endDate = DateTime.UtcNow.Date;
 
-        var context = _portfolioService.Context;
-        var withdraws = await context.Mutations
-            .Include(t => t.Transaction)
-            .Where(x => x.Transaction.TimeStamp.Date >= startDate
-               // && x.Transaction.TimeStamp.Date <= endDate
-                && x.Type == Enums.TransactionKind.Withdraw)
-            .GroupBy(g => g.Transaction.TimeStamp.Date)
-            .Select(grouped => new
+            //*** In case adding new values to PortfolioValues has failed during a previous loop, then
+            //*** it might be that InflowData already has been added in the previous loop and
+            //*** will be out-of-sync 
+            //*** so, check also latest date and add starting from that date instead of the expected 'startdate' 
+
+            var lastEntry = _graphService.GetLatestDataPointOutFlow();
+            var lastEntryDate = DateOnly.MinValue;
+
+            if (lastEntry is not null)
             {
-                Date = grouped.Key,
-                OutFlow = grouped.Sum(m => m.Qty * m.Price),
-            })
-            .OrderBy(t => t.Date)
-            .ToListAsync();
+                lastEntryDate = lastEntry.Date;
+            }
+            startDate = lastEntryDate > DateOnly.FromDateTime(startDate.Date) ? lastEntryDate.ToDateTime(new TimeOnly(1, 0)).Date : startDate;
 
-        foreach (var withdraw in withdraws)
-        {
-            var dataPoint = new DataPoint();
-            dataPoint.Date = DateOnly.FromDateTime(withdraw.Date);
-            dataPoint.Value = withdraw.OutFlow;
+            var context = _portfolioService.UpdateContext;
+            var withdraws = await context.Mutations
+                .Include(t => t.Transaction)
+                .Where(x => x.Transaction.TimeStamp.Date >= startDate
+                    // && x.Transaction.TimeStamp.Date <= endDate
+                    && x.Type == Enums.TransactionKind.Withdraw)
+                .GroupBy(g => g.Transaction.TimeStamp.Date)
+                .Select(grouped => new
+                {
+                    Date = grouped.Key,
+                    OutFlow = grouped.Sum(m => m.Qty * m.Price),
+                })
+                .OrderBy(t => t.Date)
+                .ToListAsync();
 
-            _graphService.AddDataPointOutFlow(dataPoint);
+            foreach (var withdraw in withdraws)
+            {
+                var dataPoint = new DataPoint();
+                dataPoint.Date = DateOnly.FromDateTime(withdraw.Date);
+                dataPoint.Value = withdraw.OutFlow;
+
+                _graphService.AddDataPointOutFlow(dataPoint);
+            }
         }
-        //await _graphService.SaveGraphToJson();
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, "AddOutflowData failed.");
+        }
+        finally
+        {
+            App.UpdateSemaphore.Release();
+        }
+
+        
     }
     private async Task AddPortfolioValueData(List<AssetTotals> assets, int days)
     {
-        var failed = false;
         progressCounter = 0;
         progressInterval = (100.0/assets.Count);
         foreach (var asset in assets)
@@ -277,20 +321,28 @@ public class GraphUpdateService : IGraphUpdateService
             //in case of a pre-listing coin the actual Marketvalue is fixed as long as it is not listed yet.
             //This market value is already calculated and obtained in the above assetTotals query
             var getDataResult = await GetHistoricalPrices(asset);
-            getDataResult.IfSucc(async s => {
+
+            await getDataResult.Match(async s => 
+            {
                 var historicalData = await CalculateAndPopulateHistoricalDataById(asset, days, s);
                 _graphService.AddHistoricalDataToBuffer(historicalData);
-            });
-            getDataResult.IfFail(err => { failed = true; });
-
-            await _graphService.SaveHistoricalDataBufferToJson(_portfolioService.CurrentPortfolio.Path);
-            if (failed)
+                await _graphService.SaveHistoricalDataBufferToJson(_portfolioService.CurrentPortfolio.Signature);
+            },
+            err =>
             {
-                return;
+                return Task.CompletedTask;
+            });
+            
+            if (getDataResult.IsFaulted)
+            {
+                continue;
             }
             progressCounter++;
-            
-            _messenger.Send(new UpdateProgressValueMessage(Convert.ToInt16((100 * progressCounter / assets.Count))));
+
+            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                _messenger.Send(new UpdateProgressValueMessage(Convert.ToInt16((100 * progressCounter / assets.Count))));
+            });
             
         }
         await CalculateAndStoreDataPoints(_graphService.GetHistoricalDataBuffer());
@@ -393,19 +445,27 @@ public class GraphUpdateService : IGraphUpdateService
 
                 _graphService.AddDataPointPortfolio(dataPoint);
             }
+            return true;
         }
         catch (Exception ex)
         {
             Logger.Warning("Historical Data {0} of {1} data points added", nrOfPointsAdded, dataByIds.First().DataPoints.Count);
+            return false;
         }
         finally
         {
-            await _graphService.SaveGraphToJson(_portfolioService.CurrentPortfolio.Path);
-            _graphService.ClearHistoricalDataBuffer(_portfolioService.CurrentPortfolio.Path);
+            await _graphService.SaveGraphToJson(_portfolioService.CurrentPortfolio.Signature);
+            _graphService.ClearHistoricalDataBuffer(_portfolioService.CurrentPortfolio.Signature);
             Logger.Information("Historical Data updated and saved");
-            _messenger.Send(new IsUpdatingGraphMessage(false));
+
+            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                _messenger.Send(new IsUpdatingGraphMessage(false));
+            });
+
+
+            
         }
-        return true;
     }
     private async Task<Result<MarketChartById>> GetHistoricalPrices(AssetTotals asset)
     {
@@ -440,8 +500,9 @@ public class GraphUpdateService : IGraphUpdateService
             Task delay = Task.Run(() => DelayAndShowProgress(true));
 
             var result = await GetHistoricalPricesFromGecko(asset, daysToGet, marketChart ?? new MarketChartById());
-            result.IfSucc(s => marketChart.AddPrices(s.Prices));
-            result.IfFail(err => marketChart = null);
+            result.Match(
+                Right: chart => marketChart.AddPrices(chart.Prices),
+                Left => marketChart = null);
 
             await delay;
         }
@@ -486,13 +547,17 @@ public class GraphUpdateService : IGraphUpdateService
         }
         else
         {
-            _messenger.Send(new IsUpdatingGraphMessage(true));
-            _messenger.Send(new UpdateProgressValueMessage((int)Math.Floor(startValue)));
+            MainPage.Current.DispatcherQueue.TryEnqueue( () =>
+            {
+                _messenger.Send(new IsUpdatingGraphMessage(true));
+                _messenger.Send(new UpdateProgressValueMessage((int)Math.Floor(startValue)));
+            });
+            
         }
     }
 
 
-    private Result<MarketChartById> CreateMarketChartForPrelistingCoin(AssetTotals asset, int days)
+    private static Result<MarketChartById> CreateMarketChartForPrelistingCoin(AssetTotals asset, int days)
     {
         var marketChart = new MarketChartById();
         marketChart.Prices = new decimal?[days][];
@@ -513,7 +578,7 @@ public class GraphUpdateService : IGraphUpdateService
 
         return marketChart ?? new MarketChartById();
     }
-    private async Task<Result<MarketChartById>> GetHistoricalPricesFromGecko(AssetTotals asset, int days, MarketChartById fullChart)
+    private async Task<Either<Error,MarketChartById>> GetHistoricalPricesFromGecko(AssetTotals asset, int days, MarketChartById fullChart)
     {
         var Retries = 0;
         var TotalRequests = 0;
@@ -567,7 +632,7 @@ public class GraphUpdateService : IGraphUpdateService
             catch (System.Exception ex)
             {
                 Logger.Warning(ex, "Getting Historical Data failed after {0} requests - {1}", TotalRequests);
-                error = ex;
+                return Error.New(ex);
             }
             finally
             {
@@ -575,63 +640,101 @@ public class GraphUpdateService : IGraphUpdateService
                 tokenSource2.Dispose();
             }
         }
-        if (error != null)
-        {
-            return new Result<MarketChartById>(error);
-        }
 
         Logger.Information("Checking MarketChart for {0}", asset.Coin.ApiId);
         var checkedMarketChart = await CheckAndFixMarketChart(additionalMarketChart ?? new MarketChartById(), fullChart, DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
+        
+        return checkedMarketChart != null ? checkedMarketChart : Error.New("Null Chart");
 
-
-        return checkedMarketChart ?? new Result<MarketChartById>(new NullReferenceException());
     }
     private async Task<double> GetHistoricalQtyByDate(DateOnly _date, AssetTotals asset)
     {
-        var context = _portfolioService.Context;
-        var historicalQty = asset.Qty;
-        var date = _date.ToDateTime(TimeOnly.Parse("01:00 AM"));
-
-        var mutations = await context.Mutations
-            .Where(m => m.Asset.Coin.ApiId.ToLower() == asset.Coin.ApiId.ToLower())
-            .Include(t => t.Transaction)
-            .Where(t => t.Transaction.TimeStamp.Date >= date.Date && t.Transaction.TimeStamp.Date <= DateTime.UtcNow)
-            .ToListAsync();
-
-        if (mutations is not null && mutations.Count > 0)
+        await App.UpdateSemaphore.WaitAsync();
+        try
         {
-            var QtyIn = mutations.Where(x => x.Direction == Enums.MutationDirection.In).Sum(x => x.Qty);
-            var QtyOut = mutations.Where(x => x.Direction == Enums.MutationDirection.Out).Sum(x => x.Qty);
+            var context = _portfolioService.UpdateContext;
+            var historicalQty = asset.Qty;
+            var date = _date.ToDateTime(TimeOnly.Parse("01:00 AM"));
 
-            var delta = QtyIn - QtyOut;
-            historicalQty = asset.Qty - delta;
+            var mutations = await context.Mutations
+                .Where(m => m.Asset.Coin.ApiId.ToLower() == asset.Coin.ApiId.ToLower())
+                .Include(t => t.Transaction)
+                .Where(t => t.Transaction.TimeStamp.Date >= date.Date && t.Transaction.TimeStamp.Date <= DateTime.UtcNow)
+                .ToListAsync();
 
+            if (mutations is not null && mutations.Count > 0)
+            {
+                var QtyIn = mutations.Where(x => x.Direction == Enums.MutationDirection.In).Sum(x => x.Qty);
+                var QtyOut = mutations.Where(x => x.Direction == Enums.MutationDirection.Out).Sum(x => x.Qty);
+
+                var delta = QtyIn - QtyOut;
+                historicalQty = asset.Qty - delta;
+
+            }
+            return historicalQty;
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, $"GetHistoricalQtyByDate failed for {asset?.Coin.ApiId}");
+            return 0;
+        }
+        finally
+        {
+            App.UpdateSemaphore.Release();
         }
 
-        return historicalQty;
+
+       
     }
     private async Task<List<AssetTotals>> GetAssets()
     {
-        var context = _portfolioService.Context;
-        var assets = await context.Assets
-                .Include(x => x.Coin)
-                .GroupBy(asset => asset.Coin)
-                .Select(assetGroup => new AssetTotals
-                {
-                    Qty = assetGroup.Sum(x => x.Qty),
-                    Coin = assetGroup.Key,
-                })
-                .ToListAsync();
+        await App.UpdateSemaphore.WaitAsync();
+        try
+        {
+            var context = _portfolioService.UpdateContext;
+            var assets = await context.Assets
+                    .Include(x => x.Coin)
+                    .GroupBy(asset => asset.Coin)
+                    .Select(assetGroup => new AssetTotals
+                    {
+                        Qty = assetGroup.Sum(x => x.Qty),
+                        Coin = assetGroup.Key,
+                    })
+                    .ToListAsync();
 
-        return assets;
+            return assets;
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, $"GetAssets failed. Returned empty list");
+            return new List<AssetTotals>();
+        }
+        finally
+        {
+            App.UpdateSemaphore.Release();
+        }
     }
     private async Task<int> GetDaysBasedOnOldestTransaction()
     {
-        var context = _portfolioService.Context;
-        var tx = await context.Transactions.OrderBy(x => x.TimeStamp).FirstOrDefaultAsync();
-        var days =  tx is not null ? DateTime.UtcNow.Subtract(tx.TimeStamp).Days + 1 : 0;
+        await App.UpdateSemaphore.WaitAsync();
+        try
+        {
+            var context = _portfolioService.UpdateContext;
+            var tx = await context.Transactions.OrderBy(x => x.TimeStamp).FirstOrDefaultAsync();
+            var days = tx is not null ? DateTime.UtcNow.Subtract(tx.TimeStamp).Days + 1 : 0;
 
-        return days;
+            return days;
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, $"GetDaysBasedOnOldestTransaction failed. Returned 0 days");
+            return 0;
+        }
+        finally
+        {
+            App.UpdateSemaphore.Release();
+        }
+        
     }
     private int GetDaysBasedOnLatestDataPoint()
     {
@@ -643,25 +746,39 @@ public class GraphUpdateService : IGraphUpdateService
     
     private async Task<List<AssetTotals>> GetRemainingAssets()
     {
-        var context = _portfolioService.Context;
-        var assets = await context.Assets
-                .Include(x => x.Coin)
-                .GroupBy(asset => asset.Coin)
-                .Select(assetGroup => new AssetTotals
-                {
-                    Qty = assetGroup.Sum(x => x.Qty),
-                    Coin = assetGroup.Key,
-                })
-                .ToListAsync();
-        //Remove from assets the ones that are already in the buffer
-        var buffer = _graphService.GetHistoricalDataBuffer();
-        foreach (var item in buffer)
+        await App.UpdateSemaphore.WaitAsync();
+        try
         {
-            var asset = assets.Find(x => x.Coin.ApiId == item.Id);
-            assets.Remove(asset);
-        }
+            var context = _portfolioService.UpdateContext;
+            var assets = await context.Assets
+                    .Include(x => x.Coin)
+                    .GroupBy(asset => asset.Coin)
+                    .Select(assetGroup => new AssetTotals
+                    {
+                        Qty = assetGroup.Sum(x => x.Qty),
+                        Coin = assetGroup.Key,
+                    })
+                    .ToListAsync();
+            //Remove from assets the ones that are already in the buffer
+            var buffer = _graphService.GetHistoricalDataBuffer();
+            foreach (var item in buffer)
+            {
+                var asset = assets.Find(x => x.Coin.ApiId == item.Id);
+                assets.Remove(asset);
+            }
 
-        return assets;
+            return assets;
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, $"GetRemainingAssets failed. Returned empty list");
+            return new();
+        }
+        finally
+        {
+            App.UpdateSemaphore.Release();
+        }
+        
     }
     private int GetDaysFromBuffer()
     {
@@ -680,28 +797,41 @@ public class GraphUpdateService : IGraphUpdateService
         return days;
     }
     
-    private void ObtainFirstPortfolioValue()
+    private async void ObtainFirstPortfolioValue()
     {
-        var context = _portfolioService.Context;
-        var beforeDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(365)).Date;
+        await App.UpdateSemaphore.WaitAsync();
+        try
+        {
+            var context = _portfolioService.UpdateContext;
+            var beforeDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(365)).Date;
 
-        var sumDeposits = context.Mutations
-            .Include(t => t.Transaction)
-            .Where(x => x.Type == Enums.TransactionKind.Deposit && x.Transaction.TimeStamp.Date < beforeDate)
-            .Sum(x => x.Qty * x.Price);
+            var sumDeposits = context.Mutations
+                .Include(t => t.Transaction)
+                .Where(x => x.Type == Enums.TransactionKind.Deposit && x.Transaction.TimeStamp.Date < beforeDate)
+                .Sum(x => x.Qty * x.Price);
 
-        var sumWithDraws = context.Mutations
-                    .Include(t => t.Transaction)
-                    .Where(x => x.Type == Enums.TransactionKind.Withdraw && x.Transaction.TimeStamp.Date < beforeDate)
-                    .Sum(x => x.Qty * x.Price);
+            var sumWithDraws = context.Mutations
+                        .Include(t => t.Transaction)
+                        .Where(x => x.Type == Enums.TransactionKind.Withdraw && x.Transaction.TimeStamp.Date < beforeDate)
+                        .Sum(x => x.Qty * x.Price);
 
-        _graphService.AddDataPointInFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits });
-        _graphService.AddDataPointOutFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumWithDraws });
-        _graphService.AddDataPointPortfolio(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits - sumWithDraws });
+            _graphService.AddDataPointInFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits });
+            _graphService.AddDataPointOutFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumWithDraws });
+            _graphService.AddDataPointPortfolio(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits - sumWithDraws });
 
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, $"ObtainFirstPortfolioValue failed.");
+        }
+        finally
+        {
+            App.UpdateSemaphore.Release();
+        }
+        
     }
 
-    private async Task<MarketChartById> CheckAndFixMarketChart(MarketChartById additionalChart, MarketChartById fullChart, DateTime startDate)
+    private static async Task<MarketChartById> CheckAndFixMarketChart(MarketChartById additionalChart, MarketChartById fullChart, DateTime startDate)
     {
         var additionalPriceList = additionalChart.GetPriceList();
         var fullPriceList = fullChart.GetPriceList();

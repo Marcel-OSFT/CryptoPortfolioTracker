@@ -1,0 +1,35 @@
+<muxc:ContentDialog
+    x:Class="CryptoPortfolioTracker.Dialogs.RestorePortfolioDialog"
+    Title="Restore a backup"
+    PrimaryButtonText="Save"
+    PrimaryButtonClick="Button_Click_Accept"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:l="using:WinUI3Localizer"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="Root"
+    Loading="Dialog_Loading"
+    mc:Ignorable="d">
+
+    <RelativePanel >
+        
+        <TextBlock x:Name="txtSelectFile" l:Uids.Uid="RestorePortfolioDialog_HeaderFile"  Text="Select a file to restore" 
+                   Margin="0,10,0,10"/>
+        
+        <TextBlock x:Name="txtFilename" Text="{Binding FileName}" l:Uids.Uid="RestorePortfolioDialog_FileName" 
+                   RelativePanel.Below="txtSelectFile" Margin="0,10,0,10" Width="400" FontSize="16" FontStyle="Oblique"/>
+        <Button x:Name="btnBrowse" Content="Browse" l:Uids.Uid="RestorePortfolioDialog_BrowseButton" Command="{Binding BrowseCommand}"
+                RelativePanel.RightOf="txtFilename"/>
+
+        <TextBlock x:Name="txtExplanation" Text="{Binding Explanation}" 
+                   RelativePanel.Below="txtFilename" Margin="0,10,0,10" Width="400" TextWrapping="Wrap"/>
+        
+
+        <TextBlock x:Name="txtName" Text="{Binding PortfolioName}" l:Uids.Uid="RestorePortfolioDialog_Name" 
+                   RelativePanel.Below="txtExplanation" Margin="0,10,0,10" FontSize="16" FontStyle="Oblique"/>
+        
+        
+    </RelativePanel>
+</muxc:ContentDialog>

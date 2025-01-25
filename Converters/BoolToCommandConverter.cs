@@ -13,10 +13,7 @@ public partial class BoolToCommandConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         var test = (ICommand)parameter;
-        if (test is not null)
-        {
-            Debug.WriteLine("");
-        }
+        
         return (bool)value ? null : (ICommand)parameter;
     }
 
