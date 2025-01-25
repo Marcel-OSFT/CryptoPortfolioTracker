@@ -71,8 +71,9 @@ public partial class BaseViewModel : ObservableObject
             CloseButtonText = closeButtonText,
             RequestedTheme = _preferencesService.GetAppTheme(),
         };
-        var dlgResult = await dialog.ShowAsync();
-        return dlgResult;
+       
+        var result = await App.ShowContentDialogAsync(dialog);
+        return result;
     }
 
 }

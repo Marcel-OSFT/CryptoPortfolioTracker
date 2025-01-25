@@ -24,7 +24,7 @@ public partial class AssetsView : Page, IDisposable
     private async void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
         MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
-        await _viewModel.Initialize();
+        await _viewModel.ViewLoading();
     }
 
     private void View_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -45,10 +45,6 @@ public partial class AssetsView : Page, IDisposable
         MyAssetsListViewControl.AssetsListView.DataContext = null;
     }
 
-    //private void AddTransactionButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    //{
-    //    _viewModel.AddTransaction();
-    //}
 
     public void Dispose()
     {

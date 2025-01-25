@@ -21,8 +21,8 @@ public sealed partial class StringFormatLargeNumberConverter : IValueConverter
         }
 
 
-        var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App._preferencesService.GetNumberFormat();
+        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
+        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
 
         if (value is double || value is int)
         {

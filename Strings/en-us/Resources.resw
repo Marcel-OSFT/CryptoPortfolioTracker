@@ -1172,8 +1172,8 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="SwitchPortfolio_Title.Text" xml:space="preserve">
     <value>Switch Portfolio</value>
   </data>
-  <data name="SwitchPortfolio_Explainer" xml:space="preserve">
-    <value>The Crypto Portfolio Tracker supports multiple portfolios. Go to the Portfolio Admin view to manage and setup your portfolio(s).</value>
+  <data name="SwitchPortfolio_Explainer.Text" xml:space="preserve">
+    <value>The Crypto Portfolio Tracker supports multiple portfolios. Go to the Portfolio Admin view to manage and setup your portfolio(s). Switch from portfolio by double-clicking one of the portfolios in the list below.</value>
   </data>
   <data name="SwitchPortfolioLV_Title.Text" xml:space="preserve">
     <value>Portfolios</value>
@@ -1183,5 +1183,158 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   </data>
   <data name="Navigation_SwitchPortfolio.Content" xml:space="preserve">
     <value>Switch Portfolio</value>
+  </data>
+  <data name="Navigation_Admin.Content" xml:space="preserve">
+    <value>Portfolio Admin</value>
+  </data>
+  <data name="PortfolioAdmin_Title.Text" xml:space="preserve">
+    <value>Portfolio Admin</value>
+  </data>
+  <data name="PortfolioAdmin_Explainer.Text" xml:space="preserve">
+    <value>This view provides you with the means to maintain your portfolio's with regard to renaming, adding, removing and copying of a portfolio. The App also creates Restore Points at specific moments. In case of a faulty portfolio, you wil have the possibility to restore the portfolio by using a Restore Point. Besides that, you can also create/restore your own backup. This could be usefull for example for (temporary) moving your portfolio to a laptop during holiday.</value>
+  </data>
+  <data name="PortfolioDialog_Title_Edit" xml:space="preserve">
+    <value>Rename Portfolio</value>
+  </data>
+  <data name="PortfolioDialog_PrimaryButton_Edit" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="PortfolioDialog_CloseButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="PortfolioDialog_Title_Add" xml:space="preserve">
+    <value>Add a new Portfolio</value>
+  </data>
+  <data name="PortfolioDialog_PrimaryButton_Add" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="PortfolioDialog_NameExists" xml:space="preserve">
+    <value>A portfolio with this name already exists.</value>
+  </data>
+  <data name="Messages_PortfolioRenameFailed_Title" xml:space="preserve">
+    <value>Renaming Portfolio failed</value>
+  </data>
+  <data name="PortfolioDialog_Name.Header" xml:space="preserve">
+    <value>Portfolio Name</value>
+  </data>
+  <data name="Messages_PortfolioAddFailed_Title" xml:space="preserve">
+    <value>Failed to add Portfolio</value>
+  </data>
+  <data name="PortfolioAdmin_PreName.Text" xml:space="preserve">
+    <value>All data specifically related to portfolio</value>
+  </data>
+  <data name="PortfolioAdmin_PostName.Text" xml:space="preserve">
+    <value>will be removed. Do you want to continue?</value>
+  </data>
+  <data name="PortfolioAdmin_DeleteConfirm.Content" xml:space="preserve">
+    <value>Yes, remove portfolio</value>
+  </data>
+  <data name="PortfolioAdmin_ShowRestoreButton.Label" xml:space="preserve">
+    <value>Show Restore Points</value>
+  </data>
+  <data name="PortfolioAdmin_AddButton.Label" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="PortfolioAdmin_RenameButton.Label" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="PortfolioAdmin_CopyButton.Label" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="PortfolioAdmin_DeleteButton.Label" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Messages_PortfolioDeleteFailed_Title" xml:space="preserve">
+    <value>Failed to delete portfolio</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreButton.Label" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreConfirm.Content" xml:space="preserve">
+    <value>Yes, restore portfolio</value>
+  </data>
+  <data name="PortfolioAdmin_RestorePreName.Text" xml:space="preserve">
+    <value>Do you want to restore portfolio</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreMidName.Text" xml:space="preserve">
+    <value>will be restored using restore point</value>
+  </data>
+  <data name="PortfolioAdmin_RestorePostName.Text" xml:space="preserve">
+    <value>Do you want to continue?</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreTitle.Text" xml:space="preserve">
+    <value>Restore Points for </value>
+  </data>
+  <data name="Messages_PortfolioRestoreConnectFailed_Title" xml:space="preserve">
+    <value>Reconnecting portfolio after applying a Restore Point failed. Please apply another Restore Point or Backup.</value>
+  </data>
+  <data name="Messages_PortfolioRestoreWarning_Title" xml:space="preserve">
+    <value>Restoring Mandatory portfolio files succeeded.</value>
+  </data>
+  <data name="Messages_PortfolioRestoreCriticalError_Title" xml:space="preserve">
+    <value>Restoring Portfolio failed. </value>
+  </data>
+  <data name="Messages_PortfolioRestoreCriticalError_Message" xml:space="preserve">
+    <value>Failure during restore. Possible changes have been reverted. Restore not app;ied. See log-files for details.</value>
+  </data>
+  <data name="Messages_PortfolioRestoreDisconnectFailed_Title" xml:space="preserve">
+    <value>Disconnecting portfolio failed. </value>
+  </data>
+  <data name="Messages_PortfolioRestoreWarning_Message" xml:space="preserve">
+    <value>Fault occured during restoring MarketCharts. See log-file for details.</value>
+  </data>
+  <data name="PortfolioAdmin_DeleteRestoreButton.Label" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="PortfolioDialog_Title_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Messages_PortfolioCopyFailed_Title" xml:space="preserve">
+    <value>Copying Portfolio failed.</value>
+  </data>
+  <data name="CopyPortfolioDialog_RbFullCopy.Content" xml:space="preserve">
+    <value>Full Copy</value>
+  </data>
+  <data name="CopyPortfolioDialog_RbPartialCopy.Content" xml:space="preserve">
+    <value>Partial Copy</value>
+  </data>
+  <data name="CopyPortfolioDialog_RadioButtons.Header" xml:space="preserve">
+    <value>Option</value>
+  </data>
+  <data name="CopyPortfolioDialog_CopyOptions.Text" xml:space="preserve">
+    <value>Choose which Copy option you prefer. A Full copy results in an exact copy including Assets and Transactions. A Partial copy contains the Coin Library (including PriceLevels and Narratives) and the Accounts.</value>
+  </data>
+  <data name="CopyPortfolioDialog_Name.Header" xml:space="preserve">
+    <value>New Portfolio Name</value>
+  </data>
+  <data name="PortfolioDialog_PrimaryButton_Copy" xml:space="preserve">
+    <value>Create Copy</value>
+  </data>
+  <data name="PortfolioAdmin_SaveBackupButton.Label" xml:space="preserve">
+    <value>Save Backup</value>
+  </data>
+  <data name="PortfolioDialog_Title_Restore" xml:space="preserve">
+    <value>Restore a Portfolio</value>
+  </data>
+  <data name="PortfolioDialog_PrimaryButton_Restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="RestorePortfolioDialog_Name.Header" xml:space="preserve">
+    <value>Portfolio Name</value>
+  </data>
+  <data name="RestorePortfolioDialog_ExplNoSignature" xml:space="preserve">
+    <value>Invalid Backup. Cannot continue with Restore</value>
+  </data>
+  <data name="RestorePortfolioDialog_ExplPortfolioExist" xml:space="preserve">
+    <value>Restoring this backup will overwrite the existing portfolio below. If needed make a backup first.</value>
+  </data>
+  <data name="RestorePortfolioDialog_ExplPortfolioNotExist" xml:space="preserve">
+    <value>No such actual portfolio found. Restoring this backup will result in a new portfolio with the following name:</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreBackupButton.Label" xml:space="preserve">
+    <value>Restore Backup</value>
+  </data>
+  <data name="RestorePortfolioDialog_ExplError" xml:space="preserve">
+    <value>Error while extracting backup. Cannot continue with restore</value>
   </data>
 </root>

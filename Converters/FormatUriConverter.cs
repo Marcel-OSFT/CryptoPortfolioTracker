@@ -23,11 +23,11 @@ public partial class FormatUriConverter : IValueConverter
 
                 if (fileName != "QuestionMarkBlue.png")
                 {
-                    iconPath = App.appDataPath + "\\" + App.IconsFolder + "\\" + fileName;
+                    iconPath = App.AppDataPath + "\\" + App.IconsFolder + "\\" + fileName;
                 }
                 else
                 {
-                    iconPath = App.appPath + "\\Assets\\" + fileName;
+                    iconPath = App.AppPath + "\\Assets\\" + fileName;
                 }
                 
 
@@ -43,7 +43,7 @@ public partial class FormatUriConverter : IValueConverter
             }
             else
             {
-                result = App.appPath + "\\Assets\\QuestionMarkRed.png";
+                result = App.AppPath + "\\Assets\\QuestionMarkRed.png";
             }
         }
         catch

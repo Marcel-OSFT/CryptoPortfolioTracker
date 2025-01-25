@@ -125,7 +125,6 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
     {
         if (d is RegExTextBox tbox)
         {
-            Debug.WriteLine("Separator " + tbox.DecimalSeparator);
             tbox.SetRegex(tbox.RegEx);
         }
     }
@@ -229,7 +228,6 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
                 KeyDown += (sender, e) => KeyDownNumeric(sender, e, false, false);
                 break;
         }
-        Debug.WriteLine("SetRegex " + regExChoosen);
         TextBoxExtensions.SetRegex(this, regExChoosen);
     }
 

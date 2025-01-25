@@ -1414,10 +1414,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Switch Portfolio</source>
           <target state="translated">Wissel Portefeuille</target>
         </trans-unit>
-        <trans-unit id="SwitchPortfolio_Explainer" translate="yes" xml:space="preserve">
-          <source>The Crypto Portfolio Tracker supports multiple portfolios. Go to the Portfolio Admin view to manage and setup your portfolio(s).</source>
-          <target state="translated">De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuille(s) te beheren en in te stellen.</target>
-        </trans-unit>
         <trans-unit id="SwitchPortfolioLV_Title.Text" translate="yes" xml:space="preserve">
           <source>Portfolios</source>
           <target state="translated">Portefeuille</target>
@@ -1429,6 +1425,214 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="Navigation_SwitchPortfolio.Content" translate="yes" xml:space="preserve">
           <source>Switch Portfolio</source>
           <target state="translated">Wissel portefeuille</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_Title.Text" translate="yes" xml:space="preserve">
+          <source>Portfolio Admin</source>
+          <target state="translated">Portefeuille Admin</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>This view provides you with the means to maintain your portfolio's with regard to renaming, adding, removing and copying of a portfolio. The App also creates Restore Points at specific moments. In case of a faulty portfolio, you wil have the possibility to restore the portfolio by using a Restore Point. Besides that, you can also create/restore your own backup. This could be usefull for example for (temporary) moving your portfolio to a laptop during holiday.</source>
+          <target state="translated">Deze weergave biedt u de mogelijkheid om uw portefeuilles te onderhouden met betrekking tot het hernoemen, toevoegen, verwijderen en kopiëren van een portefeuille. De app maakt ook herstelpunten op specifieke momenten. In het geval van een defecte portefeuille, heeft u de mogelijkheid om deze te herstellen met behulp van een herstelpunt. Daarnaast kunt u ook uw eigen back-up maken/herstellen. Dit kan bijvoorbeeld handig zijn om uw portefeuille (tijdelijk) te verplaatsen naar een laptop voor tijdens de vakantie.</target>
+        </trans-unit>
+        <trans-unit id="Navigation_Admin.Content" translate="yes" xml:space="preserve">
+          <source>Portfolio Admin</source>
+          <target state="translated">Portefeuille Admin</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_Title_Edit" translate="yes" xml:space="preserve">
+          <source>Rename Portfolio</source>
+          <target state="translated">Portefeuille hernoemen</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="translated">Accepteren</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_CloseButton" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="translated">annuleren</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_Title_Add" translate="yes" xml:space="preserve">
+          <source>Add a new Portfolio</source>
+          <target state="translated">Een nieuwe portefeuille toevoegen</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_PrimaryButton_Add" translate="yes" xml:space="preserve">
+          <source>Accept</source>
+          <target state="translated">Accepteren</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_NameExists" translate="yes" xml:space="preserve">
+          <source>A portfolio with this name already exists.</source>
+          <target state="translated">Een portefeuille met deze naam bestaat al</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioRenameFailed_Title" translate="yes" xml:space="preserve">
+          <source>Renaming Portfolio failed</source>
+          <target state="translated">Fout bij het hernoemen van de portefeuille</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_Name.Header" translate="yes" xml:space="preserve">
+          <source>Portfolio Name</source>
+          <target state="translated">Portefeuille naam</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioAddFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to add Portfolio</source>
+          <target state="translated">Fout bij het toevoegen van de portfolio</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_PreName.Text" translate="yes" xml:space="preserve">
+          <source>All data specifically related to portfolio</source>
+          <target state="translated">Alle gegevens die specifiek betrekking hebben op de portefeuille</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_PostName.Text" translate="yes" xml:space="preserve">
+          <source>will be removed. Do you want to continue?</source>
+          <target state="translated">worden verwijderd. Wilt u doorgaan?</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_DeleteConfirm.Content" translate="yes" xml:space="preserve">
+          <source>Yes, remove portfolio</source>
+          <target state="translated">Ja, verwijder portefeuille</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_ShowRestoreButton.Label" translate="yes" xml:space="preserve">
+          <source>Show Restore Points</source>
+          <target state="translated">Toon herstelpunten</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_AddButton.Label" translate="yes" xml:space="preserve">
+          <source>Add</source>
+          <target state="translated">Toevoegen</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_RenameButton.Label" translate="yes" xml:space="preserve">
+          <source>Rename</source>
+          <target state="translated">Hernoemen</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_CopyButton.Label" translate="yes" xml:space="preserve">
+          <source>Copy</source>
+          <target state="translated">Kopieren</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_DeleteButton.Label" translate="yes" xml:space="preserve">
+          <source>Delete</source>
+          <target state="translated">Verwijderen</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioDeleteFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to delete portfolio</source>
+          <target state="translated">Fout bij verwijderen van portefeuille</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_RestoreButton.Label" translate="yes" xml:space="preserve">
+          <source>Restore</source>
+          <target state="translated">Herstellen</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_RestoreConfirm.Content" translate="yes" xml:space="preserve">
+          <source>Yes, restore portfolio</source>
+          <target state="translated">Ja, herstel portefeuille</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_RestorePreName.Text" translate="yes" xml:space="preserve">
+          <source>Do you want to restore portfolio</source>
+          <target state="translated">Wilt u de portefeuille herstellen?</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_RestoreMidName.Text" translate="yes" xml:space="preserve">
+          <source>will be restored using restore point</source>
+          <target state="translated">wordt hersteld met behulp van herstelpunt</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_RestorePostName.Text" translate="yes" xml:space="preserve">
+          <source>Do you want to continue?</source>
+          <target state="translated">Wilt U verder gaan?</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_RestoreTitle.Text" translate="yes" xml:space="preserve">
+          <source>Restore Points for </source>
+          <target state="translated">Herstelpunten voor</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioRestoreConnectFailed_Title" translate="yes" xml:space="preserve">
+          <source>Reconnecting portfolio after applying a Restore Point failed. Please apply another Restore Point or Backup.</source>
+          <target state="translated">Portfolio opnieuw verbinden na toepassen van een herstelpunt is mislukt. Pas een ander herstelpunt of een back-up toe.</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioRestoreWarning_Title" translate="yes" xml:space="preserve">
+          <source>Restoring Mandatory portfolio files succeeded.</source>
+          <target state="translated">Het herstellen van de verplichte portfoliobestanden is gelukt.</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioRestoreCriticalError_Title" translate="yes" xml:space="preserve">
+          <source>Restoring Portfolio failed. </source>
+          <target state="translated">Herstellen van Portfolio mislukt.</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioRestoreCriticalError_Message" translate="yes" xml:space="preserve">
+          <source>Failure during restore. Possible changes have been reverted. Restore not app;ied. See log-files for details.</source>
+          <target state="translated">Fout tijdens herstel. Mogelijke wijzigingen zijn teruggedraaid. Herstel niet toegepast. Zie logbestand voor details.</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioRestoreDisconnectFailed_Title" translate="yes" xml:space="preserve">
+          <source>Disconnecting portfolio failed. </source>
+          <target state="translated">Het loskoppelen van de portefeuille is mislukt.</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioRestoreWarning_Message" translate="yes" xml:space="preserve">
+          <source>Fault occured during restoring MarketCharts. See log-file for details.</source>
+          <target state="translated">Er is een fout opgetreden tijdens het herstellen van MarketCharts. Zie logbestand voor details.</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_DeleteRestoreButton.Label" translate="yes" xml:space="preserve">
+          <source>Delete</source>
+          <target state="translated">Verwijderen</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_Title_Copy" translate="yes" xml:space="preserve">
+          <source>Copy</source>
+          <target state="translated">Kopieer</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioCopyFailed_Title" translate="yes" xml:space="preserve">
+          <source>Copying Portfolio failed.</source>
+          <target state="translated">Fout bij het kopieren van de portefeuille.</target>
+        </trans-unit>
+        <trans-unit id="CopyPortfolioDialog_RbFullCopy.Content" translate="yes" xml:space="preserve">
+          <source>Full Copy</source>
+          <target state="translated">Volledige kopie</target>
+        </trans-unit>
+        <trans-unit id="CopyPortfolioDialog_RbPartialCopy.Content" translate="yes" xml:space="preserve">
+          <source>Partial Copy</source>
+          <target state="translated">Gedeeltelijke kopie</target>
+        </trans-unit>
+        <trans-unit id="CopyPortfolioDialog_RadioButtons.Header" translate="yes" xml:space="preserve">
+          <source>Option</source>
+          <target state="translated">Optie</target>
+        </trans-unit>
+        <trans-unit id="CopyPortfolioDialog_CopyOptions.Text" translate="yes" xml:space="preserve">
+          <source>Choose which Copy option you prefer. A Full copy results in an exact copy including Assets and Transactions. A Partial copy contains the Coin Library (including PriceLevels and Narratives) and the Accounts.</source>
+          <target state="translated">Kies welke kopieeroptie u verkiest. Een volledige kopie resulteert in een exacte kopie inclusief activa en transacties. Een gedeeltelijke kopie bevat de Muntenbibliotheek (inclusief prijsniveaus en narratieven) en de Accounts.</target>
+        </trans-unit>
+        <trans-unit id="CopyPortfolioDialog_Name.Header" translate="yes" xml:space="preserve">
+          <source>New Portfolio Name</source>
+          <target state="translated">Nieuwe portefeuille naam</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_PrimaryButton_Copy" translate="yes" xml:space="preserve">
+          <source>Create Copy</source>
+          <target state="translated">Kopie maken</target>
+        </trans-unit>
+        <trans-unit id="SwitchPortfolio_Explainer.Text" translate="yes" xml:space="preserve">
+          <source>The Crypto Portfolio Tracker supports multiple portfolios. Go to the Portfolio Admin view to manage and setup your portfolio(s). Switch from portfolio by double-clicking one of the portfolios in the list below.</source>
+          <target state="translated">De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuilles te beheren en in te stellen. Wissel van portefeuille door te dubbelklikken op een van de portefeuilles in de onderstaande lijst.</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_SaveBackupButton.Label" translate="yes" xml:space="preserve">
+          <source>Save Backup</source>
+          <target state="translated">Backup opslaan</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_Title_Restore" translate="yes" xml:space="preserve">
+          <source>Restore a Portfolio</source>
+          <target state="translated">Een portefeuille herstellen</target>
+        </trans-unit>
+        <trans-unit id="PortfolioDialog_PrimaryButton_Restore" translate="yes" xml:space="preserve">
+          <source>Restore</source>
+          <target state="translated">Herstellen</target>
+        </trans-unit>
+        <trans-unit id="RestorePortfolioDialog_ExplNoSignature" translate="yes" xml:space="preserve">
+          <source>Invalid Backup. Cannot continue with Restore</source>
+          <target state="translated">Ongeldige backup. Kan niet doorgaan met herstellen</target>
+        </trans-unit>
+        <trans-unit id="RestorePortfolioDialog_ExplPortfolioExist" translate="yes" xml:space="preserve">
+          <source>Restoring this backup will overwrite the existing portfolio below. If needed make a backup first.</source>
+          <target state="translated">Het herstellen van deze backup overschrijft de bestaande portfolio hieronder. Maak indien nodig eerst een backup.</target>
+        </trans-unit>
+        <trans-unit id="RestorePortfolioDialog_ExplPortfolioNotExist" translate="yes" xml:space="preserve">
+          <source>No such actual portfolio found. Restoring this backup will result in a new portfolio with the following name:</source>
+          <target state="translated">Geen dergelijke portfolio gevonden. Het herstellen van deze backup resulteert in een nieuwe portfolio met de volgende naam:</target>
+        </trans-unit>
+        <trans-unit id="PortfolioAdmin_RestoreBackupButton.Label" translate="yes" xml:space="preserve">
+          <source>Restore Backup</source>
+          <target state="translated">Backup terugzetten</target>
+        </trans-unit>
+        <trans-unit id="RestorePortfolioDialog_Name.Header" translate="yes" xml:space="preserve">
+          <source>Portfolio Name</source>
+          <target state="translated">Portefeuillenaam</target>
+        </trans-unit>
+        <trans-unit id="RestorePortfolioDialog_ExplError" translate="yes" xml:space="preserve">
+          <source>Error while extracting backup. Cannot continue with restore</source>
+          <target state="translated">Fout bij het uitpakken van de back-up. Kan niet doorgaan met herstellen.</target>
         </trans-unit>
       </group>
     </body>

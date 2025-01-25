@@ -66,8 +66,8 @@ public partial class Coin : BaseModel
             return;
         }
 
-        var withinRangePerc = App._preferencesService.GetWithinRangePerc();
-        var closeToPerc = App._preferencesService.GetCloseToPerc();
+        var withinRangePerc = App.PreferencesService.GetWithinRangePerc();
+        var closeToPerc = App.PreferencesService.GetCloseToPerc();
 
         foreach (var level in PriceLevels)
         {
@@ -111,11 +111,10 @@ public partial class Coin : BaseModel
         int period = 14;
         try
         {
-            var fileName = Path.Combine(App.appDataPath, App.ChartsFolder, $"MarketChart_" + ApiId + ".json");
+            var fileName = Path.Combine(App.ChartsFolder, $"MarketChart_" + ApiId + ".json");
 
             if (!File.Exists(fileName))
             {
-                Debug.WriteLine($"file for {ApiId} does not exist");
                 return 0;
             }
 
@@ -178,14 +177,11 @@ public partial class Coin : BaseModel
                 rsiValues.Add(rsi);
             }
 
-            Debug.WriteLine($"Calculating RSI {rsiValues.Last()} for {ApiId}");
-
             Rsi =  rsiValues.Last();
             return Rsi;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.Message);
             Rsi = 0;
             return Rsi;
         }

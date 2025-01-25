@@ -22,7 +22,7 @@ public partial class PriceLevelsView : Page, IDisposable
 
     private async void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        await _viewModel.Initialize();
+        await _viewModel.ViewLoading();
     }
 
     private void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

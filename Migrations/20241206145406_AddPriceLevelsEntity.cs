@@ -37,6 +37,24 @@ namespace CryptoPortfolioTracker.Migrations
                 name: "IX_PriceLevels_CoinId",
                 table: "PriceLevels",
                 column: "CoinId");
+
+
+            // Seed initial data
+            migrationBuilder.Sql(@"
+            INSERT INTO PriceLevels (CoinId, Type, Value, Status, Note)
+            SELECT Id, 0, 0, 0, '' FROM Coins
+            UNION ALL
+            SELECT Id, 1, 0, 0, '' FROM Coins
+            UNION ALL
+            SELECT Id, 2, 0, 0, '' FROM Coins
+        ");
+
+
+
+
+
+
+
         }
 
         /// <inheritdoc />

@@ -22,7 +22,7 @@ public interface IAssetService
     double GetTotalsAssetsPnLPerc();
     Task<double> GetInFlow();
     Task<double> GetOutFlow();
-    void SortList();
+    Task SortList();
     void ClearAssetTotalsList();
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
@@ -30,5 +30,6 @@ public interface IAssetService
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative);
     Portfolio? GetPortfolio();
+   // Task UpdatePricesAssetTotals();
 }
 

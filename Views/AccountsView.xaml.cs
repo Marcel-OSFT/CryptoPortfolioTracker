@@ -31,7 +31,7 @@ public partial class AccountsView : Page, IDisposable
     private async void View_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
         MyAssetsListViewControl.AssetsListView.DataContext = _viewModel;
-        await _viewModel.Initialize();
+        await _viewModel.ViewLoading();
         InitAssetsListView();
     }
 

@@ -180,9 +180,8 @@ public partial class DashboardViewModel : BaseViewModel
             SelectedHeatMapIndex = _preferencesService.GetHeatMapIndex();
             await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
-        catch (Exception ex)
+        catch (Exception )
         {
-            Debug.WriteLine(ex);
         }
     }
 

@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Microsoft.VisualBasic.FileIO;
 
 
 namespace CryptoPortfolioTracker.Helpers;
@@ -34,7 +35,6 @@ public class MkOsft
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex.Message);
                     list.RemoveAt(0);
                 }
             }
@@ -139,22 +139,63 @@ public class MkOsft
         }
     }
 
-    public static void FileMove(string fileName, string path, string newPath)
+    /// <summary>
+    ///  Copies a file, if it exists.
+    /// </summary>
+    /// <param name="fileName">full path of the file to be copied</param>
+    /// <param name="destPath">destination path to move file to</param>
+    public static void FileMove(string fileName, string destPath)
     {
-        var file = Path.Combine(path, fileName);
-        var newFile = Path.Combine(newPath, fileName);
-        if (File.Exists(file))
+        //var file = Path.Combine(sourcePath, fileName);
+        var destFile = Path.Combine(destPath, Path.GetFileName(fileName));
+        if (File.Exists(fileName))
         {
-            File.Move(file, newFile);
+            if (!Directory.Exists(destPath))
+            {
+                DirectoryCreate(destPath);
+            }
+            File.Move(fileName, destFile, true);
         }
     }
+
+    /// <summary>
+    ///  Copies a file, if it exists.
+    /// </summary>
+    /// <param name="fileName">full path of the file to be copied</param>
+    /// <param name="destPath">destination path of the file. If left empty, then destPath will be equal to sourcePath</param>
+    /// <param name="overWrite">true to allow overwrite of an existing file</param>
+    /// <returns>Returns 0 if the file was copied successfully, otherwise returns -1</returns>
+    public static void FileCopy(string fileName, string destPath = "", bool overWrite = false )
+    {
+        string destFile;
+        var sourcePath = Path.GetFullPath(fileName);
+
+
+        if (sourcePath == destPath || destPath == string.Empty)
+        {
+           destFile = Path.GetFileNameWithoutExtension(fileName) + " - copy" + Path.GetExtension(fileName);
+        }
+        else
+        {
+            destFile = Path.Combine(destPath, Path.GetFileName(fileName));
+        }
+
+        if (File.Exists(fileName))
+        {
+            File.Copy(fileName, destFile, overWrite);
+        }
+    }
+
+    
+
+
 
     public static void FilesDelete(string searchPattern, string path)
     {
         var filesToDelete = Directory.GetFiles(path, searchPattern);
         foreach (var file in filesToDelete)
         {
-            File.Delete(file);
+            if (File.Exists(file)) File.Delete(file);
         }
     }
 
@@ -163,17 +204,32 @@ public class MkOsft
     /// </summary>
     /// <param name="path">Path of directory to create</param>
     /// <param name="forceDelete">'true' will Delete directory prior to creating a new one</param>
-    public static void CreateDirectory(string path, bool forceDelete = false)
+    public static void DirectoryCreate(string path, bool forceDelete = false)
     {
         if (forceDelete && Directory.Exists(path))
         {
-            Directory.Delete(path,true);
+            Directory.Delete(path, true);
         }
         Directory.CreateDirectory(path);
     }
 
+    public static void DirectoryDelete(string path, bool sendToRecycleBin = false)
+    {
+        if (Directory.Exists(path))
+        {
+            RecycleOption recycleOpt = sendToRecycleBin ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently;
+            FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, recycleOpt);
 
-    public static void MakeFileHidden(string path)
+           // Directory.Delete(path, true);
+        }
+    }
+
+    /// <summary>
+    /// Hide or Unhide a file 
+    /// </summary>
+    /// <param name="path">Path of file to (un)hide</param>
+    /// <param name="hide">'true' will set the 'hidden' atribute, false will remove the 'hidden'atribute if it was set</param>
+    public static void MakeFileHidden(string path, bool unHide = false)
     {
         // Check if the file exists
         if (File.Exists(path))
@@ -181,14 +237,22 @@ public class MkOsft
             // Get the current attributes of the file
             FileAttributes attributes = File.GetAttributes(path);
 
-            // Add the Hidden attribute
-            attributes |= FileAttributes.Hidden;
+            if (unHide)
+            {
+                // Ensure the Hidden attribute is OFF
+                attributes &= ~FileAttributes.Hidden;
+            }
+            else
+            {
+                // Ensure the Hidden attribute is ON
+                attributes |= FileAttributes.Hidden;
+            }
 
             // Set the updated attributes
             File.SetAttributes(path, attributes);
         }
     }
-
+    
     /// <summary>
     /// Retrieves an element of type T from a UI element by name.
     /// </summary>
@@ -242,5 +306,13 @@ public class MkOsft
         return null;
     }
 
-
+    /// <summary>
+    /// Remove all extra spaces.
+    /// </summary>
+    /// <param name="name">The Name to normalize.</param>
+    public static string NormalizeName(string name)
+    {
+        // Split by whitespace and rejoin with a single space
+        return string.Join(" ", name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+    }
 }

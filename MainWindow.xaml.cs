@@ -48,7 +48,7 @@ public sealed partial class MainWindow : Window
         //Window.CenterOnScreen();
 #endif
         _manager.AppWindow.Title = "Crypto Portfolio Tracker";
-        _manager.AppWindow.SetIcon(App.appPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
+        _manager.AppWindow.SetIcon(App.AppPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
        
         
         SetTitleBar(null);

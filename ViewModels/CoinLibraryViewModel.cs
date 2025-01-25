@@ -72,9 +72,11 @@ public partial class CoinLibraryViewModel : BaseViewModel
         coinListGecko = new List<CoinList>();
         narratives = new List<Narrative>();
     }
-    public async Task Initialize()
+    public async Task ViewLoading()
     {
         CurrentPortfolio = _libraryService.GetPortfolio();
+        PortfolioName = CurrentPortfolio.Name;
+
         if (_libraryService.IsCoinsListEmpty())
         {
             await _libraryService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
@@ -176,7 +178,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
 
 
         Logger.Information("Showing Coin Dialog");
-        App.isBusy = true;
+       
         var loc = Localizer.Get();
         try
         {
@@ -184,7 +186,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (result == ContentDialogResult.Primary)
             {
@@ -211,9 +213,6 @@ public partial class CoinLibraryViewModel : BaseViewModel
                 ex.Message,
                  loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
-
-        App.isBusy = false;
     }
     private bool CanShowAddCoinDialog()
     {
@@ -224,7 +223,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public async Task MergePreListingCoin(Coin preListingCoin)
     {
         Logger.Information("Showing Coin Dialog");
-        App.isBusy = true;
+        
         var loc = Localizer.Get();
         try
         {
@@ -232,7 +231,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (result == ContentDialogResult.Primary)
             {
@@ -259,9 +258,6 @@ public partial class CoinLibraryViewModel : BaseViewModel
                 ex.Message,
                  loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
-
-        App.isBusy = false;
     }
 
     private bool CanMergePreListingCoin(Coin coin)
@@ -273,22 +269,22 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public async Task ShowAddPreListingCoinDialog()
     {
         Logger.Information("Showing Pre-Listing Coin Dialog");
-        App.isBusy = true;
+        
         var loc = Localizer.Get();
         try
         {
-            preListingDialog = new AddPrereleaseCoinDialog(Current, _preferencesService)
+            var dialog = new AddPrereleaseCoinDialog(Current, _preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
-            var result = await preListingDialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (result == ContentDialogResult.Primary)
             {
-                var coinName = preListingDialog.newCoin is not null ? preListingDialog.newCoin.Name : string.Empty;
+                var coinName = dialog.newCoin is not null ? dialog.newCoin.Name : string.Empty;
                 Logger.Information("Adding Pre-Listing Coin to Library  - {0}", coinName);
-                await (await _libraryService.CreateCoin(preListingDialog.newCoin))
-                    .Match(Succ: succ =>_libraryService.AddToCoinsList(preListingDialog.newCoin),
+                await (await _libraryService.CreateCoin(dialog.newCoin))
+                    .Match(Succ: succ =>_libraryService.AddToCoinsList(dialog.newCoin),
                     Fail: async err =>
                     {
                         await ShowMessageDialog(
@@ -308,15 +304,11 @@ public partial class CoinLibraryViewModel : BaseViewModel
                 ex.Message,
                  loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
-
-        App.isBusy = false;
     }
 
     [RelayCommand]
     public async Task ShowAddNoteDialog(Coin coin)
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         Logger.Information("Showing Note Dialog");
         try
@@ -325,7 +317,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
             if (result == ContentDialogResult.Primary)
             {
                 Logger.Information("Adding Note for {0}", coin.Name);
@@ -350,24 +342,22 @@ public partial class CoinLibraryViewModel : BaseViewModel
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
     }
     [RelayCommand]
     public async Task AssignNarrativeToCoin(Coin coin)
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         Logger.Information("Showing AssignNarrative Dialog");
         try
         {
             (await _narrativeService.GetNarratives())
-            .IfSucc(list => narratives = list);
+                .IfSucc(list => narratives = list);
 
             var dialog = new AssignNarrativeDialog(coin, _viewModel ,_preferencesService)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
             if (result == ContentDialogResult.Primary)
             {
                 Logger.Information("Assigning Narrative {0} to {1}", dialog.selectedNarrative.Name, coin.Name);
@@ -392,7 +382,6 @@ public partial class CoinLibraryViewModel : BaseViewModel
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteCoin))]
@@ -429,7 +418,6 @@ public partial class CoinLibraryViewModel : BaseViewModel
     [RelayCommand]
     public async Task ShowDescription(Coin coin)
     {
-        App.isBusy = true;
         Logger.Information("Showing Description Dialog for {0}}", coin.Name);
         if (coin != null)
         {
@@ -437,9 +425,8 @@ public partial class CoinLibraryViewModel : BaseViewModel
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
-            await dialog.ShowAsync();
+            await App.ShowContentDialogAsync(dialog);
         }
-        App.isBusy = false;
     }
 
     private Task UpdateListCoinsAfterMerge(Coin prelistingCoin, Coin? newCoin)

@@ -21,10 +21,10 @@ public sealed partial class ValueFormatConverter : IValueConverter
         }
 
 
-        var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App._preferencesService.GetNumberFormat();
+        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
+        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
 
-        var isValueAsterix = App._preferencesService.GetAreValesMasked(); 
+        var isValueAsterix = App.PreferencesService.GetAreValesMasked(); 
 
         if (isValueAsterix)
         {
@@ -56,8 +56,8 @@ public sealed partial class ValueFormatConverter : IValueConverter
         try
         {
             
-            var ci = new CultureInfo(App._preferencesService.GetAppCultureLanguage());
-            ci.NumberFormat = App._preferencesService.GetNumberFormat();
+            var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
+            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
 
             if (targetType == typeof(double))
             {

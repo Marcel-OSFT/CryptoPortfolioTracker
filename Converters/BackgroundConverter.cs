@@ -14,7 +14,7 @@ public partial class BackgroundConverter : IValueConverter
     {
         var greenColor = new SolidColorBrush(Color.FromArgb(100, SKColors.LimeGreen.Red, SKColors.LimeGreen.Green, SKColors.LimeGreen.Blue));
         var redColor = new SolidColorBrush(Color.FromArgb(100, SKColors.OrangeRed.Red, SKColors.OrangeRed.Green, SKColors.OrangeRed.Blue));
-        if (App._preferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
+        if (App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
         {
             greenColor = new SolidColorBrush(Color.FromArgb(100, SKColors.DarkGreen.Red, SKColors.DarkGreen.Green, SKColors.DarkGreen.Blue));
             redColor = new SolidColorBrush(Color.FromArgb(100, SKColors.DarkRed.Red, SKColors.DarkRed.Green, SKColors.DarkRed.Blue));

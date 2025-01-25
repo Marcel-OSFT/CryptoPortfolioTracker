@@ -1061,9 +1061,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="SwitchPortfolio_Title.Text" xml:space="preserve">
     <value>Wissel Portefeuille</value>
   </data>
-  <data name="SwitchPortfolio_Explainer" xml:space="preserve">
-    <value>De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuille(s) te beheren en in te stellen.</value>
-  </data>
   <data name="SwitchPortfolioLV_Title.Text" xml:space="preserve">
     <value>Portefeuille</value>
   </data>
@@ -1072,5 +1069,161 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="Navigation_SwitchPortfolio.Content" xml:space="preserve">
     <value>Wissel portefeuille</value>
+  </data>
+  <data name="PortfolioAdmin_Title.Text" xml:space="preserve">
+    <value>Portefeuille Admin</value>
+  </data>
+  <data name="PortfolioAdmin_Explainer.Text" xml:space="preserve">
+    <value>Deze weergave biedt u de mogelijkheid om uw portefeuilles te onderhouden met betrekking tot het hernoemen, toevoegen, verwijderen en kopiëren van een portefeuille. De app maakt ook herstelpunten op specifieke momenten. In het geval van een defecte portefeuille, heeft u de mogelijkheid om deze te herstellen met behulp van een herstelpunt. Daarnaast kunt u ook uw eigen back-up maken/herstellen. Dit kan bijvoorbeeld handig zijn om uw portefeuille (tijdelijk) te verplaatsen naar een laptop voor tijdens de vakantie.</value>
+  </data>
+  <data name="Navigation_Admin.Content" xml:space="preserve">
+    <value>Portefeuille Admin</value>
+  </data>
+  <data name="PortfolioDialog_Title_Edit" xml:space="preserve">
+    <value>Portefeuille hernoemen</value>
+  </data>
+  <data name="PortfolioDialog_PrimaryButton_Edit" xml:space="preserve">
+    <value>Accepteren</value>
+  </data>
+  <data name="PortfolioDialog_CloseButton" xml:space="preserve">
+    <value>annuleren</value>
+  </data>
+  <data name="PortfolioDialog_Title_Add" xml:space="preserve">
+    <value>Een nieuwe portefeuille toevoegen</value>
+  </data>
+  <data name="PortfolioDialog_PrimaryButton_Add" xml:space="preserve">
+    <value>Accepteren</value>
+  </data>
+  <data name="PortfolioDialog_NameExists" xml:space="preserve">
+    <value>Een portefeuille met deze naam bestaat al</value>
+  </data>
+  <data name="Messages_PortfolioRenameFailed_Title" xml:space="preserve">
+    <value>Fout bij het hernoemen van de portefeuille</value>
+  </data>
+  <data name="PortfolioDialog_Name.Header" xml:space="preserve">
+    <value>Portefeuille naam</value>
+  </data>
+  <data name="Messages_PortfolioAddFailed_Title" xml:space="preserve">
+    <value>Fout bij het toevoegen van de portfolio</value>
+  </data>
+  <data name="PortfolioAdmin_PreName.Text" xml:space="preserve">
+    <value>Alle gegevens die specifiek betrekking hebben op de portefeuille</value>
+  </data>
+  <data name="PortfolioAdmin_PostName.Text" xml:space="preserve">
+    <value>worden verwijderd. Wilt u doorgaan?</value>
+  </data>
+  <data name="PortfolioAdmin_DeleteConfirm.Content" xml:space="preserve">
+    <value>Ja, verwijder portefeuille</value>
+  </data>
+  <data name="PortfolioAdmin_ShowRestoreButton.Label" xml:space="preserve">
+    <value>Toon herstelpunten</value>
+  </data>
+  <data name="PortfolioAdmin_AddButton.Label" xml:space="preserve">
+    <value>Toevoegen</value>
+  </data>
+  <data name="PortfolioAdmin_RenameButton.Label" xml:space="preserve">
+    <value>Hernoemen</value>
+  </data>
+  <data name="PortfolioAdmin_CopyButton.Label" xml:space="preserve">
+    <value>Kopieren</value>
+  </data>
+  <data name="PortfolioAdmin_DeleteButton.Label" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Messages_PortfolioDeleteFailed_Title" xml:space="preserve">
+    <value>Fout bij verwijderen van portefeuille</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreButton.Label" xml:space="preserve">
+    <value>Herstellen</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreConfirm.Content" xml:space="preserve">
+    <value>Ja, herstel portefeuille</value>
+  </data>
+  <data name="PortfolioAdmin_RestorePreName.Text" xml:space="preserve">
+    <value>Wilt u de portefeuille herstellen?</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreMidName.Text" xml:space="preserve">
+    <value>wordt hersteld met behulp van herstelpunt</value>
+  </data>
+  <data name="PortfolioAdmin_RestorePostName.Text" xml:space="preserve">
+    <value>Wilt U verder gaan?</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreTitle.Text" xml:space="preserve">
+    <value>Herstelpunten voor</value>
+  </data>
+  <data name="Messages_PortfolioRestoreConnectFailed_Title" xml:space="preserve">
+    <value>Portfolio opnieuw verbinden na toepassen van een herstelpunt is mislukt. Pas een ander herstelpunt of een back-up toe.</value>
+  </data>
+  <data name="Messages_PortfolioRestoreWarning_Title" xml:space="preserve">
+    <value>Het herstellen van de verplichte portfoliobestanden is gelukt.</value>
+  </data>
+  <data name="Messages_PortfolioRestoreCriticalError_Title" xml:space="preserve">
+    <value>Herstellen van Portfolio mislukt.</value>
+  </data>
+  <data name="Messages_PortfolioRestoreCriticalError_Message" xml:space="preserve">
+    <value>Fout tijdens herstel. Mogelijke wijzigingen zijn teruggedraaid. Herstel niet toegepast. Zie logbestand voor details.</value>
+  </data>
+  <data name="Messages_PortfolioRestoreDisconnectFailed_Title" xml:space="preserve">
+    <value>Het loskoppelen van de portefeuille is mislukt.</value>
+  </data>
+  <data name="Messages_PortfolioRestoreWarning_Message" xml:space="preserve">
+    <value>Er is een fout opgetreden tijdens het herstellen van MarketCharts. Zie logbestand voor details.</value>
+  </data>
+  <data name="PortfolioAdmin_DeleteRestoreButton.Label" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="PortfolioDialog_Title_Copy" xml:space="preserve">
+    <value>Kopieer</value>
+  </data>
+  <data name="Messages_PortfolioCopyFailed_Title" xml:space="preserve">
+    <value>Fout bij het kopieren van de portefeuille.</value>
+  </data>
+  <data name="CopyPortfolioDialog_RbFullCopy.Content" xml:space="preserve">
+    <value>Volledige kopie</value>
+  </data>
+  <data name="CopyPortfolioDialog_RbPartialCopy.Content" xml:space="preserve">
+    <value>Gedeeltelijke kopie</value>
+  </data>
+  <data name="CopyPortfolioDialog_RadioButtons.Header" xml:space="preserve">
+    <value>Optie</value>
+  </data>
+  <data name="CopyPortfolioDialog_CopyOptions.Text" xml:space="preserve">
+    <value>Kies welke kopieeroptie u verkiest. Een volledige kopie resulteert in een exacte kopie inclusief activa en transacties. Een gedeeltelijke kopie bevat de Muntenbibliotheek (inclusief prijsniveaus en narratieven) en de Accounts.</value>
+  </data>
+  <data name="CopyPortfolioDialog_Name.Header" xml:space="preserve">
+    <value>Nieuwe portefeuille naam</value>
+  </data>
+  <data name="PortfolioDialog_PrimaryButton_Copy" xml:space="preserve">
+    <value>Kopie maken</value>
+  </data>
+  <data name="SwitchPortfolio_Explainer.Text" xml:space="preserve">
+    <value>De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuilles te beheren en in te stellen. Wissel van portefeuille door te dubbelklikken op een van de portefeuilles in de onderstaande lijst.</value>
+  </data>
+  <data name="PortfolioAdmin_SaveBackupButton.Label" xml:space="preserve">
+    <value>Backup opslaan</value>
+  </data>
+  <data name="PortfolioDialog_Title_Restore" xml:space="preserve">
+    <value>Een portefeuille herstellen</value>
+  </data>
+  <data name="PortfolioDialog_PrimaryButton_Restore" xml:space="preserve">
+    <value>Herstellen</value>
+  </data>
+  <data name="RestorePortfolioDialog_ExplNoSignature" xml:space="preserve">
+    <value>Ongeldige backup. Kan niet doorgaan met herstellen</value>
+  </data>
+  <data name="RestorePortfolioDialog_ExplPortfolioExist" xml:space="preserve">
+    <value>Het herstellen van deze backup overschrijft de bestaande portfolio hieronder. Maak indien nodig eerst een backup.</value>
+  </data>
+  <data name="RestorePortfolioDialog_ExplPortfolioNotExist" xml:space="preserve">
+    <value>Geen dergelijke portfolio gevonden. Het herstellen van deze backup resulteert in een nieuwe portfolio met de volgende naam:</value>
+  </data>
+  <data name="PortfolioAdmin_RestoreBackupButton.Label" xml:space="preserve">
+    <value>Backup terugzetten</value>
+  </data>
+  <data name="RestorePortfolioDialog_Name.Header" xml:space="preserve">
+    <value>Portefeuillenaam</value>
+  </data>
+  <data name="RestorePortfolioDialog_ExplError" xml:space="preserve">
+    <value>Fout bij het uitpakken van de back-up. Kan niet doorgaan met herstellen.</value>
   </data>
 </root>

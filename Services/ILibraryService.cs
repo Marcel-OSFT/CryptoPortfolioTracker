@@ -33,10 +33,7 @@ public interface ILibraryService
     /// Nothing
     /// </returns>
     void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
-    /// <summary>
-    /// this function without parameters will sort the list using the last used settings.
-    /// </summary>
-    void SortList();
+    
     
     /// <summary>
     /// This Task will populate the ListCoins property of the LibraryService by 
@@ -45,7 +42,6 @@ public interface ILibraryService
     /// <returns> 
     /// an ObservableCollection of type 'Coin'
     /// </returns>
-    Task<ObservableCollection<Coin>> PopulateCoinsList();
     bool IsCoinsListEmpty();
     void ClearCoinsList();
     Task RemoveFromCoinsList(Coin coin);

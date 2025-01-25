@@ -27,8 +27,10 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     public async Task<ObservableCollection<Transaction>> PopulateTransactionsByAssetList(int assetId)
     {
         var getResult = await GetTransactionsByAsset(assetId);
-        getResult.IfSucc(s => ListAssetTransactions = new ObservableCollection<Transaction>(s));
-        getResult.IfFail(err => ListAssetTransactions = new());
+        ListAssetTransactions = getResult.Match(
+            list => new ObservableCollection<Transaction>(list),
+            err => new());
+        
         return ListAssetTransactions;
     }
     public void ClearAssetTransactionsList()
@@ -41,10 +43,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     public Task UpdateListAssetTransactions(Transaction transactionNew, Transaction transactionToEdit)
     {
 
-        if (ListAssetTransactions is null)
-        {
-            return Task.CompletedTask;
-        }
+        if (ListAssetTransactions is null || !ListAssetTransactions.Any()) { return Task.CompletedTask; }
 
         var index = -1;
         for (var i = 0; i < ListAssetTransactions.Count; i++)
@@ -63,7 +62,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     }
     public Task<bool> RemoveFromListAssetTransactions(Transaction deletedTransaction)
     {
-        if (ListAssetTransactions is null) { return Task.FromResult(false); }
+        if (ListAssetTransactions is null || !ListAssetTransactions.Any()) { return Task.FromResult(false); }
         var transactionToUpdate = ListAssetTransactions.Where(x => x.Id == deletedTransaction.Id).Single();
         ListAssetTransactions.Remove(deletedTransaction);
         return Task.FromResult(true);

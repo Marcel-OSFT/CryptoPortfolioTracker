@@ -9,6 +9,7 @@ using Serilog.Core;
 using System.Globalization;
 using CryptoPortfolioTracker.Enums;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 namespace CryptoPortfolioTracker.Services;
@@ -107,8 +108,12 @@ public class PreferencesService : IPreferencesService
         userPreferences.AreValuesMasked = value;
         SaveUserPreferences("AreValuesMasked", value);
     }
-    public void SetLastPortfolio(Portfolio value)
+    public void SetLastPortfolio(Portfolio? value)
     {
+        if (value == null)
+        {
+            return;
+        }
         userPreferences.LastPortfolio = value;
         SaveUserPreferences("LastPortfolio", value);
     }
@@ -177,11 +182,10 @@ public class PreferencesService : IPreferencesService
     {
         try
         {
-            if (File.Exists(App.appDataPath + "\\prefs.xml"))
+            if (File.Exists(App.AppDataPath + "\\prefs.xml"))
             {
-                App.isAppInitializing = true;
                 var mySerializer = new XmlSerializer(typeof(UserPreferences));
-                using var myFileStream = new FileStream(App.appDataPath + "\\prefs.xml", FileMode.Open);
+                using var myFileStream = new FileStream(App.AppDataPath + "\\prefs.xml", FileMode.Open);
 
                 userPreferences = (mySerializer.Deserialize(myFileStream) as UserPreferences) ?? new UserPreferences();
 
@@ -201,22 +205,14 @@ public class PreferencesService : IPreferencesService
             }
         }
         catch { }
-        finally
-        {
-            App.isAppInitializing = false;
-        }
+        
     }
 
     public void SaveUserPreferences(string propertyName, object value)
     {
-        if (App.isAppInitializing)
-        {
-            return;
-        }
-
         Logger?.Information("{0} set to {1}", propertyName, value.ToString());
         var mySerializer = new XmlSerializer(typeof(UserPreferences));
-        var myWriter = new StreamWriter(App.appDataPath + "\\prefs.xml");
+        var myWriter = new StreamWriter(App.AppDataPath + "\\prefs.xml");
         mySerializer.Serialize(myWriter, this.userPreferences);
         myWriter.Close();
     }

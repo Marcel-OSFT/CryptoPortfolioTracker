@@ -44,6 +44,6 @@ namespace CryptoPortfolioTracker.Services
         int GetHeatMapIndex();
         void SetHeatMapIndex(int index);
         Portfolio GetLastPortfolio();
-        void SetLastPortfolio(Portfolio value);
+        void SetLastPortfolio(Portfolio? value);
     }
 }

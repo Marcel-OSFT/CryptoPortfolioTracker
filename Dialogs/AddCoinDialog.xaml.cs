@@ -15,6 +15,7 @@ using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
+using LanguageExt.Common;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -206,50 +207,14 @@ public partial class AddCoinDialog : ContentDialog
     {
         IsPrimaryButtonEnabled = false;
         CoinFullDataById coinDetails = new();
-
+        var result = new Result<CoinFullDataById>();
+        
         try
         {
             var coinFullDataByIdResult = await _viewModel._libraryService.GetCoinDetails(coinId);
-            coinFullDataByIdResult.IfSucc(async details =>
+            await coinFullDataByIdResult.Match(async details =>
             {
-                var image = details.Image.Small.AbsoluteUri != null ? new BitmapImage(new Uri(base.BaseUri, details.Image.Small.AbsoluteUri)) : null;
-                CoinImage.Source = image;
-
-                var run = new Run
-                {
-                    Text = details.Id
-                };
-                parId.Inlines.Clear();
-                parId.Inlines.Add(run);
-
-                run = new Run
-                {
-                    Text = details.Name
-                };
-                parName.Inlines.Clear();
-                parName.Inlines.Add(run);
-
-                run = new Run
-                {
-                    Text = details.Symbol.ToUpper()
-                };
-                parSymbol.Inlines.Clear();
-                parSymbol.Inlines.Add(run);
-
-                run = new Run
-                {
-                    Text = details.MarketCapRank.ToString()
-                };
-                parRank.Inlines.Clear();
-                parRank.Inlines.Add(run);
-
-                double? price = details.MarketData.CurrentPrice.Where(x => x.Key == "usd").FirstOrDefault().Value;
-                run = new Run
-                {
-                    Text = price?.ToString("0.########")
-                };
-                parPrice.Inlines.Clear();
-                parPrice.Inlines.Add(run);
+                DisplayCoinInfo(details);
 
                 if (await IsCoinAlreadyInLibrary(details.Id))
                 {
@@ -262,8 +227,13 @@ public partial class AddCoinDialog : ContentDialog
                     IsPrimaryButtonEnabled = true;
                 }
                 coinDetails = details;
-            });
+            },
+            err =>
+            {
+                result = new Result<CoinFullDataById>(err);
+                return Task.CompletedTask;
 
+            });
         }
         catch (Exception)
         {
@@ -276,6 +246,49 @@ public partial class AddCoinDialog : ContentDialog
         }
         return coinDetails;
     }
+
+    private void DisplayCoinInfo(CoinFullDataById details)
+    {
+        var image = details.Image.Small.AbsoluteUri != null ? new BitmapImage(new Uri(base.BaseUri, details.Image.Small.AbsoluteUri)) : null;
+        CoinImage.Source = image;
+
+        var run = new Run
+        {
+            Text = details.Id
+        };
+        parId.Inlines.Clear();
+        parId.Inlines.Add(run);
+
+        run = new Run
+        {
+            Text = details.Name
+        };
+        parName.Inlines.Clear();
+        parName.Inlines.Add(run);
+
+        run = new Run
+        {
+            Text = details.Symbol.ToUpper()
+        };
+        parSymbol.Inlines.Clear();
+        parSymbol.Inlines.Add(run);
+
+        run = new Run
+        {
+            Text = details.MarketCapRank.ToString()
+        };
+        parRank.Inlines.Clear();
+        parRank.Inlines.Add(run);
+
+        double? price = details.MarketData.CurrentPrice.Where(x => x.Key == "usd").FirstOrDefault().Value;
+        run = new Run
+        {
+            Text = price?.ToString("0.########")
+        };
+        parPrice.Inlines.Clear();
+        parPrice.Inlines.Add(run);
+    }
+
     public async Task<bool> IsCoinAlreadyInLibrary(string coinId)
     {
         var getCoinResult = await _viewModel._libraryService.GetCoin(coinId);
@@ -290,18 +303,7 @@ public partial class AddCoinDialog : ContentDialog
         }
     }
 
-    //public event PropertyChangedEventHandler? PropertyChanged;
-    //protected void OnPropertyChanged([CallerMemberName] string? name = null)
-    //{
-    //    dispatcherQueue.TryEnqueue(() =>
-    //    {
-    //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    //    },
-    //    exception =>
-    //    {
-    //        throw new Exception(exception.Message);
-    //    });
-    //}
+    
 
 }
 

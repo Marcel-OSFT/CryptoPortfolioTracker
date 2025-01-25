@@ -9,13 +9,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
-using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.ViewModels;
 using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using Newtonsoft.Json;
 using Polly;
 using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
@@ -39,40 +38,13 @@ public partial class LibraryService : ObservableObject, ILibraryService
         currentSortingOrder = SortingOrder.Ascending;
     }
 
-    public async Task<ObservableCollection<Coin>> PopulateCoinsList()
-    {
-        var getResult = await GetCoinsFromContext();
-        getResult.IfSucc(list =>
-        {
-            if (currentSortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(list.OrderBy(currentSortFunc));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(currentSortFunc));
-            }
-        });
-        getResult.IfFail(err => ListCoins = new());
-        return ListCoins;
-    }
     public async Task<ObservableCollection<Coin>> PopulateCoinsList( SortingOrder sortingOrder, Func<Coin, object> sortFunc )
     {
         var getResult = await GetCoinsFromContext();
-        getResult.IfSucc(list =>
-        {
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(list.OrderBy(sortFunc));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(sortFunc));
-            }
-            currentSortingOrder = sortingOrder;
-            currentSortFunc = sortFunc;
-        });
-        getResult.IfFail(err => ListCoins = new());
+        ListCoins = getResult.Match(
+            list => SortedList(list, sortingOrder, sortFunc),
+            err =>  new());
+        
         return ListCoins;
     }
 
@@ -88,7 +60,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public Task RemoveFromCoinsList(Coin coin)
     {
-        if (ListCoins is null) { return Task.FromResult(false); }
+        if (ListCoins is null || !ListCoins.Any()) { return Task.FromResult(false); }
         try
         {
             ListCoins.Remove(coin);
@@ -102,7 +74,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public Task AddToCoinsList(Coin coin)
     {
-        if (coin == null) { return Task.FromResult(false); }
+        if (coin == null || !ListCoins.Any()) { return Task.FromResult(false); }
         try
         {
             ListCoins.Add(coin);
@@ -114,40 +86,30 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
     {
-        if (ListCoins is not null)
-        {
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(sortFunc));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(sortFunc));
-            }
-        }
-
-        currentSortingOrder = sortingOrder;
-        currentSortFunc = sortFunc;
+        if (ListCoins is null || !ListCoins.Any()) return;
+        
+        var list = ListCoins.ToList();
+        ListCoins = SortedList(list,sortingOrder, sortFunc);
 
     }
 
     /// <summary>
     /// this function without parameters will sort the list using the last used settings.
     /// </summary>
-    public void SortList()
+
+    private ObservableCollection<Coin> SortedList(List<Coin> list, SortingOrder sortingOrder = SortingOrder.None, Func<Coin, object>? sortFunc = null)
     {
-        if (ListCoins is not null)
+        if (sortingOrder != SortingOrder.None && sortFunc != null)
         {
-            if (currentSortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(currentSortFunc));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(currentSortFunc));
-            }
+            currentSortFunc = sortFunc;
+            currentSortingOrder = sortingOrder;
         }
+        return currentSortingOrder == SortingOrder.Ascending
+            ? new ObservableCollection<Coin>(list.OrderBy(currentSortFunc))
+            : new ObservableCollection<Coin>(list.OrderByDescending(currentSortFunc));
     }
+
+
 
     public async Task<Result<bool>> CreateCoin(Coin? newCoin)
     {
@@ -285,7 +247,6 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
         var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
 
-        Exception? error = null;
         while (!cancellationToken.IsCancellationRequested)
         {
             try
@@ -298,7 +259,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
             }
             catch (System.Exception ex)
             {
-                error = ex;
+                return new Result<List<CoinList>>(ex);
             }
             finally
             {
@@ -306,11 +267,6 @@ public partial class LibraryService : ObservableObject, ILibraryService
                 tokenSource2.Dispose();
             }
         }
-        if (error != null)
-        {
-            return new Result<List<CoinList>>(error);
-        }
-
         return coinList ?? new List<CoinList>();
     }
 
@@ -333,7 +289,11 @@ public partial class LibraryService : ObservableObject, ILibraryService
                 Retries++;
                 if (Retries > 0)
                 {
-                    _messenger.Send(new ShowBePatienceMessage());
+                    MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        _messenger.Send(new ShowBePatienceMessage());
+                    });
+                    
                 }
                 return default;
             }
@@ -347,7 +307,6 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
         var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
 
-        Exception? error = null;
         while (!cancellationToken.IsCancellationRequested)
         {
             try
@@ -359,7 +318,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
             }
             catch (System.Exception ex)
             {
-                error = ex;
+                return new Result<CoinFullDataById>(ex);
             }
             finally
             {
@@ -367,12 +326,6 @@ public partial class LibraryService : ObservableObject, ILibraryService
                 tokenSource2.Dispose();
             }
         }
-
-        if (error != null)
-        {
-            return new Result<CoinFullDataById>(error);
-        }
-
         return coinFullDataById ?? new CoinFullDataById();
     }
 

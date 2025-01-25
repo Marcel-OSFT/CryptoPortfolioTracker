@@ -20,7 +20,7 @@ namespace CryptoPortfolioTracker.Infrastructure
         public PortfolioContext Create(string connectionString)
         {
             var optionsBuilder = new DbContextOptionsBuilder<PortfolioContext>(_options)
-                .UseSqlite(connectionString);
+                .UseSqlite($"{connectionString};Pooling=False");
 
             return new PortfolioContext(optionsBuilder.Options);
         }

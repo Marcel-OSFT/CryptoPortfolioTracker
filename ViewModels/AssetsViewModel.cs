@@ -22,6 +22,14 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
+//public class UpdatePricesMessage
+//{
+
+//    public UpdatePricesMessage()
+//    {
+
+//    }
+//}
 public class UpdatePricesMessage
 {
     public Coin Coin { get; }
@@ -85,9 +93,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
     partial void OnIsPrivacyModeChanged(bool value)
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
-
         _preferencesService.SetAreValuesMasked(value);
-
         _assetService.ReloadValues();
         _transactionService.ReloadValues();
     }
@@ -106,6 +112,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
         messenger.Register<UpdatePricesMessage>(this, (r, m) =>
         {
             _assetService.UpdatePricesAssetTotals(m.Coin, m.OldPrice, m.NewPrice);
+           // _assetService.UpdatePricesAssetTotals();
+
         });
 
         _assetService = assetService;
@@ -114,25 +122,22 @@ public sealed partial class AssetsViewModel : BaseViewModel
         _graphService = graphService;
         _preferencesService = preferencesService;
         _accountService = accountService;
-
         CurrentPortfolio = _assetService.GetPortfolio();
-
         SortGroup = "Assets";
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
-
         _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
-
     }
 
     /// <summary>
     /// Initialize async task is called from the View_Loading event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
-    public async Task Initialize()
+    public async Task ViewLoading()
     {
         CurrentPortfolio = _assetService.GetPortfolio();
+        PortfolioName = CurrentPortfolio.Name;
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
 
         IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
@@ -150,6 +155,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
         await _assetService.GetInFlow();
         await _assetService.GetOutFlow();
+
+
     }
     /// <summary>
     /// ReleaseDataSource async task is called from the View_UnLoaded event of the associated View
@@ -268,7 +275,6 @@ public sealed partial class AssetsViewModel : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanShowTransactionDialogToAdd))]
     public async Task ShowTransactionDialogToAdd()
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         try
         {
@@ -277,7 +283,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
             {
                 XamlRoot = AssetsView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (dialog.Exception != null)
             {
@@ -316,7 +322,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
+        
     }
     private bool CanShowTransactionDialogToAdd()
     {
@@ -326,7 +332,6 @@ public sealed partial class AssetsViewModel : BaseViewModel
     [RelayCommand]
     public async Task ShowTransactionDialogToEdit(Transaction transaction)
     {
-        App.isBusy = true;
         AssetAccount? accountAffected = null;
         var loc = Localizer.Get();
         try
@@ -339,7 +344,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
             {
                 XamlRoot = AssetsView.Current.XamlRoot
             };
-            var result = await dialog.ShowAsync();
+            var result = await App.ShowContentDialogAsync(dialog);
 
             if (dialog.Exception != null)
             {
@@ -381,13 +386,11 @@ public sealed partial class AssetsViewModel : BaseViewModel
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
     }
 
     [RelayCommand]
     public async Task DeleteTransaction(Transaction transaction)
     {
-        App.isBusy = true;
         var loc = Localizer.Get();
         try
         {
@@ -433,7 +436,6 @@ public sealed partial class AssetsViewModel : BaseViewModel
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-        finally { App.isBusy = false; }
     }
     public async Task ShowAssetTransactions(AssetAccount clickedAccount)
     {

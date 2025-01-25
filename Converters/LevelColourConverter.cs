@@ -17,7 +17,7 @@ public partial class LevelColourConverter : IValueConverter
         SolidColorBrush closeToColor;
         SolidColorBrush beyondColor;
 
-        bool isDarkTheme = App._preferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark;
+        bool isDarkTheme = App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark;
 
         (withinRangeColor, closeToColor) = parameter switch
         {
@@ -29,8 +29,8 @@ public partial class LevelColourConverter : IValueConverter
             _ => (baseColor, baseColor)
         };
 
-        var WithinRangePerc = App._preferencesService.GetWithinRangePerc();
-        var CloseToLevelPerc = App._preferencesService.GetCloseToPerc();
+        var WithinRangePerc = App.PreferencesService.GetWithinRangePerc();
+        var CloseToLevelPerc = App.PreferencesService.GetCloseToPerc();
 
         if (value is double val)
         {
@@ -60,7 +60,7 @@ public partial class LevelColourConverter : IValueConverter
     //    var withinRangeColor = new SolidColorBrush();
     //    var closeToColor = new SolidColorBrush();
 
-    //    if ( App._preferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
+    //    if ( App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
     //    {      
     //        switch (parameter)
     //        {
@@ -109,8 +109,8 @@ public partial class LevelColourConverter : IValueConverter
     //        }
     //    }
 
-    //    var WithinRangePerc = App._preferencesService.GetWithinRangePerc();
-    //    var CloseToLevelPerc = App._preferencesService.GetCloseToPerc();
+    //    var WithinRangePerc = App.PreferencesService.GetWithinRangePerc();
+    //    var CloseToLevelPerc = App.PreferencesService.GetCloseToPerc();
 
     //    if (value is double)
     //    {

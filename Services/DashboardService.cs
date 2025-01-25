@@ -59,60 +59,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
         }
     }
    
-    public double CalculateRSI(List<double> closingPrices, int period)
-    {
-        if (closingPrices == null || closingPrices.Count < period + 1)
-            throw new ArgumentException("Insufficient data to calculate RSI");
-
-        List<double> rsiValues = new List<double>();
-        List<double> gains = new List<double>();
-        List<double> losses = new List<double>();
-
-        // Calculate initial average gains and losses
-        for (int i = 1; i <= period; i++)
-        {
-            double change = closingPrices[i] - closingPrices[i - 1];
-            if (change > 0)
-            {
-                gains.Add(change);
-                losses.Add(0);
-            }
-            else
-            {
-                gains.Add(0);
-                losses.Add(-change);
-            }
-        }
-
-        double avgGain = gains.Average();
-        double avgLoss = losses.Average();
-
-        // Calculate the alpha for EWMA
-        double alpha = 1.0 / period;
-
-        // Calculate RSI for the first period
-        double rs = avgGain / avgLoss;
-        double rsi = 100 - (100 / (1 + rs));
-        rsiValues.Add(rsi);
-
-        // Calculate RSI for the remaining periods using EWMA
-        for (int i = period + 1; i < closingPrices.Count; i++)
-        {
-            double change = closingPrices[i] - closingPrices[i - 1];
-            double gain = change > 0 ? change : 0;
-            double loss = change < 0 ? -change : 0;
-
-            avgGain = (gain * alpha) + (avgGain * (1 - alpha));
-            avgLoss = (loss * alpha) + (avgLoss * (1 - alpha));
-
-            rs = avgGain / avgLoss;
-            rsi = 100 - (100 / (1 + rs));
-            rsiValues.Add(rsi);
-        }
-
-        return rsiValues.Last();
-    }
-
+    
     public async Task<List<Coin>> GetTopWinners()
     {
         try
@@ -193,12 +140,16 @@ public partial class DashboardService : ObservableObject, IDashboardService
         try
         {
             var portfolioValue = _assetService.GetTotalsAssetsValue();
+            //minimum value visible in Pie is 0.01%. if it is 0.00 % it will be shown on every pie
+            // which we don't want.
+
+            var threshold = Math.Ceiling(0.0001 * portfolioValue);
 
             if (pieChartName == "Portfolio")
             {
                 // first get TOP 10 coins based on Rank
                 var assets = (await _assetService.PopulateAssetTotalsList())
-                    .Where(x => x.MarketValue > 0)
+                    .Where(x => x.MarketValue > threshold)
                     .OrderBy(x => x.Coin.Rank)
                     .Take(_preferencesService.GetMaxPieCoins())
                     .ToList();
@@ -237,7 +188,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
             if (pieChartName == "Accounts")
             {
                 var accounts = (await _accountService.PopulateAccountsList())
-                    .Where(x => x.TotalValue > 0)
+                    .Where(x => x.TotalValue > threshold)
                     .OrderBy(x => x.TotalValue)
                     .ToList();
 
@@ -263,7 +214,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
             if (pieChartName == "Narratives")
             {
                 var narratives = (await _narrativeService.PopulateNarrativesList())
-                    .Where(x => x.TotalValue > 0)
+                    .Where(x => x.TotalValue > threshold)
                     .OrderBy(x => x.TotalValue)
                     .ToList();
 

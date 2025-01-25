@@ -16,6 +16,8 @@ using System.Diagnostics;
 using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
 using CommunityToolkit.Mvvm.Messaging;
+using System.Data.SqlClient;
+using CryptoPortfolioTracker.Dialogs;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -43,67 +45,31 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public void UpdateHeatMap()
     {
-        _messenger.Send(new UpdateDashboardMessage());
+        MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+        {
+            _messenger.Send(new UpdateDashboardMessage());
+        });
+        
     }
 
     public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
     {
-        if (ListCoins is not null)
-        {
-            //*** extract the Infinity values from the collection
-            //*** so that they appended at the end of the sorted collection
-            var infinityValues = ListCoins.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
-            var sortedList = ListCoins.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
+        if (ListCoins is null || !ListCoins.Any()) return;
+        
+        //*** extract the Infinity values from the collection
+        //*** so that they appended at the end of the sorted collection
+        var infinityValues = ListCoins.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
+        var valueList = ListCoins.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
 
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(sortedList.OrderBy(sortFunc).Concat(infinityValues));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(sortedList.OrderByDescending(sortFunc).Concat(infinityValues));
-            }
-        }
-        currentSortingOrder = sortingOrder;
-        currentSortFunc = sortFunc;
+        ListCoins = new ObservableCollection<Coin>(SortedList(valueList, sortingOrder, sortFunc).Concat(infinityValues)); ;
     }
     public void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
     {
-        if (ListCoins is not null)
-        {
-            //*** extract the Infinity values from the collection
-            //*** so that they appended at the end of the sorted collection
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(sortFunc));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(sortFunc));
-            }
-        }
-        currentSortingOrder = sortingOrder;
-        currentSortFunc = sortFunc;
+        if (ListCoins is null || !ListCoins.Any()) return;
+        var list = ListCoins.ToList();
+        ListCoins = new ObservableCollection<Coin>(SortedList(list, sortingOrder, sortFunc));
     }
 
-    public void SortListTest(SortingOrder sortingOrder)
-    {
-        if (ListCoins is not null)
-        {
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderBy(x => x.PriceLevels.Where(t => t.Type==PriceLevelType.TakeProfit).First().DistanceToValuePerc));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(ListCoins.OrderByDescending(x => x.PriceLevels.Where(t => t.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc));
-            }
-        }
-
-        currentSortingOrder = sortingOrder;
-        //currentSortFunc = sortFunc;
-
-    }
 
     public bool IsCoinsListEmpty()
     {
@@ -113,51 +79,38 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     public async Task<ObservableCollection<Coin>> PopulateCoinsList()
     {
         var getResult = await GetCoinsFromContext();
-        getResult.IfSucc(list =>
-        {
-            if (currentSortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(list.OrderBy(currentSortFunc));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(currentSortFunc));
-            }
-        });
-        getResult.IfFail(err => ListCoins = new());
+        ListCoins = getResult.Match(
+            list => new ObservableCollection<Coin>(SortedList(list)),
+            err => ListCoins = new());
+        
         return ListCoins;
     }
     public async Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
     {
         var getResult = await GetCoinsFromContext();
-        getResult.IfSucc(list =>
+        ListCoins = getResult.Match(list =>
         {
             //*** extract the Infinity values from the collection
             //*** so that they appended at the end of the sorted collection
             var infinityValues = list.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
-            var sortedList = list.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
+            var valuesList = list.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
 
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListCoins = new ObservableCollection<Coin>(sortedList.OrderBy(sortFunc).Concat(infinityValues));
-            }
-            else
-            {
-                ListCoins = new ObservableCollection<Coin>(sortedList.OrderByDescending(sortFunc).Concat(infinityValues));
-            }
-            //if (sortingOrder == SortingOrder.Ascending)
-            //{
-            //    ListCoins = new ObservableCollection<Coin>(list.OrderBy(sortFunc));
-            //}
-            //else
-            //{
-            //    ListCoins = new ObservableCollection<Coin>(list.OrderByDescending(sortFunc));
-            //}
-            currentSortingOrder = sortingOrder;
-            currentSortFunc = sortFunc;
-        });
-        getResult.IfFail(err => ListCoins = new());
+            return new ObservableCollection<Coin>(SortedList(valuesList, sortingOrder, sortFunc).Concat(infinityValues));
+        },
+        err => new());
+
         return ListCoins;
+    }
+    private List<Coin> SortedList(List<Coin> list, SortingOrder sortingOrder = SortingOrder.None, Func<Coin, object>? sortFunc = null)
+    {
+        if (sortingOrder != SortingOrder.None && sortFunc != null)
+        {
+            currentSortFunc = sortFunc;
+            currentSortingOrder = sortingOrder;
+        }
+        return currentSortingOrder == SortingOrder.Ascending
+            ? new List<Coin>(list.OrderBy(currentSortFunc))
+            : new List<Coin>(list.OrderByDescending(currentSortFunc));
     }
 
     public async Task<Result<List<Coin>>> GetCoinsFromContext()
@@ -283,16 +236,9 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return heatMapPoints;
     }
 
-    private async Task<int> AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    private static async Task<int> AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
         var rsi = asset.Coin.Rsi;
-
-        //if (rsi == 0)
-        //{
-        //    asset.Coin.CalculateRsiAsync();
-        //}
-
-        Debug.WriteLine($"Add point RSI: {rsi} for coin {asset.Coin.ApiId}");
 
         var weight = 100 * asset.MarketValue / sumMarketValue;
 
@@ -310,7 +256,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return index;
     }
 
-    private int AddHeatMapPointTarget(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    private static int AddHeatMapPointTarget(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
         if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0) { return index; }
 

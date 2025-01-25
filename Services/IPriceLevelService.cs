@@ -13,7 +13,6 @@ namespace CryptoPortfolioTracker.Services;
 public interface IPriceLevelService
 {
     public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
-    public void SortListTest(SortingOrder sortingOrder);
 
 
     public bool IsCoinsListEmpty();

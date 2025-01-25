@@ -11,7 +11,7 @@ public partial class ColourConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         var netInvestColor = new SolidColorBrush(Colors.Goldenrod);
-        var baseColor =  App._preferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark ? 
+        var baseColor =  App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark ? 
             new SolidColorBrush(Colors.White)
             : new SolidColorBrush(Colors.Black);
 
@@ -25,7 +25,7 @@ public partial class ColourConverter : IValueConverter
             }
         }
 
-        if ( App._preferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
+        if ( App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
         {
             greenColor = new SolidColorBrush(Colors.LimeGreen);
         }

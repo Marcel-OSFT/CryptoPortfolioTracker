@@ -60,7 +60,7 @@
             <!-- End of General Header -->
             <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="10,50,0,0">
                 <Grid Name="SwitchPortfolioContent">
-                    <ListView x:Name="PortfoliosLV" BorderThickness="0"
+                    <ListView x:Name="PortfoliosLV" BorderThickness="0" VerticalAlignment="Stretch"
                         BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
                         DoubleTapped="PortfoliosListView_DoubleTapped" IsDoubleTapEnabled="True" IsTapEnabled="False"
                         Width="650"  HorizontalAlignment="Left" 
