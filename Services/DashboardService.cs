@@ -16,6 +16,7 @@ using CoinGeckoFluentApi.Client;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Helpers;
 using LanguageExt.Common;
+using System.Diagnostics;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -29,10 +30,6 @@ public partial class DashboardService : ObservableObject, IDashboardService
     private readonly IPreferencesService _preferencesService;
     private readonly IAccountService _accountService;
 
-    private DataPoint[] priceData;
-    private DataPoint[] rsiData;
-
-
     public DashboardService(PortfolioService portfolioService, IAssetService assetService, INarrativeService narrativeService, IAccountService accountService, IPreferencesService preferencesService)
     {
         _portfolioService = portfolioService;
@@ -40,7 +37,6 @@ public partial class DashboardService : ObservableObject, IDashboardService
         _preferencesService = preferencesService;
         _accountService = accountService;
         _narrativeService = narrativeService;
-        
     }
 
     public PortfolioContext GetContext()
@@ -91,6 +87,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
         try
         {
             var context = _portfolioService.Context;
+
             var assets = await context.Assets
                 .Include(x => x.Coin)
                 .Where(x => x.Qty > 0 && x.Coin.Change24Hr < 0)
@@ -118,6 +115,17 @@ public partial class DashboardService : ObservableObject, IDashboardService
     {
         return coin;
     }
+
+    public async Task EvaluatePriceLevels()
+    {
+        var coins = _portfolioService.Context.Coins.ToList();
+        foreach (var coin in coins)
+        {
+            coin.EvaluatePriceLevels(coin.Price);
+        }
+    }
+
+
 
     public double GetPortfolioValue()
     {
@@ -175,15 +183,16 @@ public partial class DashboardService : ObservableObject, IDashboardService
                     }
 
                 }
-                var perc2 = 100 * sumOthersMarketValue / portfolioValue;
-                var piePoint2 = new PiePoint
+                var percOthers = 100 * sumOthersMarketValue / portfolioValue;
+                if (percOthers > threshold)
                 {
-                    Value = perc2,
-                    Label = "OTHERS"
-                };
-                piePoints.Add(piePoint2);
-
-
+                    var piePoint2 = new PiePoint
+                    {
+                        Value = percOthers,
+                        Label = "OTHERS"
+                    };
+                    piePoints.Add(piePoint2);
+                }
             }
             if (pieChartName == "Accounts")
             {
@@ -237,7 +246,6 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
                 }
             }
-
         }
         catch (Exception)
         {

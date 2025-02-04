@@ -52,10 +52,8 @@ public sealed partial class ValueFormatConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
-        double result;
         try
         {
-            
             var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
             ci.NumberFormat = App.PreferencesService.GetNumberFormat();
 
@@ -68,11 +66,10 @@ public sealed partial class ValueFormatConverter : IValueConverter
             {
                 return System.Convert.ToInt16((string)value, ci);
             }
-
         }
         catch
         {
-            result = 0;
+            return 0;
         }
         return 0;
     }

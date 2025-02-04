@@ -118,13 +118,7 @@ public partial class App : Application
 
         InitializePortfolioService();
         
-        Logger?.Information("Start to CacheIcons.");
-        
         CacheLibraryIconsAsync();
-        
-        Logger?.Information("CacheIcons done.");
-        
-        Logger?.Information("GetService<MainWindow>");
         Window = Container.GetService<MainWindow>();
         if (Window != null)
         {
@@ -134,8 +128,6 @@ public partial class App : Application
         {
             Logger?.Error("Failed to retrieve MainWindow from the service container.");
         }
-        Logger?.Information("MainWindow Activated");
-
     }
 
     private static async void CacheLibraryIconsAsync()
@@ -380,7 +372,7 @@ public partial class App : Application
         
     }
 
-    private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    public void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
         // Log the exception details (optional)
         Logger?.Error($"Unhandled exception: {e.Message}");
@@ -390,18 +382,18 @@ public partial class App : Application
         e.Handled = true;
 
         // Show a user-friendly message
-        ShowErrorMessage(e.Message);
+        _ = ShowErrorMessage(e.Message);
     }
 
     public static async Task ShowErrorMessage(string message)
     {
         Window? tempWindow= null;
         var xamlRoot = MainPage.Current?.XamlRoot;
-        if ( xamlRoot is null && Splash is not null)
+        if ( xamlRoot == null && Splash is not null)
         {
             xamlRoot= Splash.Content.XamlRoot;
         }
-        else 
+        else if (xamlRoot == null)
         {
             tempWindow = new SplashScreen();
             tempWindow.Activate();

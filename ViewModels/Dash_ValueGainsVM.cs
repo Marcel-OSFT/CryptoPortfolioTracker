@@ -77,9 +77,9 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
         };
 
     /// <summary>   
-    /// This method is called by the ValueGainsControl_Loading event.  
+    /// This method is called by the ValueGainsControl_Loaded event.  
     /// </summary>
-    public async Task ValueGainsControlLoading()
+    public async Task ValueGainsControlLoaded()
     {
         GetValueGains();
         await GetCapitalFlowData();

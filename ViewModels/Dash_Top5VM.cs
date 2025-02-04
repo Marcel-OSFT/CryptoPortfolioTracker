@@ -25,9 +25,9 @@ public partial class DashboardViewModel : BaseViewModel
     
 
     /// <summary>   
-    /// This method is called by the Top5Control_Loading event.  
+    /// This method is called by the Top5Control_Loaded event.  
     /// </summary>
-    public async Task Top5ControlLoading()
+    public async Task Top5ControlLoaded()
     {
         await GetTop5();
     }

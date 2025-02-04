@@ -56,10 +56,14 @@ public partial class PieChartControl : UserControl, INotifyPropertyChanged
         
     }
 
-    private async void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    private void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-       _viewModel.PieControlLoading(this);
+       //_viewModel.PieControlLoading(this);
+    }
 
+    private void Control_Loaded(object sender, RoutedEventArgs e)
+    {
+        _viewModel.PieControlLoaded(this);
     }
 
     private void Pie_UpdateStarted(IChartView<SkiaSharpDrawingContext> chart)
@@ -99,8 +103,6 @@ public partial class PieChartControl : UserControl, INotifyPropertyChanged
 
     private void SetFill()
     {
-        var i = 0;
-
         // Get the default color and set the alpha channel for opacity
         //var color = defaultColors[i++ % defaultColors.Length];
 
@@ -132,4 +134,5 @@ public partial class PieChartControl : UserControl, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    
 }

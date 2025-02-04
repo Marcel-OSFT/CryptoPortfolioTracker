@@ -139,7 +139,7 @@ public partial class DashboardViewModel : BaseViewModel
     }
 
     /// <summary>  
-    /// This method is called by the DashboardView_Loading event.  
+    /// This method is called by the DashboardView_Loaded event.  
     /// </summary>  
     public void ViewLoading()
     {

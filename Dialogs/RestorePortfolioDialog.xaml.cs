@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO.Compression;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
@@ -30,7 +31,7 @@ public sealed partial class RestorePortfolioDialog :  ContentDialog
     private readonly PortfolioService _portfolioService;
     private readonly ILocalizer loc = Localizer.Get();
 
-    public RestorePortfolioDialog(PortfolioService portfolioService, IPreferencesService preferencesService, AdminViewModel viewModel)
+    public RestorePortfolioDialog(PortfolioService portfolioService, IPreferencesService preferencesService)
     {
         this.InitializeComponent();
         _preferencesService = preferencesService;
@@ -40,7 +41,7 @@ public sealed partial class RestorePortfolioDialog :  ContentDialog
     }
 
     [RelayCommand]
-    private async void Browse()
+    private async Task Browse()
     {
         var picker = new FileOpenPicker
         {
@@ -67,7 +68,7 @@ public sealed partial class RestorePortfolioDialog :  ContentDialog
             {
                 ZipFile.ExtractToDirectory(FileName, tempFolder);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Explanation = loc.GetLocalizedString("RestorePortfolioDialog_ExplError");
                 return;

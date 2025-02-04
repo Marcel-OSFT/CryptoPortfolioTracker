@@ -16,6 +16,7 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Loading="Control_Loading"
+    Loaded="Control_Loaded"
     mc:Ignorable="d">
 
     <Grid>

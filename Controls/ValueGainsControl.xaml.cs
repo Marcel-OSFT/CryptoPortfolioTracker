@@ -28,9 +28,12 @@ public partial class ValueGainsControl : UserControl, INotifyPropertyChanged
 
     private async void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        _viewModel.ValueGainsControlLoading();
+        //await _viewModel.ValueGainsControlLoading();
     }
-
+    private async void Control_Loaded(object sender, RoutedEventArgs e)
+    {
+        await _viewModel.ValueGainsControlLoaded();
+    }
     private void Graph_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         _viewModel.ChangeLabelSizeCapitalFlow(e);
@@ -42,4 +45,6 @@ public partial class ValueGainsControl : UserControl, INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+    
 }

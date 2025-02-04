@@ -47,7 +47,6 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     //private bool isHidingZeroBalances;
 
     public Account? selectedAccount = null;
-    private bool _isAssetsListViewInitialized;
 
     [ObservableProperty] private string glyphPrivacy = "\uE890";
 
@@ -89,7 +88,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     [ObservableProperty] private bool isAssetsExtendedView = false;
 
     /// <summary>
-    /// Initialize async task is called from the View_Loading event of the associated View
+    /// Initialize async task is called from the View_Loaded event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
     /// <returns></returns>

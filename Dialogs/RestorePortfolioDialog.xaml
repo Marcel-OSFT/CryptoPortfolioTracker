@@ -19,7 +19,7 @@
                    Margin="0,10,0,10"/>
         
         <TextBlock x:Name="txtFilename" Text="{Binding FileName}" l:Uids.Uid="RestorePortfolioDialog_FileName" 
-                   RelativePanel.Below="txtSelectFile" Margin="0,10,0,10" Width="400" FontSize="16" FontStyle="Oblique"/>
+                   RelativePanel.Below="txtSelectFile" Margin="0,10,0,10" Width="400" FontSize="16" FontStyle="Oblique" TextWrapping="Wrap"/>
         <Button x:Name="btnBrowse" Content="Browse" l:Uids.Uid="RestorePortfolioDialog_BrowseButton" Command="{Binding BrowseCommand}"
                 RelativePanel.RightOf="txtFilename"/>
 

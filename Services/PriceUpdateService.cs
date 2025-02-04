@@ -197,7 +197,7 @@ public class PriceUpdateService : IPriceUpdateService
 
                 MainPage.Current.DispatcherQueue.TryEnqueue( async () =>
                 {
-                    await _assetService.SortList();
+                    _assetService.SortList();
                     await _assetService.CalculateAssetsTotalValues();
                 });
             }
@@ -352,12 +352,14 @@ public class PriceUpdateService : IPriceUpdateService
                 context.Coins.Update(coin);
                 Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
 
+                await context.SaveChangesAsync();
+
                 MainPage.Current.DispatcherQueue.TryEnqueue(() =>
                 {
-                    _messenger.Send(new UpdatePricesMessage(coin, oldPrice, newPrice));
+                    _messenger.Send(new UpdatePricesMessage(coin));
                 });
 
-                await context.SaveChangesAsync();
+                
             }
             return coin;
         }

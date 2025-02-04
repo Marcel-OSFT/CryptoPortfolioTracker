@@ -30,8 +30,7 @@ using System.Diagnostics;
 namespace CryptoPortfolioTracker.ViewModels
 {
 
-    [ObservableObject]
-    public partial class Backup
+    public partial class Backup : ObservableObject
     {
         [ObservableProperty] private string fileName;
         public DateTime BackupDate { get; set; }
@@ -65,7 +64,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         /// <summary>  
-        /// This method is called by the AdminPortfolioView_Loading event.  
+        /// This method is called by the AdminPortfolioView_Loaded event.  
         /// </summary>  
         public void AdminViewLoading()
         {
@@ -74,7 +73,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
         
         [RelayCommand]
-        private async void OpenPickFolder()
+        private async Task OpenPickFolder()
         {
             StorageFolder selectedFolder = await PickFolderAsync();
             if (selectedFolder != null)
@@ -104,7 +103,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         [RelayCommand]
-        private async void AddPortfolio()
+        private async Task AddPortfolio()
         {
             var loc = Localizer.Get();
             
@@ -140,7 +139,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         [RelayCommand]
-        private async void RenamePortfolio(Portfolio portfolio)
+        private async Task RenamePortfolio(Portfolio portfolio)
         {
             var loc = Localizer.Get();
             if (SelectedPortfolio != null)
@@ -190,7 +189,7 @@ namespace CryptoPortfolioTracker.ViewModels
         //}
 
         [RelayCommand]
-        private async void CopyPortfolio(Portfolio portfolio)
+        private async Task CopyPortfolio(Portfolio portfolio)
         {
             if (portfolio != null)
             {
@@ -235,7 +234,7 @@ namespace CryptoPortfolioTracker.ViewModels
         
 
         [RelayCommand]
-        private async void DeletePortfolio(Portfolio portfolio)
+        private async Task DeletePortfolio(Portfolio portfolio)
         {
             //*** what are the conditions to allow deletion of a portfolio? ***
             //*** - no restrictions, except that active portfolio can't be deleted
@@ -273,7 +272,7 @@ namespace CryptoPortfolioTracker.ViewModels
 
 
         [RelayCommand(CanExecute = nameof(CanBackupPortfolio))]
-        private async void BackupPortfolio(Portfolio portfolio) //****** to be implemented and checked
+        private async Task BackupPortfolio(Portfolio portfolio) //****** to be implemented and checked
         {
             if (portfolio != null)
             {
@@ -316,7 +315,7 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         [RelayCommand]
-        private async void RestorePortfolio(Portfolio portfolio)
+        private async Task RestorePortfolio(Portfolio portfolio)
         {
             if (portfolio == null || SelectedBackup == null) return;
 
@@ -406,7 +405,7 @@ namespace CryptoPortfolioTracker.ViewModels
             Either<Error, bool> result = new();
             try
             {
-                var restoreSignatureResult = RestoreSignatureFolder(tempFolder, portfolio, backupFilePath);
+                var restoreSignatureResult = await RestoreSignatureFolder(tempFolder, portfolio, backupFilePath);
                 switch (restoreSignatureResult)
                 {
                     case RestoreResult.Succesfull:
@@ -416,6 +415,7 @@ namespace CryptoPortfolioTracker.ViewModels
                                 Right: _ =>
                                 {
                                     // show succesfull-animation
+                                    Logger.Information("Restore of portfolio {PortfolioName} succesfull", portfolio.Name);
                                     result = true;
                                 },
                                 Left: async err =>
@@ -479,10 +479,11 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanRestorePortfolioDummy))]
-        private async void RestorePortfolioDummy(Portfolio portfolio)
+        private Task RestorePortfolioDummy(Portfolio portfolio)
         {
             // this command is dummy because the final command is run through the Flyout that 
             // shows when the user clicks on the restore button.
+            return Task.CompletedTask;
         }
 
         private bool CanRestorePortfolioDummy(Portfolio portfolio)
@@ -490,11 +491,10 @@ namespace CryptoPortfolioTracker.ViewModels
             return SelectedBackup != null;
         }
 
-        private RestoreResult RestoreSignatureFolder(string tempFolder, Portfolio portfolio, string backupFilePath)
+        private async Task<RestoreResult> RestoreSignatureFolder(string tempFolder, Portfolio portfolio, string backupFilePath)
         {
             var signatureDestPath = Path.Combine(App.PortfoliosPath, portfolio.Signature);
             var signatureTempPath = Path.Combine(tempFolder, portfolio.Signature);
-            
 
             RestoreResult result = RestoreResult.None;
 
@@ -518,7 +518,8 @@ namespace CryptoPortfolioTracker.ViewModels
                 //Check if Destination folder exists. It might be a restore from a backup of a currently non-existing portfolio 
                 if (!Directory.Exists(signatureDestPath))
                 {
-                    Directory.CreateDirectory(signatureDestPath);
+                    //new portfolio so add it to the collection and create the signature folder
+                    await _portfolioService.AddPortfolio(portfolio, false);
                 }
 
                 SecureMandatoryFiles(signatureDestPath);
@@ -537,7 +538,7 @@ namespace CryptoPortfolioTracker.ViewModels
             }
             catch (Exception ex)
             {
-                return result;
+                return RestoreResult.ErrorCriticalNeedRecovery;
             }
         }
 
@@ -596,7 +597,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 var files = Directory.GetFiles(signatureDestPath, "*.sec");
                 foreach (var file in files)
                 {
-                    var destFile = file.Substring(0, file.Length - 4);
+                    var destFile = file[..^4]; // Simplified Substring
                     File.Move(file, destFile, true);
                 }
             }
@@ -691,7 +692,7 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             if (backup != null)
             {
-                var deleteResult = _portfolioService.DeleteRestorePoint(selectedPortfolio.Signature,backup.FileName);
+                var deleteResult = _portfolioService.DeleteRestorePoint(SelectedPortfolio.Signature,backup.FileName);
                 if (deleteResult.IsSuccess)
                 {
                     Backups.Remove(backup);
@@ -706,11 +707,11 @@ namespace CryptoPortfolioTracker.ViewModels
         }
 
         [RelayCommand]
-        private async void BrowseAndRestorePortfolio()
+        private async Task BrowseAndRestorePortfolio()
         {
 
             // Show the copy dialog
-            RestorePortfolioDialog dialog = new RestorePortfolioDialog(_portfolioService, _preferencesService, this);
+            RestorePortfolioDialog dialog = new RestorePortfolioDialog(_portfolioService, _preferencesService);
 
             dialog.RequestedTheme = _preferencesService.GetAppTheme();
             dialog.XamlRoot = MainPage.Current.XamlRoot;

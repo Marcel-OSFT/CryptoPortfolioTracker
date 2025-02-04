@@ -33,13 +33,9 @@ namespace CryptoPortfolioTracker.ViewModels;
 public class UpdatePricesMessage
 {
     public Coin Coin { get; }
-    public double OldPrice { get; }
-    public double NewPrice { get; }
-    public UpdatePricesMessage(Coin coin, double oldPrice, double newPrice)
+    public UpdatePricesMessage(Coin coin)
     {
         Coin = coin;
-        OldPrice = oldPrice;
-        NewPrice = newPrice;
     }
 }
 
@@ -111,7 +107,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
         messenger.Register<UpdatePricesMessage>(this, (r, m) =>
         {
-            _assetService.UpdatePricesAssetTotals(m.Coin, m.OldPrice, m.NewPrice);
+            _assetService.UpdatePricesAssetTotals(m.Coin);
            // _assetService.UpdatePricesAssetTotals();
 
         });
@@ -131,7 +127,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
     }
 
     /// <summary>
-    /// Initialize async task is called from the View_Loading event of the associated View
+    /// Initialize async task is called from the View_Loaded event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
     public async Task ViewLoading()

@@ -224,10 +224,10 @@ public partial class AssetService : ObservableObject, IAssetService
         }
         
     }
-    public Task UpdatePricesAssetTotals(Coin coin, double oldPrice, double? newPrice)
+    public Task UpdatePricesAssetTotals(Coin coin)
     {
         var asset = ListAssetTotals?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
-        if (asset != null && ListAssetTotals != null && oldPrice != newPrice)
+        if (asset != null && ListAssetTotals != null)
         {
             //Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
             var index = -1;
@@ -239,7 +239,8 @@ public partial class AssetService : ObservableObject, IAssetService
                     break;
                 }
             }
-            ListAssetTotals[index].Coin.Price = coin.Price;
+           // ListAssetTotals[index].Coin.Price = coin.Price;
+            ListAssetTotals[index].Coin = coin;
             ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
         }
         return Task.CompletedTask;
@@ -369,7 +370,7 @@ public partial class AssetService : ObservableObject, IAssetService
     /// <summary>
     /// this function without parameters will sort the list using the last used settings.
     /// </summary>
-    public async Task SortList()
+    public void SortList()
     {
         if (ListAssetTotals is null || !ListAssetTotals.Any()) return;
 
@@ -429,16 +430,18 @@ public partial class AssetService : ObservableObject, IAssetService
         try
         {
             assetsTotals = await context.Assets
-            .Include(x => x.Coin)
-            .ThenInclude(y => y.PriceLevels)
-            .GroupBy(asset => asset.Coin)
-            .Select(assetGroup => new AssetTotals
-            {
-                Qty = assetGroup.Sum(x => x.Qty),
-                CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
-                Coin = assetGroup.Key,
-            })
-            .ToListAsync();
+                .Include(x => x.Coin)
+                .ThenInclude(y => y.PriceLevels)
+                .GroupBy(asset => asset.Coin)
+                .Select(assetGroup => new AssetTotals
+                {
+                    Qty = assetGroup.Sum(x => x.Qty),
+                    CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
+                    Coin = assetGroup.Key
+                })
+                .ToListAsync();
+
+            GetPriceLevels(assetsTotals);
 
             GetNetInvestments(assetsTotals);
 
@@ -466,6 +469,30 @@ public partial class AssetService : ObservableObject, IAssetService
 
         return assetsTotals;
     }
+
+    private void GetPriceLevels(List<AssetTotals> assetsTotals)
+    {
+        var context = _portfolioService.Context;
+        foreach (var assetTotal in assetsTotals)
+        {
+
+            assetTotal.Coin.PriceLevels = context.PriceLevels
+                .Where(x => x.Coin.Id == assetTotal.Coin.Id)
+                .ToList();
+
+        }
+    }
+    private void GetPriceLevels(AssetTotals assetTotals)
+    {
+        var context = _portfolioService.Context;
+
+        assetTotals.Coin.PriceLevels = context.PriceLevels
+            .Where(x => x.Coin.Id == assetTotals.Coin.Id)
+            .ToList();
+
+
+    }
+
     private async Task<Double> CalculateInFlow()
     {
         var context = _portfolioService.Context;
@@ -524,6 +551,8 @@ public partial class AssetService : ObservableObject, IAssetService
            })
            .SingleAsync();
 
+
+            GetPriceLevels(assetTotal);
             GetNetInvestment(assetTotal);
         }
         catch (Exception ex)
@@ -552,6 +581,7 @@ public partial class AssetService : ObservableObject, IAssetService
            })
            .SingleAsync();
 
+            GetPriceLevels(assetTotals);
             GetNetInvestmentByAccount(assetTotals, account.Id);
 
         }

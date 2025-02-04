@@ -28,8 +28,7 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
 
     private async void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        await _viewModel.GraphControlLoading();
-       // this.UpdateLayout();
+       // await _viewModel.GraphControlLoading();
     }
 
     private void Graph_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -42,5 +41,10 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private async void Control_Loaded(object sender, RoutedEventArgs e)
+    {
+        await _viewModel.GraphControlLoaded();
     }
 }

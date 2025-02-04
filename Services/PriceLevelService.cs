@@ -224,7 +224,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 else
                 {
                     
-                    index = await AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
+                    index = AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
                 }
             }
         }
@@ -236,7 +236,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return heatMapPoints;
     }
 
-    private static async Task<int> AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    private static int AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
         var rsi = asset.Coin.Rsi;
 
@@ -258,7 +258,10 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     private static int AddHeatMapPointTarget(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
-        if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0) { return index; }
+        if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0) 
+        { 
+            return index; 
+        }
 
         var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
         var weight = 100 * asset.MarketValue / sumMarketValue;

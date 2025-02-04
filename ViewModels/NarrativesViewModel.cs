@@ -90,7 +90,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     [ObservableProperty] private bool isAssetsExtendedView = false;
 
     /// <summary>
-    /// Initialize async task is called from the View_Loading event of the associated View
+    /// Initialize async task is called from the View_Loaded event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
     /// <returns></returns>

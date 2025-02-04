@@ -22,9 +22,9 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     [ObservableProperty] public bool showOnlyAssets;
 
-    partial void OnShowOnlyAssetsChanged(bool value)
+    async partial void OnShowOnlyAssetsChanged(bool value)
     {
-        PopulateNarrativesList(value);
+        await PopulateNarrativesList(value);
     }
 
     public NarrativeService(PortfolioService portfolioService)
