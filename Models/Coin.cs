@@ -59,7 +59,7 @@ public partial class Coin : BaseModel
         CalculateRsiAsync();
     }
 
-    private void EvaluatePriceLevels(double newValue)
+    public void EvaluatePriceLevels(double newValue)
     {
         if (newValue == 0)
         {
@@ -124,7 +124,7 @@ public partial class Coin : BaseModel
             if (FileDateMarketChart != fileDate || !ClosingPrices.Any())
             {
                 MarketChartById marketChart = new();
-                await marketChart.LoadMarketChartJson(apiId);
+                await marketChart.LoadMarketChartJson(ApiId);
                 ClosingPrices = marketChart.Prices.TakeLast(2 * period + 50).Select(p => (double)p[1].Value).ToList();
                 FileDateMarketChart = fileDate;
             }

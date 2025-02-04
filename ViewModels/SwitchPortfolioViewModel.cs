@@ -44,15 +44,15 @@ namespace CryptoPortfolioTracker.ViewModels
             //*** Switch the database context
 
             var switchResult = await _portfolioService.SwitchPortfolio(newValue);
-            return await switchResult.Match(
-                Succ: async succ =>
+            return switchResult.Match(
+                Succ: succ =>
                 {
                     //*** Resume update services
                     SelectedPortfolio = newValue;
                     _portfolioService.ResumeUpdateServices();
                     return new Result<bool>(true);
                 },
-                Fail: async err =>
+                Fail: err =>
                 {
                     //*** Resume update services
                     //selectedPortfolio remains the same

@@ -168,9 +168,9 @@ public partial class DashboardViewModel : BaseViewModel
     }
 
     /// <summary>   
-    /// This method is called by the HeatMapControl_Loading event.  
+    /// This method is called by the HeatMapControl_Loaded event.  
     /// </summary>
-    public async void HeatMapControlLoading()
+    public async void HeatMapControlLoaded()
     {
         try
         {
@@ -178,6 +178,7 @@ public partial class DashboardViewModel : BaseViewModel
             bubbleSizeMin = 1;
             SetCustomSeparators();
             SelectedHeatMapIndex = _preferencesService.GetHeatMapIndex();
+            _dashboardService.EvaluatePriceLevels();
             await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
         catch (Exception )

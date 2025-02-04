@@ -20,6 +20,7 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     Loading="Control_Loading"
+    Loaded="Control_Loaded"
     mc:Ignorable="d">
 
     <UserControl.Resources>

@@ -67,9 +67,9 @@ public partial class DashboardViewModel : BaseViewModel
     }
 
     /// <summary>   
-    /// This method is called by the GraphControl_Loading event.  
+    /// This method is called by the GraphControl_Loaded event.  
     /// </summary>
-    public async Task GraphControlLoading()
+    public async Task GraphControlLoaded()
     {
         var loc = Localizer.Get();
         var ci = new CultureInfo(loc.GetCurrentLanguage());

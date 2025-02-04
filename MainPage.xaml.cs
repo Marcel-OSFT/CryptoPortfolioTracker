@@ -37,7 +37,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IPreferencesService preferencesService)
     {
-        Logger.Information("start MainPage Constructor");
         InitializeComponent();
         Current = this;
         DataContext = this;
@@ -46,9 +45,23 @@ public partial class MainPage : Page, INotifyPropertyChanged
         _graphUpdateService = graphUpdateService;
         _priceUpdateService = priceUpdateService;
         SetupTeachingTips();
-        Logger.Information("End MainPage Constructor");
     }
 
+    private async void MainPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        _graphUpdateService.Start();
+        _priceUpdateService.Start();
+
+        //navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
+        navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().Where(x => x.Name == "AssetsView").First();
+        App.Splash?.Close();
+        App.Splash = null;
+
+        if (_preferencesService.GetCheckingForUpdate())
+        {
+            await CheckUpdateNow();
+        }
+    }
     private void SetupTeachingTips()
     {
         var teachingTipInitial = _preferencesService.GetTeachingTip("TeachingTipBlank");
@@ -117,9 +130,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     private async void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
-        //LoadView(Type.GetType("CryptoPortfolioTracker.Views.Temporary"));
-        Logger?.Information("MainPage NavigationView_SelectionChanged");
-
         var selectedItem = (NavigationViewItem)args.SelectedItem;
         Type? pageType;
         if (args.IsSettingsSelected)
@@ -175,8 +185,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     private void LoadView(Type pageType)
     {
-        Logger.Information("start LoadView");
-
         if (pageType.Name == "CoinLibraryView" )
         {
             _graphUpdateService.Pause();
@@ -203,15 +211,9 @@ public partial class MainPage : Page, INotifyPropertyChanged
                 _priceUpdateService = App.Container.GetService<IPriceUpdateService>();
                 _priceUpdateService?.Start();
             }
-
-            //_graphUpdateService.Start();
-            //_priceUpdateService.Start();
-
         }
         lastPageType = pageType;
         contentFrame.Content = App.Container.GetService(pageType);
-        Logger.Information("End LoadView");
-
     }
 
     private async void DisplayHelpFile()
@@ -251,26 +253,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
         };
         var dlgResult = await dialog.ShowAsync();
         return dlgResult;
-    }
-
-    private async void MainPage_Loaded(object sender, RoutedEventArgs e)
-    {
-        Logger.Information("start MainPage_Loaded");
-        _graphUpdateService.Start();
-        _priceUpdateService.Start();
-
-        navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
-        App.Splash?.Close();
-        App.Splash = null;
-
-        if (_preferencesService.GetCheckingForUpdate()) 
-        { 
-            await CheckUpdateNow(); 
-        }
-        //_graphUpdateService.Start();
-        //_priceUpdateService.Start();
-        Logger.Information("End MainPage_Loaded");
-
     }
 
     private void OnGetItClickedNarr(object sender, RoutedEventArgs e)

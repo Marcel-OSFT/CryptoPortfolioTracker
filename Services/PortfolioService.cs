@@ -573,6 +573,7 @@ namespace CryptoPortfolioTracker.Services
                     //check if the name of the current portfolio was changed
                     if (CurrentPortfolio.Name == newPortfolio.Name)
                     {
+                        OnPropertyChanged("CurrentPortfolio");
                         _preferenceService.SetLastPortfolio(CurrentPortfolio);
                     }
 
@@ -591,13 +592,16 @@ namespace CryptoPortfolioTracker.Services
             }
         }
 
-        public async Task<Either<Error, bool>> AddPortfolio(Portfolio portfolio)
+        public async Task<Either<Error, bool>> AddPortfolio(Portfolio portfolio, bool needNewSignature = true)
         {
             try
             {
                 if (portfolio != null)
                 {
-                    portfolio.Signature = Guid.NewGuid().ToString();
+                    if (portfolio.Signature == string.Empty || needNewSignature)
+                    {
+                        portfolio.Signature = Guid.NewGuid().ToString();
+                    }
                     var path = Path.Combine(App.PortfoliosPath, portfolio.Signature);
                     var backupPath = Path.Combine(path, App.BackupFolder);
 
@@ -729,12 +733,12 @@ namespace CryptoPortfolioTracker.Services
                     // for that pause both UpdateServices
                     await PauseUpdateServices();
                     DisconnectUpdateContext();
-                    ConnectUpdateContext(newPortfolio);
+                    await ConnectUpdateContext(newPortfolio);
 
                     await RemoveAssetsFromPortfolio(UpdateContext);
 
                     DisconnectUpdateContext();
-                    ConnectUpdateContext(portfolio);
+                    await ConnectUpdateContext(portfolio);
                     ResumeUpdateServices();
                 }
                 return true;
@@ -759,19 +763,19 @@ namespace CryptoPortfolioTracker.Services
 
         }
 
-        public async Task<Either<Error, bool>> ConnectUpdateContext(Portfolio portfolio)
+        public Task<Either<Error, bool>> ConnectUpdateContext(Portfolio portfolio)
         {
             try
             {
                 var relativePath = Path.GetRelativePath(App.AppDataPath, Path.Combine(App.PortfoliosPath, portfolio.Signature, App.DbName));
                 UpdateContext = _updateContextFactory.Create($"Data Source=|DataDirectory|{relativePath}");
                 Logger.Information($"UpdateContext Connected to {portfolio.Signature}");
-                return true;
+                return Task.FromResult<Either<Error, bool>>(true);
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, $"Failed to connect UpdateContext to {portfolio.Signature}");
-                return Error.New(ex);
+                return Task.FromResult<Either<Error, bool>>(Error.New(ex));
             }
         }
 

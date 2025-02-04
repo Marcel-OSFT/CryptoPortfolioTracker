@@ -23,9 +23,13 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
         DataContext = _viewModel;
     }
 
-    private void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    private async void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        _viewModel.Top5ControlLoading();
+        //await _viewModel.Top5ControlLoading();
+    }
+    private async void Control_Loaded(object sender, RoutedEventArgs e)
+    {
+        await _viewModel.Top5ControlLoaded();
     }
 
     private void Control_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -71,6 +75,5 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
         });
     }
 
-
-
+    
 }

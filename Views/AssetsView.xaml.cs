@@ -39,7 +39,7 @@ public partial class AssetsView : Page, IDisposable
         }
     }
 
-    private async void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void View_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         _viewModel.Terminate();
         MyAssetsListViewControl.AssetsListView.DataContext = null;

@@ -21,9 +21,9 @@ public partial class DashboardViewModel : BaseViewModel
     
 
     /// <summary>   
-    /// This method is called by the PieChartControl_Loading event.  
+    /// This method is called by the PieChartControl_Loaded event.  
     /// </summary>
-    public void PieControlLoading(PieChartControl pieChart)
+    public void PieControlLoaded(PieChartControl pieChart)
     {
         try
         {

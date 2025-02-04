@@ -62,6 +62,8 @@ public class GraphUpdateService : IGraphUpdateService
         try
         {
             await _graphService.LoadGraphFromJson(_portfolioService.CurrentPortfolio.Signature);
+            await Task.Delay(60000);
+            await CheckForNewGraphData();
 
             while (await timer.WaitForNextTickAsync(cts.Token))
             {
@@ -70,10 +72,8 @@ public class GraphUpdateService : IGraphUpdateService
                     if (resumeTask == null || resumeTask.IsCompleted )
                     {
                         resumeTask = null;
-                        IsUpdating = true;
                         Logger.Information("NextTick received");
                         await CheckForNewGraphData();
-                        IsUpdating = false;
                     }
                     else
                     {
@@ -361,6 +361,7 @@ public class GraphUpdateService : IGraphUpdateService
         var firstDate = DateOnly.FromDateTime(DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
 
         var dataSetChart = chartData.Prices.Where(x => DateOnly.FromDateTime(DateTime.UnixEpoch.AddMilliseconds(Convert.ToDouble(x[0]))).CompareTo(firstDate) >= 0).ToArray();
+        if (dataSetChart == null || dataSetChart.Length == 0) { return data; }
 
         var dateShift = 0;
 
@@ -462,9 +463,6 @@ public class GraphUpdateService : IGraphUpdateService
             {
                 _messenger.Send(new IsUpdatingGraphMessage(false));
             });
-
-
-            
         }
     }
     private async Task<Result<MarketChartById>> GetHistoricalPrices(AssetTotals asset)
@@ -538,7 +536,7 @@ public class GraphUpdateService : IGraphUpdateService
                 MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
                 {
                     // Check/set 'isFinishedLoading' to false to show message
-                    _messenger.Send(new IsUpdatingGraphMessage(true));
+                   // _messenger.Send(new IsUpdatingGraphMessage(true));
                     var newValue = (int)Math.Floor(startValue + (stepSize * i));
                     _messenger.Send(new UpdateProgressValueMessage(newValue));
                         
@@ -549,7 +547,7 @@ public class GraphUpdateService : IGraphUpdateService
         {
             MainPage.Current.DispatcherQueue.TryEnqueue( () =>
             {
-                _messenger.Send(new IsUpdatingGraphMessage(true));
+               // _messenger.Send(new IsUpdatingGraphMessage(true));
                 _messenger.Send(new UpdateProgressValueMessage((int)Math.Floor(startValue)));
             });
             

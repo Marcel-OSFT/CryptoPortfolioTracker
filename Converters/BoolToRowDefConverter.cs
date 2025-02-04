@@ -8,8 +8,8 @@ namespace CryptoPortfolioTracker.Converters;
 
 public class RowDefConverterParameters
 {
-    public string Text { get; set; }
-    public XamlRoot XamlRoot { get; set; }
+    public string Text { get; set; } = string.Empty;
+    public XamlRoot XamlRoot { get; set; } = null;
 }
 
 public partial class BoolToRowDefConverter : IValueConverter

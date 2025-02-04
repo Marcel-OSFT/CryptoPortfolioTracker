@@ -30,7 +30,6 @@ public partial class ZoomGridDefConverter : IValueConverter
             case FullScreenMode.None:
                 {
                     return defaultHeight;
-                    break;
                 }
             case FullScreenMode.HeatMap:
                 {
@@ -42,7 +41,6 @@ public partial class ZoomGridDefConverter : IValueConverter
                     {
                         return "0";
                     }
-                    break;
                 }
             case FullScreenMode.Graph:
                 {
@@ -54,7 +52,6 @@ public partial class ZoomGridDefConverter : IValueConverter
                     {
                         return "0";
                     }
-                    break;
                 }
             case FullScreenMode.PiePortfolio:
                 {
@@ -66,7 +63,6 @@ public partial class ZoomGridDefConverter : IValueConverter
                     {
                         return "0";
                     }
-                    break;
                 }
             case FullScreenMode.PieAccounts:
                 {
@@ -78,7 +74,6 @@ public partial class ZoomGridDefConverter : IValueConverter
                     {
                         return "0";
                     }
-                    break;
                 }
             case FullScreenMode.PieNarratives:
                 {
@@ -90,12 +85,10 @@ public partial class ZoomGridDefConverter : IValueConverter
                     {
                         return "0";
                     }
-                    break;
                 }
             default:
                 {
                     return defaultHeight;
-                    break;
                 }
         }
         

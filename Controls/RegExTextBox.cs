@@ -68,6 +68,7 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
     private string? regExChoosen;
     private static MyEnum SelectedRegEx;
     private static bool invalidKeyEntered;
+    private static bool decimalKeyNumPadEntered;
 
     public bool IsZeroAllowed
     {
@@ -147,6 +148,20 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
                 Text = Text.Remove(cursorPosition, 1);
                 SelectionStart = cursorPosition;
                 invalidKeyEntered = false;
+            }
+            return;
+        }
+        if (decimalKeyNumPadEntered)
+        {
+            var cursorPosition = SelectionStart - 1;
+            if (cursorPosition >= 0)
+            {
+                Text = Text.Remove(cursorPosition, 1);
+                if (sender is not RegExTextBox thisInstance) { return; }
+                var decimalChar = thisInstance.DecimalSeparator;
+                Text = Text + decimalChar;
+                SelectionStart = cursorPosition + 1;
+                decimalKeyNumPadEntered = false;
             }
             return;
         }
@@ -240,8 +255,11 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
     {
         if (sender is not RegExTextBox thisInstance)  { return; }
         invalidKeyEntered = false;
+        decimalKeyNumPadEntered = false;
         var decimalChar = thisInstance.DecimalSeparator;
         var decimalKey = decimalChar == "." ? 190 : 188;
+
+        var keyValue = Convert.ToInt32(e.Key);
 
         // Determine whether the keystroke is a number from the top of the keyboard.
         if (e.Key < VirtualKey.Number0 || e.Key > VirtualKey.Number9)
@@ -256,7 +274,7 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
                     var tbox = sender as TextBox ?? new();
                     if (!_isDecimal
                             || (tbox.Text.Contains(decimalChar))
-                            || Convert.ToInt32(e.Key) != decimalKey)
+                            || (Convert.ToInt32(e.Key) != decimalKey && e.Key != VirtualKey.Decimal))
                     {
                         //Determine wether the keystroke is the '-' key
                         //check if '-' already exists, allow the '-' key if all text is selected and will be overwritten
@@ -274,6 +292,10 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
                                 invalidKeyEntered = true;
                             }
                         }
+                    }
+                    else if (e.Key == VirtualKey.Decimal)
+                    {
+                        decimalKeyNumPadEntered = true;
                     }
                 }
             }

@@ -34,9 +34,6 @@ namespace CryptoPortfolioTracker.Views
         public AdminViewModel _viewModel { get; }
         
         public static AdminView Current;
-        private Portfolio? selectedPortfolio;
-        private Portfolio? deselectedPortfolio;
-        private bool animationBusy = false;
 
         public AdminView(AdminViewModel adminViewModel, IMessenger messenger)
         {
@@ -74,7 +71,7 @@ namespace CryptoPortfolioTracker.Views
             {
                 var primaryBorder = MkOsft.GetElementFromUiElement<Border>(primaryItem, "PortfolioItem");
                 var primaryStoryboard = CreateColorAnimation(Colors.Transparent, color, 2, primaryBorder);
-                primaryStoryboard.Completed += async (s, e) =>
+                primaryStoryboard.Completed += (s, e) =>
                 {
                     primaryBorder.Background = new SolidColorBrush(Colors.Transparent);
                 };
@@ -84,7 +81,7 @@ namespace CryptoPortfolioTracker.Views
                     var secondaryBorder = MkOsft.GetElementFromUiElement<Border>(secondaryItem, "BackupItem");
                     var secondaryStoryboard = CreateColorAnimation(color, Colors.Transparent, 2, secondaryBorder);
                     
-                    secondaryStoryboard.Completed += async (s, e) =>
+                    secondaryStoryboard.Completed += (s, e) =>
                     {
                         secondaryBorder.Background = new SolidColorBrush(Colors.Transparent);
                     };

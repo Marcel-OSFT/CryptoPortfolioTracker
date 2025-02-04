@@ -16,6 +16,7 @@
     xmlns:toolkit="using:AK.Toolkit.WinUI3" xmlns:models="using:CryptoPortfolioTracker.Models"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loading="Control_Loading"
+    Loaded="Control_Loaded"
     mc:Ignorable="d">
 
 
