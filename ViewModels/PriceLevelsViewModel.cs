@@ -16,6 +16,7 @@ using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
 using WinUI3Localizer;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
@@ -23,6 +24,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
 {
     public IPriceLevelService _priceLevelService { get; private set; }
     private readonly IPreferencesService _preferencesService;
+
     [ObservableProperty] public string portfolioName = string.Empty;
     [ObservableProperty] public Portfolio currentPortfolio;
 
@@ -37,7 +39,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
     private Func<Coin, object> initialSortFunc;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public PriceLevelsViewModel(IPriceLevelService priceLevelService, IPreferencesService preferencesService) : base(preferencesService)
+    public PriceLevelsViewModel(IPriceLevelService priceLevelService, IMessenger messenger, IPreferencesService preferencesService) : base(preferencesService)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceLevelsViewModel).Name.PadRight(22));
         Current = this;
@@ -48,6 +50,12 @@ public partial class PriceLevelsViewModel : BaseViewModel
         sortGroup = "Library";
         initialSortFunc = x => x.PriceLevels.Where(t => t.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
         initialSortingOrder = SortingOrder.Descending;
+
+        messenger.Register<UpdatePricesMessage>(this, (r, m) =>
+        {
+            _priceLevelService.UpdateCoinsList(m.Coin);
+        });
+
     }
     public async Task ViewLoading()
     {

@@ -354,6 +354,14 @@ public class PriceUpdateService : IPriceUpdateService
 
                 await context.SaveChangesAsync();
 
+                // Reflect the changes in the Coin entity also in the PortfolioContext
+                var entity = await _portfolioService.Context.Coins.FindAsync(coin.Id);
+                if (entity != null)
+                {
+                    await _portfolioService.Context.Entry(entity).ReloadAsync();
+                }
+
+
                 MainPage.Current.DispatcherQueue.TryEnqueue(() =>
                 {
                     _messenger.Send(new UpdatePricesMessage(coin));

@@ -101,6 +101,31 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
         return ListCoins;
     }
+
+    public Task UpdateCoinsList(Coin coin)
+    {
+        if (ListCoins == null) return Task.CompletedTask;
+
+        var coinToUpdate = ListCoins.Where(a => a.ApiId == coin.ApiId).SingleOrDefault();
+        if (coinToUpdate != null)
+        {
+            var index = -1;
+            for (var i = 0; i < ListCoins.Count; i++)
+            {
+                if (ListCoins[i].ApiId == coinToUpdate.ApiId)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            ListCoins[index] = coin;
+        }
+        return Task.CompletedTask;
+    }
+
+
+
+
     private List<Coin> SortedList(List<Coin> list, SortingOrder sortingOrder = SortingOrder.None, Func<Coin, object>? sortFunc = null)
     {
         if (sortingOrder != SortingOrder.None && sortFunc != null)
@@ -126,6 +151,11 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 .Where(x => x.Name.Length <= 12 || (x.Name.Length > 12 && x.Name.Substring(x.Name.Length - 12) != "_pre-listing"))
                 .OrderBy(x => x.Rank)
                 .ToListAsync();
+
+            foreach (var coin in coinList)
+            {
+                coin.EvaluatePriceLevels(coin.Price);
+            }
         }
         catch (Exception ex)
         {

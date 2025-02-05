@@ -32,4 +32,5 @@ public interface IPriceLevelService
     void UpdateHeatMap();
     void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
     Portfolio GetPortfolio();
+    Task UpdateCoinsList(Coin coin);
 }
