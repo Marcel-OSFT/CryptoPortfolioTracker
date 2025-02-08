@@ -61,16 +61,12 @@ public partial class PriceLevelsViewModel : BaseViewModel
     {
         CurrentPortfolio = _priceLevelService.GetPortfolio();
         PortfolioName = CurrentPortfolio.Name;
-
-        if (_priceLevelService.IsCoinsListEmpty())
-        {
-            await _priceLevelService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
-        }
+        await _priceLevelService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
     }
 
     public void Terminate()
     {
-        
+        _priceLevelService.ClearCoinsList();
     }
 
     [RelayCommand]

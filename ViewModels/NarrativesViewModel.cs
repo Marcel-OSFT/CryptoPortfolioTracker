@@ -55,12 +55,9 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     partial void OnIsPrivacyModeChanged(bool value)
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
-
         _preferencesService.SetAreValuesMasked(value);
-
         _narrativeService.ReloadValues();
         _assetService.ReloadValues();
-
     }
 
 

@@ -22,14 +22,6 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-//public class UpdatePricesMessage
-//{
-
-//    public UpdatePricesMessage()
-//    {
-
-//    }
-//}
 public class UpdatePricesMessage
 {
     public Coin Coin { get; }

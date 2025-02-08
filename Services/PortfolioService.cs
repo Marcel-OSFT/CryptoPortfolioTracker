@@ -753,8 +753,9 @@ namespace CryptoPortfolioTracker.Services
         {
             if (context == null) { return; };
 
-            context.Assets.RemoveRange(context.Assets);
+            context.Mutations.RemoveRange(context.Mutations);
             context.Transactions.RemoveRange(context.Transactions);
+            context.Assets.RemoveRange(context.Assets);
             foreach(var coin in context.Coins)
             {
                 coin.IsAsset = false;

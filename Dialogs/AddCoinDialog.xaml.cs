@@ -181,7 +181,8 @@ public partial class AddCoinDialog : ContentDialog
                 coin.PriceLevels.Add(level);
 
                 Narrative selectedNarrative = cbNarratives.SelectedItem as Narrative;
-                selectedNarrative.Coins.Add(coin);
+                //selectedNarrative.Coins.Add(coin);
+                coin.Narrative = selectedNarrative;
 
                 if (coin.ApiId != string.Empty && coin.Name != string.Empty && coin.Symbol != string.Empty)
                 {
@@ -203,6 +204,7 @@ public partial class AddCoinDialog : ContentDialog
         }
         finally { Current = null!; }
     }
+
     public async Task<CoinFullDataById> GetCoinDetails(string coinId)
     {
         IsPrimaryButtonEnabled = false;

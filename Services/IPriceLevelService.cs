@@ -33,4 +33,5 @@ public interface IPriceLevelService
     void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
     Portfolio GetPortfolio();
     Task UpdateCoinsList(Coin coin);
+    void ClearCoinsList();
 }

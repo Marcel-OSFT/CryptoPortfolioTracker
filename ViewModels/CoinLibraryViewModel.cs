@@ -77,11 +77,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         CurrentPortfolio = _libraryService.GetPortfolio();
         PortfolioName = CurrentPortfolio.Name;
 
-        if (_libraryService.IsCoinsListEmpty())
-        {
-            await _libraryService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
-
-        }
+        await _libraryService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
     }
 
     public void Terminate()
@@ -90,7 +86,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         searchListGecko = MkOsft.NullList<string>(searchListGecko);
         coinListGecko = MkOsft.NullList<CoinList>(coinListGecko);
 
-       // _libraryService.ClearCoinsList();
+       _libraryService.ClearCoinsList();
     }
 
     public async Task RetrieveAllCoinData()

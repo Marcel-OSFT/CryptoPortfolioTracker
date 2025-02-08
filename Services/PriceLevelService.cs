@@ -315,4 +315,9 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     {
         return _assetService.GetPortfolio();
     }
+
+    public void ClearCoinsList()
+    {
+        ListCoins?.Clear();
+    }
 }

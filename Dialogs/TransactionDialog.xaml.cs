@@ -33,7 +33,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     private readonly ITransactionService _transactionService;
     private readonly IPreferencesService _preferencesService;
     public Exception Exception;
-    private readonly DispatcherQueue dispatcherQueue;
+    //private readonly DispatcherQueue dispatcherQueue;
     private readonly ILocalizer loc = Localizer.Get();
 
     [ObservableProperty] private TransactionKind transactionType;
@@ -139,7 +139,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     public TransactionDialog(ITransactionService transactionService, IPreferencesService preferencesService, DialogAction _dialogAction, Transaction? transaction = null)
     {
         InitializeComponent();
-        dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+        //dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         dialogAction = _dialogAction;
         _transactionService = transactionService;
         _preferencesService = preferencesService;
@@ -176,36 +176,25 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         PrimaryButtonText = loc.GetLocalizedString("TransactionDialog_PrimaryButton");
         CloseButtonText = loc.GetLocalizedString("TransactionDialog_CloseButton");
     }
-    #endregion Constructors
-
-    #region Methods  
-    
     private async void GetMaxQtyAndPrice()
     {
-        //in case of a 'Deposit' the MaxQtyA doesn't need to be set....
-        //doesn't need to be set as wel for an EDIT transaction
         if (dialogAction == DialogAction.Add && TransactionType != TransactionKind.Deposit)
         {
-            (await _transactionService.GetMaxQtyAndPrice(CoinA, AccountFrom)).IfSucc(result =>
+            var result = await _transactionService.GetMaxQtyAndPrice(CoinA, AccountFrom);
+            result.IfSucc(values =>
             {
-                MaxQtyA = result[0];
-                if (TransactionType != TransactionKind.Transfer)
-                {
-                    ActualPriceA = PriceA = result[1];
-                }
-                else
-                {
-                    ActualPriceA = PriceA = result[2];
-                }
+                MaxQtyA = values[0];
+                ActualPriceA = PriceA = TransactionType != TransactionKind.Transfer ? values[1] : values[2];
             });
         }
         else
         {
             MaxQtyA = -1;
-            ActualPriceA = PriceA = (await _transactionService.GetPriceFromLibrary(CoinA))
-                .Match(Succ: price => price, Fail: err => 0);
+            var priceResult = await _transactionService.GetPriceFromLibrary(CoinA);
+            ActualPriceA = PriceA = priceResult.Match(price => price, _ => 0);
         }
     }
+
     private async Task<Transaction> WrapUpTransactionData()
     {
         var transactionToAdd = new Transaction();
@@ -213,21 +202,21 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
 
         Mutation mutationToAdd;
 
-        switch (TransactionType.ToString())
+        switch (TransactionType)
         {
-            case "Deposit":
+            case TransactionKind.Deposit:
                 //** IN portion
                 mutationToAdd = (await GetMutation(TransactionType, MutationDirection.In, CoinA, QtyA, PriceA, AccountFrom))
                     .Match(Succ: mutation => mutation, Fail: err => throw err);
                 newMutations.Add(mutationToAdd);
                 break;
-            case "Withdraw":
+            case TransactionKind.Withdraw:
                 //** OUT portion
                 mutationToAdd = (await GetMutation(TransactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
                     .Match(Succ: mutation => mutation, Fail: err => throw err);
                 newMutations.Add(mutationToAdd);
                 break;
-            case "Transfer":
+            case TransactionKind.Transfer:
                 //** OUT portion
                 mutationToAdd = (await GetMutation(TransactionType, MutationDirection.Out, CoinA, QtyA, PriceA, AccountFrom))
                     .Match(Succ: mutation => mutation, Fail: err => throw err);
@@ -245,10 +234,10 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
                     newMutations.Add(mutationToAdd);
                 }
                 break;
-            case "Convert":
-            case "Buy":
-            case "Sell":
-                //Do we have a Tx combined with TRansfer
+            case TransactionKind.Convert:
+            case TransactionKind.Buy:
+            case TransactionKind.Sell:
+                //Do we have a Tx combined with Transfer
                 if (AccountFrom == AccountTo) // Not combined with transfer
                 {
                     //** OUT portion
@@ -281,7 +270,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
                 break;
         }
         var _coinA = CoinA != string.Empty && CoinA.Contains(' ') ? CoinA.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
-        var _coinB = CoinB != string.Empty && CoinB.Contains(' ') ? CoinB.Split(" ", 2) : new string[2] {string.Empty, string.Empty };
+        var _coinB = CoinB != string.Empty && CoinB.Contains(' ') ? CoinB.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
         var _coinFee = FeeCoin != string.Empty && FeeCoin.Contains(' ') ? FeeCoin.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
 
         var transactionDetails = new TransactionDetails
@@ -314,41 +303,54 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         }
         return transactionToAdd;
     }
-    private async Task<Result<Mutation>> GetMutation(TransactionKind type, MutationDirection direction, string symbolName, double qty, double price, string account)
+    private async Task<Result<Mutation>> GetMutation(TransactionKind type, MutationDirection direction, string _symbolName, double qty, double price, string _account)
     {
-        var mutation = new Mutation();
         try
         {
-            // mutation.Asset.Coin.Symbol = symbol;
-            mutation.Asset.Coin = (await _transactionService.GetCoinBySymbol(symbolName))
-                .Match(Succ: coin => coin, Fail: err => throw new Exception(err.Message, err));
-            //mutation.Asset.Account.Name = account;
-            mutation.Asset.Account = (await _transactionService.GetAccountByName(account))
-                .Match(Succ: account => account, Fail: err => throw new Exception(err.Message, err));
-            mutation.Asset.Id = (await _transactionService.GetAssetIdByCoinAndAccount(mutation.Asset.Coin, mutation.Asset.Account))
-                                 .Match(Succ: account => account, Fail: err => throw new Exception(err.Message, err));
-            mutation.Qty = qty;
-            mutation.Price = price;
-            //mutation.Transaction = transaction;
-            mutation.Direction = direction;
-            mutation.Type = type;
+            var coinResult = await _transactionService.GetCoinBySymbol(_symbolName);
+            var coin = coinResult.IfFail(err => throw err);
+
+            var accountResult = await _transactionService.GetAccountByName(_account);
+            var account = accountResult.IfFail(err => throw err);
+            
+            var assetIdResult = await _transactionService.GetAssetIdByCoinAndAccount(coin, account);
+            var assetId = assetIdResult.IfFail(err => throw err);
+
+            var mutation = new Mutation
+            {
+                Asset = new Asset
+                {
+                    Coin = coin,
+                    Account = account,
+                    Id = assetId
+                },
+                Qty = qty,
+                Price = price,
+                Direction = direction,
+                Type = type
+            };
+
+            return mutation;
         }
         catch (Exception ex)
         {
             return new Result<Mutation>(ex);
         }
-        return mutation;
     }
+
     private void CalculatePriceB()
     {
         if (QtyB == 0)
         {
             PriceB = 0;
-            return;
         }
-        PriceB = QtyA * PriceA / QtyB;
+        else
+        {
+            PriceB = QtyA * PriceA / QtyB;
+        }
         OnPropertyChanged(nameof(QtyA));
     }
+
     private void ConfigureDialogFields(string explainType, string assetTextA, string assetTextB, string accountTextA, string accountTextB, bool isAccountLinkEnabled = true)
     {
         TransactionText = explainType;
@@ -358,60 +360,22 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         HeaderCoinB = assetTextB;
 
         IsAccountsLinked = isAccountLinkEnabled;
-        if (isAccountLinkEnabled)
-        {
-            TBoxPriceA.Visibility = Visibility.Visible;
-        }
-        else //transfer
-        {
-            TBoxPriceA.Visibility = Visibility.Collapsed;
-        }
+        TBoxPriceA.Visibility = isAccountLinkEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-        if (HeaderCoinB == "")
-        {
-            CoinSelectionB.Visibility = Visibility.Collapsed;
-            QtyAndPriceSelectionB.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            CoinSelectionB.Visibility = Visibility.Visible;
-            QtyAndPriceSelectionB.Visibility = Visibility.Visible;
-        }
-        if (HeaderAccountTo == "")
-        {
-            AccountSelectionB.Visibility = Visibility.Collapsed;
-            LinkAccountsButton.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            AccountSelectionB.Visibility = Visibility.Visible;
-            if (isAccountLinkEnabled)
-            {
-                LinkAccountsButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                LinkAccountsButton.Visibility = Visibility.Collapsed;
-            }
-        }
-        if (HeaderCoinB == "" && HeaderAccountTo == "")
-        {
-            FeeSelection.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            FeeSelection.Visibility = Visibility.Visible;
-        }
+        CoinSelectionB.Visibility = string.IsNullOrEmpty(HeaderCoinB) ? Visibility.Collapsed : Visibility.Visible;
+        QtyAndPriceSelectionB.Visibility = string.IsNullOrEmpty(HeaderCoinB) ? Visibility.Collapsed : Visibility.Visible;
 
+        AccountSelectionB.Visibility = string.IsNullOrEmpty(HeaderAccountTo) ? Visibility.Collapsed : Visibility.Visible;
+        LinkAccountsButton.Visibility = isAccountLinkEnabled && !string.IsNullOrEmpty(HeaderAccountTo) ? Visibility.Visible : Visibility.Collapsed;
+
+        FeeSelection.Visibility = string.IsNullOrEmpty(HeaderCoinB) && string.IsNullOrEmpty(HeaderAccountTo) ? Visibility.Collapsed : Visibility.Visible;
     }
+
     private static string ClearStringIfNoMatchWithList(string _string, List<string> list)
     {
-        if (!list.Contains(_string))
-        {
-            _string = "";
-        }
-        return _string;
+        return list.Contains(_string) ? _string : string.Empty;
     }
+
     private void InitializeAllFields()
     {
         DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
@@ -419,61 +383,24 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         CoinA = CoinB = AccountFrom = AccountTo = Note = FeeCoin = "";
         HeaderCoinA = HeaderCoinB = HeaderAccountFrom = HeaderAccountTo = "";
 
-        QtyA = 0;
-        MaxQtyA = 0;
-        PriceA = 0;
-        PriceB = 0;
-        QtyB = 0;
-        FeeQty = 0;
+        QtyA = MaxQtyA = PriceA = PriceB = QtyB = FeeQty = 0;
 
-        if (ListCoinA != null)
-        {
-            ListCoinA.Clear();
-        }
-        else
-        {
-            ListCoinA = new List<string>();
-        }
+        ListCoinA = ListCoinA ?? new List<string>();
+        ListCoinA.Clear();
 
-        if (ListCoinB != null)
-        {
-            ListCoinB.Clear();
-        }
-        else
-        {
-            ListCoinB = new List<string>();
-        }
+        ListCoinB = ListCoinB ?? new List<string>();
+        ListCoinB.Clear();
 
-        if (ListAccountFrom != null)
-        {
-            ListAccountFrom.Clear();
-        }
-        else
-        {
-            ListAccountFrom = new List<string>();
-        }
+        ListAccountFrom = ListAccountFrom ?? new List<string>();
+        ListAccountFrom.Clear();
 
-        if (ListAccountTo != null)
-        {
-            ListAccountTo.Clear();
-        }
-        else
-        {
-            ListAccountTo = new List<string>();
-        }
+        ListAccountTo = ListAccountTo ?? new List<string>();
+        ListAccountTo.Clear();
 
-        if (ListFeeCoin != null)
-        {
-            ListFeeCoin.Clear();
-        }
-        else
-        {
-            ListFeeCoin = new List<string>();
-        }
+        ListFeeCoin = ListFeeCoin ?? new List<string>();
+        ListFeeCoin.Clear();
     }
-    #endregion Methods
 
-    #region TransactionType Events
     private async void TransactionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         InitializeAllFields();
@@ -485,83 +412,72 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
 
         if (sender is RadioButtons rb)
         {
-            switch (rb.SelectedIndex)
+            var selectedIndex = rb.SelectedIndex;
+            var coinSymbolsTask = selectedIndex switch
             {
-                case 0: //Deposit                       
+                0 => _transactionService.GetCoinSymbolsFromLibrary(),
+                1 => _transactionService.GetCoinSymbolsFromAssets(),
+                2 => _transactionService.GetCoinSymbolsFromAssets(),
+                3 => _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromAssets(),
+                4 => _transactionService.GetUsdtUsdcSymbolsFromAssets(),
+                5 => _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromAssets(),
+                _ => Task.FromResult(new Result<List<string>>(new List<string>()))
+            };
+
+            var coinSymbolsResult = await coinSymbolsTask;
+            ListCoinA = coinSymbolsResult.Match(Succ: list => list, Fail: err => new List<string>());
+
+            switch (selectedIndex)
+            {
+                case 0: // Deposit
                     Validator.RegisterEntriesToValidate(new int[4] { 0, 2, 4, 5 });
                     TransactionType = TransactionKind.Deposit;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Deposit_Explainer"), CoinHeader, "", AccountToHeader, "");
-                    ListCoinA = (await _transactionService
-                        .GetCoinSymbolsFromLibrary())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
                     ListCoinB = new List<string>();
                     ListAccountTo = new List<string>();
                     ListFeeCoin = new List<string>();
                     break;
-                case 1: //Withdraw
+                case 1: // Withdraw
                     Validator.RegisterEntriesToValidate(new int[4] { 0, 2, 4, 5 });
-                    TransactionType =  TransactionKind.Withdraw;
+                    TransactionType = TransactionKind.Withdraw;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Withdraw_Explainer"), CoinHeader, "", AccountFromHeader, "");
-                    ListCoinA = (await _transactionService
-                        .GetCoinSymbolsFromAssets())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
                     ListCoinB = new List<string>();
                     ListAccountTo = new List<string>();
                     ListFeeCoin = new List<string>();
                     break;
-                case 2: //Transfer
+                case 2: // Transfer
                     Validator.RegisterEntriesToValidate(new int[6] { 0, 2, 3, 4, 8, 9 });
-                    TransactionType =  TransactionKind.Transfer;
+                    TransactionType = TransactionKind.Transfer;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Transfer_Explainer"), CoinHeader, "", AccountFromHeader, AccountToHeader, false);
-                    ListCoinA = (await _transactionService
-                        .GetCoinSymbolsFromAssets())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
                     ListFeeCoin = ListCoinA;
                     ListCoinB = new List<string>();
                     break;
-                case 3: //Convert
+                case 3: // Convert
                     Validator.RegisterEntriesToValidate(new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-                    TransactionType =  TransactionKind.Convert;
+                    TransactionType = TransactionKind.Convert;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Convert_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
-                    ListCoinA = (await _transactionService
-                        .GetCoinSymbolsExcludingUsdtUsdcFromAssets())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
-                    ListCoinB = (await _transactionService
-                        .GetCoinSymbolsExcludingUsdtUsdcFromLibrary())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
+                    ListCoinB = (await _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
                     ListAccountTo = new List<string>();
                     ListFeeCoin = ListCoinA;
                     break;
-                case 4: //Buy
-                    Validator.RegisterEntriesToValidate(new int[10] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-                    TransactionType =  TransactionKind.Buy;
-                    ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Buy_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
-                    ListCoinA = (await _transactionService
-                        .GetUsdtUsdcSymbolsFromAssets())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
-                    ListCoinB = (await _transactionService
-                        .GetCoinSymbolsExcludingUsdtUsdcFromLibrary())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
-                    ListAccountTo = new List<string>();
-                    ListFeeCoin = (await _transactionService
-                        .GetCoinSymbolsFromAssets())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
-                    break;
-                case 5: //Sell
+                case 4: // Buy
                     Validator.RegisterEntriesToValidate(new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-                    TransactionType =  TransactionKind.Sell;
+                    TransactionType = TransactionKind.Buy;
+                    ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Buy_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
+                    ListCoinB = (await _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
+                    ListAccountTo = new List<string>();
+                    ListFeeCoin = (await _transactionService.GetCoinSymbolsFromAssets()).Match(Succ: list => list, Fail: err => new List<string>());
+                    break;
+                case 5: // Sell
+                    Validator.RegisterEntriesToValidate(new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+                    TransactionType = TransactionKind.Sell;
                     ConfigureDialogFields(loc.GetLocalizedString("TransactionDialog_Sell_Explainer"), CoinFromHeader, CoinToHeader, AccountFromHeader, AccountToHeader);
-                    ListCoinA = (await _transactionService
-                        .GetCoinSymbolsExcludingUsdtUsdcFromAssets())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
-                    ListCoinB = (await _transactionService
-                        .GetUsdtUsdcSymbolsFromLibrary())
-                        .Match(Succ: list => list, Fail: err => new List<string>());
-                    ListAccountTo = new List<string>(); 
+                    ListCoinB = (await _transactionService.GetUsdtUsdcSymbolsFromLibrary()).Match(Succ: list => list, Fail: err => new List<string>());
+                    ListAccountTo = new List<string>();
                     ListFeeCoin = ListCoinA;
-
                     break;
             }
+
             if (dialogAction == DialogAction.Add)
             {
                 TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
@@ -572,9 +488,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
                 CoinB = transactionToEdit.Details.CoinBSymbol + " " + transactionToEdit.Details.CoinBName;
                 AccountFrom = transactionToEdit.Details.AccountFrom;
                 AccountTo = transactionToEdit.Details.AccountTo;
-                // above items are set and can not change while editing
-                // so they don't need to be validated and need to be unregistered
-                Validator.UnRegisterEntriesToValidate(new int[4] { 0, 1, 2, 3});
+                Validator.UnRegisterEntriesToValidate(new int[4] { 0, 1, 2, 3 });
 
                 QtyA = transactionToEdit.Details.QtyA;
                 QtyB = transactionToEdit.Details.QtyB;
@@ -589,121 +503,172 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
                 ASBoxCoinB.IsEnabled = false;
                 ASBoxAccountFrom.IsEnabled = false;
                 ASBoxAccountTo.IsEnabled = false;
-                IsEarnings = PriceA == 0 ;
+                IsEarnings = PriceA == 0;
             }
         }
     }
-    #endregion TransactionType Events
 
-    #region ASBoxCoinA Events       
     private async void ASBoxCoinA_TextChanged(object sender, EventArgs e)
     {
-        var asBox = (sender as AutoSuggestBoxWithValidation);
-        var entry = (asBox is not null) ? asBox.MyText : string.Empty; 
-        
-        if (ListCoinA.Contains(entry))
+        if (sender is AutoSuggestBoxWithValidation asBox)
         {
-           await SetEntriesBasedOnCoinA(entry);
-        }
-        else
-        {
-            if (ListAccountFrom is not null)
+            var entry = asBox.MyText ?? string.Empty;
+
+            if (ListCoinA.Contains(entry))
             {
-                ListAccountFrom = new List<string>();
+                await SetEntriesBasedOnCoinA(entry);
+            }
+            else
+            {
+                ListAccountFrom?.Clear();
                 AccountFrom = string.Empty;
             }
         }
     }
+
     private async void ASBoxCoinA_SuggestionChosen(object sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
         var selectedText = args.SelectedItem.ToString() ?? string.Empty;
         await SetEntriesBasedOnCoinA(selectedText);
     }
+    //private async Task SetEntriesBasedOnCoinA(string coin)
+    //{
+    //    switch (TransactionType.ToString())
+    //    {
+    //        case "Deposit": //->ASBoxCoinA
+    //            ListAccountFrom = (await _transactionService
+    //                .GetAccountNames())
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
+    //            break;
+    //        case "Withdraw": //->ASBoxCoinA
+    //            ListAccountFrom = (await _transactionService
+    //                .GetAccountNames(coin))
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
+    //            break;
+    //        case "Transfer": //->ASBoxCoinA
+    //            ListAccountFrom = (await _transactionService
+    //                .GetAccountNames(coin))
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
+    //            break;
+    //        case "Convert": //->ASBoxCoinA
+    //            ListAccountFrom = (await _transactionService
+    //                .GetAccountNames(coin))
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
+    //            ListCoinB = (await _transactionService
+    //                .GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(coin))
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            ListAccountTo = (await _transactionService
+    //                .GetAccountNames())
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB);
+    //            break;
+    //        case "Buy": //->ASBoxCoinA
+    //            ListAccountFrom = (await _transactionService
+    //                .GetAccountNames(coin))
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
+    //            ListAccountTo = (await _transactionService
+    //                .GetAccountNames())
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            ListCoinB.Clear();
+    //            var list = (await _transactionService
+    //                .GetCoinSymbolsExcludingUsdtUsdcFromLibrary())
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            ListCoinB.AddRange(list);
+    //            CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB); //string.empty
+
+    //            break;
+    //        case "Sell": //->ASBoxCoinA
+    //            ListAccountFrom = (await _transactionService
+    //                .GetAccountNames(coin))
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
+    //            CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB);
+    //            ListAccountTo = (await _transactionService
+    //                .GetAccountNames())
+    //                .Match(Succ: list => list, Fail: err => new List<string>());
+    //            break;
+    //    }
+    //}
     private async Task SetEntriesBasedOnCoinA(string coin)
     {
-        switch (TransactionType.ToString())
-        {
-            case "Deposit": //->ASBoxCoinA
-                ListAccountFrom = (await _transactionService
-                    .GetAccountNames())
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-                break;
-            case "Withdraw": //->ASBoxCoinA
-                ListAccountFrom = (await _transactionService
-                    .GetAccountNames(coin))
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-                break;
-            case "Transfer": //->ASBoxCoinA
-                ListAccountFrom = (await _transactionService
-                    .GetAccountNames(coin))
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-                break;
-            case "Convert": //->ASBoxCoinA
-                ListAccountFrom = (await _transactionService
-                    .GetAccountNames(coin))
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-                ListCoinB = (await _transactionService
-                    .GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(coin))
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                ListAccountTo = (await _transactionService
-                    .GetAccountNames())
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB);
-                break;
-            case "Buy": //->ASBoxCoinA
-                ListAccountFrom = (await _transactionService
-                    .GetAccountNames(coin))
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-                ListAccountTo = (await _transactionService
-                    .GetAccountNames())
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                ListCoinB.Clear();
-                var list = (await _transactionService
-                    .GetCoinSymbolsExcludingUsdtUsdcFromLibrary())
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                ListCoinB.AddRange(list);
-                CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB); //string.empty
+        List<string> accountNames;
+        List<string> coinSymbols;
 
+        switch (TransactionType)
+        {
+            case TransactionKind.Deposit:
+                accountNames = await GetAccountNames();
                 break;
-            case "Sell": //->ASBoxCoinA
-                ListAccountFrom = (await _transactionService
-                    .GetAccountNames(coin))
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
+            case TransactionKind.Withdraw:
+            case TransactionKind.Transfer:
+                accountNames = await GetAccountNames(coin);
+                break;
+            case TransactionKind.Convert:
+                accountNames = await GetAccountNames(coin);
+                coinSymbols = await GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(coin);
+                ListCoinB = coinSymbols;
+                ListAccountTo = await GetAccountNames();
                 CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB);
-                ListAccountTo = (await _transactionService
-                    .GetAccountNames())
-                    .Match(Succ: list => list, Fail: err => new List<string>());
+                break;
+            case TransactionKind.Buy:
+                accountNames = await GetAccountNames(coin);
+                ListAccountTo = await GetAccountNames();
+                coinSymbols = await GetCoinSymbolsExcludingUsdtUsdcFromLibrary();
+                ListCoinB = coinSymbols;
+                CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB);
+                break;
+            case TransactionKind.Sell:
+                accountNames = await GetAccountNames(coin);
+                ListAccountTo = await GetAccountNames();
+                CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB);
+                break;
+            default:
+                accountNames = new List<string>();
                 break;
         }
-    }
-    #endregion ASBoxCoinA Events
 
-    #region ASBoxAccountFrom Events
+        ListAccountFrom = accountNames;
+        AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
+    }
+
+    private async Task<List<string>> GetAccountNames(string coin = null)
+    {
+        return (await _transactionService.GetAccountNames(coin))
+            .Match(Succ: list => list, Fail: err => new List<string>());
+    }
+
+    private async Task<List<string>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string coin)
+    {
+        return (await _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(coin))
+            .Match(Succ: list => list, Fail: err => new List<string>());
+    }
+
+    private async Task<List<string>> GetCoinSymbolsExcludingUsdtUsdcFromLibrary()
+    {
+        return (await _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromLibrary())
+            .Match(Succ: list => list, Fail: err => new List<string>());
+    }
+
     private async void ASBoxAccountFrom_TextChanged(object sender, EventArgs e)
     {
-        var _list = new List<string>();
-
-        switch (TransactionType.ToString())
+        switch (TransactionType)
         {
-            case "Transfer": //->ASBoxAccountFrom
-                _list = ListAccountFrom;
+            case TransactionKind.Transfer:
                 if (AccountFrom == AccountTo)
                 {
                     AccountTo = "";
                 }
-                ListAccountTo = (await _transactionService
-                    .GetAccountNamesExcluding(AccountFrom))
+                ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom))
                     .Match(Succ: list => list, Fail: err => new List<string>());
                 break;
-            case "Convert":
-            case "Buy":
-            case "Sell":
+            case TransactionKind.Convert:
+            case TransactionKind.Buy:
+            case TransactionKind.Sell:
                 if (IsAccountsLinked && ListAccountFrom.Contains(AccountFrom))
                 {
                     AccountTo = AccountFrom;
@@ -711,58 +676,45 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
                 break;
         }
     }
+
     private async void ASBoxAccountFrom_SuggestionChosen(object sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
         AccountFrom = args.SelectedItem.ToString() ?? string.Empty;
         if (IsAccountsLinked)
         {
-            AccountTo = args.SelectedItem.ToString() ?? string.Empty;
+            AccountTo = AccountFrom;
         }
-        switch (TransactionType.ToString())
+
+        if (TransactionType == TransactionKind.Transfer)
         {
-            case "Transfer":
-                ListAccountTo = (await _transactionService
-                    .GetAccountNamesExcluding(AccountFrom))
-                    .Match(Succ: list => list, Fail: err => new List<string>());
-                AccountTo = AccountTo is not null 
-                    ? ClearStringIfNoMatchWithList(AccountTo, ListAccountTo) 
-                    : string.Empty;
-                break;
+            ListAccountTo = (await _transactionService.GetAccountNamesExcluding(AccountFrom))
+                .Match(Succ: list => list, Fail: err => new List<string>());
+            AccountTo = ClearStringIfNoMatchWithList(AccountTo, ListAccountTo);
         }
     }
     private void LinkAccountsButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         IsAccountsLinked = !IsAccountsLinked;
-        if (IsAccountsLinked)
-        {
-            AccountTo = AccountFrom;
-        }
-        else
-        {
-            AccountTo = string.Empty;
-        }
+        AccountTo = IsAccountsLinked ? AccountFrom : string.Empty;
     }
-    #endregion ASBoxAccountFrom Events
-
-    #region TBoxQtyA
+    
     private void QtyOrPrice_pressed(object sender, PointerRoutedEventArgs e)
     {
-        if (sender is RegExTextBox tbox) { tbox.SelectAll(); }
+        if (sender is RegExTextBox tbox)
+        {
+            tbox.SelectAll();
+        }
     }
-    #endregion TBoxQtyA
 
-    #region TBoxPriceA Events
     private void TBoxPriceA_TextChanged(object sender, EventArgs e)
     {
-        if (sender is RegExTextBox tbox && tbox.Text == string.Empty)
+        if (sender is RegExTextBox { Text: "" })
         {
             PriceA = ActualPriceA;
             OnPropertyChanged(nameof(PriceA));
         }
     }
-    #endregion TBoxPriceA Events
-
-    #region PrimaryButton events
+    
     public async void PrimaryButton_AcceptTransaction(ContentDialog sender, ContentDialogButtonClickEventArgs e)
     {
         try
@@ -776,20 +728,18 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
             Exception = ex;
         }
     }
-    #endregion PrimaryButton events
-
-    #region Dialog Events
+   
     private void CloseButton_Cancel(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         Validator.Stop();
     }
-    #endregion Dialog Events
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        var appTheme = _preferencesService.GetAppTheme();
+        if (sender.ActualTheme != appTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = appTheme;
         }
     }
 
@@ -807,12 +757,12 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     {
         if (sender is TextBox tbox)
         {
-            var ci = new CultureInfo(loc.GetCurrentLanguage());
-            ci.NumberFormat = _preferencesService.GetNumberFormat();    
-            var value = Convert.ToDouble(tbox.Text, ci);
-            if (MaxQtyA != -1 && value > MaxQtyA)
+            if (double.TryParse(tbox.Text, NumberStyles.Any, new CultureInfo(loc.GetCurrentLanguage()) { NumberFormat = _preferencesService.GetNumberFormat() }, out double value))
             {
-                tbox.Text = MaxQtyA.ToString(ci);
+                if (MaxQtyA != -1 && value > MaxQtyA)
+                {
+                    tbox.Text = MaxQtyA.ToString(CultureInfo.CurrentCulture);
+                }
             }
         }
     }
