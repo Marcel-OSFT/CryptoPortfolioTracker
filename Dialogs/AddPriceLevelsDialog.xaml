@@ -13,10 +13,9 @@
     PrimaryButtonClick="Button_Click_Accept">
 
     <ContentDialog.Resources>
+        <converters:FormatValueToString x:Key="FormatValueToString"/>
         <!-- Overriding ContentDialogMaxWidth value -->
         <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-
     </ContentDialog.Resources>
 
     <Grid  Margin="0,0,0,0" Width="400">
@@ -40,7 +39,7 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="True"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding TpValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
+                Text="{Binding TpValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource FormatValueToString}, ConverterParameter='{}{0:0.########}'}"
                 Style="{StaticResource MK_TextBoxStyle}"
                 Width="160" Margin="10,0,5,5" HorizontalAlignment="Left"/>
             <TextBox l:Uids.Uid="PriceLevelsDialog_Note" x:Name="txtTPNote" 
@@ -62,7 +61,7 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="True"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding BuyValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
+                Text="{Binding BuyValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource FormatValueToString}, ConverterParameter='{}{0:0.########}'}"
                 Style="{StaticResource MK_TextBoxStyle}"
                 Width="160" Margin="10,0,5,5" HorizontalAlignment="Left"/>
             <TextBox l:Uids.Uid="PriceLevelsDialog_Note" x:Name="txtBuyNote" 
@@ -84,7 +83,7 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="True"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding StopValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
+                Text="{Binding StopValue, ElementName=Root, Mode=TwoWay, Converter={StaticResource FormatValueToString}, ConverterParameter='{}{0:0.########}'}"
                 Style="{StaticResource MK_TextBoxStyle}"
                 Width="160" Margin="10,0,5,5" HorizontalAlignment="Left"/>
             <TextBox l:Uids.Uid="PriceLevelsDialog_Note" x:Name="txtStopNote" 

@@ -10,11 +10,18 @@ namespace CryptoPortfolioTracker.Services;
 public interface IAssetService
 {
     bool IsHidingZeroBalances { get; set; }
-    public Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccountFromContext(Coin coin, Account account);
+    double TotalAssetsValue { get; set; }
+    double TotalAssetsCostBase { get; set; }
+    double TotalAssetsPnLPerc { get; set; }
+    double InFlow { get; set; }
+    double OutFlow { get; set; }
+    long VisibleAssetsCount { get; set; }
+
+    //public Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccountFromContext(Coin coin, Account account);
     Task UpdatePricesAssetTotals(Coin coin);
     Task CalculateAssetsTotalValues();
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList();
-    Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account);
+    //Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account);
     void SortList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
     Task UpdateListAssetTotals(Transaction transaction);
     double GetTotalsAssetsValue();
@@ -28,7 +35,7 @@ public interface IAssetService
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
     void ReloadValues();
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
-    Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative);
+    //Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative);
     Portfolio? GetPortfolio();
    // Task UpdatePricesAssetTotals();
 }

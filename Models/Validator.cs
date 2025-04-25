@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -84,16 +85,15 @@ public partial class Validator : BaseModel, INotifyPropertyChanged
     }
     private Task ValidateEntriesAsync()
     {
-        
         var ct = tokenSource2.Token;
-
         var task = Task.Run(async () =>
         {
+            
             // Were we already canceled?
-            ct.ThrowIfCancellationRequested();
+            // ct.ThrowIfCancellationRequested();
 
-            var moreToDo = true;
-            while (moreToDo)
+            // var moreToDo = true;
+            while (!ct.IsCancellationRequested)
             {
                 var invalidEntries = 0;
                
@@ -111,15 +111,21 @@ public partial class Validator : BaseModel, INotifyPropertyChanged
                 await Task.Delay(500);
                 // Poll on this property if you have to do
                 // other cleanup before throwing.
-                if (ct.IsCancellationRequested)
-                {
-                    // Clean up here, then...
-                    ct.ThrowIfCancellationRequested();
-                }
+                //if (ct.IsCancellationRequested)
+                //{
+                //    // Clean up here, then...
+                //    // ct.ThrowIfCancellationRequested();
+                //    //moreToDo = false;
+                //    Debug.WriteLine("Validator: Task was canceled - 1a");
+                //}
             }
+            //Debug.WriteLine("Validator: Task was canceled - 1b");
+           
+            
         }, tokenSource2.Token); // Pass same token to Task.Run.
         return task;
     }
+
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? name = null)
     {

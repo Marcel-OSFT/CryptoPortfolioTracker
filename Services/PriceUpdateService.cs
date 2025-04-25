@@ -152,9 +152,11 @@ public class PriceUpdateService : IPriceUpdateService
         {
             var context = _portfolioService.UpdateContext;
             var coinIdsTemp = await context.Coins
-                .Include(x => x.PriceLevels)
+                //.AsNoTracking()
                 .Where(x => x.Name.Length <= 12 || (x.Name.Length > 12 && x.Name.Substring(x.Name.Length - 12) != "_pre-listing"))
-                .Select(c => c.ApiId).ToListAsync();
+                .Include(x => x.PriceLevels)
+                .Select(c => c.ApiId)
+                .ToListAsync();
 
             isReleased = App.UpdateSemaphore.Release() == 0;
 
@@ -326,11 +328,13 @@ public class PriceUpdateService : IPriceUpdateService
     private async Task<Result<Coin>> UpdatePriceCoin(CoinMarkets coinData)
     {
         await App.UpdateSemaphore.WaitAsync();
+        await Task.Delay(100);
+        var context = _portfolioService.UpdateContext;
+        context.ChangeTracker?.Clear();
+
         try
         {
-            await Task.Delay(100);
-            var context = _portfolioService.UpdateContext;
-
+           
             var coin = await context.Coins
                 .Include(x => x.PriceLevels)
                 .SingleAsync(c => c.ApiId.ToLower() == coinData.Id.ToLower());
@@ -354,22 +358,24 @@ public class PriceUpdateService : IPriceUpdateService
 
                 await context.SaveChangesAsync();
 
-                // Reflect the changes in the Coin entity also in the PortfolioContext
+                //// Reflect the changes in the Coin entity also in the PortfolioContext
                 var entity = await _portfolioService.Context.Coins.FindAsync(coin.Id);
                 if (entity != null)
                 {
                     await _portfolioService.Context.Entry(entity).ReloadAsync();
                 }
 
-
                 MainPage.Current.DispatcherQueue.TryEnqueue(() =>
                 {
                     _messenger.Send(new UpdatePricesMessage(coin));
                 });
-
-                
             }
             return coin;
+        }
+        catch (JsonException jsonEx)
+        {
+            Logger.Error(jsonEx, "JSON processing error for coin: {0}", coinData.Name);
+            return new Result<Coin>(jsonEx);
         }
         catch (Exception ex)
         {
@@ -378,6 +384,7 @@ public class PriceUpdateService : IPriceUpdateService
         }
         finally
         {
+            context.ChangeTracker?.Clear();
             App.UpdateSemaphore.Release();
         }
     }

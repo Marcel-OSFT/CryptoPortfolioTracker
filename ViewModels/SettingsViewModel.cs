@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
@@ -19,6 +20,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static SettingsViewModel Current;
+   
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     private readonly IPreferencesService _preferencesService;
@@ -78,6 +80,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
         Current = this;
         _preferencesService = preferencesService;
+       
         InitializeFields();
     }
 

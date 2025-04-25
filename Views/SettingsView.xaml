@@ -16,8 +16,6 @@
     mc:Ignorable="d">
     
     <Page.Resources>
-        <converters:ThemeToBoolConverter x:Key="ThemeToBoolConverter"/>
-
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
             <Setter Property="Padding" Value="0"/>
@@ -40,7 +38,7 @@
             <RelativePanel>
                 <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
                 <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding PortfolioName}"  Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
+                <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text=""  Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
                 <TextBlock l:Uids.Uid="Settings_Title" x:Name="txtSettings" Margin="36,10,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="txtPortfolio" />
             </RelativePanel>
             <Border Grid.Row="2"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,0,0">
@@ -94,7 +92,7 @@
                                 <ct:SettingsCard l:Uids.Uid="Settings_AppTheme"
                                     HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
                                     IsEnabled="True">
-                                    <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{Binding AppTheme, Mode=TwoWay, Converter={StaticResource ThemeToBoolConverter}}" />
+                                    <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{x:Bind converters:Functions.DarkThemeToTrue(_viewModel.AppTheme), Mode=OneWay}" />
                                 </ct:SettingsCard>
                         
                                 <ct:SettingsCard l:Uids.Uid="Settings_KeepScrollBarsExpanded"

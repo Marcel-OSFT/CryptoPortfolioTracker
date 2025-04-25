@@ -49,6 +49,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
     private SortingOrder initialSortingOrder;
     private Func<Coin, object> initialSortFunc;
     public List<Narrative> narratives;
+    [ObservableProperty] public partial long CoinsCount { get; set; }
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
@@ -78,6 +79,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         PortfolioName = CurrentPortfolio.Name;
 
         await _libraryService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
+        CoinsCount = _libraryService.ListCoins.Count;
     }
 
     public void Terminate()
@@ -218,6 +220,9 @@ public partial class CoinLibraryViewModel : BaseViewModel
     [RelayCommand(CanExecute = nameof(CanMergePreListingCoin))]
     public async Task MergePreListingCoin(Coin preListingCoin)
     {
+        (await _narrativeService.GetNarratives())
+            .IfSucc(list => narratives = list);
+
         Logger.Information("Showing Coin Dialog");
         
         var loc = Localizer.Get();

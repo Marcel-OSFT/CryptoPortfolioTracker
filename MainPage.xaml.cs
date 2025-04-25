@@ -175,7 +175,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
                             var result = await dialog.ShowAsync();
                             break;
                         }
-
                 }
 
                 navigationView.SelectedItem = lastSelectedNavigationItem;
@@ -185,12 +184,12 @@ public partial class MainPage : Page, INotifyPropertyChanged
 
     private void LoadView(Type pageType)
     {
-        if (pageType.Name == "CoinLibraryView" )
+        if (pageType.Name == "CoinLibraryView" || pageType.Name == "PriceLevelsView")
         {
             _graphUpdateService.Pause();
             _priceUpdateService.Pause();
         }
-        else if (lastPageType is not null && lastPageType.Name == "CoinLibraryView")
+        else if (lastPageType is not null && (lastPageType.Name == "CoinLibraryView" || lastPageType.Name == "PriceLevelsView"))
         {
             if (_graphUpdateService != null)
             {

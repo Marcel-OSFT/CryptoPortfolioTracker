@@ -21,17 +21,24 @@ namespace CryptoPortfolioTracker.Models
         [ObservableProperty] private double value;
         [ObservableProperty] private string note;
         [ObservableProperty] private PriceLevelStatus status;
-        [ObservableProperty] [NotMapped] private double distanceToValuePerc;
+       // [ObservableProperty] [NotMapped] public double distanceToValuePerc;
+        [NotMapped] public double DistanceToValuePerc { get; set; }
 
         //******* Navigation Properties
         [ObservableProperty] private Coin coin;
 
         partial void OnValueChanged(double oldValue, double newValue)
         {
-            //var dist = Math.Abs(100 * (coin.Price - newValue) / Value);
             var dist = (100 * (Coin.Price - newValue) / Value);
-            DistanceToValuePerc = dist; 
+            DistanceToValuePerc = dist;
         }
-    }
 
+        //partial void OnCoinChanged(Coin newCoin)
+        //{
+        //    if (newCoin == null || newCoin.ApiId == string.Empty) return;
+        //    var dist = (100 * (newCoin.Price - Value) / Value);
+        //    DistanceToValuePerc = dist;
+        //}
+
+    }
 }

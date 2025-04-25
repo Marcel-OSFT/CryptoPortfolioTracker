@@ -19,13 +19,6 @@
 
 
     <UserControl.Resources>
-        <converters:LevelColourConverter x:Key="myLevelColourConverter"/>
-        <converters:AvgPriceConverter x:Key="myAvgPriceConverter"/>
-        <converters:OnTargetConverter x:Key="myOnTargetConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:FontSizeToImageSizeConverter x:Key="FontSizeToImageSizeConverter"/>
-
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="Padding" Value="0"/>
@@ -202,8 +195,7 @@
                                         <Border Grid.Column="0" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                             <Image Stretch="UniformToFill" Margin="10,5,0,5">
                                                 <Image.Source>
-                                                    <BitmapImage DecodePixelHeight="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy, Converter={StaticResource FontSizeToImageSizeConverter}}"
-                                                    UriSource="{Binding ImageUri}"/>
+                                                    <BitmapImage DecodePixelHeight="32" UriSource="{Binding ImageUri}"/>
                                                 </Image.Source>
                                             </Image>
                                         </Border>
@@ -217,59 +209,43 @@
                                         <Border Grid.Column="2" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
                                                 <TextBlock Name="txtPrice" 
-                                                        Text="{Binding Price, 
-                                                            Converter={StaticResource StringFormatConverter}, 
-                                                            ConverterParameter='{}$ {0:0.########}'}" 
+                                                        Text="{x:Bind converters:Functions.FormatValueToString(Price,'$ {0:0.########}'), Mode=OneWay}" 
                                                         FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True"
-                                                               Foreground="{Binding PriceLevels, Converter={StaticResource myOnTargetConverter}}"/>
+                                                               Foreground="{x:Bind converters:Functions.PriceLevelTypeToColor(PriceLevels), Mode=OneWay}"/>
                                                 <TextBlock Name="txtAvgCost" 
-                                                        Text="{Binding Assets, 
-                                                            Converter={StaticResource myAvgPriceConverter}, 
-                                                            ConverterParameter='{}$ {0:0.########}'}" 
+                                                        Text="{x:Bind converters:Functions.GetAndFormatAssetAverageCost(Assets,'$ {0:0.########}'), Mode=OneWay}" 
                                                         FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtPrice" />
                                             </RelativePanel>
                                         </Border>
                                         <Border Grid.Column="3" Margin="0,2,0,2"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
-                                                <TextBlock Name="txtTpLevel" 
-                                                   Text="{Binding PriceLevels[0].Value, 
-                                                        Converter={StaticResource StringFormatConverter}, 
-                                                        ConverterParameter='{}$ {0:0.########}'}" 
-                                                           Foreground="{Binding PriceLevels[0].DistanceToValuePerc, Converter={StaticResource myLevelColourConverter}, ConverterParameter='TpLevel'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                                                <TextBlock Name="txtTpLevel"
+                                                   Text="{x:Bind converters:Functions.FormatPriceLevelToString(PriceLevels,0,'$ {0:0.########}'), Mode=OneWay}" 
+                                                           Foreground="{x:Bind converters:Functions.PriceLevelToColor(PriceLevels,0,'TpLevel'), Mode=OneWay}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
                                                 <TextBlock Name="txtDistanceToTpLevel" 
-                                                    Text="{Binding PriceLevels[0].DistanceToValuePerc, 
-                                                        Converter={StaticResource StringFormatConverter}, 
-                                                        ConverterParameter='{}{0:0.00} %'}" 
-                                                           Foreground="{Binding PriceLevels[0].DistanceToValuePerc, Converter={StaticResource myLevelColourConverter}, ConverterParameter='TpDist'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtTpLevel" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                                                    Text="{x:Bind converters:Functions.FormatDistanceToLevelToString(PriceLevels,0,'{0:0.00} %'), Mode=OneWay}" 
+                                                           Foreground="{x:Bind converters:Functions.PriceLevelToColor(PriceLevels,0, 'TpDist'), Mode=OneWay}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtTpLevel" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
                                                 </RelativePanel>
                                         </Border>
                                         <Border Grid.Column="4" Margin="0,2,0,2"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
                                                 <TextBlock Name="txtBuyLevel" 
-                                                   Text="{Binding PriceLevels[1].Value, 
-                                                        Converter={StaticResource StringFormatConverter}, 
-                                                        ConverterParameter='{}$ {0:0.########}'}"
-                                                           Foreground="{Binding PriceLevels[1].DistanceToValuePerc, Converter={StaticResource myLevelColourConverter}, ConverterParameter='BuyLevel'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                                                   Text="{x:Bind converters:Functions.FormatPriceLevelToString(PriceLevels,1,'$ {0:0.########}'), Mode=OneWay}"
+                                                           Foreground="{x:Bind converters:Functions.PriceLevelToColor(PriceLevels,1,'BuyLevel'), Mode=OneWay}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
                                                 <TextBlock Name="txtDistanceToBuyLevel" 
-                                                    Text="{Binding PriceLevels[1].DistanceToValuePerc, 
-                                                        Converter={StaticResource StringFormatConverter}, 
-                                                        ConverterParameter='{}{0:0.00} %'}" 
-                                                           Foreground="{Binding PriceLevels[1].DistanceToValuePerc, Converter={StaticResource myLevelColourConverter}, ConverterParameter='BuyDist'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtBuyLevel" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                                                    Text="{x:Bind converters:Functions.FormatDistanceToLevelToString(PriceLevels,1,'{0:0.00} %'), Mode=OneWay}" 
+                                                           Foreground="{x:Bind converters:Functions.PriceLevelToColor(PriceLevels,1,'BuyDist'), Mode=OneWay}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtBuyLevel" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>
 
                                         <Border Grid.Column="5" Margin="0,2,0,2"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
                                                 <TextBlock Name="txtStopLevel" 
-                                                     Text="{Binding PriceLevels[2].Value, 
-                                                          Converter={StaticResource StringFormatConverter}, 
-                                                            ConverterParameter='{}$ {0:0.########}'}" 
-                                                             Foreground="{Binding PriceLevels[2].DistanceToValuePerc, Converter={StaticResource myLevelColourConverter}, ConverterParameter='StopLevel'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                                                     Text="{x:Bind converters:Functions.FormatPriceLevelToString(PriceLevels,2,'$ {0:0.########}'), Mode=OneWay}"
+                                                             Foreground="{x:Bind converters:Functions.PriceLevelToColor(PriceLevels,2,'StopLevel'), Mode=OneWay}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
                                                 <TextBlock Name="txtDistanceToStopLevel" 
-                                                      Text="{Binding PriceLevels[2].DistanceToValuePerc, 
-                                                          Converter={StaticResource StringFormatConverter}, 
-                                                          ConverterParameter='{}{0:0.00} %'}" 
-                                                             Foreground="{Binding PriceLevels[2].DistanceToValuePerc, Converter={StaticResource myLevelColourConverter}, ConverterParameter='StopDist'}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtStopLevel" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
+                                                      Text="{x:Bind converters:Functions.FormatDistanceToLevelToString(PriceLevels,2,'{0:0.00} %'), Mode=OneWay}"
+                                                             Foreground="{x:Bind converters:Functions.PriceLevelToColor(PriceLevels,2,'StopDist'), Mode=OneWay}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtStopLevel" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>
 

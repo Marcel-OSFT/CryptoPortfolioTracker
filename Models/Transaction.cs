@@ -44,7 +44,9 @@ public partial class Transaction : BaseModel
         }
         try
         {
-            Details.TransactionType = Mutations.ElementAt(0).Type;
+            var transactionType = Mutations.ElementAt(0).Type;
+
+            //Details.TransactionType = Mutations.ElementAt(0).Type;
             var muts = new List<Mutation>(Mutations
                 .OrderByDescending(d => d.Direction)
                 .OrderBy(t => t.Type));
@@ -54,66 +56,73 @@ public partial class Transaction : BaseModel
                 {
                     case TransactionKind.Deposit:
                         {
-                            Details.CoinASymbol = mutation.Asset.Coin.Symbol;
-                            Details.CoinAName = mutation.Asset.Coin.Name;
-                            Details.ImageUriA = mutation.Asset.Coin.ImageUri;
-                            Details.QtyA = mutation.Qty;
-                            Details.PriceA = mutation.Price;
-                            Details.ValueA = Details.QtyA * Details.PriceA;
-                            Details.AccountFrom = mutation.Asset.Account.Name;
-                            Details.TransactionDirection = MutationDirection.In;
+                            Details = new TransactionDetailsBuilder(Details)
+                                .OfTransactionType(transactionType)
+                                .FromCoinSymbol(mutation.Asset.Coin.Symbol)
+                                .FromCoinName(mutation.Asset.Coin.Name)
+                                .FromImage(mutation.Asset.Coin.ImageUri)
+                                .FromQty(mutation.Qty)
+                                .FromPrice(mutation.Price)
+                                .FromValue(mutation.Qty * mutation.Price)
+                                .FromAccount(mutation.Asset.Account.Name)
+                                .Direction(MutationDirection.In)
+                                .Build();
                             break;
                         }
                     case TransactionKind.Withdraw:
                         {
-                            Details.CoinASymbol = mutation.Asset.Coin.Symbol;
-                            Details.CoinAName = mutation.Asset.Coin.Name;
-                            Details.ImageUriA = mutation.Asset.Coin.ImageUri;
-                            Details.QtyA = mutation.Qty;
-                            Details.PriceA = mutation.Price;
-                            Details.ValueA = Details.QtyA * Details.PriceA;
-                            Details.AccountFrom = mutation.Asset.Account.Name;
-                            Details.TransactionDirection = MutationDirection.Out;
+                            Details = new TransactionDetailsBuilder(Details)
+                                .OfTransactionType(transactionType)
+                                .FromCoinSymbol(mutation.Asset.Coin.Symbol)
+                                .FromCoinName(mutation.Asset.Coin.Name)
+                                .FromImage(mutation.Asset.Coin.ImageUri)
+                                .FromQty(mutation.Qty)
+                                .FromPrice(mutation.Price)
+                                .FromValue(mutation.Qty * mutation.Price)
+                                .FromAccount(mutation.Asset.Account.Name)
+                                .Direction(MutationDirection.Out)
+                                .Build();
                             break;
                         }
                     case TransactionKind.Transfer:
                         {
-                            if (Details.TransactionType == TransactionKind.Transfer) // solely a transfer transaction
+                            if (transactionType == TransactionKind.Transfer) // solely a transfer transaction
                             {
                                 if (mutation.Direction == MutationDirection.Out)
                                 {
-                                    Details.CoinASymbol = mutation.Asset.Coin.Symbol;
-                                    Details.CoinAName = mutation.Asset.Coin.Name;
-                                    Details.ImageUriA = mutation.Asset.Coin.ImageUri;
-                                    Details.QtyA = mutation.Qty;
-                                    Details.PriceA = mutation.Price;
-                                    Details.ValueA = Details.QtyA * Details.PriceA;
-                                    Details.AccountFrom = mutation.Asset.Account.Name;
+                                    Details = new TransactionDetailsBuilder(Details)
+                                        .OfTransactionType(transactionType)
+                                        .FromCoinSymbol(mutation.Asset.Coin.Symbol)
+                                        .FromCoinName(mutation.Asset.Coin.Name)
+                                        .FromImage(mutation.Asset.Coin.ImageUri)
+                                        .FromQty(mutation.Qty)
+                                        .FromPrice(mutation.Price)
+                                        .FromValue(mutation.Qty * mutation.Price)
+                                        .FromAccount(mutation.Asset.Account.Name)
+                                        .Direction(RequestedAsset != null && RequestedAsset.Account.Name == mutation.Asset.Account.Name ? MutationDirection.Out : MutationDirection.In)
+                                        .Build();
                                 }
-                                else
+                                else //IN
                                 {
-                                    Details.AccountTo = mutation.Asset.Account.Name;
-                                }
-                                //*** set transactionDirection voor Icon in View
-                                Details.AccountTo = mutation.Asset.Account.Name;
-                                if (RequestedAsset != null && RequestedAsset.Account.Name == Details.AccountTo)
-                                {
-                                    Details.TransactionDirection = MutationDirection.In;
-                                }
-                                else
-                                {
-                                    Details.TransactionDirection = MutationDirection.Out;
+                                    //Everything is already set except the ToAccount
+                                    Details = new TransactionDetailsBuilder(Details)
+                                        .ToAccount(mutation.Asset.Account.Name)
+                                        .Build();
                                 }
                             }
-                            else // transaction combined with transfer 
+                            else if (mutation.Direction == MutationDirection.In) // transaction (sell, buy, convert) combined with transfer 
                             {
-                                Details.CoinBSymbol = mutation.Asset.Coin.Symbol;
-                                Details.CoinBName = mutation.Asset.Coin.Name;
-                                Details.ImageUriB = mutation.Asset.Coin.ImageUri;
-                                Details.QtyB = mutation.Qty;
-                                Details.PriceB = mutation.Price;
-                                Details.ValueB = Details.QtyB * Details.PriceB;
-                                Details.AccountTo = mutation.Asset.Account.Name;
+                                //both 'passes' (IN and OUT) have same paramaters, so to prevent a second pass only do this on the OUT
+                                Details = new TransactionDetailsBuilder(Details)
+                                        .OfTransactionType(transactionType)
+                                        .ToCoinSymbol(mutation.Asset.Coin.Symbol)
+                                        .ToCoinName(mutation.Asset.Coin.Name)
+                                        .ToImage(mutation.Asset.Coin.ImageUri)
+                                        .ToQty(mutation.Qty)
+                                        .ToPrice(mutation.Price)
+                                        .ToValue(mutation.Qty * mutation.Price)
+                                        .ToAccount(mutation.Asset.Account.Name)
+                                        .Build();
                             }
                             break;
                         }
@@ -123,41 +132,44 @@ public partial class Transaction : BaseModel
                         {
                             if (mutation.Direction == MutationDirection.In)
                             {
-                                Details.CoinBSymbol = mutation.Asset.Coin.Symbol;
-                                Details.CoinBName = mutation.Asset.Coin.Name;
-                                Details.ImageUriB = mutation.Asset.Coin.ImageUri;
-                                Details.QtyB = mutation.Qty;
-                                Details.PriceB = mutation.Price;
-                                Details.ValueB = Details.QtyB * Details.PriceB;
-                                Details.AccountTo = mutation.Asset.Account.Name;
-
-                                if (RequestedAsset != null && (RequestedAsset.Coin.Symbol == Details.CoinBSymbol && RequestedAsset.Coin.Name == Details.CoinBName))
-                                {
-                                    Details.TransactionDirection = MutationDirection.In;
-                                }
-                                else
-                                {
-                                    Details.TransactionDirection = MutationDirection.Out;
-                                }
+                                Details = new TransactionDetailsBuilder(Details)
+                                        .OfTransactionType(transactionType)
+                                        .ToCoinSymbol(mutation.Asset.Coin.Symbol)
+                                        .ToCoinName(mutation.Asset.Coin.Name)
+                                        .ToImage(mutation.Asset.Coin.ImageUri)
+                                        .ToQty(mutation.Qty)
+                                        .ToPrice(mutation.Price)
+                                        .ToValue(mutation.Qty * mutation.Price)
+                                        .ToAccount(mutation.Asset.Account.Name)
+                                        .Direction((RequestedAsset != null && (RequestedAsset.Coin.Symbol == mutation.Asset.Coin.Symbol && RequestedAsset.Coin.Name == mutation.Asset.Coin.Name)) 
+                                            ? MutationDirection.In 
+                                            : MutationDirection.Out)
+                                        .Build();
                             }
                             else
                             {
-                                Details.CoinASymbol = mutation.Asset.Coin.Symbol;
-                                Details.CoinAName = mutation.Asset.Coin.Name;
-                                Details.ImageUriA = mutation.Asset.Coin.ImageUri;
-                                Details.QtyA = mutation.Qty;
-                                Details.PriceA = mutation.Price;
-                                Details.ValueA = Details.QtyA * Details.PriceA;
-                                Details.AccountFrom = mutation.Asset.Account.Name;
+                                Details = new TransactionDetailsBuilder(Details)
+                                        .OfTransactionType(transactionType)
+                                        .FromCoinSymbol(mutation.Asset.Coin.Symbol)
+                                        .FromCoinName(mutation.Asset.Coin.Name)
+                                        .FromImage(mutation.Asset.Coin.ImageUri)
+                                        .FromQty(mutation.Qty)
+                                        .FromPrice(mutation.Price)
+                                        .FromValue(mutation.Qty * mutation.Price)
+                                        .FromAccount(mutation.Asset.Account.Name)
+                                        .Build();
                             }
                             break;
                         }
                     case TransactionKind.Fee:
                         {
-                            Details.FeeCoinSymbol = mutation.Asset.Coin.Symbol;
-                            Details.FeeCoinName = mutation.Asset.Coin.Name;
-                            Details.ImageUriFee = mutation.Asset.Coin.ImageUri;
-                            Details.FeeQty = mutation.Qty;
+                            Details = new TransactionDetailsBuilder(Details)
+                                        .OfTransactionType(transactionType)
+                                        .FeeCoinSymbol(mutation.Asset.Coin.Symbol)
+                                        .FeeCoinName(mutation.Asset.Coin.Name)
+                                        .FeeImage(mutation.Asset.Coin.ImageUri)
+                                        .FeeQty(mutation.Qty)
+                                        .Build();
                             break;
                         }
                     default: break;

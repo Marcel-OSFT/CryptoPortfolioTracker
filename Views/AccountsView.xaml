@@ -9,17 +9,13 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:controls="using:CryptoPortfolioTracker.Controls"
+    xmlns:controls="using:CryptoPortfolioTracker.Controls" 
+    d:DataContext="{d:DesignInstance Type=viewmodels:AccountsViewModel}"
     Loading="View_Loading"
     Unloaded="View_Unloaded"
      mc:Ignorable="d">
     
     <Page.Resources>
-        <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
-        <converters:RowDefConverterParameters x:Key="ParamsRow0" Text="100|1*" XamlRoot="{x:Bind AccountsContent.XamlRoot}" />
-        <converters:RowDefConverterParameters x:Key="ParamsRow1" Text="1*|0" XamlRoot="{x:Bind AccountsContent.XamlRoot}" />
-
-
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
             <Setter Property="Padding" Value="0"/>
@@ -45,19 +41,19 @@
                     Command="{Binding TogglePrivacyModeCommand}" RelativePanel.RightOf="txtAccounts" RelativePanel.AlignBottomWith="txtAccounts" 
                     ToolTipService.ToolTip="Toggle privacy" >
                     <FontIcon x:Name="Icon" Glyph="{Binding GlyphPrivacy}" FontSize="15" FontWeight="Normal" Width="20" Foreground="Black"/>
-
                 </helpers:CustomBtn>
             </RelativePanel>
             <TextBlock l:Uids.Uid="Accounts_Explainer" Grid.Row="1" VerticalAlignment="Bottom" Style="{StaticResource ExplainerTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"/>
             <Border Grid.Row="2" VerticalAlignment="Stretch" Margin="10,0,0,0">
                 <Grid x:Name="AccountsContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow0}}"/>
-                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow1}}"/>
+                        <RowDefinition Height="{x:Bind converters:Functions.BoolToRowDef(_viewModel.IsExtendedView,'100','1*',AccountsContent.XamlRoot), Mode=OneWay}"/>
+                        <RowDefinition Height="{x:Bind converters:Functions.BoolToRowDef(_viewModel.IsExtendedView,'1*','0',AccountsContent.XamlRoot), Mode=OneWay}"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <controls:AccountsListViewControl x:Name="MyAccountsListViewControl" x:FieldModifier="public" Grid.Row="0" />
-                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Grid.Row="1" Margin="0,-8,0,0" />
+                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Grid.Row="1" Margin="0,-8,0,0" 
+                                                    IsShowingNetInvestment="False" IsAssetsExtendedView="False"/>
                     <Button l:Uids.Uid="Accounts_AddAccount" 
                             Grid.Row="2" 
                             VerticalAlignment="Bottom" 

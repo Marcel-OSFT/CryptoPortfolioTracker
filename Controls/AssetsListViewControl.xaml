@@ -10,25 +10,16 @@
     xmlns:models="using:CryptoPortfolioTracker.Models"    
     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"    
     xmlns:helpers="using:CryptoPortfolioTracker.Helpers"    
-   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"    
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:ui="using:CommunityToolkit.WinUI"
     x:Name="Root"
     xmlns:l="using:WinUI3Localizer"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
+     d:DataContext="{d:DesignInstance Type=viewmodels:AssetsViewModel}"
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <converters:BoolToScrollModeConverter x:Key="BoolToScrollModeConverter"/>
-        <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
-        <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:BoolToCommandConverter x:Key="BoolToCommandConverter"/>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ValueFormatConverter x:Key="ValueFormatConverter"/>
-        <converters:FontSizeToImageSizeConverter x:Key="FontSizeToImageSizeConverter"/>
-        <converters:FormatUriConverter x:Key="FormatUriConverter"/>
-
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="MinHeight" Value="10"/>
             <Setter Property="Padding" Value="0"/>
@@ -36,9 +27,7 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
-
     </UserControl.Resources>
-
    
     <Grid Name="ColumnHeadersAndListView" Margin="15,0,5,0" Padding="10,8,0,0" x:FieldModifier="public" >
         <Grid.RowDefinitions>
@@ -62,7 +51,7 @@
                 x:Name="NameHeader"
                 
                 l:Uids.Uid="AssetsLV_Name" 
-                IsEnabled="{Binding IsAssetsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}" 
                 Margin="0,0,0,5"
                 FontSize="12"
                 FontStyle="Italic"
@@ -98,7 +87,7 @@
             <local:ColumnHeaderButton 
                 x:Name="Change24HrHeader"
                 l:Uids.Uid="AssetsLV_24Hour" 
-                IsEnabled="{Binding IsAssetsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}"
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -112,7 +101,7 @@
             <local:ColumnHeaderButton
                 x:Name="Change1MonthHeader"
                 l:Uids.Uid="AssetsLV_1Month" 
-                IsEnabled="{Binding IsAssetsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -139,7 +128,7 @@
             <local:ColumnHeaderButton
                 x:Name="MarketValueHeader"
                 l:Uids.Uid="AssetsLV_MarketValue" 
-                IsEnabled="{Binding IsAssetsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}"
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -166,7 +155,7 @@
             <local:ColumnHeaderButton
                 x:Name="CostBaseHeader"
                 l:Uids.Uid="AssetsLV_CostBase" 
-                IsEnabled="{Binding IsAssetsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -186,10 +175,10 @@
                 VerticalAlignment="Bottom"
                 HorizontalTextAlignment="Right"
                 />
-            <local:ColumnHeaderButton x:Name="BtnNetInvestment"
-                Visibility="{Binding IsHidingNetInvestment, Converter={StaticResource BoolToVisibilityConverter}}"
+            <local:ColumnHeaderButton x:Name="BtnNetInvestment" x:FieldModifier="public"
+                Visibility="{x:Bind converters:Functions.TrueToVisible(IsShowingNetInvestment), Mode=OneWay}"
                 l:Uids.Uid="AssetsLV_NetInvestment" 
-                IsEnabled="{Binding IsAssetsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}"
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -207,7 +196,7 @@
             <local:ColumnHeaderButton
                 x:Name="PnlHeader"
                 l:Uids.Uid="AssetsLV_ProfitLoss" 
-                IsEnabled="{Binding IsAssetsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -221,7 +210,7 @@
             <local:ColumnHeaderButton 
                 x:Name="PnlPercHeader"
                 l:Uids.Uid="AssetsLV_ProfitLossPerc" 
-                IsEnabled="{Binding IsAssetsExtendedView , Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -244,7 +233,7 @@
                   toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                   ui:ListViewExtensions.Command="{Binding AssetItemClickedCommand}" SizeChanged="AssetsListView_SizeChanged" ItemClick="View_ItemClick"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                  ScrollViewer.VerticalScrollMode="{Binding IsAssetsExtendedView , Converter={StaticResource BoolToScrollModeConverter}}"
+                  ScrollViewer.VerticalScrollMode="{x:Bind converters:Functions.TrueToScrollModeDisabled(IsAssetsExtendedView), Mode=OneWay}"
                         CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" 
                   SelectionChanged="AssetsListView_SelectionChanged" Loading="AssetsListView_Loading">
 
@@ -252,7 +241,7 @@
             <DataTemplate x:DataType="models:AssetTotals" >
                 <UserControl>
                     <Grid >
-                        <SwipeControl x:Name="AssetsListHoverSwipeContainer" Visibility="{Binding IsHidden, Converter={StaticResource BoolToVisibilityConverter}}" >
+                        <SwipeControl x:Name="AssetsListHoverSwipeContainer" Visibility="{x:Bind converters:Functions.FalseToVisible(IsHidden), Mode=OneWay}" >
                             <Grid >
                                 <Grid Name="theGrid"  x:FieldModifier="public"  VerticalAlignment="Center" Margin="2,3,0,5" HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
@@ -272,8 +261,8 @@
                                     <Border Grid.Column="0" Margin="0,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                         <Image Stretch="UniformToFill" Margin="10,5,0,5">
                                             <Image.Source>
-                                                <BitmapImage DecodePixelHeight="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy, Converter={StaticResource FontSizeToImageSizeConverter}}"
-                                                    UriSource="{Binding Coin.ImageUri, Converter={StaticResource FormatUriConverter}}"/>
+                                                    <BitmapImage DecodePixelHeight="32"
+                                                    UriSource="{x:Bind converters:Functions.FormatUri(Coin.ImageUri), Mode=OneWay}"/>
                                             </Image.Source>
                                         </Image>
                                     </Border>
@@ -287,9 +276,7 @@
 
                                     <Border Grid.Column="2"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                        <RelativePanel HorizontalAlignment="Right">
-                                            <TextBlock Name="txtQty"  Text="{Binding Qty, 
-                                                Converter={StaticResource ValueFormatConverter}, 
-                                                ConverterParameter='{}{0:0.########}'}" 
+                                                <TextBlock Name="txtQty"  Text="{x:Bind converters:Functions.FormatValueToString(Qty,'{0:0.########}'), Mode=OneWay}" 
                                                 FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" />
                                             <TextBlock Name="txtSymbol" Text="{Binding Coin.Symbol}" RelativePanel.RightOf="txtQty" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" Margin="5,0,0,0"/>
                                         </RelativePanel>
@@ -297,67 +284,49 @@
                                     <Border Grid.Column="3"  Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtChange24Hr" 
-                                                Text="{Binding Coin.Change24Hr, 
-                                                    Converter={StaticResource StringFormatConverter}, 
-                                                    ConverterParameter='{}{0:0.00} %'}" 
+                                                Text="{x:Bind converters:Functions.FormatValueToString(Coin.Change24Hr,'{0:0.00} %'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"
-                                                Foreground="{Binding Coin.Change24Hr, Converter={StaticResource myColourConverter}}"/>
+                                                Foreground="{x:Bind converters:Functions.DoubleToColour(Coin.Change24Hr,''), Mode=OneWay}"/>
                                             <TextBlock Name="txtChange30D" 
-                                                Text="{Binding Coin.Change1Month, 
-                                                    Converter={StaticResource StringFormatConverter}, 
-                                                    ConverterParameter='{}{0:0.00} %'}" 
+                                                Text="{x:Bind converters:Functions.FormatValueToString(Coin.Change1Month,'{0:0.00} %'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange24Hr" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"
-                                                Foreground="{Binding Coin.Change1Month, Converter={StaticResource myColourConverter}}"/>
+                                                Foreground="{x:Bind converters:Functions.DoubleToColour(Coin.Change1Month,''), Mode=OneWay}"/>
                                         </RelativePanel>
                                     </Border>
                                     <Border Grid.Column="4"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtMarketValue" 
-                                                Text="{Binding MarketValue, 
-                                                    Converter={StaticResource ValueFormatConverter}, 
-                                                    ConverterParameter='{}$ {0:N0}'}" 
+                                                Text="{x:Bind converters:Functions.FormatValueToString(MarketValue,'$ {0:N0}'), Mode=OneWay}" 
                                                 FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtPrice" 
-                                                Text="{Binding Coin.Price, 
-                                                    Converter={StaticResource StringFormatConverter}, 
-                                                    ConverterParameter='{}$ {0:0.########}'}" 
+                                                Text="{x:Bind converters:Functions.FormatValueToString(Coin.Price,'$ {0:0.########}'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketValue" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
                                         </RelativePanel>
                                     </Border>
                                     <Border Grid.Column="5"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                         <RelativePanel HorizontalAlignment="Right" >
                                             <TextBlock Name="txtCostBase"  
-                                                Text="{Binding CostBase, 
-                                                    Converter={StaticResource ValueFormatConverter}, 
-                                                    ConverterParameter='{}$ {0:N0}'}" 
+                                                Text="{x:Bind converters:Functions.FormatValueToString(CostBase,'$ {0:N0}'), Mode=OneWay}" 
                                                 FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtAverageCostPrice" 
-                                                Text="{Binding AverageCostPrice, 
-                                                    Converter={StaticResource StringFormatConverter}, 
-                                                    ConverterParameter='{}$ {0:0.########}'}" 
+                                                Text="{x:Bind converters:Functions.FormatValueToString(AverageCostPrice,'$ {0:0.########}'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtCostBase" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
                                             <TextBlock Name="txtNetInvestment" 
-                                                Text="{Binding NetInvestment, 
-                                                    Converter={StaticResource ValueFormatConverter}, 
-                                                    ConverterParameter='{}$ {0:N0}'}"
-                                                Foreground="{Binding NetInvestment, Converter={StaticResource myColourConverter}, ConverterParameter='NetInvestment'}"
-                                                Visibility="{Binding DataContext.DataContext.IsHidingNetInvestment, ElementName=proxy, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                Text="{x:Bind converters:Functions.FormatValueToString(NetInvestment,'$ {0:N0}'), Mode=OneWay}"
+                                                Foreground="{x:Bind converters:Functions.DoubleToColour(NetInvestment,'NetInvestment'), Mode=OneWay}"
+                                                Visibility="{x:Bind BtnNetInvestment.Visibility, Mode=OneWay}"
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtAverageCostPrice" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
                                         </RelativePanel>
                                     </Border>
                                     <Border Grid.Column="6"  Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"  >
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtProfitLoss" 
-                                                Text="{Binding ProfitLoss, 
-                                                    Converter={StaticResource ValueFormatConverter}, 
-                                                    ConverterParameter='{}$ {0:N0}'}"  
+                                                Text="{x:Bind converters:Functions.FormatValueToString(ProfitLoss,'$ {0:N0}'), Mode=OneWay}"  
                                                 FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"  RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtProfitLossPerc" 
-                                                Text="{Binding ProfitLossPerc, 
-                                                    Converter={StaticResource StringFormatConverter}, 
-                                                    ConverterParameter='{}{0:0.00} %'}" 
+                                                Text="{x:Bind converters:Functions.FormatValueToString(ProfitLossPerc,'{0:0.00} %'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtProfitLoss" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"
-                                                Foreground="{Binding ProfitLossPerc, Converter={StaticResource myColourConverter}}"/>
+                                                Foreground="{x:Bind converters:Functions.DoubleToColour(ProfitLossPerc,''), Mode=OneWay}"/>
                                         </RelativePanel>
                                     </Border>
                                 </Grid>

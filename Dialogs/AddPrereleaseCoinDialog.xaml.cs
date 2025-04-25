@@ -41,18 +41,16 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
 
     private void Button_Click_AcceptCoin(ContentDialog sender, ContentDialogButtonClickEventArgs e)
     {
-        var coin = new Coin
-        {
-            Name = CoinName.Text + "_pre-listing",
-            Symbol = CoinSymbol.Text.ToUpper(),
-            ApiId = CoinName.Text + CoinSymbol.Text,
-            About = CoinAbout.Text,
-            Price = Convert.ToDouble(CoinPrice.Text),
-            ImageUri = App.AppPath + "\\Assets\\QuestionMarkBlue.png",
-            Rank = 999999
-        };
-
-        newCoin = coin;
+        newCoin = CoinBuilder.Create()
+            .WithName(CoinName.Text + "_pre-listing")
+            .WithSymbol(CoinSymbol.Text.ToUpper())
+            .WithApiId(CoinName.Text + CoinSymbol.Text)
+            .WithAbout(CoinAbout.Text)
+            .CurrentPriceAt(Convert.ToDouble(CoinPrice.Text))
+            .WithImage(App.AppPath + "\\Assets\\QuestionMarkBlue.png")
+            .MarketCapRankAt(999999)
+            .OfNarrative(_viewModel._narrativeService.GetDefaultNarrative())
+            .Build();
     }
 
     private void CoinName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)

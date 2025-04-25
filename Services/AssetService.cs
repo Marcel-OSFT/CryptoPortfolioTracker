@@ -25,13 +25,22 @@ public partial class AssetService : ObservableObject, IAssetService
     private Func<AssetTotals, object> currentSortFunc;
 
     [ObservableProperty] private static ObservableCollection<AssetTotals>? listAssetTotals;
-    [ObservableProperty] private double totalAssetsValue;
-    [ObservableProperty] private double totalAssetsCostBase;
-    [ObservableProperty] private double totalAssetsPnLPerc;
-    [ObservableProperty] private double inFlow;
-    [ObservableProperty] private double outFlow;
-    [ObservableProperty] public long visibleAssetsCount;
-    [ObservableProperty] public bool isHidingZeroBalances;
+    //[ObservableProperty] public partial double TotalAssetsValue { get; set; }
+    //[ObservableProperty] public partial double TotalAssetsCostBase { get; set; }
+    //[ObservableProperty] public partial double TotalAssetsPnLPerc { get; set; }
+    //[ObservableProperty] public partial double InFlow { get; set; }
+    //[ObservableProperty] public partial double OutFlow { get; set; }
+    //[ObservableProperty] public partial long VisibleAssetsCount { get; set; }
+    [ObservableProperty] public partial bool IsHidingZeroBalances { get; set;}
+
+    public double TotalAssetsValue { get; set; }
+    public double TotalAssetsCostBase { get; set; }
+    public double TotalAssetsPnLPerc { get; set; }
+    public double InFlow { get; set; }
+    public double OutFlow { get; set; }
+    public long VisibleAssetsCount { get; set; }
+
+
 
     partial void OnIsHidingZeroBalancesChanged(bool value)
     {
@@ -101,22 +110,22 @@ public partial class AssetService : ObservableObject, IAssetService
             err => new());
         return ListAssetTotals;
     }
-    public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account)
-    {
-        var getResult = await GetAssetsByAccountFromContext(account.Id);
-        ListAssetTotals = getResult.Match(
-           list => SortedList(list),
-           err => new());
-        return ListAssetTotals;
-    }
-    public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative)
-    {
-        var getResult = await GetAssetsByNarrativeFromContext(narrative.Id);
-        ListAssetTotals = getResult.Match(
-            list => SortedList(list),
-            err => new());
-        return ListAssetTotals;
-    }
+    //public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account)
+    //{
+    //    var getResult = await GetAssetsByAccountFromContext(account.Id);
+    //    ListAssetTotals = getResult.Match(
+    //       list => SortedList(list),
+    //       err => new());
+    //    return ListAssetTotals;
+    //}
+    //public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative)
+    //{
+    //    var getResult = await GetAssetsByNarrativeFromContext(narrative.Id);
+    //    ListAssetTotals = getResult.Match(
+    //        list => SortedList(list),
+    //        err => new());
+    //    return ListAssetTotals;
+    //}
 
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
     {
@@ -206,25 +215,34 @@ public partial class AssetService : ObservableObject, IAssetService
     }
     public async Task CalculateAssetsTotalValues()
     {
-        if (ListAssetTotals != null && ListAssetTotals.Count > 0 && ListAssetTotals[0].Coin.Symbol != "EXCEPTIONAL ERROR")
+        try
         {
-            TotalAssetsValue = ListAssetTotals.Sum(x => x.MarketValue);
-            TotalAssetsCostBase = ListAssetTotals.Sum(x => x.CostBase);
-            TotalAssetsPnLPerc = 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase;
-            InFlow = await CalculateInFlow();
-            OutFlow = await CalculateOutFlow();
+            if (ListAssetTotals != null && ListAssetTotals.Count > 0 && ListAssetTotals[0].Coin.Symbol != "EXCEPTIONAL ERROR")
+            {
+                TotalAssetsValue = ListAssetTotals.Sum(x => x.MarketValue);
+                TotalAssetsCostBase = ListAssetTotals.Sum(x => x.CostBase);
+                TotalAssetsPnLPerc = 100 * (TotalAssetsValue - TotalAssetsCostBase) / TotalAssetsCostBase;
+                InFlow = await CalculateInFlow();
+                OutFlow = await CalculateOutFlow();
+            }
+            else
+            {
+                TotalAssetsValue = 0;
+                TotalAssetsCostBase = 0;
+                TotalAssetsPnLPerc = 0;
+                InFlow = 0;
+                OutFlow = 0;
+            }
+
         }
-        else
+        catch (Exception ex)  
         {
-            TotalAssetsValue = 0;
-            TotalAssetsCostBase = 0;
-            TotalAssetsPnLPerc = 0;
-            InFlow = 0;
-            OutFlow = 0;
+            Debug.WriteLine(ex);
         }
+
         
     }
-    public Task UpdatePricesAssetTotals(Coin coin)
+    public async Task UpdatePricesAssetTotals(Coin coin)
     {
         var asset = ListAssetTotals?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
         if (asset != null && ListAssetTotals != null)
@@ -243,7 +261,15 @@ public partial class AssetService : ObservableObject, IAssetService
             ListAssetTotals[index].Coin = coin;
             ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
         }
-        return Task.CompletedTask;
+
+        GetTotalsAssetsValue();
+        GetTotalsAssetsCostBase();
+        GetTotalsAssetsPnLPerc();
+
+        await GetInFlow();
+        await GetOutFlow();
+
+        return;
     }
 
     //public Task UpdatePricesAssetTotals()
@@ -284,16 +310,17 @@ public partial class AssetService : ObservableObject, IAssetService
         try
         {
             assetsTotals = await context.Assets
-            .Where(c => c.Account.Id == accountId)
-            .Include(x => x.Coin)
-            .GroupBy(asset => asset.Coin)
-            .Select(assetGroup => new AssetTotals
-            {
-                Qty = assetGroup.Sum(x => x.Qty),
-                CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
-                Coin = assetGroup.Key
-            })
-            .ToListAsync();
+                .AsNoTracking()
+                .Where(c => c.Account.Id == accountId)
+                .Include(x => x.Coin)
+                .GroupBy(asset => asset.Coin)
+                .Select(assetGroup => new AssetTotals
+                {
+                    Qty = assetGroup.Sum(x => x.Qty),
+                    CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
+                    Coin = assetGroup.Key
+                })
+                .ToListAsync();
 
             GetNetInvestmentsByAccount(assetsTotals, accountId);
 
@@ -327,6 +354,7 @@ public partial class AssetService : ObservableObject, IAssetService
         try
         {
             assetsTotals = await context.Narratives
+                .AsNoTracking()
                 .Where(n => n.Id == narrativeId)
                 .SelectMany(n => n.Coins)
                 .Where(c => c.IsAsset)
@@ -384,7 +412,10 @@ public partial class AssetService : ObservableObject, IAssetService
         
         //for updating purpose of the View, the affected elements of the data source List has to be updated
         //*** First retrieve the coin(s) (max 2) affected by the transaction
-        var coinsAffected = transaction.Mutations.Select(x => x.Asset.Coin).Distinct().ToList();
+        var coinsAffected = transaction.Mutations
+            .Select(x => x.Asset.Coin)
+            .Distinct()
+            .ToList();
 
         // Check if one isn't in the assetsList yet, if so then add it.
         foreach (var coin in coinsAffected)
@@ -426,22 +457,37 @@ public partial class AssetService : ObservableObject, IAssetService
     private async Task<Result<List<AssetTotals>>> GetAssetTotalsFromContext()
     {
         var context = _portfolioService.Context;
-        List<AssetTotals> assetsTotals;
+        List<AssetTotals> assetsTotals = null;
         try
         {
-            assetsTotals = await context.Assets
+            //assetsTotals = await context.Assets
+            //    .Include(x => x.Coin)
+            //    .ThenInclude(y => y.PriceLevels)
+            //    .GroupBy(asset => asset.Coin)
+            //    .Select(assetGroup => new AssetTotals
+            //    {
+            //        Qty = assetGroup.Sum(x => x.Qty),
+            //        CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
+            //        Coin = assetGroup.Key
+            //    })
+            //    .ToListAsync();
+
+            // GetPriceLevels(assetsTotals);
+
+            // Select clause after a GroupBy is seen as a 2nd projection causing in 
+            //the 'ThenInclude' to be ignored'/lost. For that reason the query is in 2 steps.
+            var groupedAssets = await context.Assets
                 .Include(x => x.Coin)
                 .ThenInclude(y => y.PriceLevels)
                 .GroupBy(asset => asset.Coin)
-                .Select(assetGroup => new AssetTotals
-                {
-                    Qty = assetGroup.Sum(x => x.Qty),
-                    CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
-                    Coin = assetGroup.Key
-                })
                 .ToListAsync();
 
-            GetPriceLevels(assetsTotals);
+            assetsTotals = groupedAssets.Select(groupedAsset => new AssetTotals
+            {
+                Coin = groupedAsset.Key,
+                Qty = groupedAsset.Sum(x => x.Qty),
+                CostBase = groupedAsset.Sum(x => x.AverageCostPrice * x.Qty)
+            }).ToList();
 
             GetNetInvestments(assetsTotals);
 
@@ -470,27 +516,26 @@ public partial class AssetService : ObservableObject, IAssetService
         return assetsTotals;
     }
 
-    private void GetPriceLevels(List<AssetTotals> assetsTotals)
-    {
-        var context = _portfolioService.Context;
-        foreach (var assetTotal in assetsTotals)
-        {
+    //private void GetPriceLevels(List<AssetTotals> assetsTotals)
+    //{
+    //    var context = _portfolioService.Context;
+    //    foreach (var assetTotal in assetsTotals)
+    //    {
 
-            assetTotal.Coin.PriceLevels = context.PriceLevels
-                .Where(x => x.Coin.Id == assetTotal.Coin.Id)
-                .ToList();
-
-        }
-    }
+    //        assetTotal.Coin.PriceLevels = context.PriceLevels
+    //            .AsNoTracking()
+    //            .Where(x => x.Coin.Id == assetTotal.Coin.Id)
+    //            .ToList();
+    //    }
+    //}
     private void GetPriceLevels(AssetTotals assetTotals)
     {
         var context = _portfolioService.Context;
 
         assetTotals.Coin.PriceLevels = context.PriceLevels
+            .AsNoTracking()
             .Where(x => x.Coin.Id == assetTotals.Coin.Id)
             .ToList();
-
-
     }
 
     private async Task<Double> CalculateInFlow()
@@ -500,8 +545,9 @@ public partial class AssetService : ObservableObject, IAssetService
         try
         {
             var deposits = await context.Mutations
-            .Where(m => m.Type == TransactionKind.Deposit)
-            .ToListAsync();
+                .AsNoTracking()
+                .Where(m => m.Type == TransactionKind.Deposit)
+                .ToListAsync();
 
             inFlow = deposits.Sum(s => s.Qty * s.Price);
         }
@@ -519,8 +565,9 @@ public partial class AssetService : ObservableObject, IAssetService
         try
         {
             var withdraws = await context.Mutations
-            .Where(m => m.Type == TransactionKind.Withdraw)
-            .ToListAsync();
+                .AsNoTracking()
+                .Where(m => m.Type == TransactionKind.Withdraw)
+                .ToListAsync();
             
             outFlow = withdraws.Sum(s => s.Qty * s.Price);
 
@@ -536,23 +583,24 @@ public partial class AssetService : ObservableObject, IAssetService
     {
         var context = _portfolioService.Context;
         if (coin == null) { return new AssetTotals(); }
-        AssetTotals assetTotal;
+        AssetTotals assetTotal = null;
         try
         {
-            assetTotal = await context.Assets
-           .Where(c => c.Coin.Id == coin.Id)
-           .Include(x => x.Coin)
-           .GroupBy(asset => asset.Coin)
-           .Select(assetGroup => new AssetTotals
-           {
-               Qty = assetGroup.Sum(x => x.Qty),
-               CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
-               Coin = assetGroup.Key
-           })
-           .SingleAsync();
+            var groupedAssets = await context.Assets
+                .Where(c => c.Coin.Id == coin.Id)
+               .Include(x => x.Coin)
+               .ThenInclude(y => y.PriceLevels)
+               .GroupBy(asset => asset.Coin)
+               .ToListAsync();
 
+            assetTotal = groupedAssets.Select(assetGroup => new AssetTotals
+            {
+                Qty = assetGroup.Sum(x => x.Qty),
+                CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
+                Coin = assetGroup.Key
+            }).Single();
 
-            GetPriceLevels(assetTotal);
+            //GetPriceLevels(assetTotal);
             GetNetInvestment(assetTotal);
         }
         catch (Exception ex)
@@ -561,46 +609,51 @@ public partial class AssetService : ObservableObject, IAssetService
         }
         return assetTotal;
     }
-    public async Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccountFromContext(Coin coin, Account account)
-    {
-        var context = _portfolioService.Context;
-        if (coin == null || account == null) { return new AssetTotals(); }
-        AssetTotals assetTotals;
-        try
-        {
-            assetTotals = await context.Assets
-           .Include(x => x.Coin)
-           .Include(y => y.Account)
-           .Where(c => c.Coin.Id == coin.Id && c.Account.Id == account.Id)
-           .GroupBy(asset => asset.Coin)
-           .Select(assetGroup => new AssetTotals
-           {
-               Qty = assetGroup.Sum(x => x.Qty),
-               CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
-               Coin = assetGroup.Key
-           })
-           .SingleAsync();
+    //public async Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccountFromContext(Coin coin, Account account)
+    //{
+    //    var context = _portfolioService.Context;
+    //    if (coin == null || account == null) { return new AssetTotals(); }
+    //    AssetTotals assetTotals;
+    //    try
+    //    {
+    //        var groupedAssets = await context.Assets
+    //           .AsNoTracking()
+    //           .Include(x => x.Coin)
+    //           .Include(y => y.Account)
+    //           .Where(c => c.Coin.Id == coin.Id && c.Account.Id == account.Id)
+    //           .GroupBy(asset => asset.Coin)
+    //           .ToListAsync();
 
-            GetPriceLevels(assetTotals);
-            GetNetInvestmentByAccount(assetTotals, account.Id);
+    //        assetTotals = groupedAssets.Select(assetGroup => new AssetTotals
+    //           {
+    //               Qty = assetGroup.Sum(x => x.Qty),
+    //               CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
+    //               Coin = assetGroup.Key
+    //           })
+    //           .Single();
 
-        }
-        catch (Exception ex)
-        {
-            return new Result<AssetTotals>(ex);
-        }
-        return assetTotals;
-    }
+    //       // GetPriceLevels(assetTotals);
+    //        GetNetInvestmentByAccount(assetTotals, account.Id);
+
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return new Result<AssetTotals>(ex);
+    //    }
+    //    return assetTotals;
+    //}
 
     private void GetNetInvestment(AssetTotals assetTotal)
     {
         var context = _portfolioService.Context;
         var sumBuy = context.Mutations
+            .AsNoTracking()
             .Where(m => m.Direction == MutationDirection.In
                 && m.Asset.Coin.Id == assetTotal.Coin.Id)
             .Sum(s => s.Qty * s.Price);
 
         var sumSell = context.Mutations
+            .AsNoTracking()
             .Where(m => m.Direction == MutationDirection.Out
                 && m.Asset.Coin.Id == assetTotal.Coin.Id)
             .Sum(s => s.Qty * s.Price);
@@ -609,24 +662,26 @@ public partial class AssetService : ObservableObject, IAssetService
 
     }
 
-    private void GetNetInvestmentByAccount(AssetTotals assetTotal, int accountId)
-    {
-        var context = _portfolioService.Context;
-        var sumBuy = context.Mutations
-            .Where(m => m.Direction == MutationDirection.In
-                && m.Asset.Coin.Id == assetTotal.Coin.Id
-                && m.Asset.Account.Id == accountId)
-            .Sum(s => s.Qty * s.Price);
+    //private void GetNetInvestmentByAccount(AssetTotals assetTotal, int accountId)
+    //{
+    //    var context = _portfolioService.Context;
+    //    var sumBuy = context.Mutations
+    //        .AsNoTracking()
+    //        .Where(m => m.Direction == MutationDirection.In
+    //            && m.Asset.Coin.Id == assetTotal.Coin.Id
+    //            && m.Asset.Account.Id == accountId)
+    //        .Sum(s => s.Qty * s.Price);
 
-        var sumSell = context.Mutations
-            .Where(m => m.Direction == MutationDirection.Out
-                && m.Asset.Coin.Id == assetTotal.Coin.Id
-                && m.Asset.Account.Id == accountId)
-            .Sum(s => s.Qty * s.Price);
+    //    var sumSell = context.Mutations
+    //        .AsNoTracking()
+    //        .Where(m => m.Direction == MutationDirection.Out
+    //            && m.Asset.Coin.Id == assetTotal.Coin.Id
+    //            && m.Asset.Account.Id == accountId)
+    //        .Sum(s => s.Qty * s.Price);
 
-        assetTotal.NetInvestment = sumBuy - sumSell;
+    //    assetTotal.NetInvestment = sumBuy - sumSell;
 
-    }
+    //}
 
     private void GetNetInvestments(List<AssetTotals> assetsTotals)
     {
@@ -634,11 +689,13 @@ public partial class AssetService : ObservableObject, IAssetService
         foreach (var assetTotal in assetsTotals)
         {
             var sumBuy = context.Mutations
+                .AsNoTracking()
                 .Where(m => m.Direction == MutationDirection.In
                     && m.Asset.Coin.Id == assetTotal.Coin.Id)
                 .Sum(s => s.Qty * s.Price);
 
             var sumSell = context.Mutations
+                .AsNoTracking()
                 .Where(m => m.Direction == MutationDirection.Out
                     && m.Asset.Coin.Id == assetTotal.Coin.Id)
                 .Sum(s => s.Qty * s.Price);
@@ -653,12 +710,14 @@ public partial class AssetService : ObservableObject, IAssetService
         foreach (var assetTotal in assetsTotals)
         {
             var sumBuy = context.Mutations
+                .AsNoTracking()
                 .Where(m => m.Direction == MutationDirection.In
                     && m.Asset.Coin.Id == assetTotal.Coin.Id
                     && m.Asset.Account.Id == accountId)
                 .Sum(s => s.Qty * s.Price);
 
             var sumSell = context.Mutations
+                .AsNoTracking()
                 .Where(m => m.Direction == MutationDirection.Out
                     && m.Asset.Coin.Id == assetTotal.Coin.Id
                     && m.Asset.Account.Id == accountId)

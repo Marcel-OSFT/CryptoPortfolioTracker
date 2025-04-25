@@ -21,6 +21,26 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
 {
     private int selectedItemIndex;
     private bool isSettingIndex;
+    //public readonly AssetsViewModel _viewModel;
+
+
+    public static readonly DependencyProperty IsShowingNetInvestmentProperty =
+            DependencyProperty.Register(nameof(IsShowingNetInvestment), typeof(bool), typeof(AssetsListViewControl), new PropertyMetadata(false));
+
+    public bool IsShowingNetInvestment
+    {
+        get => (bool)GetValue(IsShowingNetInvestmentProperty);
+        set => SetValue(IsShowingNetInvestmentProperty, value);
+    }
+
+    public static readonly DependencyProperty IsAssetsExtendedViewProperty =
+            DependencyProperty.Register(nameof(IsAssetsExtendedView), typeof(bool), typeof(AssetsListViewControl), new PropertyMetadata(false));
+
+    public bool IsAssetsExtendedView
+    {
+        get => (bool)GetValue(IsAssetsExtendedViewProperty);
+        set => SetValue(IsAssetsExtendedViewProperty, value);
+    }
 
 
     //***********************************************//
@@ -29,6 +49,8 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
     public AssetsListViewControl()
     {
         InitializeComponent();
+        //_viewModel = AssetsViewModel.Current;
+        //DataContext = _viewModel;
     }
 
     private void AssetsListView_Loading(FrameworkElement sender, object args)

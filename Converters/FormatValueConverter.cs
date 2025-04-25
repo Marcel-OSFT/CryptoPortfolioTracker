@@ -4,9 +4,10 @@ using System.Globalization;
 using CryptoPortfolioTracker.Services;
 using Microsoft.UI.Xaml.Data;
 
+
 namespace CryptoPortfolioTracker.Converters;
 
-public sealed partial class ValueFormatConverter : IValueConverter
+public class FormatValueToString : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
@@ -20,26 +21,20 @@ public sealed partial class ValueFormatConverter : IValueConverter
             return value;
         }
 
-
-        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
-
-        var isValueAsterix = App.PreferencesService.GetAreValesMasked(); 
-
-        if (isValueAsterix)
+        CultureInfo ci;
+        if (App.PreferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
         {
-            return "********";
+            ci = new CultureInfo("nl-NL");
+            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
         }
-
+        else
+        {
+            ci = new CultureInfo("en-US");
+            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+        }
 
         if (value is double)
         {
-            if (double.IsInfinity((double)value))
-            {
-                return "-";
-            }
-            var test = (double)value;
-            var test2 = string.Format(ci, (string)parameter, (double)value);
             return string.Format(ci, (string)parameter, (double)value);
         }
         else if (value is int)
@@ -52,25 +47,36 @@ public sealed partial class ValueFormatConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
+        double result;
         try
         {
-            var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
-            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+            CultureInfo ci;
+            if (App.PreferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
+            {
+                ci = new CultureInfo("nl-NL");
+                ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+            }
+            else
+            {
+                ci = new CultureInfo("en-US");
+                ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+            }
 
             if (targetType == typeof(double))
             {
-                var test = System.Convert.ToDouble((string)value, ci);
-                return  System.Convert.ToDouble((string)value, ci);
+                return System.Convert.ToDouble((string)value, ci);
             }
             else if (targetType == typeof(int))
             {
                 return System.Convert.ToInt16((string)value, ci);
             }
+
         }
         catch
         {
-            return 0;
+            result = 0;
         }
         return 0;
     }
+
 }

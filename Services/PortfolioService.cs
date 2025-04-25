@@ -18,6 +18,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.ViewModels;
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -36,6 +37,7 @@ namespace CryptoPortfolioTracker.Services
         public readonly IUpdateContextFactory _updateContextFactory;
         public PortfolioContext Context { get; set; }
         public UpdateContext UpdateContext { get; set; }
+        private IMessenger _messenger;
 
         [ObservableProperty] private Portfolio? currentPortfolio;
         [ObservableProperty] private ObservableCollection<Portfolio> portfolios = new();
@@ -47,12 +49,12 @@ namespace CryptoPortfolioTracker.Services
 
         public bool IsInitialPortfolioLoaded { get; private set; } = false;
 
-        public PortfolioService(IPortfolioContextFactory contextFactory, IUpdateContextFactory updateContextFactory, IPreferencesService preferencesService)
+        public PortfolioService(IPortfolioContextFactory contextFactory, IUpdateContextFactory updateContextFactory, IMessenger messenger, IPreferencesService preferencesService)
         {
             _contextFactory = contextFactory;
             _updateContextFactory = updateContextFactory;
             _preferenceService = preferencesService;
-            
+            _messenger = messenger;
         }
 
         /// <summary>
@@ -146,7 +148,8 @@ namespace CryptoPortfolioTracker.Services
                 CurrentPortfolio = Portfolios.Where(x => x.Signature == portfolio.Signature).FirstOrDefault();
 
                 _preferenceService.SetLastPortfolio(CurrentPortfolio);
-               
+                _messenger.Send(new PortfolioConnectionChangedMessage());
+
 
                 string portfoliosFile = Path.Combine(App.PortfoliosPath, App.PortfoliosFileName);
                 await SavePortfoliosAsync(portfoliosFile, async stream =>
@@ -172,11 +175,31 @@ namespace CryptoPortfolioTracker.Services
                 UpdateContext = _updateContextFactory.Create($"Data Source=|DataDirectory|{relativePath}");
                 
                 await CheckDatabase(portfolio.Signature);
+                AddSuffixToMarketChartsIfNeeded();
                 return true;
             }
             catch (Exception ex)
             {
                 return Error.New(ex);
+            }
+        }
+
+        private void AddSuffixToMarketChartsIfNeeded()
+        {
+            var context = Context;
+            List<string> prelistingApiIds = context.Coins
+                .AsNoTracking()
+                .Where(c => c.Name.Contains("_pre-listing"))
+                .Select(c => c.ApiId)
+                .ToList();
+
+            foreach(var apiId in prelistingApiIds)
+            {
+                var file = Directory.GetFiles(App.ChartsFolder, "MarketChart_" + apiId + ".json").FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(file)) continue;
+
+                var newFile = file.Replace(apiId, apiId + "-prelisting");
+                File.Move(file, newFile);
             }
         }
 
@@ -392,8 +415,6 @@ namespace CryptoPortfolioTracker.Services
 
         private static async Task LoadPortfoliosAsync(string fileName, Func<FileStream, Task> processStream)
         {
-
-
             if (File.Exists(fileName))
             {
                 try
@@ -736,6 +757,7 @@ namespace CryptoPortfolioTracker.Services
                     await ConnectUpdateContext(newPortfolio);
 
                     await RemoveAssetsFromPortfolio(UpdateContext);
+                    RemoveGraphJson(destSignaturePath);
 
                     DisconnectUpdateContext();
                     await ConnectUpdateContext(portfolio);
@@ -749,19 +771,42 @@ namespace CryptoPortfolioTracker.Services
             }
         }
 
+        private void RemoveGraphJson(string destSignaturePath)
+        {
+            var graphJsonPath = Path.Combine(destSignaturePath, "graph.json");
+            var graphJsonBakPath = Path.Combine(destSignaturePath, "graph.json.bak");
+
+            if (File.Exists(graphJsonPath))
+            {
+                File.Delete(graphJsonPath);
+            }
+            if (File.Exists(graphJsonBakPath))
+            {
+                File.Delete(graphJsonBakPath);
+            }
+        }
+
         private async Task RemoveAssetsFromPortfolio(UpdateContext context)
         {
             if (context == null) { return; };
 
-            context.Mutations.RemoveRange(context.Mutations);
-            context.Transactions.RemoveRange(context.Transactions);
-            context.Assets.RemoveRange(context.Assets);
-            foreach(var coin in context.Coins)
+            try
             {
-                coin.IsAsset = false;
-            }
-            await context.SaveChangesAsync();
+                context.ChangeTracker?.Clear();
 
+                context.Mutations.RemoveRange(context.Mutations);
+                context.Transactions.RemoveRange(context.Transactions);
+                context.Assets.RemoveRange(context.Assets);
+                foreach(var coin in context.Coins)
+                {
+                    coin.IsAsset = false;
+                }
+                await context.SaveChangesAsync();
+            }
+            finally
+            {
+                context.ChangeTracker?.Clear();
+            }
         }
 
         public Task<Either<Error, bool>> ConnectUpdateContext(Portfolio portfolio)

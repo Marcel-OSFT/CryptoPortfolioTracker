@@ -15,10 +15,6 @@
      mc:Ignorable="d">
     
     <Page.Resources>
-        <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
-        <converters:RowDefConverterParameters x:Key="ParamsRow0" Text="90|1*" XamlRoot="{x:Bind NarrativesContent.XamlRoot}" />
-        <converters:RowDefConverterParameters x:Key="ParamsRow1" Text="1*|0" XamlRoot="{x:Bind NarrativesContent.XamlRoot}" />
-
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
             <Setter Property="Padding" Value="0"/>
@@ -51,12 +47,13 @@
             <Border Grid.Row="2" VerticalAlignment="Stretch" Margin="10,0,0,0">
                 <Grid Name="NarrativesContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow0}}"/>
-                        <RowDefinition Height="{Binding IsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow1}}"/>
+                        <RowDefinition Height="{x:Bind converters:Functions.BoolToRowDef(_viewModel.IsExtendedView,'90','1*',NarrativesContent.XamlRoot), Mode=OneWay}"/>
+                        <RowDefinition Height="{x:Bind converters:Functions.BoolToRowDef(_viewModel.IsExtendedView,'1*','0',NarrativesContent.XamlRoot), Mode=OneWay}"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <controls:NarrativesListViewControl x:Name="MyNarrativesListViewControl" x:FieldModifier="public" Grid.Row="0" />
-                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Grid.Row="1" Margin="0,-8,0,0" />
+                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Grid.Row="1" Margin="0,-8,0,0" 
+                                                    IsShowingNetInvestment="False" IsAssetsExtendedView="False"/>
                     <Button l:Uids.Uid="Narratives_AddNarrative" 
                             Grid.Row="2" 
                             VerticalAlignment="Bottom" 

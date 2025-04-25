@@ -28,11 +28,12 @@ public sealed partial class AssignNarrativeDialog : ContentDialog
     public AssignNarrativeDialog(Coin coin, CoinLibraryViewModel viewModel, IPreferencesService preferencesService)
     {
         _coin = coin;
-        InitializeComponent();
         _preferencesService = preferencesService;
         _viewModel = viewModel;
         Narratives = _viewModel.narratives ?? new List<Narrative>();
-        InitialNarrative = _viewModel._narrativeService.GetNarrativeByCoin(coin);
+        InitialNarrative = Narratives.Where(x => x.Name == coin.Narrative.Name).FirstOrDefault();
+
+        InitializeComponent();
         SetDialogTitleAndButtons();
 
     }
@@ -42,6 +43,7 @@ public sealed partial class AssignNarrativeDialog : ContentDialog
         Title = loc.GetLocalizedString("AssignNarrativeDialog_Title_Edit") + " " + _coin.Name;
         PrimaryButtonText = loc.GetLocalizedString("AssignNarrativeDialog_PrimaryButton_Edit");
         CloseButtonText = loc.GetLocalizedString("NarrativeDialog_CloseButton");
+       
     }
 
     private void Button_Click_AcceptNarrative(ContentDialog sender, ContentDialogButtonClickEventArgs e)

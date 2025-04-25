@@ -18,6 +18,8 @@ using CryptoPortfolioTracker.Views;
 using CommunityToolkit.Mvvm.Messaging;
 using System.Data.SqlClient;
 using CryptoPortfolioTracker.Dialogs;
+using WinRT;
+using CryptoPortfolioTracker.Helpers;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -28,7 +30,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     private HeatMap heatMap;
     private readonly PortfolioService _portfolioService;
     private readonly IAssetService _assetService;
-    [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
+    [ObservableProperty] public partial ObservableCollection<Coin> ListCoins { get; set; } = new();
     private SortingOrder currentSortingOrder;
     private Func<Coin, object> currentSortFunc;
 
@@ -146,9 +148,12 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         {
             //coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
             coinList = await context.Coins
-                .Include(x => x.PriceLevels)
-                .Include(x => x.Assets)
+                .AsNoTracking()
                 .Where(x => x.Name.Length <= 12 || (x.Name.Length > 12 && x.Name.Substring(x.Name.Length - 12) != "_pre-listing"))
+                .Include(x => x.PriceLevels)
+                .Include(x => x.Narrative)
+                .Include(x => x.Assets)
+                .ThenInclude(x => x.Account)
                 .OrderBy(x => x.Rank)
                 .ToListAsync();
 
@@ -166,11 +171,19 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public async Task<Result<bool>> ResetPriceLevels(Coin coin)
     {
+        if (coin == null) return false;
+
+        await App.UpdateSemaphore.WaitAsync();
         var context = _portfolioService.Context;
-        bool _result;
-        if (coin == null) { return false; }
+        context.ChangeTracker?.Clear();
+        bool result;
+
         try
         {
+            //ensure that the Coin is tracked before updating the Coin.
+            // Using 'Find' will result in adding it to the tracked entities.
+            context.Coins.Find(coin.Id);
+
             foreach (var level in coin.PriceLevels)
             {
                 level.Value = 0;
@@ -180,27 +193,42 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             }
 
             context.Coins.Update(coin);
-            _result = await context.SaveChangesAsync() > 0;
-
+            result = await context.SaveChangesAsync() > 0;
         }
         catch (Exception ex)
         {
             return new Result<bool>(ex);
         }
-        return _result;
-        
+        finally
+        {
+            context.ChangeTracker?.Clear();
+            App.UpdateSemaphore.Release();
+        }
+
+        return result;
     }
 
     public async Task<Result<bool>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels)
     {
+        await App.UpdateSemaphore.WaitAsync();
+        Debug.WriteLine("PriceLevels Locked");
+
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
         bool result;
-        if (coin == null || priceLevels==null || priceLevels.Count == 0) { return false; }
+        if (coin == null || priceLevels == null || priceLevels.Count == 0)
+        {
+            App.UpdateSemaphore.Release();
+            return false;
+        }
         try
         {
-            foreach( var level in priceLevels)
+            //ensure that the Coin is tracked before updating the Coin.
+            // Using 'Find' will result in adding it to the tracked entities.
+            context.Coins.Find(coin.Id);
+            foreach (var level in priceLevels)
             {
-                var priceLevelToUpdate = coin.PriceLevels.Where(x => x.Type == level.Type).First();
+                var priceLevelToUpdate = coin.PriceLevels.First(x => x.Type == level.Type);
                 priceLevelToUpdate.Value = level.Value;
                 priceLevelToUpdate.Note = level.Note;
             }
@@ -212,6 +240,11 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         {
             RejectChanges();
             return new Result<bool>(ex);
+        }
+        finally
+        {
+            context.ChangeTracker?.Clear();
+            App.UpdateSemaphore.Release();
         }
         return result;
     }
@@ -293,7 +326,15 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             return index; 
         }
 
-        var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
+        
+        var priceLevel = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First();
+
+        priceLevel.DistanceToValuePerc = (100 * (asset.Coin.Price - priceLevel.Value) / priceLevel.Value);
+
+        var perc = priceLevel.DistanceToValuePerc;
+        //var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
+
+
         var weight = 100 * asset.MarketValue / sumMarketValue;
 
         if (!double.IsInfinity(perc))
@@ -320,4 +361,5 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     {
         ListCoins?.Clear();
     }
+
 }

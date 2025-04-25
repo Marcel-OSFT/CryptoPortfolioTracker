@@ -18,30 +18,30 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public class UpdateDashboardMessage
-{
-    // You can add properties here if you need to pass additional data with the message
-}
+//public class UpdateDashboardMessage
+//{
+  
+//}
 
-public class UpdateProgressValueMessage
-{
-    public int ProgressValue { get;}
+//public class UpdateProgressValueMessage
+//{
+//    public int ProgressValue { get;}
 
-    public UpdateProgressValueMessage(int value)
-    {
-        ProgressValue = value;
-    }
-}
+//    public UpdateProgressValueMessage(int value)
+//    {
+//        ProgressValue = value;
+//    }
+//}
 
-public class IsUpdatingGraphMessage
-{
-    public bool IsUpdating { get; }
+//public class IsUpdatingGraphMessage
+//{
+//    public bool IsUpdating { get; }
 
-    public IsUpdatingGraphMessage(bool value)
-    {
-        IsUpdating = value;
-    }
-}
+//    public IsUpdatingGraphMessage(bool value)
+//    {
+//        IsUpdating = value;
+//    }
+//}
 
 [ObservableRecipient]
 public partial class DashboardViewModel : BaseViewModel
@@ -124,9 +124,9 @@ public partial class DashboardViewModel : BaseViewModel
         {
             ProgressValueGraph = m.ProgressValue;
         });
-        messenger.Register<IsUpdatingGraphMessage>(this, (r, m) =>
+        messenger.Register<GraphUpdatedMessage>(this, (r, m) =>
         {
-            IsUpdatingGraph = m.IsUpdating;
+            SetValuesGraph();
         });
 
         _preferencesService = preferencesService;

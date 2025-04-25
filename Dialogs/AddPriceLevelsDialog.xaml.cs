@@ -49,7 +49,7 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
 
     private void InitializeFields(ICollection<PriceLevel> priceLevels)
     {
-        newPriceLevels = priceLevels;
+        //newPriceLevels = priceLevels;
 
         foreach (var level in priceLevels)
         {
@@ -80,25 +80,47 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
 
     private void Button_Click_Accept(ContentDialog sender, ContentDialogButtonClickEventArgs e)
     {
-        //assign the new values to the price levels
-        foreach (var level in newPriceLevels)
+        newPriceLevels = new List<PriceLevel>
         {
-            if (level.Type == PriceLevelType.TakeProfit)
+            new PriceLevel
             {
-                level.Value = TpValue;
-                level.Note = TpNote;
-            }
-            else if (level.Type == PriceLevelType.Buy)
+                Type = PriceLevelType.TakeProfit,
+                Value = TpValue,
+                Note = TpNote
+            },
+            new PriceLevel
             {
-                level.Value = BuyValue;
-                level.Note = BuyNote;
-            }
-            else if (level.Type == PriceLevelType.Stop)
+                Type = PriceLevelType.Buy,
+                Value = BuyValue,
+                Note = BuyNote
+            },
+            new PriceLevel
             {
-                level.Value = StopValue;
-                level.Note = StopNote;
+                Type = PriceLevelType.Stop,
+                Value = StopValue,
+                Note = StopNote
             }
-        }
+        };
+
+        ////assign the new values to the price levels
+        //foreach (var level in newPriceLevels)
+        //{
+        //    if (level.Type == PriceLevelType.TakeProfit)
+        //    {
+        //        level.Value = TpValue;
+        //        level.Note = TpNote;
+        //    }
+        //    else if (level.Type == PriceLevelType.Buy)
+        //    {
+        //        level.Value = BuyValue;
+        //        level.Note = BuyNote;
+        //    }
+        //    else if (level.Type == PriceLevelType.Stop)
+        //    {
+        //        level.Value = StopValue;
+        //        level.Note = StopNote;
+        //    }
+        //}
     }
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)

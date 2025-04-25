@@ -15,8 +15,6 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
         <Style x:Key="CustomListViewItemsStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="MinHeight" Value="30"/>
             <Setter Property="Padding" Value="0"/>
@@ -24,7 +22,6 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
-
        
         <Style x:Key="myAppBarButton" TargetType="AppBarButton">
             <Setter Property="Width" Value="70"/>
@@ -108,7 +105,7 @@
                     Command="{Binding BackupPortfolioCommand}"  CommandParameter="{Binding SelectedPortfolio}"/>
                 <AppBarButton x:Name="tbRestoreBackup"  Icon="OpenFile" l:Uids.Uid="PortfolioAdmin_RestoreBackupButton" Style="{StaticResource myAppBarButton}"
                     Command="{Binding BrowseAndRestorePortfolioCommand}"/>
-                <AppBarToggleButton x:Name="tbShowRestore" Icon="Bullets" l:Uids.Uid="PortfolioAdmin_ShowRestoreButton" />
+                <AppBarToggleButton x:Name="tbShowRestore" Icon="Bullets" l:Uids.Uid="PortfolioAdmin_ShowRestoreButton"/>
             </CommandBar>
             <TextBlock Text="Portfolios" Grid.Row="0" Grid.Column="0" FontWeight="Bold" FontSize="16" Margin="10,0,0,0" VerticalAlignment="Center"/>
             <ListView x:Name="PortfolioListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
@@ -135,7 +132,7 @@
         </Grid>
 
         <!-- Restore Points Section -->
-        <Grid Grid.Row="2" Visibility="{Binding IsChecked, ElementName=tbShowRestore, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='invert'}"
+        <Grid Grid.Row="2" Visibility="{x:Bind converters:Functions.TrueToVisible(tbShowRestore.IsChecked), Mode=OneWay}"
               Margin="10,10,0,5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -204,7 +201,7 @@
             <VisualStateGroup>
                 <VisualState x:Name="Unchecked">
                     <VisualState.StateTriggers>
-                        <StateTrigger IsActive="{Binding ElementName=tbShowRestore, Path=IsChecked, Converter={StaticResource InvertBoolConverter}}"/>
+                        <StateTrigger IsActive="{x:Bind converters:Functions.InvertBool(tbShowRestore.IsChecked), Mode=OneWay}"/>
                     </VisualState.StateTriggers>
                     <Storyboard>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Row1" Storyboard.TargetProperty="Height">

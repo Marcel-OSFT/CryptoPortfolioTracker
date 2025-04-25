@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -22,14 +23,14 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public class UpdatePricesMessage
-{
-    public Coin Coin { get; }
-    public UpdatePricesMessage(Coin coin)
-    {
-        Coin = coin;
-    }
-}
+//public class UpdatePricesMessage
+//{
+//    public Coin Coin { get; }
+//    public UpdatePricesMessage(Coin coin)
+//    {
+//        Coin = coin;
+//    }
+//}
 
 [ObservableRecipient]
 public sealed partial class AssetsViewModel : BaseViewModel
@@ -46,27 +47,25 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public readonly IGraphService _graphService;
     private readonly IPreferencesService _preferencesService;
 
-    [ObservableProperty] public string portfolioName = string.Empty;
-    [ObservableProperty] public Portfolio currentPortfolio;
+    [ObservableProperty] public partial string PortfolioName { get; set; } = string.Empty;
+    [ObservableProperty] public partial Portfolio CurrentPortfolio { get; set; }
 
-    partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    partial void OnCurrentPortfolioChanged(Portfolio oldValue, Portfolio newValue)
     {
         PortfolioName = newValue.Name;
     }
 
-    public bool IsHidingNetInvestment { get; set; } = false;
-
-    [ObservableProperty] private string sortGroup;
+    [ObservableProperty] public partial string SortGroup { get; set; }
 
     public AssetTotals? selectedAsset = null;
     private AssetAccount? selectedAccount = null;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowTransactionDialogToAddCommand))]
-    private bool isAssetsExtendedView = false;
+    public partial bool IsAssetsExtendedView { get; set; } = false;
 
   
-    [ObservableProperty] private bool isHidingCapitalFlow;
+    [ObservableProperty] public partial bool IsHidingCapitalFlow { get; set; }
 
     public static List<CoinList>? coinListGecko;
     private bool disposedValue;
@@ -74,9 +73,11 @@ public sealed partial class AssetsViewModel : BaseViewModel
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;
 
-    [ObservableProperty] private string glyphPrivacy = "\uE890";
+    [ObservableProperty] public partial string GlyphPrivacy { get; set; } = "\uE890";
 
-    [ObservableProperty] private bool isPrivacyMode;
+    [ObservableProperty] public partial bool IsPrivacyMode { get; set; }
+
+    private NumberFormatInfo numberFormatInfo;
 
     partial void OnIsPrivacyModeChanged(bool value)
     {
@@ -84,7 +85,16 @@ public sealed partial class AssetsViewModel : BaseViewModel
         _preferencesService.SetAreValuesMasked(value);
         _assetService.ReloadValues();
         _transactionService.ReloadValues();
+        ReloadTotals();
     }
+
+    [ObservableProperty] public partial double TotalPortfolioValue { get; set; }
+    [ObservableProperty] public partial double TotalCostBase { get; set; }
+    [ObservableProperty] public partial double TotalPnlPerc { get; set; }
+    [ObservableProperty] public partial double TotalInflow { get; set; }
+    [ObservableProperty] public partial double TotalOutflow { get; set; }
+    [ObservableProperty] public partial long VisibleAssetsCount { get; set; }
+
 
 
     public AssetsViewModel(IGraphService graphService, 
@@ -97,55 +107,126 @@ public sealed partial class AssetsViewModel : BaseViewModel
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
 
-        messenger.Register<UpdatePricesMessage>(this, (r, m) =>
+        messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
         {
-            _assetService.UpdatePricesAssetTotals(m.Coin);
-           // _assetService.UpdatePricesAssetTotals();
-
+            await _assetService.UpdatePricesAssetTotals(m.Coin);
+            await GetPortfolioTotals();
         });
 
+        messenger.Register<PortfolioConnectionChangedMessage>(this, async (r, m) =>
+        {
+            await LoadViewData();
+        });
+        messenger.Register<PreferencesChangedMessage>(this, async (r, m) =>
+        {
+            await RefreshViewAfterChangeOfPreferences();
+        });
+
+
         _assetService = assetService;
-        
         _transactionService = transactionService;
         _graphService = graphService;
         _preferencesService = preferencesService;
         _accountService = accountService;
-        CurrentPortfolio = _assetService.GetPortfolio();
-        SortGroup = "Assets";
-        currentSortFunc = x => x.MarketValue;
-        currentSortingOrder = SortingOrder.Descending;
-        _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
-        IsPrivacyMode = _preferencesService.GetAreValesMasked();
+
+        InitializeView();
+
     }
 
     /// <summary>
     /// Initialize async task is called from the View_Loaded event of the associated View
     /// this to prevent to have it called from the ViewModels constructor
     /// </summary>
-    public async Task ViewLoading()
+    private async Task InitializeView()
     {
         CurrentPortfolio = _assetService.GetPortfolio();
         PortfolioName = CurrentPortfolio.Name;
+
+        SortGroup = "Assets";
+        currentSortFunc = x => x.MarketValue;
+        currentSortingOrder = SortingOrder.Descending;
+        _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
+        numberFormatInfo = _preferencesService.GetNumberFormat();
+        await LoadViewData();
+    }
 
-        IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
-       // IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+    
+    public async Task ViewLoading()
+    {
+        await LoadViewData();
+        //CurrentPortfolio = _assetService.GetPortfolio();
+        //PortfolioName = CurrentPortfolio.Name;
+     //   IsPrivacyMode = _preferencesService.GetAreValesMasked();
 
+     //   IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
+
+       // await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
+
+        //below setting(s) might have been changed while was moved away from the associated view
+
+        //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
+        //TotalPortfolioValue = _assetService.GetTotalsAssetsValue();
+        //TotalCostBase = _assetService.GetTotalsAssetsCostBase();
+        //TotalPnlPerc = _assetService.GetTotalsAssetsPnLPerc();
+
+        //TotalInflow = await _assetService.GetInFlow();
+        //TotalOutflow = await _assetService.GetOutFlow();
+        //VisibleAssetsCount = _assetService.VisibleAssetsCount;
+
+    }
+
+    private async Task RefreshViewAfterChangeOfPreferences()
+    {
+        if (IsRelevantPreferenceChanged())
+        {
+            IsPrivacyMode = _preferencesService.GetAreValesMasked();
+            IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
+            numberFormatInfo = _preferencesService.GetNumberFormat();
+
+            //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
+            await GetPortfolioTotals();
+
+        }
+    }
+
+    private bool IsRelevantPreferenceChanged()
+    {
+        return IsPrivacyMode != _preferencesService.GetAreValesMasked()
+             || IsHidingCapitalFlow != _preferencesService.GetHidingCapitalFlow()
+             || numberFormatInfo != _preferencesService.GetNumberFormat();
+    }
+
+    private async Task LoadViewData()
+    {
+        CurrentPortfolio = _assetService.GetPortfolio();
+        PortfolioName = CurrentPortfolio.Name;
 
         await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
 
         //below setting(s) might have been changed while was moved away from the associated view
 
         //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
-        _assetService.GetTotalsAssetsValue();
-        _assetService.GetTotalsAssetsCostBase();
-        _assetService.GetTotalsAssetsPnLPerc();
-
-        await _assetService.GetInFlow();
-        await _assetService.GetOutFlow();
-
-
+        await GetPortfolioTotals();
     }
+
+    private async Task GetPortfolioTotals()
+    {
+        TotalPortfolioValue = 0;
+        TotalCostBase = 0;
+        TotalPnlPerc = 0;
+        TotalInflow = 0;
+        TotalOutflow = 0;
+
+        TotalPortfolioValue = _assetService.GetTotalsAssetsValue();
+        TotalCostBase = _assetService.GetTotalsAssetsCostBase();
+        TotalPnlPerc = _assetService.GetTotalsAssetsPnLPerc();
+        TotalInflow = await _assetService.GetInFlow();
+        TotalOutflow = await _assetService.GetOutFlow();
+        VisibleAssetsCount = _assetService.VisibleAssetsCount;
+    }
+
+
     /// <summary>
     /// ReleaseDataSource async task is called from the View_UnLoaded event of the associated View
     /// </summary>
@@ -154,11 +235,17 @@ public sealed partial class AssetsViewModel : BaseViewModel
         selectedAccount = null;
         selectedAsset = null;
         IsAssetsExtendedView = false;
-        _assetService.ClearAssetTotalsList();
+       // _assetService.ClearAssetTotalsList();
         
     }
 
-
+    private void ReloadTotals()
+    {
+        OnPropertyChanged(nameof(TotalPortfolioValue));
+        OnPropertyChanged(nameof(TotalCostBase));
+        OnPropertyChanged(nameof(TotalInflow));
+        OnPropertyChanged(nameof(TotalOutflow));
+    }
 
 
     [RelayCommand]

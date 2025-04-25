@@ -32,7 +32,6 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     {
         PortfolioName = newValue.Name;
     }
-    public bool IsHidingNetInvestment { get; set; } = true;
 
 
     private readonly IPreferencesService _preferencesService;
@@ -63,6 +62,11 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
     }
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ShowAccountDialogToAddCommand))]
+    public partial bool IsExtendedView { get; set; } = false;
+
+    [ObservableProperty] public partial bool IsAssetsExtendedView { get; set; } = false;
 
     public AccountsViewModel(IAccountService accountService, IAssetService assetService, IPreferencesService preferencesService) : base(preferencesService)
     {
@@ -81,11 +85,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
     }
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ShowAccountDialogToAddCommand))]
-    private bool isExtendedView = false;
-
-    [ObservableProperty] private bool isAssetsExtendedView = false;
+    
 
     /// <summary>
     /// Initialize async task is called from the View_Loaded event of the associated View

@@ -17,18 +17,13 @@
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <ContentDialog.Resources>
+        <converters:FormatValueToString x:Key="FormatValueToString"/>
         <!-- Overriding values -->
         <x:Double x:Key="ContentDialogMaxWidth">1200</x:Double>
         <x:Double x:Key="ContentDialogMaxHeight">1200</x:Double>
         <x:Double x:Key="RadioButtonCheckGlyphSize">12</x:Double>
         <x:Double x:Key="RadioButtonCheckGlyphPointerOverSize">14</x:Double>
         <x:Double x:Key="RadioButtonCheckGlyphPressedOverSize">10</x:Double>
-        
-        <converters:InvertBoolConverter x:Key="myInvertBoolConverter"/>
-        <converters:MaxQtyAConverter x:Key="myMaxQtyAConverter"/>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter"/>
-
         <Style x:Key="TextBoxRegexStyle" TargetType="TextBox">
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="TextWrapping" Value="Wrap" />
@@ -118,7 +113,7 @@
         <Grid Grid.Row="3" Grid.Column="1">
             <AppBarButton Label="" Visibility="Visible" VerticalAlignment="Stretch" Click="LinkAccountsButton_Click" 
                 Style="{StaticResource MK_AppBarButtonStyle}" Margin="5,15,0,0"
-                x:Name="LinkAccountsButton" Opacity="{Binding IsAccountsLinked, Converter={StaticResource BoolToOpacityConverter}}">
+                x:Name="LinkAccountsButton" Opacity="{x:Bind converters:Functions.TrueToOpacityOne(IsAccountsLinked), Mode=OneWay}">
                 <AppBarButton.Icon>
                     <FontIcon  Glyph="&#xE71B;"/>
                 </AppBarButton.Icon>
@@ -132,7 +127,7 @@
                 IsEntryMatched="{Binding Validator.EntryCollection[3], 
                     ElementName=Root, 
                     Mode=TwoWay}"
-                IsEnabled="{Binding IsAccountsLinked, Converter={StaticResource myInvertBoolConverter}}"
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAccountsLinked), Mode=OneWay}"
                 AnimateBorder="True"
                 Width="315"/>
         </RelativePanel>
@@ -147,8 +142,8 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="False"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding QtyA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}"
-                Header="{Binding MaxQtyA, Converter={StaticResource myMaxQtyAConverter}}" 
+                Text="{Binding QtyA, ElementName=Root, Mode=TwoWay, Converter={StaticResource FormatValueToString}, ConverterParameter='{}{0:0.########}'}"
+                Header="{x:Bind converters:Functions.FormatMaxQtyA(MaxQtyA), Mode=OneWay}" 
                 IsEntryValid="{Binding Validator.EntryCollection[4], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}"
                 PointerPressed="QtyOrPrice_pressed" 
@@ -158,8 +153,8 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="{Binding IsEarnings}"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                        IsEnabled="{Binding Path=IsChecked, ElementName=Earnings, Converter={StaticResource myInvertBoolConverter}, Mode=TwoWay}"           
-                Text="{Binding PriceA, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.##################}'}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(Earnings.IsChecked), Mode=OneWay}"           
+                Text="{Binding PriceA, ElementName=Root, Mode=TwoWay, Converter={StaticResource FormatValueToString}, ConverterParameter='{}{0:0.##################}'}" 
                 IsEntryValid="{Binding Validator.EntryCollection[5], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}" 
                 Width="145"
@@ -175,7 +170,7 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="False"
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding QtyB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}" 
+                Text="{Binding QtyB, ElementName=Root, Mode=TwoWay, Converter={StaticResource FormatValueToString}, ConverterParameter='{}{0:0.########}'}" 
                 IsEntryValid="{Binding Validator.EntryCollection[6], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}"
                 PointerPressed="QtyOrPrice_pressed"
@@ -185,7 +180,7 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="False" 
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding PriceB, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}" 
+                Text="{Binding PriceB, ElementName=Root, Mode=TwoWay, Converter={StaticResource FormatValueToString}, ConverterParameter='{}{0:0.########}'}" 
                 IsEntryValid="{Binding Validator.EntryCollection[7], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}" 
                 Width="145" 
@@ -203,7 +198,7 @@
                 RegEx="RegExPositiveDecimal" 
                 IsZeroAllowed="True" 
                 DecimalSeparator="{Binding DecimalSeparator, ElementName=Root, Mode=OneWay}"
-                Text="{Binding FeeQty, ElementName=Root, Mode=TwoWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.########}'}" 
+                Text="{Binding FeeQty, ElementName=Root, Mode=TwoWay, Converter={StaticResource FormatValueToString}, ConverterParameter='{}{0:0.########}'}" 
                 IsEntryValid="{Binding Validator.EntryCollection[8], ElementName=Root, Mode=TwoWay}"
                 Style="{StaticResource MK_TextBoxStyle}" 
                 PointerPressed="QtyOrPrice_pressed"

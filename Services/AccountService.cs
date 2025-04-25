@@ -133,6 +133,7 @@ public partial class AccountService : ObservableObject, IAccountService
         try
         {
             assetAccount = await context.Assets
+                .AsNoTracking()
                 .Where(c => c.Id == assetId)
                 .Include(x => x.Coin)
                 .Include(a => a.Account)
@@ -155,6 +156,7 @@ public partial class AccountService : ObservableObject, IAccountService
     public async Task<Result<bool>> CreateAccount(Account? newAccount)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker.Clear();
         bool _result;
 
         if (newAccount == null) { return false; }
@@ -167,11 +169,16 @@ public partial class AccountService : ObservableObject, IAccountService
         {
             return new Result<bool>(ex);
         }
+        finally
+        {
+            context.ChangeTracker.Clear();
+        }
         return _result;
     }
     public async Task<Result<bool>> EditAccount(Account newAccount, Account accountToEdit)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker.Clear();
         bool _result;
         if (newAccount == null || newAccount.Name == "" || accountToEdit == null) { return false; }
         try
@@ -189,11 +196,16 @@ public partial class AccountService : ObservableObject, IAccountService
         {
             return new Result<bool>(ex);
         }
+        finally 
+        { 
+            context.ChangeTracker.Clear(); 
+        }
         return _result;
     }
     public async Task<Result<bool>> RemoveAccount(int accountId)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker.Clear();
         bool _result;
         if (accountId <= 0) { return false; }
         try
@@ -206,6 +218,10 @@ public partial class AccountService : ObservableObject, IAccountService
         {
             return new Result<bool>(ex);
         }
+        finally
+        {
+            context.ChangeTracker.Clear();
+        }
         return _result;
     }
     private async Task<Result<List<Account>>> GetAccounts()
@@ -215,6 +231,7 @@ public partial class AccountService : ObservableObject, IAccountService
         try
         {
             accounts = await context.Accounts
+                .AsNoTracking()
                 .Include(x => x.Assets)
                 .ThenInclude(c => c.Coin)
                 .ToListAsync();
@@ -233,27 +250,28 @@ public partial class AccountService : ObservableObject, IAccountService
         }
         return accounts;
     }
-    public async Task<Result<Account>> GetAccountByName(string name)
-    {
-        var context = _portfolioService.Context;
-        Account account;
-        try
-        {
-            account = await context.Accounts
-                .Include(x => x.Assets)
-                .ThenInclude(c => c.Coin)
-                .Where(x => x.Name.ToLower() == name.ToLower())
-                .SingleAsync();
+    //public async Task<Result<Account>> GetAccountByName(string name)
+    //{
+    //    var context = _portfolioService.Context;
+    //    Account account;
+    //    try
+    //    {
+    //        account = await context.Accounts
+    //            .AsNoTracking()
+    //            .Include(x => x.Assets)
+    //            .ThenInclude(c => c.Coin)
+    //            .Where(x => x.Name.ToLower() == name.ToLower())
+    //            .SingleAsync();
 
-            account.CalculateTotalValue();
-            account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0;
-        }
-        catch (Exception ex)
-        {
-            return new Result<Account>(ex);
-        }
-        return account;
-    }
+    //        account.CalculateTotalValue();
+    //        account.IsHoldingAsset = account.Assets != null && account.Assets.Count > 0;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return new Result<Account>(ex);
+    //    }
+    //    return account;
+    //}
     public async Task<Result<bool>> AccountHasNoAssets(int accountId)
     {
         var context = _portfolioService.Context;
@@ -262,9 +280,10 @@ public partial class AccountService : ObservableObject, IAccountService
         try
         {
             account = await context.Accounts
-            .Where(c => c.Id == accountId)
-            .Include(x => x.Assets)
-            .SingleAsync();
+                .AsNoTracking()
+                .Where(c => c.Id == accountId)
+                .Include(x => x.Assets)
+                .SingleAsync();
         }
         catch (Exception ex)
         {
@@ -280,8 +299,9 @@ public partial class AccountService : ObservableObject, IAccountService
         try
         {
             assetAccounts = await context.Assets
-                .Include(x => x.Coin)
+                .AsNoTracking()
                 .Where(c => c.Coin.Id == coinId)
+                .Include(x => x.Coin)
                 .Include(a => a.Account)
                 .Select(assets => new AssetAccount
                 {
@@ -307,7 +327,9 @@ public partial class AccountService : ObservableObject, IAccountService
         var context = _portfolioService.Context;
         try
         {
-            return context.Accounts.Any(x => x.Name.ToLower() == name.ToLower());
+            return context.Accounts
+                .AsNoTracking()
+                .Any(x => x.Name.ToLower() == name.ToLower());
         }
         catch (Exception)
         {

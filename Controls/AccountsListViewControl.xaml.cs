@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
@@ -14,7 +15,8 @@ using System.Runtime.CompilerServices;
 
 namespace CryptoPortfolioTracker.Controls;
 
-public partial class AccountsListViewControl : UserControl, INotifyPropertyChanged
+[ObservableObject]
+public partial class AccountsListViewControl : UserControl
 {
     public readonly AccountsViewModel _viewModel;
     //private ScrollViewer gridViewScrollViewer;
@@ -153,11 +155,11 @@ public partial class AccountsListViewControl : UserControl, INotifyPropertyChang
         }
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    //public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+    //protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    //{
+    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    //}
 
 }

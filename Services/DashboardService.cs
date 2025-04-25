@@ -62,14 +62,15 @@ public partial class DashboardService : ObservableObject, IDashboardService
         {
             var context = _portfolioService.Context;
             
-            var assets = await context.Assets
-                .Include(x => x.Coin)
+            var coins = await context.Assets
+                .AsNoTracking()
                 .Where(x => x.Qty > 0 && x.Coin.Change24Hr > 0)
+                .Include(x => x.Coin)
+                .GroupBy(x => x.Coin) // Group by Coin
                 .ToListAsync();
 
-            List<Coin> topWinners = assets
-                .GroupBy(x => x.Coin) // Group by Coin
-                .Select(g => g.First().Coin) // Select the first asset's Coin from each group
+            List<Coin> topWinners = coins
+                .Select(g => g.First().Coin) // Select the first Coin from each group's asset
                 .OrderByDescending(x => x.Change24Hr) // Order by Change24Hr descending
                 .Take(5) // Take the first 5
                 .ToList();
@@ -88,14 +89,15 @@ public partial class DashboardService : ObservableObject, IDashboardService
         {
             var context = _portfolioService.Context;
 
-            var assets = await context.Assets
-                .Include(x => x.Coin)
+            var coins = await context.Assets
+                .AsNoTracking()
                 .Where(x => x.Qty > 0 && x.Coin.Change24Hr < 0)
+                .Include(x => x.Coin)
+                .GroupBy(x => x.Coin) // Group by Coin
                 .ToListAsync();
 
-            List<Coin> topLosers = assets
-                .GroupBy(x => x.Coin) // Group by Coin
-                .Select(g => g.First().Coin) // Select the first asset's Coin from each group
+            List<Coin> topLosers = coins
+                .Select(g => g.First().Coin) // Select the first Coin from each group's asset
                 .OrderBy(x => x.Change24Hr)
                 .Take(5)
                 .ToList();
@@ -118,7 +120,10 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
     public async Task EvaluatePriceLevels()
     {
-        var coins = _portfolioService.Context.Coins.ToList();
+        var coins = _portfolioService.Context.Coins
+            .AsNoTracking()
+            .ToList();
+
         foreach (var coin in coins)
         {
             coin.EvaluatePriceLevels(coin.Price);
@@ -263,8 +268,9 @@ public partial class DashboardService : ObservableObject, IDashboardService
         var dataPoints = new List<CapitalFlowPoint>();
 
         var mutations = await context.Mutations
-            .Include(t => t.Transaction)
+            .AsNoTracking()
             .Where(x => x.Type == transactionKind)
+            .Include(t => t.Transaction)
             .GroupBy(g => g.Transaction.TimeStamp.Year)
             .Select(grouped => new
             {

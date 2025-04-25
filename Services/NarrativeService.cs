@@ -115,6 +115,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     {
         bool _result;
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
 
         if (newNarrative == null) { return false; }
         try
@@ -126,11 +127,16 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         {
             return new Result<bool>(ex);
         }
+        finally
+        {
+            context.ChangeTracker?.Clear();
+        }
         return _result;
     }
     public async Task<Result<bool>> EditNarrative(Narrative newNarrative, Narrative NarrativeToEdit)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
         bool _result;
         if (newNarrative == null || newNarrative.Name == "" || NarrativeToEdit == null) { return false; }
         try
@@ -148,11 +154,16 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         {
             return new Result<bool>(ex);
         }
+        finally
+        {
+            context.ChangeTracker?.Clear();
+        }
         return _result;
     }
     public async Task<Result<bool>> RemoveNarrative(int NarrativeId)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
         bool _result;
         if (NarrativeId <= 0) { return false; }
         try
@@ -165,6 +176,10 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         {
             return new Result<bool>(ex);
         }
+        finally
+        {
+            context.ChangeTracker?.Clear();
+        }
         return _result;
     }
     public async Task<Result<List<Narrative>>> GetNarratives(bool onlyAssets = false)
@@ -176,15 +191,17 @@ public partial class NarrativeService : ObservableObject, INarrativeService
             if (onlyAssets)
             {
                 Narratives = await context.Narratives
+                    .AsNoTracking()
+                    .Where(n => n.Coins.Any(c => c.Assets.Any()))
                     .Include(x => x.Coins)
                     .ThenInclude(y => y.Assets)
-                    .Where(n => n.Coins.Any(c => c.Assets.Any()))
                     .OrderBy(x => x.Name)
                     .ToListAsync();
             }
             else
             {
                 Narratives = await context.Narratives
+                    .AsNoTracking()
                     .Include(x => x.Coins)
                     .OrderBy(x => x.Name)
                     .ToListAsync();
@@ -206,26 +223,27 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         }
         return Narratives;
     }
-    public async Task<Result<Narrative>> GetNarrativeByName(string name)
-    {
-        var context = _portfolioService.Context;
-        Narrative narrative = null;
-        try
-        {
-            narrative = await context.Narratives
-                .Include(x => x.Coins)
-                .Where(x => x.Name.ToLower() == name.ToLower())
-                .SingleAsync();
+    //public async Task<Result<Narrative>> GetNarrativeByName(string name)
+    //{
+    //    var context = _portfolioService.Context;
+    //    Narrative narrative = null;
+    //    try
+    //    {
+    //        narrative = await context.Narratives
+    //            .Include(x => x.Coins)
+    //            .Where(x => x.Name.ToLower() == name.ToLower())
+    //            .SingleAsync();
 
-            narrative.TotalValue = await CalculateTotalValue(narrative); ;
-            narrative.IsHoldingCoins = narrative.Coins != null && narrative.Coins.Count > 0;
-        }
-        catch (Exception ex)
-        {
-            return new Result<Narrative>(ex);
-        }
-        return narrative;
-    }
+    //        narrative.TotalValue = await CalculateTotalValue(narrative); ;
+    //        narrative.IsHoldingCoins = narrative.Coins != null && narrative.Coins.Count > 0;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return new Result<Narrative>(ex);
+    //    }
+    //    return narrative;
+    //}
+    
     public async Task<Result<bool>> NarrativeHasNoCoins(int NarrativeId)
     {
         var context = _portfolioService.Context;
@@ -234,9 +252,10 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         try
         {
             Narrative = await context.Narratives
-            .Where(c => c.Id == NarrativeId)
-            .Include(x => x.Coins)
-            .SingleAsync();
+                .AsNoTracking()
+                .Where(c => c.Id == NarrativeId)
+                .Include(x => x.Coins)
+                .SingleAsync();
         }
         catch (Exception ex)
         {
@@ -251,9 +270,9 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         if (narrative == null || narrative.Coins == null || !narrative.Coins.Any()) return 0.0;
 
         var sum = await context.Assets
+            .AsNoTracking()
+            .Where(asset => narrative.Coins.Contains(asset.Coin))        
             .Include(x => x.Coin)
-            .Where(asset => narrative.Coins.Contains(asset.Coin))
-            
             .SumAsync(asset => asset.Qty * asset.Coin.Price);
 
         return sum;
@@ -265,12 +284,31 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         if (narrative == null || narrative.Coins == null || !narrative.Coins.Any()) return 0.0;
 
         var sum = await context.Assets
-            .Include(x => x.Coin)
+            .AsNoTracking()
             .Where(asset => narrative.Coins.Contains(asset.Coin))
-
+            .Include(x => x.Coin)
             .SumAsync(asset => asset.Qty * asset.AverageCostPrice);
 
         return sum;
+    }
+
+    public Narrative GetDefaultNarrative()
+    {
+        var context = _portfolioService.Context;
+        Narrative narrative;
+        try
+        {
+            narrative = context.Narratives
+                .AsNoTracking()
+                .Where(x => x.Name == "- Not Assigned -")
+                .Include(x => x.Coins)
+                .Single();
+        }
+        catch (Exception ex)
+        {
+            narrative = new();
+        }
+        return narrative;
     }
 
     public Narrative GetNarrativeByCoin(Coin coin)
@@ -279,7 +317,10 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         Narrative narrative;
         try
         {
-            narrative = context.Narratives.Where(x => x.Coins.Contains(coin)).First();
+            narrative = context.Narratives
+                .AsNoTracking()
+                .Where(x => x.Coins.Contains(coin))
+                .First();
         }
         catch (Exception)
         {
@@ -293,7 +334,10 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         Narrative? narrative;
         try
         {
-            narrative = context.Narratives.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefault();
+            narrative = context.Narratives
+                .AsNoTracking()
+                .Where(x => x.Name.ToLower() == name.ToLower())
+                .FirstOrDefault();
         }
         catch (Exception)
         {
@@ -305,6 +349,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     public async Task<Result<bool>> AssignNarrative(Coin coin, Narrative newNarrative)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
         bool result;
         if (newNarrative == null || coin == null) { return false; }
         try
@@ -314,6 +359,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
                 .SingleAsync();
 
             coinToUpdate.Narrative = newNarrative;
+            context.Update(coinToUpdate);
 
             result = await context.SaveChangesAsync() > 0;
         }
@@ -321,6 +367,10 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         {
             RejectChanges();
             return new Result<bool>(ex);
+        }
+        finally
+        {
+            context.ChangeTracker?.Clear();
         }
         return result;
     }

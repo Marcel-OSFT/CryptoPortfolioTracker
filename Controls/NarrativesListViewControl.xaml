@@ -17,14 +17,6 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
-        <converters:BoolToScrollModeConverter x:Key="BoolToScrollModeConverter"/>
-        <converters:ColourConverter x:Key="myColourConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ValueFormatConverter x:Key="ValueFormatConverter"/>
-        <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
-
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="MinHeight" Value="10"/>
             <Setter Property="Padding" Value="-8"/>
@@ -52,7 +44,7 @@
             <local:ColumnHeaderButton
                 x:Name="NameHeader"
                 l:Uids.Uid="NarrativesLV_Name" 
-                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}"
+                IsEnabled="{x:Bind converters:Functions.InvertBool(_viewModel.IsExtendedView), Mode=OneWay}"
                 Margin="0,0,0,0"
                 MinWidth="140"
                 FontSize="12"
@@ -76,7 +68,7 @@
             <local:ColumnHeaderButton
                 x:Name="CostBaseHeader"
                 l:Uids.Uid="AssetsLV_MarketValue" 
-                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(_viewModel.IsExtendedView), Mode=OneWay}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -90,7 +82,7 @@
             <local:ColumnHeaderButton
                 x:Name="MarketValueHeader"
                 l:Uids.Uid="AssetsLV_CostBase" 
-                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(_viewModel.IsExtendedView), Mode=OneWay}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -106,7 +98,7 @@
             <local:ColumnHeaderButton
                 x:Name="PnlHeader"
                 l:Uids.Uid="AssetsLV_ProfitLoss" 
-                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(_viewModel.IsExtendedView), Mode=OneWay}"
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -119,7 +111,7 @@
             <local:ColumnHeaderButton 
                 x:Name="PnlPercHeader"
                 l:Uids.Uid="AssetsLV_ProfitLossPerc" 
-                IsEnabled="{Binding IsExtendedView, Converter={StaticResource InvertBoolConverter}}" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(_viewModel.IsExtendedView), Mode=OneWay}" 
                 Margin="0,0,0,0"
                 FontSize="12"
                 FontStyle="Italic"
@@ -132,13 +124,14 @@
         </StackPanel>
 
         <Rectangle Grid.Row="1" Grid.ColumnSpan="4" Fill="#eebc3f" Height="2" Margin="5,0,8,0"/>
+        <TextBlock x:Name="proxy2" Width="0" Height="0" Grid.Row="1" Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.IsExtendedView), Mode=OneWay}"/>
 
         <ListView x:Name="NarrativesListView" Grid.Row="2" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding _narrativeService.ListNarratives}" 
                   BorderBrush="Transparent" BorderThickness="1" IsItemClickEnabled="True" SelectionMode="Single" 
                   toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                   ui:ListViewExtensions.Command="{Binding NarrativeItemClickedCommand}" SizeChanged="ListView_SizeChanged"
                   ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                  ScrollViewer.VerticalScrollMode="{Binding IsExtendedView, Converter={StaticResource BoolToScrollModeConverter}}" 
+                  ScrollViewer.VerticalScrollMode="{x:Bind converters:Functions.TrueToScrollModeDisabled(_viewModel.IsExtendedView), Mode=OneWay}" 
                   CanReorderItems="False" AllowDrop="false" Margin="0,0,0,0">
             
             <ListView.ItemTemplate>
@@ -183,8 +176,8 @@
                                                     </ItemsPanelTemplate>
                                                 </GridView.ItemsPanel>
                                                 <GridView.ItemTemplate>
-                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Asset">
-                                                        <Image Name="Image" HorizontalAlignment="Left" Height="20" Width="39" Source="{Binding ImageUri, Converter={StaticResource ImageConverter}}"/>
+                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Coin">
+                                                        <Image Name="Image" HorizontalAlignment="Left" Height="20" Width="39" Source="{x:Bind converters:Functions.StringToImageSource(ImageUri), Mode=OneWay}"/>
                                                     </DataTemplate>
                                                 </GridView.ItemTemplate>
                                             </GridView>
@@ -194,11 +187,11 @@
                                     <Border Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtMarketValue" 
-                                                       Text="{Binding TotalValue, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                                                       Text="{x:Bind converters:Functions.FormatValueToString(TotalValue,'$ {0:N0}'), Mode=OneWay}" 
                                                        FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" 
                                                        RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtCostBase" 
-                                                       Text="{Binding CostBase, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                                                       Text="{x:Bind converters:Functions.FormatValueToString(CostBase,'$ {0:N0}'), Mode=OneWay}" 
                                                        RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketValue" 
                                                        FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
                                         </RelativePanel>
@@ -207,19 +200,19 @@
                                     <Border Grid.Column="2" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtProfitLoss" 
-                                                       Text="{Binding ProfitLoss, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}"  
+                                                       Text="{x:Bind converters:Functions.FormatValueToString(ProfitLoss,'$ {0:N0}'), Mode=OneWay}"  
                                                        FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"  
                                                        RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtProfitLossPerc" 
-                                                       Text="{Binding ProfitLossPerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.00} %'}" 
+                                                       Text="{x:Bind converters:Functions.FormatValueToString(ProfitLossPerc,'{0:0.00} %'), Mode=OneWay}" 
                                                        RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtProfitLoss" 
                                                        FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"
-                                                       Foreground="{Binding ProfitLossPerc, Converter={StaticResource myColourConverter}}"/>
+                                                       Foreground="{x:Bind converters:Functions.DoubleToColour(ProfitLossPerc,''), Mode=OneWay}"/>
                                         </RelativePanel>
                                     </Border>
                                 
                                     <RelativePanel Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                                        <CommandBar x:Name="HoverCommandBar" Visibility="{Binding DataContext.DataContext.IsExtendedView, ElementName=proxy, Converter={StaticResource BoolToVisibilityConverter}}" 
+                                        <CommandBar x:Name="HoverCommandBar" Visibility="{Binding Visibility, ElementName=proxy2, Mode=OneWay}" 
                                                     IsSticky="False" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
                                             <CommandBar.SecondaryCommands>
                                                 <AppBarButton l:Uids.Uid="NarrativesLV_Edit" Visibility="Visible" x:Name="HoverButtonEdit"  

@@ -16,6 +16,7 @@ using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
 using LanguageExt.Common;
+using LanguageExt.Pretty;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -27,10 +28,7 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
-public class ShowBePatienceMessage
-{
-   
-}
+
 
 [ObservableObject]
 [ObservableRecipient]
@@ -144,45 +142,45 @@ public partial class AddCoinDialog : ContentDialog
             if (coinFullDataById is not null) 
             {
                 selectedCoin = null;
-                var coin = new Coin
-                {
-                    ApiId = coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : string.Empty,
-                    Name = coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : string.Empty,
-                    Symbol = coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : string.Empty,
-                    ImageUri = coinFullDataById.Image.Small.AbsoluteUri.Length > 0 ? coinFullDataById.Image.Small.AbsoluteUri : string.Empty,
-                    Price = coinFullDataById.MarketData.CurrentPrice.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
-                    Ath = coinFullDataById.MarketData.Ath.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
-                    Change52Week = coinFullDataById.MarketData.PriceChangePercentage1YInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    Change1Month = coinFullDataById.MarketData.PriceChangePercentage30DInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    MarketCap = coinFullDataById.MarketData.MarketCap.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
-                    Change24Hr = coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                    About = coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value,
-                    IsAsset = false,
-                    Rank = coinFullDataById.MarketCapRank ?? 99999,
+                //var coin = new Coin
+                //{
+                //    ApiId = coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : string.Empty,
+                //    Name = coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : string.Empty,
+                //    Symbol = coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : string.Empty,
+                //    ImageUri = coinFullDataById.Image.Small.AbsoluteUri.Length > 0 ? coinFullDataById.Image.Small.AbsoluteUri : string.Empty,
+                //    Price = coinFullDataById.MarketData.CurrentPrice.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
+                //    Ath = coinFullDataById.MarketData.Ath.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
+                //    Change52Week = coinFullDataById.MarketData.PriceChangePercentage1YInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                //    Change1Month = coinFullDataById.MarketData.PriceChangePercentage30DInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                //    MarketCap = coinFullDataById.MarketData.MarketCap.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
+                //    Change24Hr = coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
+                //    About = coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value,
+                //    IsAsset = false,
+                //    Rank = coinFullDataById.MarketCapRank ?? 99999,
+                    
+                //};
 
-                };
-                var level = new PriceLevel
-                {
-                    Type = PriceLevelType.TakeProfit,
-                    Coin = coin
-                };
-                coin.PriceLevels.Add(level);
-                level = new PriceLevel
-                {
-                    Type = PriceLevelType.Buy,
-                    Coin = coin
-                };
-                coin.PriceLevels.Add(level);
-                level = new PriceLevel
-                {
-                    Type = PriceLevelType.Stop,
-                    Coin = coin
-                };
-                coin.PriceLevels.Add(level);
-
-                Narrative selectedNarrative = cbNarratives.SelectedItem as Narrative;
-                //selectedNarrative.Coins.Add(coin);
-                coin.Narrative = selectedNarrative;
+                var coin = CoinBuilder.Create()
+                    .WithApiId(coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : string.Empty)
+                    .WithName(coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : string.Empty)
+                    .WithSymbol(coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : string.Empty)
+                    .WithImage(coinFullDataById.Image.Small.AbsoluteUri.Length > 0 ? coinFullDataById.Image.Small.AbsoluteUri : string.Empty)
+                    .CurrentPriceAt(coinFullDataById.MarketData.CurrentPrice.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0)
+                    .AllTimeHighAt(coinFullDataById.MarketData.Ath.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0)
+                    .YearlyChangeAt(coinFullDataById.MarketData.PriceChangePercentage1YInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value)
+                    .MonthlyChangeAt(coinFullDataById.MarketData.PriceChangePercentage30DInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value)
+                    .DailyChangeAt(coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value)
+                    .WithAbout(coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value)
+                    .MarketCapRankAt(coinFullDataById.MarketCapRank ?? 99999)
+                    .MarketCapAt(coinFullDataById.MarketData.MarketCap.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0)
+                    .WithPriceLevel(priceLevel => priceLevel
+                        .OfType(PriceLevelType.TakeProfit))
+                    .WithPriceLevel(priceLevel => priceLevel
+                        .OfType(PriceLevelType.Buy))
+                    .WithPriceLevel(priceLevel => priceLevel
+                        .OfType(PriceLevelType.Stop))
+                    .OfNarrative(cbNarratives.SelectedItem as Narrative)
+                    .Build();
 
                 if (coin.ApiId != string.Empty && coin.Name != string.Empty && coin.Symbol != string.Empty)
                 {

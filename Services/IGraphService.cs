@@ -14,7 +14,7 @@ namespace CryptoPortfolioTracker.Services
         bool IsLoadingFromJson { get; set; }
         public Task LoadGraphFromJson(string portfolioSignature);
         public Task SaveGraphToJson(string portfolioSignature);
-        public Task SaveHistoricalDataBufferToJson(string portfolioSignature);
+       // public Task SaveHistoricalDataBufferToJson(string portfolioSignature);
         public Task RegisterModification(Transaction transactionA, Transaction? transactionB = null);
         public Task ApplyModification(string portfolioSignature);
         public ObservableCollection<DateTimePoint> GetPortfolioValues();
@@ -22,7 +22,8 @@ namespace CryptoPortfolioTracker.Services
         public ObservableCollection<DateTimePoint> GetOutFlowValues();
         public bool IsModificationRequested();
         public DateOnly GetModifyFromDate();
-        public void ClearHistoricalDataBuffer(string portfolioSignature);
+        public void ClearHistoricalDataBuffer();
+        //public void ClearHistoricalDataBuffer(string portfolioSignature);
         public void AddDataPointInFlow(DataPoint dataPoint);
         public void AddDataPointPortfolio(DataPoint dataPoint);
         public void AddDataPointOutFlow(DataPoint dataPoint);

@@ -24,8 +24,6 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-
         <Style x:Key="CustomRadioButtonStyle" TargetType="RadioButton">
             <Setter Property="Background" Value="{ThemeResource RadioButtonBackground}" />
             <Setter Property="Foreground" Value="{ThemeResource RadioButtonForeground}" />
@@ -291,7 +289,7 @@
 
         </RelativePanel>
         <TextBlock Grid.Row="1" l:Uids.Uid="HeatMapView_NoTargets" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   TextWrapping="Wrap" Visibility="{Binding HasTargets, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                   TextWrapping="Wrap" Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.HasTargets), Mode=OneWay}"/>
 
         <lvc:CartesianChart
             Grid.Row="1" SizeChanged="HeatMap_SizeChanged"
@@ -303,9 +301,6 @@
             Sections="{Binding SectionsHeatMap}"
             TooltipTextSize="12"
             Margin="0,10,10,0">
-
-            
-
         </lvc:CartesianChart>
 
         <muxc:TeachingTip x:Name="MyTeachingTipRsi" l:Uids.Uid="HeatMap_TeachRsi" Target="{x:Bind rbtHeatMap}"
@@ -314,9 +309,6 @@
                 <Button Content="Get it" Click="OnGetItClickedRsi"/>
             </muxc:TeachingTip.ActionButtonContent>
         </muxc:TeachingTip>
-
-
-
 
     </Grid>
 

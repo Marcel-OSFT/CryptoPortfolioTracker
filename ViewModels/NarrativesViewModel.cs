@@ -32,7 +32,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     {
         PortfolioName = newValue.Name;
     }
-    public bool IsHidingNetInvestment { get; set; } = true;
 
 
     private readonly IPreferencesService _preferencesService;

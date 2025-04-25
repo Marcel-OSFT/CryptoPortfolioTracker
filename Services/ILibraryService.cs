@@ -11,6 +11,8 @@ namespace CryptoPortfolioTracker.Services;
 
 public interface ILibraryService
 {
+    ObservableCollection<Coin> ListCoins { get; set; }
+
     public Task<Result<bool>> CreateCoin(Coin? newCoin);
     public Task<Result<bool>> MergeCoin(Coin prelistingCoin, Coin? newCoin);
 

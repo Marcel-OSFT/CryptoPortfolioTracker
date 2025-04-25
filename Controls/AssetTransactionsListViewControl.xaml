@@ -17,19 +17,6 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-
-        <converters:DoubleToVisibilityConverter x:Key="DoubleToVisibilityConverter"/>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ValueFormatConverter x:Key="ValueFormatConverter"/>
-        <converters:ImageUriToBitmapImageConverter x:Key="ImageConverter"/>
-        <converters:TransactionDirectionToImageConverter x:Key="TransactionDirectionConverter"/>
-        <converters:TransactionTypeToStringConverter x:Key="TransactionTypeConverter"/>
-        <converters:TransactionTypeToVisibilityConverter x:Key="TransactionTypeToVisibilityConverter"/>
-        <converters:AddPrefixConverter x:Key="AddPrefixConverter"/>
-        <converters:AddSuffixConverter x:Key="AddSuffixConverter"/>
-        <converters:TimeStampConverter x:Key="TimeStampConverter"/>
-
-
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="MinHeight" Value="30"/>
             <Setter Property="Padding" Value="0"/>
@@ -37,7 +24,6 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
-
     </UserControl.Resources>
 
 
@@ -103,13 +89,13 @@
                                         <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed" />
                                         <Border Grid.Row="0" Grid.Column="0"  Margin="10,0,0,0"  VerticalAlignment="Center">
                                             <RelativePanel>
-                                                <Image Name="ImageDirection" Source="{Binding Details.TransactionDirection, Converter={StaticResource TransactionDirectionConverter}}" Width="28" Height="28"  Margin="0,0,0,0" />
+                                                <Image Name="ImageDirection" Source="{x:Bind converters:Functions.TransactionDirectionToBitmapImage(Details.TransactionDirection), Mode=OneWay}" Width="28" Height="28"  Margin="0,0,0,0" />
                                             </RelativePanel>
                                             </Border>
                                         <Border Grid.Row="0" Grid.Column="1"  Margin="5,0,0,0"  VerticalAlignment="Center" >
                                             <StackPanel>
-                                                <TextBlock Name="txtType" Text="{Binding Details.TransactionType, Converter={StaticResource TransactionTypeConverter} }" FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" Margin="0,5,0,0" />
-                                                <TextBlock Name="txtTimeStamp" Text="{Binding TimeStamp, Converter={StaticResource TimeStampConverter} }" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" />
+                                                <TextBlock Name="txtType" Text="{x:Bind converters:Functions.TransactionKindToString(Details.TransactionType), Mode=OneWay}" FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" Margin="0,5,0,0" />
+                                                <TextBlock Name="txtTimeStamp" Text="{x:Bind converters:Functions.DateTimeToString(TimeStamp), Mode=OneWay}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" />
                                                 <TextBlock Name="txtId" Text="{Binding Id }" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="0,0,0,5"/>
                                             </StackPanel>
                                         </Border>
@@ -117,15 +103,13 @@
                                         <Border Grid.Row="0" Grid.Column="2"  Margin="0,0,0,0"  VerticalAlignment="Center" >
                                             <RelativePanel HorizontalAlignment="Right">
                                                 <TextBlock Name="txtQtyA"  
-                                                    Text="{Binding Details.QtyA, 
-                                                        Converter={StaticResource ValueFormatConverter}, 
-                                                        ConverterParameter='{}{0:0.########}'}" 
+                                                    Text="{x:Bind converters:Functions.FormatValueToString(Details.QtyA,'{0:0.########}'), Mode=OneWay}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"
                                                     RelativePanel.LeftOf="txtCoinA"/>
                                                 <TextBlock Name="txtCoinA"  
                                                     Text="{Binding Details.CoinASymbol}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" Margin="5,0,0,0"
                                                     RelativePanel.LeftOf="ImageA"/>
-                                                <Image Name="ImageA" Source="{Binding Details.ImageUriA, Converter={StaticResource ImageConverter}}" Height="24"  Margin="5,0,0,0" 
+                                                <Image Name="ImageA" Source="{x:Bind converters:Functions.StringToImageSource(Details.ImageUriA), Mode=OneWay}" Height="24"  Margin="5,0,0,0" 
                                                     RelativePanel.AlignRightWithPanel="True"/>
                                                 <TextBlock Name="txtCoinAName"  Text="{Binding Details.CoinAName}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0"
                                                     RelativePanel.Below="txtCoinA" RelativePanel.AlignRightWith="txtCoinA"/>
@@ -135,29 +119,23 @@
                                         <Border Grid.Row="0" Grid.Column="3"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                             <RelativePanel x:Name="PanelFrom" HorizontalAlignment="Right">
                                                 <TextBlock Name="txtValueA"  
-                                                    Text="{Binding Details.ValueA, 
-                                                        Converter={StaticResource ValueFormatConverter}, 
-                                                        ConverterParameter='{}$ {0:N0}'}" 
+                                                    Text="{x:Bind converters:Functions.FormatValueToString(Details.ValueA,'$ {0:N0}'), Mode=OneWay}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" Margin="0,-2,0,0"
                                                      RelativePanel.AlignRightWithPanel="True"/>
-                                                <TextBlock Name="txtPricePrefixA"  Text="{Binding Details.CoinASymbol, Converter={StaticResource AddPrefixConverter}, ConverterParameter='(1 | = $ '}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0" 
+                                                <TextBlock Name="txtPricePrefixA"  Text="{x:Bind converters:Functions.AddPrefixAndSuffixToString(Details.CoinASymbol,'\(1 ',' = $ '), Mode=OneWay}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0" 
                                                                RelativePanel.Below="txtValueA" RelativePanel.LeftOf="txtPriceA"/>
                                                 <TextBlock Name="txtPriceA"  
-                                                    Text="{Binding Details.PriceA, 
-                                                        Converter={StaticResource AddSuffixConverter}, 
-                                                        ConverterParameter=')|0.########'}" 
+                                                    Text="{x:Bind converters:Functions.FormatDoubleAndAddSuffix(Details.PriceA,'0.########','\)'), Mode=OneWay}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"  Margin="2,0,0,0" 
                                                     RelativePanel.Below="txtValueA" RelativePanel.AlignRightWithPanel="True"/>
                                                 <TextBlock Name="txtAccountFrom"  Text="{Binding Details.AccountFrom}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"  Margin="2,0,0,0" 
                                                                RelativePanel.Below="txtPriceA" 
                                                                RelativePanel.AlignRightWithPanel="True"/>
-                                                <StackPanel Orientation="Horizontal" Visibility="{Binding Details.FeeQty, Converter={StaticResource DoubleToVisibilityConverter }}" HorizontalAlignment="Right"
+                                                <StackPanel Orientation="Horizontal" Visibility="{x:Bind converters:Functions.ZeroToCollapsed(Details.FeeQty), Mode=OneWay}" HorizontalAlignment="Right"
                                                                 RelativePanel.Below="txtAccountFrom"
                                                                 RelativePanel.AlignRightWithPanel="True" >
                                                     <TextBlock Name="txtQtyFee"  
-                                                        Text="{Binding Details.FeeQty, 
-                                                            Converter={StaticResource StringFormatConverter}, 
-                                                            ConverterParameter='{}Fee: {0:0.########}'}" 
+                                                        Text="{x:Bind converters:Functions.FormatValueToString(Details.FeeQty,'Fee: {0:0.########}'), Mode=OneWay}" 
                                                         FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" />
                                                     <TextBlock Name="txtCoinFee"  Text="{Binding Details.FeeCoinSymbol}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0" />
                                                 </StackPanel>
@@ -165,16 +143,14 @@
                                         </Border>
 
                                         <Border Grid.Row="0" Grid.Column="5"  Margin="10,0,0,0"  VerticalAlignment="Center">
-                                            <RelativePanel Visibility="{Binding Details.TransactionType, Converter={StaticResource TransactionTypeToVisibilityConverter}}" HorizontalAlignment="Right">
+                                            <RelativePanel Visibility="{x:Bind converters:Functions.TransactionKindToVisibility(Details.TransactionType), Mode=OneWay}" HorizontalAlignment="Right">
                                                 <TextBlock Name="txtQtyB"  
-                                                    Text="{Binding Details.QtyB, 
-                                                        Converter={StaticResource ValueFormatConverter}, 
-                                                        ConverterParameter='{}{0:0.########}'}" 
+                                                    Text="{x:Bind converters:Functions.FormatValueToString(Details.QtyB,'{0:0.########}'), Mode=OneWay}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
                                                     RelativePanel.LeftOf="txtCoinB"/>
                                                 <TextBlock Name="txtCoinB"  Text="{Binding Details.CoinBSymbol}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" Margin="5,0,0,0" 
                                                            RelativePanel.LeftOf="ImageB"/>
-                                                <Image Name="ImageB" Source="{Binding Details.ImageUriB, Converter={StaticResource ImageConverter}}" Height="24"  Margin="5,0,0,0"
+                                                <Image Name="ImageB" Source="{x:Bind converters:Functions.StringToImageSource(Details.ImageUriB), Mode=OneWay}" Height="24"  Margin="5,0,0,0"
                                                     RelativePanel.AlignRightWithPanel="True"/>
                                                 <TextBlock Name="txtCoinBName"  Text="{Binding Details.CoinBName}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0"
                                                     RelativePanel.Below="txtCoinB" RelativePanel.AlignRightWith="txtCoinB"/>
@@ -183,19 +159,15 @@
 
                                         <Border Grid.Row="0" Grid.Column="6"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                             <StackPanel>
-                                                <RelativePanel x:Name="PanelTo" Visibility="{Binding Details.TransactionType, Converter={StaticResource TransactionTypeToVisibilityConverter}}" HorizontalAlignment="Right" >
+                                                <RelativePanel x:Name="PanelTo" Visibility="{x:Bind converters:Functions.TransactionKindToVisibility(Details.TransactionType), Mode=OneWay}" HorizontalAlignment="Right" >
                                                     <TextBlock Name="txtValueB"  
-                                                        Text="{Binding Details.ValueB, 
-                                                            Converter={StaticResource ValueFormatConverter}, 
-                                                            ConverterParameter='{}$ {0:N0}'}" 
+                                                        Text="{x:Bind converters:Functions.FormatValueToString(Details.ValueB,'$ {0:N0}'), Mode=OneWay}" 
                                                         FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" Margin="0,-2,0,0"
                                                         RelativePanel.AlignRightWithPanel="True"/>
-                                                    <TextBlock Name="txtPricePrefixB"  Text="{Binding Details.CoinBSymbol, Converter={StaticResource AddPrefixConverter}, ConverterParameter='(1 | = '}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0" 
+                                                    <TextBlock Name="txtPricePrefixB"  Text="{x:Bind converters:Functions.AddPrefixAndSuffixToString(Details.CoinBSymbol,'\(1 ',' = '), Mode=OneWay}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0" 
                                                                 RelativePanel.Below="txtValueB" RelativePanel.LeftOf="txtPriceB" />
                                                     <TextBlock Name="txtPriceB"  
-                                                        Text="{Binding Details.PriceB, 
-                                                            Converter={StaticResource AddSuffixConverter}, 
-                                                            ConverterParameter=')|0.########'}" 
+                                                        Text="{x:Bind converters:Functions.FormatDoubleAndAddSuffix(Details.PriceB,'0.########', '\)'), Mode=OneWay}" 
                                                         FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"  Margin="2,0,0,0" 
                                                         RelativePanel.Below="txtValueB" RelativePanel.AlignRightWithPanel="True"/>
                                                 </RelativePanel>

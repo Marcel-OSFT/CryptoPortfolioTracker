@@ -17,12 +17,6 @@
     SizeChanged="GridView_SizeChanged"
     mc:Ignorable="d">
 
-    <UserControl.Resources>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ValueFormatConverter x:Key="ValueFormatConverter"/>
-    </UserControl.Resources>
-
-
     <GridView x:Name="AssetAccountsGridView" x:FieldModifier="public" ItemsSource="{Binding _accountService.ListAssetAccounts, Mode=TwoWay}" 
               ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
         ScrollViewer.HorizontalScrollMode="Enabled" SelectedIndex="0"
@@ -50,9 +44,7 @@
                                Width="{Binding Tag, ElementName=AssetAccountsGridView}"
                                 FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="NoWrap" />
                     <TextBlock Name="txtQty" 
-                        Text="{Binding Qty, 
-                            Converter={StaticResource ValueFormatConverter}, 
-                            ConverterParameter='{}{0:0.########}'}" 
+                        Text="{x:Bind converters:Functions.FormatValueToString(Qty,'{0:0.########}'), Mode=OneWay}" 
                         TextWrapping="NoWrap" RelativePanel.Below="txtName"  
                        HorizontalAlignment="Stretch" 
                        FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>

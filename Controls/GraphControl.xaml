@@ -21,11 +21,6 @@
     Loaded="Control_Loaded"
     mc:Ignorable="d">
 
-    <UserControl.Resources>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    </UserControl.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -62,15 +57,15 @@
             >
         </lvc:CartesianChart>
 
-        <ProgressRing Grid.Row="1"
+        <ProgressRing x:Name="progressRing" Grid.Row="1"
                       HorizontalAlignment="Center" VerticalAlignment="Center"
                       IsActive="{Binding IsLoadingFromJsonGraph}" 
-                      Visibility="{Binding IsLoadingFromJsonGraph, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='invert'}"/>
+                      Visibility="{x:Bind converters:Functions.TrueToVisible(progressRing.IsActive), Mode=OneWay}"/>
 
         <StackPanel Grid.Row="1" x:Name="layoutRoot" Background="black" Opacity="0.5" 
             HorizontalAlignment="Center" VerticalAlignment="Center"
             Margin="0,0,0,0"
-            Visibility="{Binding IsUpdatingGraph, Converter={StaticResource BoolToVisibilityConverter }, ConverterParameter='invert'}">
+            Visibility="{x:Bind converters:Functions.TrueToVisible(_viewModel.IsUpdatingGraph), Mode=OneWay}">
             <StackPanel BorderBrush="PaleGoldenrod"  BorderThickness="2" Padding="12">
                 <TextBlock  l:Uids.Uid="GrahicView_UpdateText" />
                 <StackPanel Orientation="Vertical">
@@ -78,9 +73,7 @@
                     Value="{Binding ProgressValueGraph}" 
                     Maximum="100" 
                     Margin="0,12"/>
-                    <TextBlock Text="{Binding ProgressValueGraph, 
-                        Converter={StaticResource StringFormatConverter}, 
-                        ConverterParameter='{}{0:0} %'}"/>
+                    <TextBlock Text="{x:Bind converters:Functions.Int32ToString(_viewModel.ProgressValueGraph,'{0:0} %'), Mode=OneWay}"/>
                 </StackPanel>
             </StackPanel>
 

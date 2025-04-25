@@ -9,12 +9,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualBasic.FileIO;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace CryptoPortfolioTracker.Helpers;
 
 public class MkOsft
 {
+
     /// <summary>
     /// This gives the maximum memory cleanup when removing an observable collection
     /// </summary>

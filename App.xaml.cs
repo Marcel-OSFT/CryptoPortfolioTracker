@@ -27,6 +27,10 @@ using CommunityToolkit.WinUI;
 using Newtonsoft.Json;
 using CommunityToolkit.Mvvm.Messaging;
 using System.Threading;
+using System.ServiceProcess;
+using Windows.UI.Popups;
+using Microsoft.Win32.TaskScheduler;
+using Task = System.Threading.Tasks.Task;
 
 //using Microsoft.UI.Xaml.Markup;
 //using Microsoft.UI.Xaml;
@@ -71,6 +75,12 @@ public partial class App : Application
     public const string PortfoliosFileName = "portfolios.json";
     public static string PortfoliosPath { get; private set; }
     public static string ChartsFolder { get; private set; }
+    public static string ScheduledTaskExe { get; private set; }
+    public static string PowerShellScriptPs1 { get; private set; }
+
+    private const string TriggerTime = "02:00"; // 2 AM daily
+    public const string ScheduledTaskName = "CryptoPortfolioTracker MarketCharts Update Task";
+
 
     public App()
     {
@@ -81,6 +91,7 @@ public partial class App : Application
         GetAppEnvironmentals();
         Container = RegisterServices();
         PreferencesService = Container.GetService<IPreferencesService>() ?? throw new InvalidOperationException("Failed to retrieve IPreferencesService from the service container.");
+
     }
 
     /// <summary>
@@ -97,7 +108,7 @@ public partial class App : Application
         _mutex = new Mutex(false, MutexName, out bool createdNew);
 
         // Check if a new mutex was created
-        if (!createdNew)
+        if (!createdNew && !AdminCheck.IsRunAsAdmin())
         {
             // Another instance is already running
             await ShowErrorMessage("Another instance of the application is already running.");
@@ -111,13 +122,16 @@ public partial class App : Application
 
         PreferencesService.LoadUserPreferencesFromXml();
 
+
+
         AddNewTeachingTips();
-        
+
         InitializeLogger();
         await InitializeLocalizer();
+        await SetupScheduledTask();
 
-        InitializePortfolioService();
-        
+        await InitializePortfolioService();
+
         CacheLibraryIconsAsync();
         Window = Container.GetService<MainWindow>();
         if (Window != null)
@@ -127,6 +141,101 @@ public partial class App : Application
         else
         {
             Logger?.Error("Failed to retrieve MainWindow from the service container.");
+        }
+    }
+
+    private async Task SetupScheduledTask()
+    {
+        var registered = await IsTaskRegistered(ScheduledTaskName);
+        if (!registered)
+        {
+            if (!AdminCheck.IsRunAsAdmin())
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = Localizer.GetLocalizedString("Messages_ScheduledTask_Title"),
+                    Content = Localizer.GetLocalizedString("Messages_ScheduledTask_Explainer"),
+                    XamlRoot = Splash?.Content.XamlRoot,
+                    CloseButtonText = "OK"
+                };
+
+                await dialog.ShowAsync();
+
+                RestartAsAdmin();
+            }
+            else
+            {
+                RegisterScheduledTask(ScheduledTaskName, "Daily price update for the Market Charts", ScheduledTaskExe, TriggerTime);
+            }
+        }
+    }
+
+    private void RestartAsAdmin()
+    {
+        var exeName = Process.GetCurrentProcess().MainModule.FileName;
+        var startInfo = new ProcessStartInfo(exeName)
+        {
+            UseShellExecute = true,
+            Verb = "runas"
+        };
+
+        try
+        {
+            Process.Start(startInfo);
+            Application.Current.Exit();
+        }
+        catch (Exception ex)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Error",
+                Content = $"Failed to restart application as administrator: {ex.Message}",
+                CloseButtonText = "OK"
+            };
+
+            dialog.ShowAsync();
+        }
+    }
+
+    private async Task<bool> IsTaskRegistered(string taskName)
+    {
+        using (TaskService ts = new TaskService())
+        {
+            TaskFolder folder = ts.GetFolder(@"\");
+            var task = folder.Tasks.Where(t => t.Name == taskName).FirstOrDefault();
+
+            return (task != null);
+        }
+    }
+
+    private void RegisterScheduledTask(string taskName, string taskDescription, string exePath, string triggerTime)
+    {
+        using (TaskService ts = new TaskService())
+        {
+            TaskDefinition td = ts.NewTask();
+            td.RegistrationInfo.Description = taskDescription;
+
+            td.Principal.LogonType = TaskLogonType.InteractiveToken;
+            td.Principal.UserId = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
+            //td.Principal.LogonType = TaskLogonType.ServiceAccount;
+            //td.Principal.UserId = "SYSTEM";
+
+            td.Principal.RunLevel = TaskRunLevel.Highest;
+
+            RepetitionPattern repetition = new RepetitionPattern(TimeSpan.FromHours(1), TimeSpan.FromHours(20));
+            DailyTrigger dailyTrigger = new DailyTrigger { Repetition = repetition, StartBoundary = DateTime.Today.AddHours(3) /* Adjust time as needed */ };
+            td.Triggers.Add(dailyTrigger);
+
+            td.Actions.Add(new ExecAction(exePath, null, null));
+
+           // td.Settings.StartWhenAvailable = true;
+            td.Settings.DisallowStartIfOnBatteries = false;
+            td.Settings.StopIfGoingOnBatteries = false;
+            td.Settings.RunOnlyIfIdle = false;
+            td.Settings.IdleSettings.StopOnIdleEnd = false;
+
+            ts.RootFolder.RegisterTaskDefinition(taskName, td);
         }
     }
 
@@ -154,7 +263,10 @@ public partial class App : Application
         var context = portfolioService.Context;
 
 
-        var coins = context?.Coins.Where(coin => !string.IsNullOrEmpty(coin.ImageUri)).ToList();
+        var coins = context?.Coins
+            //.AsNoTracking()
+            .Where(coin => !string.IsNullOrEmpty(coin.ImageUri))
+            .ToList();
 
         if (coins != null)
         {
@@ -172,7 +284,7 @@ public partial class App : Application
                         }
                     }
                 }
-                
+
             });
 
             await Task.WhenAll(tasks);
@@ -249,7 +361,7 @@ public partial class App : Application
     }
 
 
-    private static async void InitializePortfolioService()
+    private static async Task InitializePortfolioService()
     {
         var contextService = App.Container.GetService<PortfolioService>();
         await contextService.InitializeAsync();
@@ -267,13 +379,26 @@ public partial class App : Application
 
         AppDomain.CurrentDomain.SetData("DataDirectory", AppDataPath);
         var version = Assembly.GetExecutingAssembly().GetName().Version;
-        ProductVersion = version is not null ? version.ToString() : string.Empty ;
+        ProductVersion = version is not null ? version.ToString() : string.Empty;
 
         PortfoliosPath = Path.Combine(AppDataPath, "Portfolios");
         ChartsFolder = Path.Combine(AppDataPath, "MarketCharts");
+        PowerShellScriptPs1 = Path.Combine(AppPath, "RegisterScheduledTask.ps1");
 
+        //ScheduledTaskExe = Path.Combine(AppPath, "MarketChartsUpdateService.exe");
 
+        if (Debugger.IsAttached)
+        {
+            // Development mode (running from IDE)
+            ScheduledTaskExe = "C:\\Program Files\\Crypto Portfolio Tracker\\MarketChartsUpdateService.exe";
+        }
+        else
+        {
+            // Production mode
+            ScheduledTaskExe = Path.Combine(AppPath, "MarketChartsUpdateService.exe");
+        }
     }
+
     private static IServiceProvider RegisterServices()
     {
         var services = new ServiceCollection();
@@ -349,6 +474,10 @@ public partial class App : Application
     {
 #if DEBUG
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Debug)
+                .Enrich.FromLogContext()
             .WriteTo.Debug(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
             .WriteTo.File(App.AppDataPath + "\\log.txt",
                     rollingInterval: RollingInterval.Day,
@@ -369,7 +498,7 @@ public partial class App : Application
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
         Logger.Information("------------------------------------");
         Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
-        
+
     }
 
     public void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -387,11 +516,11 @@ public partial class App : Application
 
     public static async Task ShowErrorMessage(string message)
     {
-        Window? tempWindow= null;
+        Window? tempWindow = null;
         var xamlRoot = MainPage.Current?.XamlRoot;
-        if ( xamlRoot == null && Splash is not null)
+        if (xamlRoot == null && Splash is not null)
         {
-            xamlRoot= Splash.Content.XamlRoot;
+            xamlRoot = Splash.Content.XamlRoot;
         }
         else if (xamlRoot == null)
         {

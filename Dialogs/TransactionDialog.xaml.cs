@@ -132,9 +132,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         CalculatePriceB();
     }
 
-   
-    #region Constructor(s)
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public TransactionDialog(ITransactionService transactionService, IPreferencesService preferencesService, DialogAction _dialogAction, Transaction? transaction = null)
     {
@@ -197,7 +194,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
 
     private async Task<Transaction> WrapUpTransactionData()
     {
-        var transactionToAdd = new Transaction();
         var newMutations = new List<Mutation>();
 
         Mutation mutationToAdd;
@@ -273,34 +269,30 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         var _coinB = CoinB != string.Empty && CoinB.Contains(' ') ? CoinB.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
         var _coinFee = FeeCoin != string.Empty && FeeCoin.Contains(' ') ? FeeCoin.Split(" ", 2) : new string[2] { string.Empty, string.Empty };
 
-        var transactionDetails = new TransactionDetails
-        {
-            CoinASymbol = _coinA[0],
-            CoinAName = _coinA[1],
-            CoinBSymbol = _coinB[0],
-            CoinBName = _coinB[1],
-            FeeCoinSymbol = _coinFee[0],
-            FeeCoinName = _coinFee[1],
-            AccountFrom = AccountFrom,
-            AccountTo = AccountTo,
-            FeeQty = FeeQty,
-            PriceA = PriceA,
-            PriceB = PriceB,
-            QtyA = QtyA,
-            QtyB = QtyB,
-            TransactionType = TransactionType,
-        };
-        transactionToAdd.Note = Note;
-        transactionToAdd.TimeStamp = DateTime.Parse(TimeStamp.ToString());
+        var transactionToAdd = TransactionBuilder.Create()
+            .ExecutedOn(DateTime.Parse(TimeStamp.ToString()))
+            .WithNote(Note)
+            .WithMutations(newMutations)
+            .WithDetails(
+                transactionDetails => transactionDetails
+                    .OfTransactionType(TransactionType)
+                    .FromCoinSymbol(_coinA[0])
+                    .FromCoinName(_coinA[1])
+                    .FromPrice(PriceA)
+                    .FromQty(QtyA)
+                    .FromAccount(AccountFrom)
+                    .ToCoinSymbol(_coinB[0])
+                    .ToCoinName(_coinB[1])
+                    .ToPrice(PriceB)
+                    .ToQty(QtyB)
+                    .ToAccount(AccountTo)
+                    .FeeCoinSymbol(_coinFee[0])
+                    .FeeCoinName(_coinFee[1])
+                    .FeeQty(FeeQty))
+            .ForAsset(dialogAction == DialogAction.Edit && transactionToEdit != null ? transactionToEdit.RequestedAsset : null)
+            .WithId(dialogAction == DialogAction.Edit && transactionToEdit != null ? transactionToEdit.Id : 0)
+            .Build();
 
-        transactionToAdd.Details = transactionDetails;
-        transactionToAdd.Mutations = newMutations;
-
-        if (dialogAction == DialogAction.Edit && transactionToEdit != null)
-        {
-            transactionToAdd.RequestedAsset = transactionToEdit.RequestedAsset;
-            transactionToAdd.Id = transactionToEdit.Id;
-        }
         return transactionToAdd;
     }
     private async Task<Result<Mutation>> GetMutation(TransactionKind type, MutationDirection direction, string _symbolName, double qty, double price, string _account)
@@ -316,19 +308,17 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
             var assetIdResult = await _transactionService.GetAssetIdByCoinAndAccount(coin, account);
             var assetId = assetIdResult.IfFail(err => throw err);
 
-            var mutation = new Mutation
-            {
-                Asset = new Asset
-                {
-                    Coin = coin,
-                    Account = account,
-                    Id = assetId
-                },
-                Qty = qty,
-                Price = price,
-                Direction = direction,
-                Type = type
-            };
+            var mutation = MutationBuilder.Create()
+                .OfType(type)
+                .QtyOf(qty)
+                .PriceOf(price)
+                .Direction(direction)
+                .WithAsset(
+                    asset => asset
+                        .WithCoin(coin)
+                        .WithAccount(account)
+                        .WithId(assetId))
+                .Build();
 
             return mutation;
         }
@@ -383,7 +373,9 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         CoinA = CoinB = AccountFrom = AccountTo = Note = FeeCoin = "";
         HeaderCoinA = HeaderCoinB = HeaderAccountFrom = HeaderAccountTo = "";
 
+        QtyA = MaxQtyA = PriceA = PriceB = QtyB = FeeQty = -1;
         QtyA = MaxQtyA = PriceA = PriceB = QtyB = FeeQty = 0;
+
 
         ListCoinA = ListCoinA ?? new List<string>();
         ListCoinA.Clear();
@@ -531,69 +523,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         var selectedText = args.SelectedItem.ToString() ?? string.Empty;
         await SetEntriesBasedOnCoinA(selectedText);
     }
-    //private async Task SetEntriesBasedOnCoinA(string coin)
-    //{
-    //    switch (TransactionType.ToString())
-    //    {
-    //        case "Deposit": //->ASBoxCoinA
-    //            ListAccountFrom = (await _transactionService
-    //                .GetAccountNames())
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-    //            break;
-    //        case "Withdraw": //->ASBoxCoinA
-    //            ListAccountFrom = (await _transactionService
-    //                .GetAccountNames(coin))
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-    //            break;
-    //        case "Transfer": //->ASBoxCoinA
-    //            ListAccountFrom = (await _transactionService
-    //                .GetAccountNames(coin))
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-    //            break;
-    //        case "Convert": //->ASBoxCoinA
-    //            ListAccountFrom = (await _transactionService
-    //                .GetAccountNames(coin))
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-    //            ListCoinB = (await _transactionService
-    //                .GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(coin))
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            ListAccountTo = (await _transactionService
-    //                .GetAccountNames())
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB);
-    //            break;
-    //        case "Buy": //->ASBoxCoinA
-    //            ListAccountFrom = (await _transactionService
-    //                .GetAccountNames(coin))
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-    //            ListAccountTo = (await _transactionService
-    //                .GetAccountNames())
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            ListCoinB.Clear();
-    //            var list = (await _transactionService
-    //                .GetCoinSymbolsExcludingUsdtUsdcFromLibrary())
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            ListCoinB.AddRange(list);
-    //            CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB); //string.empty
-
-    //            break;
-    //        case "Sell": //->ASBoxCoinA
-    //            ListAccountFrom = (await _transactionService
-    //                .GetAccountNames(coin))
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
-    //            CoinB = ClearStringIfNoMatchWithList(CoinB, ListCoinB);
-    //            ListAccountTo = (await _transactionService
-    //                .GetAccountNames())
-    //                .Match(Succ: list => list, Fail: err => new List<string>());
-    //            break;
-    //    }
-    //}
+    
     private async Task SetEntriesBasedOnCoinA(string coin)
     {
         List<string> accountNames;
@@ -636,12 +566,17 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         AccountFrom = ClearStringIfNoMatchWithList(AccountFrom, ListAccountFrom);
     }
 
-    private async Task<List<string>> GetAccountNames(string coin = null)
+    private async Task<List<string>> GetAccountNames(string coin)
     {
         return (await _transactionService.GetAccountNames(coin))
             .Match(Succ: list => list, Fail: err => new List<string>());
     }
 
+    private async Task<List<string>> GetAccountNames()
+    {
+        return (await _transactionService.GetAccountNames(string.Empty))
+            .Match(Succ: list => list, Fail: err => new List<string>());
+    }
     private async Task<List<string>> GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(string coin)
     {
         return (await _transactionService.GetCoinSymbolsExcludingUsdtUsdcFromLibraryExcluding(coin))
@@ -748,10 +683,6 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         PriceA = 0;
     }
 
-    private void TBoxQtyA_TextChanged(object sender, EventArgs e)
-    {
-
-    }
 
     private void TBoxQtyA_LostFocus(object sender, RoutedEventArgs e)
     {
@@ -767,6 +698,5 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         }
     }
 
-    
 }
 

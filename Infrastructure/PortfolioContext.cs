@@ -24,10 +24,10 @@ namespace CryptoPortfolioTracker.Infrastructure
         //}
 
 
-        public PortfolioContext(DbContextOptions<PortfolioContext> connection) : base(connection) { }
+       public PortfolioContext(DbContextOptions<PortfolioContext> connection) : base(connection) { }
 
 
-
+       
         public DbSet<Coin> Coins  { get; set; }
         public DbSet<Asset> Assets { get; set; }
         public DbSet<Account> Accounts { get; set; }
@@ -36,8 +36,6 @@ namespace CryptoPortfolioTracker.Infrastructure
         public DbSet<Transaction> Transactions { get; set; }
 
         public DbSet<PriceLevel> PriceLevels { get; set; }
-
-
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -51,6 +49,7 @@ namespace CryptoPortfolioTracker.Infrastructure
             builder.ApplyConfiguration(new PriceLevelEntityTypeConfiguration());
 
         }
+
 
     }
 }

@@ -10,6 +10,8 @@ using System.Globalization;
 using CryptoPortfolioTracker.Enums;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
+using CommunityToolkit.Mvvm.Messaging;
 
 
 namespace CryptoPortfolioTracker.Services;
@@ -17,11 +19,13 @@ namespace CryptoPortfolioTracker.Services;
 public class PreferencesService : IPreferencesService
 {
     private UserPreferences userPreferences;
+    private readonly IMessenger _messenger;
     private Serilog.ILogger Logger { get; set; }
-    public PreferencesService()
+    public PreferencesService(IMessenger messenger)
     {
         userPreferences = new UserPreferences();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PreferencesService).Name.PadRight(22));
+        _messenger = messenger;
     }
 
     public UserPreferences GetPreferences()
@@ -215,6 +219,7 @@ public class PreferencesService : IPreferencesService
         var myWriter = new StreamWriter(App.AppDataPath + "\\prefs.xml");
         mySerializer.Serialize(myWriter, this.userPreferences);
         myWriter.Close();
+        _messenger.Send(new PreferencesChangedMessage());
     }
 
     public void AttachLogger()

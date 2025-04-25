@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
@@ -12,14 +15,16 @@ using LanguageExt;
 using LanguageExt.Common;
 using LanguageExt.Pipes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.UI;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
 using Serilog.Core;
-using CoinGeckoClient = CoinGeckoFluentApi.Client.CoinGeckoClient;
-using HttpClient = System.Net.Http.HttpClient;
+using Task = System.Threading.Tasks.Task;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -32,8 +37,8 @@ public class GraphUpdateService : IGraphUpdateService
     private Task? resumeTask;
     private readonly PortfolioService _portfolioService;
     private readonly IGraphService _graphService;
-    private double progressCounter;
-    private double progressInterval;
+    //private double progressCounter;
+    //private double progressInterval;
 
     private UpdateContext currentContext;
 
@@ -44,14 +49,13 @@ public class GraphUpdateService : IGraphUpdateService
     public GraphUpdateService(IGraphService graphService, PortfolioService portfolioService, IMessenger messenger)
     {
         _portfolioService = portfolioService;
-        timer = new(System.TimeSpan.FromMinutes(1));
+        timer = new(System.TimeSpan.FromMinutes(5));
         IsPausRequested = false;
         _graphService = graphService;
         _messenger = messenger;
     }
-   
 
-    public void  Start()
+    public void Start()
     {
         Logger.Information("GraphUpdateService started");
         currentContext = _portfolioService.UpdateContext;
@@ -62,12 +66,15 @@ public class GraphUpdateService : IGraphUpdateService
         try
         {
             await _graphService.LoadGraphFromJson(_portfolioService.CurrentPortfolio.Signature);
-            await Task.Delay(60000);
-            await CheckForNewGraphData();
+            await Task.Delay(10000);
+            if (didScheduledTaskComplete())
+            {
+                await CheckForNewGraphData();
+            }
 
             while (await timer.WaitForNextTickAsync(cts.Token))
             {
-                if (!IsPausRequested)
+                if (!IsPausRequested && didScheduledTaskComplete())
                 {
                     if (resumeTask == null || resumeTask.IsCompleted )
                     {
@@ -80,11 +87,14 @@ public class GraphUpdateService : IGraphUpdateService
                         Logger.Information("NextTick received => service waiting for resumeTask to complete");
                     };
                 }
-                else
+                else if (IsPausRequested)
                 {
                     Logger.Information("NextTick received => service paused");
                 }
-                
+                else
+                {
+                    Logger.Information("NextTick received => Scheduled Update Task not yet completed for today");
+                }
             }
         }
         catch (OperationCanceledException)
@@ -131,6 +141,36 @@ public class GraphUpdateService : IGraphUpdateService
             Logger.Information("PriceUpdateService continued with existing context");
         }
     }
+    private bool didScheduledTaskComplete()
+    {
+        using (TaskService ts = new TaskService())
+        {
+            TaskFolder folder = ts.GetFolder("\\");
+            var task = folder.Tasks.Where(t => t.Name == App.ScheduledTaskName).FirstOrDefault();
+            
+            if (task != null)
+            {
+                if (task.LastRunTime.Date == DateTime.Today && task.LastTaskResult == 0)
+                {
+                    Logger.Information("{0} has completed its task today", App.ScheduledTaskName);
+                    return true;
+                }
+                else if (task.LastTaskResult != 0)
+                {
+                    Logger.Information("{0} has failed to run to completion", App.ScheduledTaskName);
+                }
+                else if (task.State == TaskState.Running)
+                {
+                    Logger.Information("{0} is running", App.ScheduledTaskName);
+                }
+                else
+                {
+                    Logger.Information("{0} not yet executed", App.ScheduledTaskName);
+                }
+            }
+            return false;
+        }
+    }
     private async Task<Result<bool>> CheckForNewGraphData()
     {
         int days;
@@ -138,37 +178,29 @@ public class GraphUpdateService : IGraphUpdateService
         IsUpdating = true;
         try
         {
-            if (_graphService.HasHistoricalDataBuffer())
+            if (_graphService.IsModificationRequested())
             {
-                days = GetDaysFromBuffer();
-                assets = await GetRemainingAssets();
+                Logger.Information("Applying Modification => FromDate: {0}", _graphService.GetModifyFromDate());
+                await _graphService.ApplyModification(_portfolioService.CurrentPortfolio.Signature);
+            }
+
+            if (_graphService.HasDataPoints())
+            {
+                days = GetDaysBasedOnLatestDataPoint();
             }
             else
             {
-                if (_graphService.IsModificationRequested())
-                {
-                    Logger.Information("Applying Modification => FromDate: {0}", _graphService.GetModifyFromDate());
-                    await _graphService.ApplyModification(_portfolioService.CurrentPortfolio.Signature);
-                }
+                days = await GetDaysBasedOnOldestTransaction();
 
-                if (_graphService.HasDataPoints())
+                //*** CoinGecko provides data for 'only' the last 365 days. If oldest Transaction is beyond 365 days 
+                //*** an initial starting Point needs to be set as first portfolio value
+                if (days > 365)
                 {
-                    days = GetDaysBasedOnLatestDataPoint();
+                    ObtainFirstPortfolioValue();
+                    days = 365;
                 }
-                else
-                {
-                    days = await GetDaysBasedOnOldestTransaction();
-
-                    //*** CoinGecko provides data for 'only' the last 365 days. If oldest Transaction is beyond 365 days 
-                    //*** an initial starting Point needs to be set as first portfolio value
-                    if (days > 365)
-                    {
-                        ObtainFirstPortfolioValue();
-                        days = 365;
-                    }
-                }
-                assets = await GetAssets();
             }
+            assets = await GetAssets();
 
             if (days == 0 || !assets.Any())
             {
@@ -177,9 +209,32 @@ public class GraphUpdateService : IGraphUpdateService
             }
             Logger.Information("Historical Data Settings; days {0}, assets {1}", days, assets.Count);
 
+            
+
+
             await AddInFlowData(days);
             await AddOutFlowData(days);
             await AddPortfolioValueData(assets, days);
+
+            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                _messenger.Send(new GraphUpdatedMessage());
+            });
+
+            //var validationResult = await ValidateMarketCharts(assets);
+            //await validationResult.Match(
+            //    async s => 
+            //    {
+            //        await AddPortfolioValueData(assets, days);
+
+            //    },
+            //    err =>
+            //    {
+            //        Logger.Warning($"MarketCharts validation failed. {err.Message}");
+            //        return Task.CompletedTask;
+            //    }
+            //);
+
             return true;
         }
         catch (Exception ex)
@@ -192,6 +247,8 @@ public class GraphUpdateService : IGraphUpdateService
             IsUpdating = false;
         }
     }
+
+   
 
     private async Task AddInFlowData(int days)
     {
@@ -219,10 +276,11 @@ public class GraphUpdateService : IGraphUpdateService
             // var endDate = DateTime.UtcNow.Date;
             var context = _portfolioService.UpdateContext;
             var deposits = await context.Mutations
-                .Include(t => t.Transaction)
+                .AsNoTracking()
                 .Where(x => x.Transaction.TimeStamp.Date >= startDate
                     //&& x.Transaction.TimeStamp.Date <= endDate
                     && x.Type == Enums.TransactionKind.Deposit)
+                .Include(t => t.Transaction)
                 .GroupBy(g => g.Transaction.TimeStamp.Date)
                 .Select(grouped => new
                 {
@@ -275,10 +333,11 @@ public class GraphUpdateService : IGraphUpdateService
 
             var context = _portfolioService.UpdateContext;
             var withdraws = await context.Mutations
-                .Include(t => t.Transaction)
+                .AsNoTracking()
                 .Where(x => x.Transaction.TimeStamp.Date >= startDate
                     // && x.Transaction.TimeStamp.Date <= endDate
                     && x.Type == Enums.TransactionKind.Withdraw)
+                .Include(t => t.Transaction)
                 .GroupBy(g => g.Transaction.TimeStamp.Date)
                 .Select(grouped => new
                 {
@@ -305,13 +364,14 @@ public class GraphUpdateService : IGraphUpdateService
         {
             App.UpdateSemaphore.Release();
         }
-
-        
     }
     private async Task AddPortfolioValueData(List<AssetTotals> assets, int days)
     {
-        progressCounter = 0;
-        progressInterval = (100.0/assets.Count);
+        //progressCounter = 0;
+        //progressInterval = (100.0/assets.Count);
+
+        _graphService.ClearHistoricalDataBuffer();
+
         foreach (var asset in assets)
         {
             if (cts is null || cts.IsCancellationRequested || IsPausRequested)
@@ -326,7 +386,7 @@ public class GraphUpdateService : IGraphUpdateService
             {
                 var historicalData = await CalculateAndPopulateHistoricalDataById(asset, days, s);
                 _graphService.AddHistoricalDataToBuffer(historicalData);
-                await _graphService.SaveHistoricalDataBufferToJson(_portfolioService.CurrentPortfolio.Signature);
+               // await _graphService.SaveHistoricalDataBufferToJson(_portfolioService.CurrentPortfolio.Signature);
             },
             err =>
             {
@@ -337,12 +397,12 @@ public class GraphUpdateService : IGraphUpdateService
             {
                 continue;
             }
-            progressCounter++;
+            //progressCounter++;
 
-            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                _messenger.Send(new UpdateProgressValueMessage(Convert.ToInt16((100 * progressCounter / assets.Count))));
-            });
+            //MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+            //{
+            //    _messenger.Send(new UpdateProgressValueMessage(Convert.ToInt16((100 * progressCounter / assets.Count))));
+            //});
             
         }
         await CalculateAndStoreDataPoints(_graphService.GetHistoricalDataBuffer());
@@ -362,6 +422,11 @@ public class GraphUpdateService : IGraphUpdateService
 
         var dataSetChart = chartData.Prices.Where(x => DateOnly.FromDateTime(DateTime.UnixEpoch.AddMilliseconds(Convert.ToDouble(x[0]))).CompareTo(firstDate) >= 0).ToArray();
         if (dataSetChart == null || dataSetChart.Length == 0) { return data; }
+
+        if (dataSetChart.Length < days)
+        {
+            days = dataSetChart.Length;
+        }
 
         var dateShift = 0;
 
@@ -456,195 +521,151 @@ public class GraphUpdateService : IGraphUpdateService
         finally
         {
             await _graphService.SaveGraphToJson(_portfolioService.CurrentPortfolio.Signature);
-            _graphService.ClearHistoricalDataBuffer(_portfolioService.CurrentPortfolio.Signature);
+           // _graphService.ClearHistoricalDataBuffer(_portfolioService.CurrentPortfolio.Signature);
             Logger.Information("Historical Data updated and saved");
-
-            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                _messenger.Send(new IsUpdatingGraphMessage(false));
-            });
         }
     }
     private async Task<Result<MarketChartById>> GetHistoricalPrices(AssetTotals asset)
     {
         var marketChart = new MarketChartById();
-        var daysToGet = 0;
 
-        await marketChart.LoadMarketChartJson(asset.Coin.ApiId);
+        var suffix = asset.Coin.Name.Contains("_pre-listing") ? "-prelisting" : "";
 
-        if (marketChart is null || marketChart.Prices is null || marketChart.Prices.Length == 0)
+        var loadResult = await marketChart.LoadMarketChartJson(asset.Coin.ApiId + suffix);
+        loadResult.IfLeft(err =>
         {
-            daysToGet = 365;
-            Logger.Information("No MarketChartJson available for {0}", asset.Coin.ApiId);
-        }
-        else
-        {
-            var lastChartDate = marketChart.EndDate().ToDateTime(TimeOnly.Parse("01:00 AM"));
-            daysToGet = DateTime.UtcNow.Subtract(lastChartDate).Days;
-            if (daysToGet > 0)
-            {
-                Logger.Information("MarketChartJson needs additional data for the last {0} days => {1}", daysToGet, asset.Coin.ApiId);
-            }
-            else
-            {
-                Logger.Information("MarketChartJson up-to-date => {0}", asset.Coin.ApiId);
-            }
-        }
-
-        if (daysToGet > 0 && (asset.Coin.Name.Length <= 12 || (asset.Coin.Name.Length > 12
-            && asset.Coin.Name.Substring(asset.Coin.Name.Length - 12) != "_pre-listing")))
-        {
-            //No data yet, so get/save History for 365 days and set marketChart.Prices for requested amount of days
-            Task delay = Task.Run(() => DelayAndShowProgress(true));
-
-            var result = await GetHistoricalPricesFromGecko(asset, daysToGet, marketChart ?? new MarketChartById());
-            result.Match(
-                Right: chart => marketChart.AddPrices(chart.Prices),
-                Left => marketChart = null);
-
-            await delay;
-        }
-        else if (daysToGet > 0)
-        {
-            CreateMarketChartForPrelistingCoin(asset, daysToGet)
-                .IfSucc(s => marketChart.AddPrices(s.Prices));   // s
-        }
-
-        if (daysToGet == 0) await DelayAndShowProgress(false);
-
-        if (marketChart is not null && marketChart.Prices is not null && marketChart.Prices.Length > 0)
-        {
-            await marketChart.SaveMarketChartJson(asset.Coin.ApiId);
-        }
-        return marketChart ?? new MarketChartById();
-    }
-
-
-    private async Task DelayAndShowProgress(bool isStepping)
-    {
-        var startValue = progressCounter * progressInterval;
-        var nrOfSteps = 10;
-        var stepSize = (double)progressInterval / nrOfSteps;
-        
-        if (isStepping)
-        {
-            for (int i = 0; i < nrOfSteps; i++)
-            {
-                await Task.Delay(1000);
-                
-                // Use the DispatcherQueue to update the UI thread
-                MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
-                {
-                    // Check/set 'isFinishedLoading' to false to show message
-                   // _messenger.Send(new IsUpdatingGraphMessage(true));
-                    var newValue = (int)Math.Floor(startValue + (stepSize * i));
-                    _messenger.Send(new UpdateProgressValueMessage(newValue));
-                        
-                });
-            }
-        }
-        else
-        {
-            MainPage.Current.DispatcherQueue.TryEnqueue( () =>
-            {
-               // _messenger.Send(new IsUpdatingGraphMessage(true));
-                _messenger.Send(new UpdateProgressValueMessage((int)Math.Floor(startValue)));
+                Logger.Warning("Error loading MarketChart for {0}: " + err.Message, asset.Coin.ApiId);
             });
-            
-        }
-    }
-
-
-    private static Result<MarketChartById> CreateMarketChartForPrelistingCoin(AssetTotals asset, int days)
-    {
-        var marketChart = new MarketChartById();
-        marketChart.Prices = new decimal?[days][];
-
-        var data = new HistoricalDataById();
-
-        data.Id = asset.Coin.ApiId;
-
-        decimal price = (decimal)asset.Coin.Price;
-
-        for (var i = 0; i < days; i++)
-        {
-            var date = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1 - i)).Date;
-            marketChart.Prices[i] = new decimal?[2] { (decimal)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds, price };
-        }
-
-        Logger.Information("Created MarketChart for pre-listing coin; {0}", asset.Coin.ApiId);
-
+        
         return marketChart ?? new MarketChartById();
     }
-    private async Task<Either<Error,MarketChartById>> GetHistoricalPricesFromGecko(AssetTotals asset, int days, MarketChartById fullChart)
-    {
-        var Retries = 0;
-        var TotalRequests = 0;
-
-        var tokenSource2 = new CancellationTokenSource();
-        var cancellationToken = tokenSource2.Token;
-
-        var strategy = new ResiliencePipelineBuilder().AddRetry(new()
-        {
-            ShouldHandle = new PredicateBuilder().Handle<System.Exception>(),
-            MaxRetryAttempts = 3,
-            Delay = System.TimeSpan.FromSeconds(60), // Wait between each try
-            OnRetry = args =>
-            {
-                var exception = args.Outcome.Exception!;
-                Logger.Debug(exception, "Getting Historical Data; OnRetry ({0})", Retries.ToString());
-                Retries++;
-                return default;
-            }
-        }).Build();
 
 
-        using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
-        var serializerSettings = new JsonSerializerSettings();
-
-        var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
-
-        System.Exception? error = null;
-        MarketChartById? additionalMarketChart = null;
-
-        while (!cancellationToken.IsCancellationRequested && !IsPausRequested)
-        {
-            TotalRequests++;
-            try
-            {
-                await strategy.ExecuteAsync(async token =>
-                {
-                    Logger.Debug("Getting Historical Data; (Retries: {0})", Retries.ToString());
-                    
-                    additionalMarketChart = await coinsClient.Coins[asset.Coin.ApiId].MarketChart
-                        .Interval("daily")
-                        .Precision("full")
-                        .Days(days.ToString())
-                        .VsCurrency("usd")
-                        .GetAsync<MarketChartById>(token);
-                }, cancellationToken);
-
-                Logger.Information("Received Historical Data; {0}", asset.Coin.ApiId);
-            }
-            catch (System.Exception ex)
-            {
-                Logger.Warning(ex, "Getting Historical Data failed after {0} requests - {1}", TotalRequests);
-                return Error.New(ex);
-            }
-            finally
-            {
-                tokenSource2.Cancel();
-                tokenSource2.Dispose();
-            }
-        }
-
-        Logger.Information("Checking MarketChart for {0}", asset.Coin.ApiId);
-        var checkedMarketChart = await CheckAndFixMarketChart(additionalMarketChart ?? new MarketChartById(), fullChart, DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
+    //private async Task DelayAndShowProgress(bool isStepping)
+    //{
+    //    var startValue = progressCounter * progressInterval;
+    //    var nrOfSteps = 10;
+    //    var stepSize = (double)progressInterval / nrOfSteps;
         
-        return checkedMarketChart != null ? checkedMarketChart : Error.New("Null Chart");
+    //    if (isStepping)
+    //    {
+    //        for (int i = 0; i < nrOfSteps; i++)
+    //        {
+    //            await Task.Delay(1000);
+                
+    //            // Use the DispatcherQueue to update the UI thread
+    //            MainPage.Current.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+    //            {
+    //                // Check/set 'isFinishedLoading' to false to show message
+    //               // _messenger.Send(new IsUpdatingGraphMessage(true));
+    //                var newValue = (int)Math.Floor(startValue + (stepSize * i));
+    //                _messenger.Send(new UpdateProgressValueMessage(newValue));
+                        
+    //            });
+    //        }
+    //    }
+    //    else
+    //    {
+    //        MainPage.Current.DispatcherQueue.TryEnqueue( () =>
+    //        {
+    //           // _messenger.Send(new IsUpdatingGraphMessage(true));
+    //            _messenger.Send(new UpdateProgressValueMessage((int)Math.Floor(startValue)));
+    //        });
+            
+    //    }
+    //}
 
-    }
+
+    //private static Result<MarketChartById> CreateMarketChartForPrelistingCoin(AssetTotals asset, int days)
+    //{
+    //    var marketChart = new MarketChartById();
+    //    marketChart.Prices = new decimal?[days][];
+
+    //    var data = new HistoricalDataById();
+
+    //    data.Id = asset.Coin.ApiId;
+
+    //    decimal price = (decimal)asset.Coin.Price;
+
+    //    for (var i = 0; i < days; i++)
+    //    {
+    //        var date = DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1 - i)).Date;
+    //        marketChart.Prices[i] = new decimal?[2] { (decimal)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds, price };
+    //    }
+
+    //    Logger.Information("Created MarketChart for pre-listing coin; {0}", asset.Coin.ApiId);
+
+    //    return marketChart ?? new MarketChartById();
+    //}
+    //private async Task<Either<Error,MarketChartById>> GetHistoricalPricesFromGecko(AssetTotals asset, int days, MarketChartById fullChart)
+    //{
+    //    var Retries = 0;
+    //    var TotalRequests = 0;
+
+    //    var tokenSource2 = new CancellationTokenSource();
+    //    var cancellationToken = tokenSource2.Token;
+
+    //    var strategy = new ResiliencePipelineBuilder().AddRetry(new()
+    //    {
+    //        ShouldHandle = new PredicateBuilder().Handle<System.Exception>(),
+    //        MaxRetryAttempts = 3,
+    //        Delay = System.TimeSpan.FromSeconds(60), // Wait between each try
+    //        OnRetry = args =>
+    //        {
+    //            var exception = args.Outcome.Exception!;
+    //            Logger.Debug(exception, "Getting Historical Data; OnRetry ({0})", Retries.ToString());
+    //            Retries++;
+    //            return default;
+    //        }
+    //    }).Build();
+
+
+    //    using var httpClient = new HttpClient();
+    //    httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
+    //    var serializerSettings = new JsonSerializerSettings();
+
+    //    var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
+
+    //    System.Exception? error = null;
+    //    MarketChartById? additionalMarketChart = null;
+
+    //    while (!cancellationToken.IsCancellationRequested && !IsPausRequested)
+    //    {
+    //        TotalRequests++;
+    //        try
+    //        {
+    //            await strategy.ExecuteAsync(async token =>
+    //            {
+    //                Logger.Debug("Getting Historical Data; (Retries: {0})", Retries.ToString());
+                    
+    //                additionalMarketChart = await coinsClient.Coins[asset.Coin.ApiId].MarketChart
+    //                    .Interval("daily")
+    //                    .Precision("full")
+    //                    .Days(days.ToString())
+    //                    .VsCurrency("usd")
+    //                    .GetAsync<MarketChartById>(token);
+    //            }, cancellationToken);
+
+    //            Logger.Information("Received Historical Data; {0}", asset.Coin.ApiId);
+    //        }
+    //        catch (System.Exception ex)
+    //        {
+    //            Logger.Warning(ex, "Getting Historical Data failed after {0} requests - {1}", TotalRequests);
+    //            return Error.New(ex);
+    //        }
+    //        finally
+    //        {
+    //            tokenSource2.Cancel();
+    //            tokenSource2.Dispose();
+    //        }
+    //    }
+
+    //    Logger.Information("Checking MarketChart for {0}", asset.Coin.ApiId);
+    //    var checkedMarketChart = await CheckAndFixMarketChart(additionalMarketChart ?? new MarketChartById(), fullChart, DateTime.UtcNow.Subtract(TimeSpan.FromDays(days - 1)));
+        
+    //    return checkedMarketChart != null ? checkedMarketChart : Error.New("Null Chart");
+
+    //}
     private async Task<double> GetHistoricalQtyByDate(DateOnly _date, AssetTotals asset)
     {
         await App.UpdateSemaphore.WaitAsync();
@@ -655,9 +676,11 @@ public class GraphUpdateService : IGraphUpdateService
             var date = _date.ToDateTime(TimeOnly.Parse("01:00 AM"));
 
             var mutations = await context.Mutations
-                .Where(m => m.Asset.Coin.ApiId.ToLower() == asset.Coin.ApiId.ToLower())
-                .Include(t => t.Transaction)
-                .Where(t => t.Transaction.TimeStamp.Date >= date.Date && t.Transaction.TimeStamp.Date <= DateTime.UtcNow)
+                .AsNoTracking()
+                .Where(m => m.Asset.Coin.ApiId.ToLower() == asset.Coin.ApiId.ToLower() &&
+                            m.Transaction.TimeStamp.Date >= date.Date &&
+                            m.Transaction.TimeStamp.Date <= DateTime.UtcNow)
+                .Include(m => m.Transaction)
                 .ToListAsync();
 
             if (mutations is not null && mutations.Count > 0)
@@ -691,14 +714,15 @@ public class GraphUpdateService : IGraphUpdateService
         {
             var context = _portfolioService.UpdateContext;
             var assets = await context.Assets
-                    .Include(x => x.Coin)
-                    .GroupBy(asset => asset.Coin)
-                    .Select(assetGroup => new AssetTotals
-                    {
-                        Qty = assetGroup.Sum(x => x.Qty),
-                        Coin = assetGroup.Key,
-                    })
-                    .ToListAsync();
+                .AsNoTracking()
+                .Include(x => x.Coin)
+                .GroupBy(asset => asset.Coin)
+                .Select(assetGroup => new AssetTotals
+                {
+                    Qty = assetGroup.Sum(x => x.Qty),
+                    Coin = assetGroup.Key,
+                })
+                .ToListAsync();
 
             return assets;
         }
@@ -718,7 +742,11 @@ public class GraphUpdateService : IGraphUpdateService
         try
         {
             var context = _portfolioService.UpdateContext;
-            var tx = await context.Transactions.OrderBy(x => x.TimeStamp).FirstOrDefaultAsync();
+            var tx = await context.Transactions
+                .AsNoTracking()
+                .OrderBy(x => x.TimeStamp)
+                .FirstOrDefaultAsync();
+
             var days = tx is not null ? DateTime.UtcNow.Subtract(tx.TimeStamp).Days + 1 : 0;
 
             return days;
@@ -742,58 +770,58 @@ public class GraphUpdateService : IGraphUpdateService
         return days;
     }
     
-    private async Task<List<AssetTotals>> GetRemainingAssets()
-    {
-        await App.UpdateSemaphore.WaitAsync();
-        try
-        {
-            var context = _portfolioService.UpdateContext;
-            var assets = await context.Assets
-                    .Include(x => x.Coin)
-                    .GroupBy(asset => asset.Coin)
-                    .Select(assetGroup => new AssetTotals
-                    {
-                        Qty = assetGroup.Sum(x => x.Qty),
-                        Coin = assetGroup.Key,
-                    })
-                    .ToListAsync();
-            //Remove from assets the ones that are already in the buffer
-            var buffer = _graphService.GetHistoricalDataBuffer();
-            foreach (var item in buffer)
-            {
-                var asset = assets.Find(x => x.Coin.ApiId == item.Id);
-                assets.Remove(asset);
-            }
+    //private async Task<List<AssetTotals>> GetRemainingAssets()
+    //{
+    //    await App.UpdateSemaphore.WaitAsync();
+    //    try
+    //    {
+    //        var context = _portfolioService.UpdateContext;
+    //        var assets = await context.Assets
+    //                .Include(x => x.Coin)
+    //                .GroupBy(asset => asset.Coin)
+    //                .Select(assetGroup => new AssetTotals
+    //                {
+    //                    Qty = assetGroup.Sum(x => x.Qty),
+    //                    Coin = assetGroup.Key,
+    //                })
+    //                .ToListAsync();
+    //        //Remove from assets the ones that are already in the buffer
+    //        var buffer = _graphService.GetHistoricalDataBuffer();
+    //        foreach (var item in buffer)
+    //        {
+    //            var asset = assets.Find(x => x.Coin.ApiId == item.Id);
+    //            assets.Remove(asset);
+    //        }
 
-            return assets;
-        }
-        catch (Exception ex)
-        {
-            Logger.Warning(ex, $"GetRemainingAssets failed. Returned empty list");
-            return new();
-        }
-        finally
-        {
-            App.UpdateSemaphore.Release();
-        }
+    //        return assets;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Logger.Warning(ex, $"GetRemainingAssets failed. Returned empty list");
+    //        return new();
+    //    }
+    //    finally
+    //    {
+    //        App.UpdateSemaphore.Release();
+    //    }
         
-    }
-    private int GetDaysFromBuffer()
-    {
-        // In case continuation happens after a (multiple) day-change,
-        // aditional day(s) needs to be added to line-up with the already obtained data in the buffer
+    //}
+    //private int GetDaysFromBuffer()
+    //{
+    //    // In case continuation happens after a (multiple) day-change,
+    //    // aditional day(s) needs to be added to line-up with the already obtained data in the buffer
         
-        var days = _graphService.GetHistoricalDataBufferDatesCount();
-        var latestDate = _graphService.GetHistoricalDataBufferLatestDate();
+    //    var days = _graphService.GetHistoricalDataBufferDatesCount();
+    //    var latestDate = _graphService.GetHistoricalDataBufferLatestDate();
 
-        var endDateDifference = DateTime.UtcNow.Subtract(latestDate.ToDateTime(TimeOnly.Parse("01:00 AM"))).Days;
-        if (endDateDifference > 0)
-        {
-            days += endDateDifference;
-        }
+    //    var endDateDifference = DateTime.UtcNow.Subtract(latestDate.ToDateTime(TimeOnly.Parse("01:00 AM"))).Days;
+    //    if (endDateDifference > 0)
+    //    {
+    //        days += endDateDifference;
+    //    }
         
-        return days;
-    }
+    //    return days;
+    //}
     
     private async void ObtainFirstPortfolioValue()
     {
@@ -804,14 +832,16 @@ public class GraphUpdateService : IGraphUpdateService
             var beforeDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(365)).Date;
 
             var sumDeposits = context.Mutations
-                .Include(t => t.Transaction)
+                .AsNoTracking()
                 .Where(x => x.Type == Enums.TransactionKind.Deposit && x.Transaction.TimeStamp.Date < beforeDate)
+                .Include(t => t.Transaction)
                 .Sum(x => x.Qty * x.Price);
 
             var sumWithDraws = context.Mutations
-                        .Include(t => t.Transaction)
-                        .Where(x => x.Type == Enums.TransactionKind.Withdraw && x.Transaction.TimeStamp.Date < beforeDate)
-                        .Sum(x => x.Qty * x.Price);
+                .AsNoTracking()
+                .Where(x => x.Type == Enums.TransactionKind.Withdraw && x.Transaction.TimeStamp.Date < beforeDate)
+                .Include(t => t.Transaction)
+                .Sum(x => x.Qty * x.Price);
 
             _graphService.AddDataPointInFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits });
             _graphService.AddDataPointOutFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumWithDraws });
@@ -827,6 +857,21 @@ public class GraphUpdateService : IGraphUpdateService
             App.UpdateSemaphore.Release();
         }
         
+    }
+
+    public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
+    {
+        var dialog = new ContentDialog()
+        {
+            Title = title,
+            XamlRoot = MainPage.Current.XamlRoot,
+            Content = message,
+            PrimaryButtonText = primaryButtonText,
+            CloseButtonText = closeButtonText,
+            RequestedTheme = App.PreferencesService.GetAppTheme()
+        };
+        var dlgResult = await dialog.ShowAsync();
+        return dlgResult;
     }
 
     private static async Task<MarketChartById> CheckAndFixMarketChart(MarketChartById additionalChart, MarketChartById fullChart, DateTime startDate)

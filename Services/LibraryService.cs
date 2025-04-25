@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
+using CryptoPortfolioTracker.Helpers;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
@@ -26,7 +27,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
 {
     private readonly IMessenger _messenger;
     private readonly PortfolioService _portfolioService;
-    [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
+    [ObservableProperty] public partial ObservableCollection<Coin> ListCoins { get; set; } = new();
     private SortingOrder currentSortingOrder;
     private Func<Coin, object> currentSortFunc;
 
@@ -114,12 +115,17 @@ public partial class LibraryService : ObservableObject, ILibraryService
     public async Task<Result<bool>> CreateCoin(Coin? newCoin)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
         var _result = false;
 
         if (newCoin == null) { return _result; }
         try
         {
+            //ensure that the Narrative is tracked before adding the Coin.
+            // Using 'Find' will result in adding it to the tracked entities.
+            context.Coins.Find(newCoin.Narrative.Id);
             context.Coins.Add(newCoin);
+
             _result = await context.SaveChangesAsync() > 0;
         }
         catch (Exception ex)
@@ -127,12 +133,17 @@ public partial class LibraryService : ObservableObject, ILibraryService
             RejectChanges();
             return new Result<bool>(ex);
         }
+        finally
+        {
+            context.ChangeTracker?.Clear();
+        }
         return _result;
     }
 
     public async Task<Result<bool>> MergeCoin(Coin prelistingCoin, Coin? newCoin)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
         var _result = false;
 
         if (newCoin == null || prelistingCoin == null) { return _result; }
@@ -145,6 +156,8 @@ public partial class LibraryService : ObservableObject, ILibraryService
             plCoin.About = newCoin.About;
             plCoin.ImageUri = newCoin.ImageUri;
             plCoin.Price = newCoin.Price;
+            plCoin.narrative = newCoin.narrative;
+            
             context.Coins.Update(plCoin);
             _result = await context.SaveChangesAsync() > 0;
         }
@@ -152,6 +165,10 @@ public partial class LibraryService : ObservableObject, ILibraryService
         {
             RejectChanges();
             return new Result<bool>(ex);
+        }
+        finally
+        {
+            context.ChangeTracker?.Clear();
         }
         return _result;
     }
@@ -164,7 +181,8 @@ public partial class LibraryService : ObservableObject, ILibraryService
         try
         {
             coin = await context.Coins
-                .Include (x => x.PriceLevels)
+                .AsNoTracking()
+                //.Include (x => x.PriceLevels)
                 .Where(x => x.ApiId.ToLower() == coinId.ToLower())
                 .SingleAsync();
         }
@@ -183,6 +201,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
         {
             //coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
             coinList = await context.Coins
+                .AsNoTracking()
                 .Include(x => x.PriceLevels)
                 .Include(x => x.Narrative)
                 .OrderBy(x => x.Rank)
@@ -198,13 +217,14 @@ public partial class LibraryService : ObservableObject, ILibraryService
     public async Task<Result<bool>> RemoveCoin(Coin coin)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
         bool _result;
         if (coin == null) { return false; }
         try
         {
             var coinToRemove = await context.Coins
-                .Include(x => x.PriceLevels)
                 .Where(x => x.ApiId == coin.ApiId)
+                .Include(x => x.PriceLevels)
                 .SingleAsync();
 
             context.Coins.Remove(coinToRemove);
@@ -215,12 +235,16 @@ public partial class LibraryService : ObservableObject, ILibraryService
             RejectChanges();
             return new Result<bool>(ex);
         }
+        finally
+        {
+            context.ChangeTracker?.Clear();
+        }
         return _result;
     }
 
     public async Task<Result<List<CoinList>>> GetCoinListFromGecko()
     {
-        var context = _portfolioService.Context;
+        //var context = _portfolioService.Context;
         var Retries = 0;
 
         var tokenSource2 = new CancellationTokenSource();
@@ -332,6 +356,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
     public async Task<Result<bool>> UpdateNote(Coin coin, string note)
     {
         var context = _portfolioService.Context;
+        context.ChangeTracker?.Clear();
         bool result;
         if (coin.Note == note) { return false; }
         try
@@ -345,6 +370,10 @@ public partial class LibraryService : ObservableObject, ILibraryService
             RejectChanges();
             return new Result<bool>(ex);
         }
+        finally
+        {
+            context.ChangeTracker?.Clear();
+        }
         return result;
     }
 
@@ -356,7 +385,10 @@ public partial class LibraryService : ObservableObject, ILibraryService
         if (coin == null || coin.ApiId == "") { return false; }
         try
         {
-            assets = context.Assets.Where(x => x.Coin.ApiId.ToLower() == coin.ApiId.ToLower()).ToList();
+            assets = context.Assets
+                .AsNoTracking()
+                .Where(x => x.Coin.ApiId.ToLower() == coin.ApiId.ToLower())
+                .ToList();
         }
         catch (Exception)
         {
@@ -389,4 +421,5 @@ public partial class LibraryService : ObservableObject, ILibraryService
     {
         return _portfolioService.CurrentPortfolio;
     }
+    
 }

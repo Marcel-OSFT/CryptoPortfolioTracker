@@ -12,7 +12,7 @@ public interface IAccountService
     public Task<Result<bool>> EditAccount(Account newAccount, Account accountToEdit);
     public Task<Result<bool>> RemoveAccount(int accountId);
     //public Task<Result<List<Account>>> GetAccounts();
-    public Task<Result<Account>> GetAccountByName(string name);
+    //public Task<Result<Account>> GetAccountByName(string name);
     public Task<Result<bool>> AccountHasNoAssets(int assetId);
     Task<ObservableCollection<Account>> PopulateAccountsList();
     Task<ObservableCollection<AssetAccount>> PopulateAccountsByAssetList(int coinId);

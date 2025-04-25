@@ -27,7 +27,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
 
     [ObservableProperty] public string portfolioName = string.Empty;
     [ObservableProperty] public Portfolio currentPortfolio;
-
+    [ObservableProperty] public partial long CoinsCount { get; set; }
     partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
     {
         PortfolioName = newValue.Name;
@@ -62,6 +62,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
         CurrentPortfolio = _priceLevelService.GetPortfolio();
         PortfolioName = CurrentPortfolio.Name;
         await _priceLevelService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
+        CoinsCount = _priceLevelService.ListCoins.Count;
     }
 
     public void Terminate()
@@ -103,7 +104,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
     public async Task ShowAddLevelsDialog(Coin coin)
     {
         var loc = Localizer.Get();
-        Logger.Information("Showing Note Dialog");
+        Logger.Information("Showing Price Levels Dialog");
         try
         {
             var dialog = new AddPriceLevelsDialog(coin, _preferencesService)
@@ -114,16 +115,29 @@ public partial class PriceLevelsViewModel : BaseViewModel
             if (result == ContentDialogResult.Primary)
             {
                 Logger.Information("Adding Price Levels for {0}", coin.Name);
-                (await _priceLevelService.UpdatePriceLevels(coin, dialog.newPriceLevels))
-                    .IfFail(async err =>
-                    {
-                        await ShowMessageDialog(
-                        loc.GetLocalizedString("Messages_PriceLevelsAddFailed_Title"),
-                        err.Message,
-                        loc.GetLocalizedString("Common_CloseButton"));
+                await (await _priceLevelService.UpdatePriceLevels(coin, dialog.newPriceLevels))
+                    .Match(
+                        async succ =>
+                        {
+                            await _priceLevelService.UpdateCoinsList(coin);
+                        },
+                        async err =>
+                        {
+                            await ShowMessageDialog(
+                                loc.GetLocalizedString("Messages_PriceLevelsAddFailed_Title"),
+                                err.Message,
+                                loc.GetLocalizedString("Common_CloseButton"));
+                            Logger.Error(err, "Adding/Updating Price Levels failed");
+                        });
+                    //.IfFail(async err =>
+                    //{
+                    //    await ShowMessageDialog(
+                    //    loc.GetLocalizedString("Messages_PriceLevelsAddFailed_Title"),
+                    //    err.Message,
+                    //    loc.GetLocalizedString("Common_CloseButton"));
 
-                        Logger.Error(err, "Adding/Updating Price Levels failed");
-                    });
+                    //    Logger.Error(err, "Adding/Updating Price Levels failed");
+                    //});
             }
         }
         catch (Exception ex)
@@ -142,15 +156,21 @@ public partial class PriceLevelsViewModel : BaseViewModel
     {
         Logger.Information("Deleting price levels for coin {0}", coin.Name);
         var loc = Localizer.Get();
-        var getResult = await _priceLevelService.ResetPriceLevels(coin);
-            getResult.IfFail(async err =>
-                   {
-                       await ShowMessageDialog(
-                          loc.GetLocalizedString("Messages_ResetLevelsFailed_Title"),
-                          err.Message,
-                          loc.GetLocalizedString("Common_CloseButton"));
-                       Logger.Error(err, "Resetting levels failed");
-                   });
+
+        await (await _priceLevelService.ResetPriceLevels(coin))
+                    .Match(
+                        async succ =>
+                        {
+                            await _priceLevelService.UpdateCoinsList(coin);
+                        },
+                        async err =>
+                        {
+                            await ShowMessageDialog(
+                            loc.GetLocalizedString("Messages_ResetLevelsFailed_Title"),
+                            err.Message,
+                            loc.GetLocalizedString("Common_CloseButton"));
+                            Logger.Error(err, "Resetting levels failed");
+                        });
     }
     private bool CanDeletePriceLevels(Coin coin)
     {

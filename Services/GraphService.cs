@@ -45,15 +45,15 @@ public partial class GraphService : ObservableObject, IGraphService
                 Logger.Information("Graph data de-serialized successfully ({0} data points)", PortfolioGraph.DataPointsPortfolio.Count);
             });
 
-            await LoadGraphDataAsync(Path.Combine(graphPath, "HistoryBuffer.json"), async stream =>
-            {
-                HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(stream);
-                if (HistoricalDataByIdsBufferList?.Count > 0)
-                {
-                    CheckValidityHistoricalDataBuffer(graphPath);
-                }
-            });
-
+            //await LoadGraphDataAsync(Path.Combine(graphPath, "HistoryBuffer.json"), async stream =>
+            //{
+            //    HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(stream);
+            //    if (HistoricalDataByIdsBufferList?.Count > 0)
+            //    {
+            //        CheckValidityHistoricalDataBuffer(graphPath);
+            //    }
+            //});
+            HistoricalDataByIdsBufferList = new();
 
             if (PortfolioGraph == null)
             {
@@ -63,6 +63,7 @@ public partial class GraphService : ObservableObject, IGraphService
             {
                 await CleanUpGraph(portfolioSignature);
             }
+            
         }
         catch (Exception ex)
         {
@@ -118,16 +119,16 @@ public partial class GraphService : ObservableObject, IGraphService
         Logger.Error("No backup graph available");
         return new Result<bool>(false);
     }
-    private void CheckValidityHistoricalDataBuffer(string path)
-    {
-        if (HistoricalDataByIdsBufferList?.Count > 0 && PortfolioGraph?.DataPointsPortfolio?.Count > 0)
-        {
-            if (GetHistoricalDataBufferOldestDate() != GetLatestDataPointDate().AddDays(1))
-            {
-                ClearHistoricalDataBuffer(path);
-            }
-        }
-    }
+    //private void CheckValidityHistoricalDataBuffer(string path)
+    //{
+    //    if (HistoricalDataByIdsBufferList?.Count > 0 && PortfolioGraph?.DataPointsPortfolio?.Count > 0)
+    //    {
+    //        if (GetHistoricalDataBufferOldestDate() != GetLatestDataPointDate().AddDays(1))
+    //        {
+    //            ClearHistoricalDataBuffer(path);
+    //        }
+    //    }
+    //}
 
 
    public async Task SaveGraphToJson(string portfolioSignature)
@@ -151,22 +152,22 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    public async Task SaveHistoricalDataBufferToJson(string portfolioSignature)
-    {
-        if (HistoricalDataByIdsBufferList.Count > 0)
-        {
-            var fileName = Path.Combine(App.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
-            try
-            {
-                await using FileStream createStream = File.Create(fileName);
-                await JsonSerializer.SerializeAsync(createStream, HistoricalDataByIdsBufferList);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Failed to serialize HistoricalDataBuffer data");
-            }
-        }
-    }
+    //public async Task SaveHistoricalDataBufferToJson(string portfolioSignature)
+    //{
+    //    if (HistoricalDataByIdsBufferList.Count > 0)
+    //    {
+    //        var fileName = Path.Combine(App.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
+    //        try
+    //        {
+    //            await using FileStream createStream = File.Create(fileName);
+    //            await JsonSerializer.SerializeAsync(createStream, HistoricalDataByIdsBufferList);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Logger.Error(ex, "Failed to serialize HistoricalDataBuffer data");
+    //        }
+    //    }
+    //}
     private async Task CleanUpGraph(string portfolioSignature)
     {
         // Remove duplicate entries
@@ -206,15 +207,20 @@ public partial class GraphService : ObservableObject, IGraphService
         return filteredDataPoints.OrderBy(x => x.Date).ToList();
     }
 
-    public void ClearHistoricalDataBuffer(string portfolioSignature)
+    //public void ClearHistoricalDataBuffer(string portfolioSignature)
+    //{
+    //    HistoricalDataByIdsBufferList.Clear();
+
+    //    var historyBufferFile = Path.Combine(App.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
+    //    if (File.Exists(historyBufferFile))
+    //    {
+    //        File.Delete(historyBufferFile);
+    //    }
+    //}
+
+    public void ClearHistoricalDataBuffer()
     {
         HistoricalDataByIdsBufferList.Clear();
-
-        var historyBufferFile = Path.Combine(App.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
-        if (File.Exists(historyBufferFile))
-        {
-            File.Delete(historyBufferFile);
-        }
     }
 
     public async Task RegisterModification(Transaction transactionA, Transaction? transactionB = null)

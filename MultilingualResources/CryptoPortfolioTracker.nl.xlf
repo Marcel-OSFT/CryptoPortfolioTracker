@@ -1634,6 +1634,18 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Error while extracting backup. Cannot continue with restore</source>
           <target state="translated">Fout bij het uitpakken van de back-up. Kan niet doorgaan met herstellen.</target>
         </trans-unit>
+        <trans-unit id="Messages_ScheduledTask_Explainer" translate="yes" xml:space="preserve">
+          <source>The CryptoPortfolioTracker needs to register a scheduled task to perform a daily update of the Market Charts. The application needs to run once as an administrator to register the scheduled task. It will restart and prompt you to accept changes. </source>
+          <target state="new">The CryptoPortfolioTracker needs to register a scheduled task to perform a daily update of the Market Charts. The application needs to run once as an administrator to register the scheduled task. It will restart and prompt you to accept changes. </target>
+        </trans-unit>
+        <trans-unit id="Messages_GraphUpdateService_InvalidChartsTitle" translate="yes" xml:space="preserve">
+          <source>Invalid MarketChart Found for</source>
+          <target state="new">Invalid MarketChart Found for</target>
+        </trans-unit>
+        <trans-unit id="Messages_ScheduledTask_Title" translate="yes" xml:space="preserve">
+          <source>Administrator Privileges Required  </source>
+          <target state="new">Administrator Privileges Required  </target>
+        </trans-unit>
       </group>
     </body>
   </file>

@@ -19,16 +19,6 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:ValueFormatConverter x:Key="ValueFormatConverter"/>
-        <converters:AddPrefixConverter x:Key="AddPrefixConverter"/>
-        <converters:BoolToRowDefConverter x:Key="BoolToRowDefConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:RowDefConverterParameters x:Key="ParamsRow0" Text="132|1*" XamlRoot="{x:Bind AssetsContent.XamlRoot}" />
-        <converters:RowDefConverterParameters x:Key="ParamsRow1" Text="75|0" XamlRoot="{x:Bind AssetsContent.XamlRoot}" />
-        <converters:RowDefConverterParameters x:Key="ParamsRow2" Text="0.7*|0" XamlRoot="{x:Bind AssetsContent.XamlRoot}" />
-
-
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
             <Setter Property="Padding" Value="0"/>
@@ -56,7 +46,7 @@
                 <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding PortfolioName}"  Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
                 <TextBlock l:Uids.Uid="Assets_Title" x:Name="txtAssets" Margin="36,5,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" 
                            RelativePanel.Below="txtPortfolio" RelativePanel.AlignBottomWithPanel="True" />
-                <TextBlock x:Name="txtCount" Text="{Binding _assetService.VisibleAssetsCount, Converter={StaticResource AddPrefixConverter}, ConverterParameter=' (|)' }" 
+                <TextBlock x:Name="txtCount" Text="{x:Bind converters:Functions.AddPrefixAndSuffixToString(_viewModel.VisibleAssetsCount,' \(','\)'), Mode=OneWay}" 
                     Margin="0,8,0,0" 
                     Foreground="DarkGoldenrod" 
                     Style="{StaticResource SubSampleHeaderTextStyle}" 
@@ -72,12 +62,12 @@
 
             <RelativePanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" >
                 <TextBlock x:Name="txtTotalAssetsValue" RelativePanel.AlignRightWithPanel="True"
-                    Text="{Binding _assetService.TotalAssetsValue, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                    Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.TotalPortfolioValue,'$ {0:N0}'), Mode=OneWay}" 
                     Foreground="DarkGoldenrod" 
                     Margin="0,15,20,0" 
                     Style="{StaticResource ValueHeaderTextStyle}" />
                 <TextBlock x:Name="txtProfitLossPerc" 
-                    Text="{Binding _assetService.TotalAssetsPnLPerc, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:N2} %'}" 
+                    Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.TotalPnlPerc,'{0:N2} %'), Mode=OneWay}" 
                     Foreground="DarkGoldenrod" 
                     Margin="36,0,20,0" Style="{StaticResource PercHeaderTextStyle}" 
                     RelativePanel.AlignRightWith="txtTotalAssetsValue" 
@@ -86,7 +76,7 @@
                 <StackPanel l:Uids.Uid="Assets_InFlowPanel" 
                     x:Name="txtInflow" 
                     Orientation="Vertical" 
-                    Visibility="{Binding IsHidingCapitalFlow, Converter={StaticResource BoolToVisibilityConverter}, Mode=TwoWay}"
+                    Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.IsHidingCapitalFlow), Mode=OneWay}"
                     RelativePanel.LeftOf="txtOutflow" RelativePanel.AlignBottomWith="txtOutflow"
                     Margin="0,0,0,0">
                     <TextBlock l:Uids.Uid="Assets_InFlow"
@@ -94,14 +84,14 @@
                         Margin="0,0,20,0" Style="{StaticResource InAndOutFlowTextHeaderStyle}" 
                         />
                     <TextBlock 
-                        Text="{Binding _assetService.InFlow, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                        Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.TotalInflow,'$ {0:N0}'), Mode=OneWay}" 
                         Foreground="Goldenrod" 
                         Margin="0,0,20,0" Style="{StaticResource InAndOutFlowTextStyle}" 
                             />
                 </StackPanel>
 
                 <StackPanel l:Uids.Uid="Assets_OutFlowPanel" x:Name="txtOutflow" Orientation="Vertical"
-                    Visibility="{Binding IsHidingCapitalFlow, Converter={StaticResource BoolToVisibilityConverter}, Mode=TwoWay}"
+                   Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.IsHidingCapitalFlow), Mode=OneWay}"
                     RelativePanel.AlignRightWithPanel="True" 
                     RelativePanel.Below="txtProfitLossPerc"
                     Margin="0,90,0,0">
@@ -111,15 +101,11 @@
                         Margin="0,0,20,0" Style="{StaticResource InAndOutFlowTextHeaderStyle}" 
                         />
                     <TextBlock
-                        Text="{Binding _assetService.OutFlow, Converter={StaticResource ValueFormatConverter}, ConverterParameter='{}$ {0:N0}'}" 
+                        Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.TotalOutflow,'$ {0:N0}'), Mode=OneWay}" 
                         Foreground="Goldenrod" 
                         Margin="0,0,20,0" Style="{StaticResource InAndOutFlowTextStyle}" 
                             />
                 </StackPanel>
-
-                
-
-
             </RelativePanel>
                 <!--/Grid-->
             
@@ -131,12 +117,13 @@
             <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch">
                 <Grid Name="AssetsContent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow0}}"/>
-                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow1}}"/>
-                        <RowDefinition Height="{Binding IsAssetsExtendedView, Converter={StaticResource BoolToRowDefConverter}, ConverterParameter={StaticResource ParamsRow2}}"/>
+                        <RowDefinition Height="{x:Bind converters:Functions.BoolToRowDef(_viewModel.IsAssetsExtendedView,'132','1*',AssetsContent.XamlRoot), Mode=OneWay}"/>
+                        <RowDefinition Height="{x:Bind converters:Functions.BoolToRowDef(_viewModel.IsAssetsExtendedView,'75','0',AssetsContent.XamlRoot), Mode=OneWay}"/>
+                        <RowDefinition Height="{x:Bind converters:Functions.BoolToRowDef(_viewModel.IsAssetsExtendedView,'0.7*','0',AssetsContent.XamlRoot), Mode=OneWay}"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="0"  />
+                    <controls:AssetsListViewControl x:Name="MyAssetsListViewControl" x:FieldModifier="public" Margin="0,0,0,0" Grid.Row="0"  
+                        IsShowingNetInvestment="true" IsAssetsExtendedView="{Binding IsAssetsExtendedView}"    />
                     <controls:AssetAccountsGridViewControl x:Name="MyAssetAccountsGridViewControl" x:FieldModifier="public" Margin="0,-7,0,0" Grid.Row="1" />
                     <controls:AssetTransactionsListViewControl x:Name="MyAssetTransactionsListViewControl" x:FieldModifier="public"  Margin="0,0,0,0" Grid.Row="2" />
                     <Button 

@@ -12,6 +12,8 @@ namespace CryptoPortfolioTracker.Services;
 
 public interface IPriceLevelService
 {
+    ObservableCollection<Coin> ListCoins { get; set; }
+
     public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
 
 

@@ -20,15 +20,6 @@
     Unloaded="Control_Unloaded"
     mc:Ignorable="d">
 
-
-    <UserControl.Resources>
-        <converters:FormatUriConverter x:Key="FormatUriConverter"/>
-        <converters:BackgroundConverter x:Key="BackgroundConverter"/>
-        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
-        <converters:FontSizeToImageSizeConverter x:Key="FontSizeToImageSizeConverter"/>
-    </UserControl.Resources>
-
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -61,14 +52,13 @@
                     <DataTemplate x:DataType="models:Coin" >
                         <UserControl>
                             <Grid AutomationProperties.Name="{x:Bind ApiId}">
-                                <Border BorderBrush="PaleGoldenrod" BorderThickness="0" Background="{Binding Change24Hr, Converter={StaticResource BackgroundConverter}}"
+                                <Border BorderBrush="PaleGoldenrod" BorderThickness="0" Background="{x:Bind converters:Functions.ValueToRedOrGreenBackground(Change24Hr), Mode=OneWay}"
                                     Margin="5,0,5,0" CornerRadius="10" Width="90" Height="70" ToolTipService.ToolTip="{Binding Name}">
                                     <RelativePanel Margin="0,0,0,0">
                                         <Image Stretch="UniformToFill" Margin="0,0,5,0" Width="20" Height="20" 
                                             RelativePanel.LeftOf="Symbol" RelativePanel.AlignVerticalCenterWith="Symbol">
                                             <Image.Source>
-                                                <BitmapImage DecodePixelHeight="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy, Converter={StaticResource FontSizeToImageSizeConverter}}"
-                                                    UriSource="{Binding ImageUri, Converter={StaticResource FormatUriConverter}}"/>
+                                                <BitmapImage DecodePixelHeight="32" UriSource="{x:Bind converters:Functions.FormatUri(ImageUri), Mode=OneWay}"/>
                                             </Image.Source>
                                         </Image>
                                         <Viewbox x:Name="Symbol" Stretch="Uniform" Width="60" Height="25" RelativePanel.AlignRightWithPanel="True">
@@ -84,7 +74,7 @@
                                         
 
                                         <TextBlock x:Name="txtPerc" 
-                                            Text="{Binding Change24Hr, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.00} %'}"
+                                            Text="{x:Bind converters:Functions.FormatValueToString(Change24Hr,'{0:0.00} %'), Mode=OneWay}"
                                             Foreground="DarkGoldenrod"
                                             FontWeight="SemiBold"
                                             Margin="0,0,2,0"
@@ -93,7 +83,7 @@
                                             RelativePanel.AlignRightWithPanel="True" />
 
                                         <TextBlock Name="txtPrice" 
-                                            Text="{Binding Price, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:0.########}'}"
+                                            Text="{x:Bind converters:Functions.FormatValueToString(Price,'$ {0:0.########}'), Mode=OneWay}"
                                             Foreground="DarkGoldenrod"
                                             FontWeight="Normal"
                                             Margin="0,0,2,2"
@@ -129,14 +119,14 @@
                     <DataTemplate x:DataType="models:Coin" >
                         <UserControl>
                             <Grid AutomationProperties.Name="{x:Bind ApiId}">
-                                <Border BorderBrush="PaleGoldenrod" BorderThickness="0" Background="{Binding Change24Hr, Converter={StaticResource BackgroundConverter}}"
+                                <Border BorderBrush="PaleGoldenrod" BorderThickness="0" Background="{x:Bind converters:Functions.ValueToRedOrGreenBackground(Change24Hr), Mode=OneWay}"
                                          Margin="5,0,5,0" CornerRadius="10" Width="90" Height="70" ToolTipService.ToolTip="{Binding Name}">
                                     <RelativePanel Margin="0,0,0,0">
                                         <Image Stretch="UniformToFill" Margin="0,0,5,0" Width="20" Height="20" 
                                              RelativePanel.LeftOf="Symbol" RelativePanel.AlignVerticalCenterWith="Symbol">
                                             <Image.Source>
-                                                <BitmapImage DecodePixelHeight="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy, Converter={StaticResource FontSizeToImageSizeConverter}}"
-                                                UriSource="{Binding ImageUri, Converter={StaticResource FormatUriConverter}}"/>
+                                                <BitmapImage DecodePixelHeight="32"
+                                                UriSource="{x:Bind converters:Functions.FormatUri(ImageUri), Mode=OneWay}"/>
                                             </Image.Source>
                                         </Image>
                                         <Viewbox x:Name="Symbol" Stretch="Uniform" Width="60" Height="25" RelativePanel.AlignRightWithPanel="True">
@@ -150,7 +140,7 @@
                                         </Viewbox>
                                         
                                         <TextBlock x:Name="txtPerc" 
-                                            Text="{Binding Change24Hr, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:0.00} %'}"
+                                            Text="{x:Bind converters:Functions.FormatValueToString(Change24Hr,'{0:0.00} %'), Mode=OneWay}"
                                             Foreground="DarkGoldenrod"
                                             FontWeight="SemiBold"
                                             Margin="0,0,2,0"
@@ -159,7 +149,7 @@
                                             RelativePanel.AlignRightWithPanel="True" />
 
                                         <TextBlock Name="txtPrice" 
-                                            Text="{Binding Price, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}$ {0:0.########}'}"
+                                            Text="{x:Bind converters:Functions.FormatValueToString(Price,'$ {0:0.########}'), Mode=OneWay}"
                                             Foreground="DarkGoldenrod"
                                             FontWeight="Normal"
                                             Margin="0,0,2,2"

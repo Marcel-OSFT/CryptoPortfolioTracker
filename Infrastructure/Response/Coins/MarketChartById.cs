@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using CryptoPortfolioTracker.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using System.Diagnostics;
+using LanguageExt.Common;
+using LanguageExt;
 
 
 namespace CryptoPortfolioTracker.Infrastructure.Response.Coins;
@@ -112,30 +114,50 @@ public class MarketChartById
             await using FileStream createStream = File.Create(fileName);
             await System.Text.Json.JsonSerializer.SerializeAsync(createStream, Prices);
         }
+
     }
 
-    public async Task LoadMarketChartJson(string coinId)
+    public async Task<Either<Error, bool>> LoadMarketChartJson(string coinId)
     {
         var fileName = App.ChartsFolder + "\\MarketChart_" + coinId + ".json";
 
-        if (File.Exists(fileName))
+        try
         {
-            try
+            if (File.Exists(fileName) && new FileInfo(fileName).Length > 0)
             {
                 await using FileStream openStream = File.OpenRead(fileName);
                 Prices = await System.Text.Json.JsonSerializer.DeserializeAsync<decimal?[][]>(openStream);
 
                 CheckAndFixPrices(this);
-
+                return true;
             }
-            catch(Exception ex )
-            {
-                Logger.LogMessage("Error loading MarketChart for {0}: " + ex.Message, coinId);
-            }
-            
+            return Error.New(new Exception($"MarketChart for {coinId} does not exist"));
         }
-
+        catch (Exception ex)
+        {
+            return Error.New(ex);
+        }
     }
+
+    //public async Task LoadMarketChartJson(string coinId)
+    //{
+    //    var fileName = App.ChartsFolder + "\\MarketChart_" + coinId + ".json";
+
+    //    if (File.Exists(fileName) && new FileInfo(fileName).Length > 0)
+    //    {
+    //        try
+    //        {
+    //            await using FileStream openStream = File.OpenRead(fileName);
+    //            Prices = await System.Text.Json.JsonSerializer.DeserializeAsync<decimal?[][]>(openStream);
+
+    //            CheckAndFixPrices(this);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Logger.LogMessage("Error loading MarketChart for {0}: " + ex.Message, coinId);
+    //        }
+    //    }
+    //}
 
 
     private decimal?[][] CheckAndFixPrices(MarketChartById Chart)

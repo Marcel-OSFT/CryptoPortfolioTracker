@@ -67,3 +67,16 @@ public static class AncestorSource
         return FindParent(parent, ancestorType);
     }
 }
+
+public static class AncestorSource1
+{
+    public static object FindAncestorDataContext(FrameworkElement element, Type ancestorType)
+    {
+        var parent = element;
+        while (parent != null && !ancestorType.IsInstanceOfType(parent))
+        {
+            parent = VisualTreeHelper.GetParent(parent) as FrameworkElement;
+        }
+        return parent?.DataContext;
+    }
+}

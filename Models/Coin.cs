@@ -52,6 +52,28 @@ public partial class Coin : BaseModel
     [NotMapped] private List<double> ClosingPrices { get; set; } = new();
     [NotMapped] private DateTime FileDateMarketChart { get; set; } = DateTime.MinValue;
 
+    public static Coin Empty()
+        => new Coin
+        {
+            Id = 0,
+            ApiId = string.Empty,
+            Name = string.Empty,
+            Symbol = string.Empty,
+            Rank = 0,
+            ImageUri = string.Empty,
+            Price = 0,
+            Ath = 0,
+            Change52Week = 0,
+            Change1Month = 0,
+            MarketCap = 0,
+            About = string.Empty,
+            Change24Hr = 0,
+            Note = string.Empty,
+            IsAsset = false,
+            Assets = new List<Asset>(),
+            PriceLevels = new List<PriceLevel>(),
+            Narrative = new(),
+        };
 
     partial void OnPriceChanged(double oldValue, double newValue)
     {
@@ -124,16 +146,26 @@ public partial class Coin : BaseModel
             if (FileDateMarketChart != fileDate || !ClosingPrices.Any())
             {
                 MarketChartById marketChart = new();
-                await marketChart.LoadMarketChartJson(ApiId);
-                ClosingPrices = marketChart.Prices.TakeLast(2 * period + 50).Select(p => (double)p[1].Value).ToList();
-                FileDateMarketChart = fileDate;
+
+                var suffix = Name.Contains("_pre-listing") ? "-prelisting" : "";
+
+                await marketChart.LoadMarketChartJson(ApiId + suffix);
+
+                if (marketChart.Prices.Length>0)
+                {
+                    ClosingPrices = marketChart.Prices.TakeLast(2 * period + 50).Select(p => (double)p[1].Value).ToList();
+                    FileDateMarketChart = fileDate;
+                }
             }
 
             var prices = ClosingPrices.ToList();
             prices.Add(Price);
 
             if (prices == null || prices.Count < period + 1)
-                throw new ArgumentException("Insufficient data to calculate RSI");
+            {
+                Rsi = 0;
+                return Rsi;
+            }
 
             List<double> rsiValues = new List<double>();
             List<double> gains = new List<double>();

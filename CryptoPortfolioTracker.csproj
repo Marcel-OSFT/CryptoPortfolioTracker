@@ -13,9 +13,10 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.3.1.0</Version>
+    <Version>1.3.3.0</Version>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
+	  <LangVersion>preview</LangVersion>
 	<WindowsSdkPackageVersion>10.0.26100.52</WindowsSdkPackageVersion>
   </PropertyGroup>
   <PropertyGroup Label="MultilingualAppToolkit">
@@ -56,15 +57,12 @@
     <None Remove="Assets\CPT256x256Icon.targetsize-48.png" />
     <None Remove="CoinDescriptionDialog.xaml" />
     <None Remove="Controls\AssetAccountsGridViewControl.xaml" />
-    <None Remove="Controls\AssetStickerControl.xaml" />
-    <None Remove="Controls\AssetStickerControl2.xaml" />
     <None Remove="Controls\AssetTransactionsListViewControl.xaml" />
     <None Remove="Controls\AutoSuggestBoxWithValidation.xaml" />
     <None Remove="Controls\ColumnHeaderButton.xaml" />
     <None Remove="Controls\GraphControl.xaml" />
     <None Remove="Controls\HeatMapControl.xaml" />
     <None Remove="Controls\PriceLevelsListViewControl.xaml" />
-    <None Remove="Controls\UserControl1.xaml" />
     <None Remove="Dialogs\AboutDialog.xaml" />
     <None Remove="Dialogs\AccountDialog.xaml" />
     <None Remove="Controls\AccountsListViewControl.xaml" />
@@ -132,7 +130,9 @@
     <PackageReference Include="Serilog.Sinks.MemorySink" Version="0.1.1-alpha" />
     <PackageReference Include="Serilog.Sinks.WinUi3" Version="0.2.1-alpha" />
     <PackageReference Include="Serilog.Sinks.WinUi3.LogViewModels" Version="0.2.1-alpha" />
-    <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="9.0.2" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.2" />
+    <PackageReference Include="TaskScheduler" Version="2.11.0" />
     <PackageReference Include="WinUI3Localizer" Version="2.2.0" />
     <PackageReference Include="WinUIEx" Version="2.2.0" />
     <PackageReference Include="WinUIEx.TestTools" Version="1.0.0" />
@@ -147,14 +147,6 @@
   <ItemGroup>
     <Page Update="CoinDescriptionDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Controls\AssetStickerControl2.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Controls\AssetStickerControl.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
     </Page>
     <Page Update="Controls\GraphControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
@@ -380,10 +372,10 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Controls\UserControl1.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <None Update="Fonts\Segoe Fluent Icons.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RegisterScheduledTask.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Page Update="Views\SwitchPortfolioView.xaml">
@@ -477,7 +469,7 @@
     <RemoveDir Directories="@(RemovingFolders)" />
   </Target>
   <ItemGroup>
-    <PRIResource Update="Strings\en-US\Resources.resw">
+    <PRIResource Update="Strings\en-us\Resources.resw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </PRIResource>
   </ItemGroup>

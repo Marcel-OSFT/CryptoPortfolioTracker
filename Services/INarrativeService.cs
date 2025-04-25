@@ -14,7 +14,7 @@ public interface INarrativeService
     public Task<Result<bool>> CreateNarrative(Narrative? newNarrative);
     public Task<Result<bool>> EditNarrative(Narrative newNarrative, Narrative NarrativeToEdit);
     public Task<Result<bool>> RemoveNarrative(int NarrativeId);
-    public Task<Result<Narrative>> GetNarrativeByName(string name);
+   // public Task<Result<Narrative>> GetNarrativeByName(string name);
     public Task<Result<bool>> NarrativeHasNoCoins(int assetId);
     Task<ObservableCollection<Narrative>> PopulateNarrativesList(bool onlyAssets = false);
     bool IsNarrativeHoldingCoins(Narrative Narrative);
@@ -28,4 +28,5 @@ public interface INarrativeService
     void SortList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc);
     void SortList();
     Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false);
+    Narrative GetDefaultNarrative();
 }
