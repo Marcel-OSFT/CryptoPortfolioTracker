@@ -164,54 +164,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         //*** disabled in AccountsView
     }
 
-    //[RelayCommand]
-    //public void SortOn24Hour(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change24Hr;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOn1Month(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.Coin.Change1Month;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnMarketValue(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.MarketValue;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnCostBase(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.CostBase;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnPnL(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLoss;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
-    //[RelayCommand]
-    //public void SortOnPnLPerc(SortingOrder sortingOrder)
-    //{
-    //    Func<AssetTotals, object> sortFunc = x => x.ProfitLossPerc;
-    //    currentSortFunc = sortFunc;
-    //    currentSortingOrder = sortingOrder;
-    //    _assetService.SortList(sortingOrder, sortFunc);
-    //}
+  
     
     [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
     public async Task ShowAccountDialogToAdd()
@@ -276,15 +229,16 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
             if (result == ContentDialogResult.Primary && dialog.newAccount is not null)
             {
                 Logger.Information("Editing Account ({0})", account.Name);
-                (await _accountService.EditAccount(dialog.newAccount, account))
-                    .IfFail(async err =>
-                    {
-                        await ShowMessageDialog(
-                        loc.GetLocalizedString("Messages_AccountUpdateFailed_Title"),
-                        err.Message,
-                        loc.GetLocalizedString("Common_CloseButton"));
-                        Logger.Error(err, "Updating Account failed");
-                    });
+                await (await _accountService.EditAccount(dialog.newAccount, account))
+                    .Match(Succ: succ => _accountService.UpdateListAccounts(account),
+                        Fail: async err =>
+                        {
+                            await ShowMessageDialog(
+                            loc.GetLocalizedString("Messages_AccountUpdateFailed_Title"),
+                            err.Message,
+                            loc.GetLocalizedString("Common_CloseButton"));
+                            Logger.Error(err, "Updating Account failed");
+                        });
             }
         }
         catch (Exception ex)

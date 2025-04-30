@@ -84,6 +84,27 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
         return Task.FromResult(true);
     }
+    public Task UpdateCoinsList(Coin coin)
+    {
+        if (coin == null || !ListCoins.Any()) { return Task.FromResult(false); }
+        try
+        {
+            var context = _portfolioService.Context;
+
+            var coinToUpdateIndex = ListCoins.IndexOf(coin);
+            var updatedCoin = context.Coins.AsNoTracking()
+                .Include(x => x.PriceLevels)
+                .Include(x => x.Narrative)
+                .Where(x => x.ApiId == coin.ApiId)
+                .SingleOrDefault();
+
+            ListCoins.RemoveAt(coinToUpdateIndex);
+            ListCoins.Insert(coinToUpdateIndex,updatedCoin);
+        }
+        catch (Exception) { Task.FromResult(false); }
+
+        return Task.FromResult(true);
+    }
 
     public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
     {
@@ -123,7 +144,8 @@ public partial class LibraryService : ObservableObject, ILibraryService
         {
             //ensure that the Narrative is tracked before adding the Coin.
             // Using 'Find' will result in adding it to the tracked entities.
-            context.Coins.Find(newCoin.Narrative.Id);
+            var trackedNarrative = context.Narratives.Where(x => x.Id == newCoin.Narrative.Id).ToList().FirstOrDefault();
+            newCoin.Narrative = trackedNarrative;
             context.Coins.Add(newCoin);
 
             _result = await context.SaveChangesAsync() > 0;
@@ -361,8 +383,13 @@ public partial class LibraryService : ObservableObject, ILibraryService
         if (coin.Note == note) { return false; }
         try
         {
-            coin.Note = note;
-            context.Coins.Update(coin);
+            var coinToUpdate = await context.Coins
+                .Where(x => x.ApiId == coin.ApiId)
+                .Include(x => x.PriceLevels)
+                .SingleAsync();
+
+            coinToUpdate.Note = note;
+            context.Coins.Update(coinToUpdate);
             result = await context.SaveChangesAsync() > 0;
         }
         catch (Exception ex)

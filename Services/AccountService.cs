@@ -110,6 +110,25 @@ public partial class AccountService : ObservableObject, IAccountService
 
         return Task.FromResult(true);
     }
+    public Task UpdateListAccounts(Account? account)
+    {
+        if (ListAccounts is null || !ListAccounts.Any() || account is null) { return Task.FromResult(false); }
+        try
+        {
+            var context = _portfolioService.Context;
+
+            var accountToUpdateIndex = ListAccounts.IndexOf(account);
+            var updatedAccount = context.Accounts.AsNoTracking()
+                .Where(x => x.Id == account.Id)
+                .SingleOrDefault();
+
+            ListAccounts.RemoveAt(accountToUpdateIndex);
+            ListAccounts.Insert(accountToUpdateIndex, updatedAccount);
+        }
+        catch (Exception) { Task.FromResult(false); }
+
+        return Task.FromResult(true);
+    }
     public async Task UpdateListAssetAccount(AssetAccount accountAffected)
     {
         if (ListAssetAccounts is null || !ListAssetAccounts.Any()) return;

@@ -22,6 +22,7 @@ public interface IAccountService
     bool IsAccountHoldingAssets(Account account);
     Task RemoveFromListAccounts(int accountId);
     Task AddToListAccounts(Account? newAccount);
+    Task UpdateListAccounts(Account? account);
     AssetAccount GetAffectedAccount(Transaction transaction);
     void ReloadValues();
     bool DoesAccountNameExist(string name);

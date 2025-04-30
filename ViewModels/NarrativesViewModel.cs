@@ -250,13 +250,13 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     }
 
     [RelayCommand (CanExecute = nameof(CanEditNarrative))]
-    public async Task ShowNarrativeDialogToEdit(Narrative Narrative)
+    public async Task ShowNarrativeDialogToEdit(Narrative narrative)
     {
         var loc = Localizer.Get();
         try
         {
             Logger.Information("Showing Narrative Dialog for Editing");
-            var dialog = new NarrativeDialog(_preferencesService , Current, DialogAction.Edit, Narrative)
+            var dialog = new NarrativeDialog(_preferencesService , Current, DialogAction.Edit, narrative)
             {
                 XamlRoot = NarrativesView.Current.XamlRoot
             };
@@ -264,16 +264,27 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
 
             if (result == ContentDialogResult.Primary && dialog.newNarrative is not null)
             {
-                Logger.Information("Editing Narrative ({0})", Narrative.Name);
-                (await _narrativeService.EditNarrative(dialog.newNarrative, Narrative))
-                    .IfFail(async err =>
-                    {
-                        await ShowMessageDialog(
-                        loc.GetLocalizedString("Messages_NarrativeUpdateFailed_Title"),
-                        err.Message,
-                        loc.GetLocalizedString("Common_CloseButton"));
-                        Logger.Error(err, "Updating Narrative failed");
-                    });
+                Logger.Information("Editing Narrative ({0})", narrative.Name);
+                //(await _narrativeService.EditNarrative(dialog.newNarrative, narrative))
+                //    .IfFail(async err =>
+                //    {
+                //        await ShowMessageDialog(
+                //        loc.GetLocalizedString("Messages_NarrativeUpdateFailed_Title"),
+                //        err.Message,
+                //        loc.GetLocalizedString("Common_CloseButton"));
+                //        Logger.Error(err, "Updating Narrative failed");
+                //    });
+
+                await (await _narrativeService.EditNarrative(dialog.newNarrative, narrative ))
+                    .Match(Succ: succ => _narrativeService.UpdateListNarratives(narrative),
+                        Fail: async err =>
+                        {
+                            await ShowMessageDialog(
+                            loc.GetLocalizedString("Messages_NarrativeUpdateFailed_Title"),
+                            err.Message,
+                            loc.GetLocalizedString("Common_CloseButton"));
+                            Logger.Error(err, "Updating Narrative failed");
+                        });
             }
         }
         catch (Exception ex)

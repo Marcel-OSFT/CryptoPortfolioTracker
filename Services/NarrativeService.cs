@@ -111,6 +111,26 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
         return Task.FromResult(true);
     }
+    public Task UpdateListNarratives(Narrative? narrative)
+    {
+        if (ListNarratives is null || narrative is null) { return Task.FromResult(false); }
+        try
+        {
+            var context = _portfolioService.Context;
+
+            var narrativeToUpdateIndex = ListNarratives.IndexOf(narrative);
+            var updatedNarrative = context.Narratives.AsNoTracking()
+                .Where(x => x.Id == narrative.Id)
+                .Include(x => x.Coins)
+                .SingleOrDefault();
+
+            ListNarratives.RemoveAt(narrativeToUpdateIndex);
+            ListNarratives.Insert(narrativeToUpdateIndex, updatedNarrative);
+        }
+        catch (Exception) { Task.FromResult(false); }
+
+        return Task.FromResult(true);
+    }
     public async Task<Result<bool>> CreateNarrative(Narrative? newNarrative)
     {
         bool _result;

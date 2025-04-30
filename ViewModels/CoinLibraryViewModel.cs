@@ -322,8 +322,9 @@ public partial class CoinLibraryViewModel : BaseViewModel
             if (result == ContentDialogResult.Primary)
             {
                 Logger.Information("Adding Note for {0}", coin.Name);
-                (await _libraryService.UpdateNote(coin, dialog.newNote))
-                    .IfFail(async err =>
+                await (await _libraryService.UpdateNote(coin, dialog.newNote))
+                    .Match(Succ: succ => _libraryService.UpdateCoinsList(coin),
+                    Fail: async err =>
                     {
                         await ShowMessageDialog(
                         loc.GetLocalizedString("Messages_NoteAddFailed_Title"),

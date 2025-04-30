@@ -20,6 +20,7 @@ public interface INarrativeService
     bool IsNarrativeHoldingCoins(Narrative Narrative);
     Task RemoveFromListNarratives(int NarrativeId);
     Task AddToListNarratives(Narrative? newNarrative);
+    Task UpdateListNarratives(Narrative? narrative);
     void ReloadValues();
     Narrative GetNarrativeByCoin(Coin coin);
     Task<Result<List<Narrative>>> GetNarratives(bool onlyAssets = false);
