@@ -117,9 +117,9 @@ public partial class PriceLevelsViewModel : BaseViewModel
                 Logger.Information("Adding Price Levels for {0}", coin.Name);
                 await (await _priceLevelService.UpdatePriceLevels(coin, dialog.newPriceLevels))
                     .Match(
-                        async succ =>
+                        async updatedCoin =>
                         {
-                            await _priceLevelService.UpdateCoinsList(coin);
+                            await _priceLevelService.UpdateCoinsList(coin, updatedCoin);
                         },
                         async err =>
                         {
@@ -159,9 +159,9 @@ public partial class PriceLevelsViewModel : BaseViewModel
 
         await (await _priceLevelService.ResetPriceLevels(coin))
                     .Match(
-                        async succ =>
+                        async updatedCoin =>
                         {
-                            await _priceLevelService.UpdateCoinsList(coin);
+                            await _priceLevelService.UpdateCoinsList(coin, updatedCoin);
                         },
                         async err =>
                         {

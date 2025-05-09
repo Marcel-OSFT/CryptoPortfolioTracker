@@ -20,6 +20,7 @@ using System.Data.SqlClient;
 using CryptoPortfolioTracker.Dialogs;
 using WinRT;
 using CryptoPortfolioTracker.Helpers;
+using LanguageExt;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -104,7 +105,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return ListCoins;
     }
 
-    public Task UpdateCoinsList(Coin coin)
+    public Task UpdateCoinsListOld(Coin coin)
     {
         if (ListCoins == null) return Task.CompletedTask;
 
@@ -125,6 +126,25 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return Task.CompletedTask;
     }
 
+    public Task UpdateCoinsList(Coin coin, Coin updatedCoin = null)
+    {
+        if (ListCoins is null || !ListCoins.Any() || coin is null) { return Task.FromResult(false); }
+        try
+        {
+            //var context = _portfolioService.Context;
+
+            var coinToUpdateIndex = ListCoins.IndexOf(coin);
+            //var updatedCoin = context.Coins.AsNoTracking()
+            //    .Where(x => x.Id == coin.Id)
+            //    .SingleOrDefault();
+
+            ListCoins.RemoveAt(coinToUpdateIndex);
+            ListCoins.Insert(coinToUpdateIndex, updatedCoin);
+        }
+        catch (Exception) { Task.FromResult(false); }
+
+        return Task.FromResult(true);
+    }
 
 
 
@@ -169,22 +189,23 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return coinList is not null ? coinList : new List<Coin>();
     }
 
-    public async Task<Result<bool>> ResetPriceLevels(Coin coin)
+    public async Task<Either<Error,Coin>> ResetPriceLevels(Coin coin)
     {
-        if (coin == null) return false;
+        if (coin == null) return Error.New("Coin is null"); ;
 
         await App.UpdateSemaphore.WaitAsync();
         var context = _portfolioService.Context;
         context.ChangeTracker?.Clear();
         bool result;
 
+        Coin coinToReset;
         try
         {
             //ensure that the Coin is tracked before updating the Coin.
             // Using 'Find' will result in adding it to the tracked entities.
-            context.Coins.Find(coin.Id);
+            coinToReset = context.Coins.Where(x => x.ApiId == coin.ApiId).Include(x => x.PriceLevels).First();
 
-            foreach (var level in coin.PriceLevels)
+            foreach (var level in coinToReset.PriceLevels)
             {
                 level.Value = 0;
                 level.Note = string.Empty;
@@ -192,12 +213,12 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 level.DistanceToValuePerc = 0;
             }
 
-            context.Coins.Update(coin);
-            result = await context.SaveChangesAsync() > 0;
+            context.Coins.Update(coinToReset);
+            await context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            return new Result<bool>(ex);
+            return Error.New(ex);
         }
         finally
         {
@@ -205,48 +226,51 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             App.UpdateSemaphore.Release();
         }
 
-        return result;
+        return coinToReset;
     }
 
-    public async Task<Result<bool>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels)
+    public async Task<Either<Error,Coin>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels)
     {
         await App.UpdateSemaphore.WaitAsync();
         Debug.WriteLine("PriceLevels Locked");
 
         var context = _portfolioService.Context;
         context.ChangeTracker?.Clear();
-        bool result;
+        //bool result;
+
+        Coin coinToUpdate;
         if (coin == null || priceLevels == null || priceLevels.Count == 0)
         {
             App.UpdateSemaphore.Release();
-            return false;
+            return Error.New("Coin is null");
         }
         try
         {
+            coinToUpdate = context.Coins.Where(x => x.ApiId == coin.ApiId).Include(x => x.PriceLevels).First(); 
             //ensure that the Coin is tracked before updating the Coin.
             // Using 'Find' will result in adding it to the tracked entities.
-            context.Coins.Find(coin.Id);
-            foreach (var level in priceLevels)
-            {
-                var priceLevelToUpdate = coin.PriceLevels.First(x => x.Type == level.Type);
-                priceLevelToUpdate.Value = level.Value;
-                priceLevelToUpdate.Note = level.Note;
-            }
+            //foreach (var level in priceLevels)
+            //{
+            //    var priceLevelToUpdate = coin.PriceLevels.First(x => x.Type == level.Type);
+            //    priceLevelToUpdate.Value = level.Value;
+            //    priceLevelToUpdate.Note = level.Note;
+            //}
+            coinToUpdate.PriceLevels = priceLevels;
 
-            context.Coins.Update(coin);
-            result = await context.SaveChangesAsync() > 0;
+            context.Coins.Update(coinToUpdate);
+            await context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
             RejectChanges();
-            return new Result<bool>(ex);
+            return Error.New(ex);
         }
         finally
         {
             context.ChangeTracker?.Clear();
             App.UpdateSemaphore.Release();
         }
-        return result;
+        return coinToUpdate;
     }
 
     private void RejectChanges()
