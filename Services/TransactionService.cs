@@ -42,7 +42,8 @@ public partial class TransactionService :  ObservableObject, ITransactionService
     {
         if (ListAssetTransactions is not null)
         {
-            ListAssetTransactions.Clear();
+            //ListAssetTransactions.Clear();
+            ListAssetTransactions = new();
         }
     }
     public Task UpdateListAssetTransactions(Transaction transactionNew, Transaction transactionToEdit)

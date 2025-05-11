@@ -107,11 +107,20 @@ public sealed partial class AssetsViewModel : BaseViewModel
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
 
+        //messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
+        //{
+        //    await _assetService.UpdatePricesAssetTotals(m.Coin);
+        //    await GetPortfolioTotals();
+        //});
         messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
         {
-            await _assetService.UpdatePricesAssetTotals(m.Coin);
+            await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
             await GetPortfolioTotals();
         });
+
+
+
+
 
         messenger.Register<PortfolioConnectionChangedMessage>(this, async (r, m) =>
         {

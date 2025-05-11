@@ -248,7 +248,7 @@ public partial class DashboardViewModel : BaseViewModel
 
         HasTargets = HeatMapPoints.Count > 0;
 
-        SeriesHeatMap?.Clear();
+       // SeriesHeatMap?.Clear();
 
         SeriesHeatMap = new ObservableCollection<ISeries>
         {

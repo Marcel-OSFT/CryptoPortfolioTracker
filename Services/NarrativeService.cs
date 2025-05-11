@@ -56,8 +56,9 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public void ClearNarrativesList()
     {
-        ListNarratives?.Clear();
+        //ListNarratives?.Clear();
         ListNarratives = null;
+        OnPropertyChanged(nameof(ListNarratives));
     }
 
     private ObservableCollection<Narrative> SortedList(List<Narrative> list, SortingOrder sortingOrder = SortingOrder.None, Func<Narrative, object>? sortFunc = null)

@@ -117,10 +117,10 @@ public partial class DashboardViewModel : BaseViewModel
 
         GetValuesGraph();
 
-        if (SeriesGraph is not null) 
-        { 
-            SeriesGraph.Clear();
-        }
+        //if (SeriesGraph is not null) 
+        //{ 
+        //    SeriesGraph.Clear();
+        //}
         SeriesGraph = new ObservableCollection<ISeries>
         {
             new LineSeries<DateTimePoint>

@@ -220,7 +220,8 @@ public partial class GraphService : ObservableObject, IGraphService
 
     public void ClearHistoricalDataBuffer()
     {
-        HistoricalDataByIdsBufferList.Clear();
+        //HistoricalDataByIdsBufferList.Clear();
+        HistoricalDataByIdsBufferList = new();
     }
 
     public async Task RegisterModification(Transaction transactionA, Transaction? transactionB = null)

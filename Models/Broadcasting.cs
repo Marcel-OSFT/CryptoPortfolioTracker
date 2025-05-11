@@ -1,13 +1,17 @@
 ﻿
 namespace CryptoPortfolioTracker.Models;
 
+//public class UpdatePricesMessage
+//{
+//    public Coin Coin { get; }
+//    public UpdatePricesMessage(Coin coin)
+//    {
+//        Coin = coin;
+//    }
+//}
 public class UpdatePricesMessage
 {
-    public Coin Coin { get; }
-    public UpdatePricesMessage(Coin coin)
-    {
-        Coin = coin;
-    }
+    
 }
 
 public class UpdateDashboardMessage

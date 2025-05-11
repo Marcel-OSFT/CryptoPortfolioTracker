@@ -158,7 +158,8 @@ public partial class AssetService : ObservableObject, IAssetService
 
     public void ClearAssetTotalsList()
     {
-        ListAssetTotals?.Clear();
+        //ListAssetTotals?.Clear();
+        ListAssetTotals = new();
     }
     public double GetTotalsAssetsValue()
     {
@@ -257,7 +258,7 @@ public partial class AssetService : ObservableObject, IAssetService
                     break;
                 }
             }
-           // ListAssetTotals[index].Coin.Price = coin.Price;
+            // ListAssetTotals[index].Coin.Price = coin.Price;
             ListAssetTotals[index].Coin = coin;
             ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
         }
@@ -272,35 +273,8 @@ public partial class AssetService : ObservableObject, IAssetService
         return;
     }
 
-    //public Task UpdatePricesAssetTotals()
-    //{
-    //    if (ListAssetTotals is null || !ListAssetTotals.Any()) return Task.CompletedTask;
 
-        //    // var asset = ListAssetTotals?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
-        //    var context = _portfolioService.Context;
-        //    var assets = ListAssetTotals.ToList();
 
-        //    foreach(var asset in assets)
-        //    {
-        //        var coin = context.Coins.Where(x => x.ApiId == asset.Coin.ApiId).SingleOrDefault();
-
-        //        if (coin == null) continue;
-
-        //        //Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
-        //        var index = -1;
-        //        for (var i = 0; i < ListAssetTotals.Count; i++)
-        //        {
-        //            if (ListAssetTotals[i].Coin.Id == asset.Coin.Id)
-        //            {
-        //                index = i;
-        //                break;
-        //            }
-        //        }
-        //        ListAssetTotals[index].Coin = coin;
-        //        ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
-        //    }
-        //    return Task.CompletedTask;
-        //}
 
     private async Task<Result<List<AssetTotals>>> GetAssetsByAccountFromContext(int accountId)
     {

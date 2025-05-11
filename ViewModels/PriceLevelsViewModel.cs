@@ -51,12 +51,17 @@ public partial class PriceLevelsViewModel : BaseViewModel
         initialSortFunc = x => x.PriceLevels.Where(t => t.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
         initialSortingOrder = SortingOrder.Descending;
 
-        messenger.Register<UpdatePricesMessage>(this, (r, m) =>
+        //messenger.Register<UpdatePricesMessage>(this, (r, m) =>
+        //{
+        //    if (_priceLevelService.ListCoinsHasAny())
+        //    {
+        //        _priceLevelService.UpdateCoinsList(m.Coin);
+        //    }
+        //}); 
+        messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
         {
-            if (_priceLevelService.ListCoinsHasAny())
-            {
-                _priceLevelService.UpdateCoinsList(m.Coin);
-            }
+            await _priceLevelService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
+            CoinsCount = _priceLevelService.ListCoins.Count;
         });
 
     }

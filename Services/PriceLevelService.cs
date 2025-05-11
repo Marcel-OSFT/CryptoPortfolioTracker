@@ -430,8 +430,9 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public void ClearCoinsList()
     {
-        ListCoins?.Clear();
+        //ListCoins?.Clear();
         ListCoins = null;
+        OnPropertyChanged(nameof(ListCoins));
     }
 
 }

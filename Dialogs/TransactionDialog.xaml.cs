@@ -377,20 +377,25 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
         QtyA = MaxQtyA = PriceA = PriceB = QtyB = FeeQty = 0;
 
 
-        ListCoinA = ListCoinA ?? new List<string>();
-        ListCoinA.Clear();
+        //ListCoinA = ListCoinA ?? new List<string>();
+        //ListCoinA.Clear();
+        ListCoinA = new List<string>();
 
-        ListCoinB = ListCoinB ?? new List<string>();
-        ListCoinB.Clear();
+        //ListCoinB = ListCoinB ?? new List<string>();
+        ListCoinB = new List<string>();
+        //ListCoinB.Clear();
 
-        ListAccountFrom = ListAccountFrom ?? new List<string>();
-        ListAccountFrom.Clear();
+        ListAccountFrom = new List<string>();
+        //ListAccountFrom = ListAccountFrom ?? new List<string>();
+        //ListAccountFrom.Clear();
 
-        ListAccountTo = ListAccountTo ?? new List<string>();
-        ListAccountTo.Clear();
+        ListAccountTo = new List<string>();
+        //ListAccountTo = ListAccountTo ?? new List<string>();
+        //ListAccountTo.Clear();
 
-        ListFeeCoin = ListFeeCoin ?? new List<string>();
-        ListFeeCoin.Clear();
+        ListFeeCoin = new List<string>();
+        //ListFeeCoin = ListFeeCoin ?? new List<string>();
+        //ListFeeCoin.Clear();
     }
 
     private async void TransactionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -512,7 +517,8 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
             }
             else
             {
-                ListAccountFrom?.Clear();
+                //ListAccountFrom?.Clear();
+                ListAccountFrom = new List<string>();
                 AccountFrom = string.Empty;
             }
         }

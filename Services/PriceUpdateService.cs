@@ -128,12 +128,22 @@ public class PriceUpdateService : IPriceUpdateService
         IsPausRequested = false;
         if (currentContext != _portfolioService.UpdateContext)
         {
-            resumeTask = Task.Run(async () =>
+            if (timerTask is null)
             {
-                Logger.Information("PriceUpdateService continued with new context");
+                Logger.Information("PriceUpdateService re-started at Resume");
                 currentContext = _portfolioService.UpdateContext;
-                await UpdatePricesAllCoins();
-            });
+                IsUpdating = false;
+                timerTask = DoWorkAsync();
+            }
+            else
+            {
+                resumeTask = Task.Run(async () =>
+                {
+                    Logger.Information("PriceUpdateService continued with new context");
+                    currentContext = _portfolioService.UpdateContext;
+                    await UpdatePricesAllCoins();
+                });
+            }
         }
         else
         {
@@ -314,6 +324,7 @@ public class PriceUpdateService : IPriceUpdateService
         if (marketDataList == null) return new Result<bool>(new ArgumentNullException(nameof(marketDataList)));
 
         Logger.Information($"Updating Market Data. {marketDataList.Count}");
+        
         foreach (var coinData in marketDataList)
         {
             var coinResult = await UpdatePriceCoin(coinData);
@@ -322,6 +333,10 @@ public class PriceUpdateService : IPriceUpdateService
                 return new Result<bool>(false);
             }
         }
+        MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+        {
+            _messenger.Send(new UpdatePricesMessage());
+        });
         return true;
     }
 
@@ -364,10 +379,10 @@ public class PriceUpdateService : IPriceUpdateService
                     await _portfolioService.Context.Entry(entity).ReloadAsync();
                 }
 
-                MainPage.Current.DispatcherQueue.TryEnqueue(() =>
-                {
-                    _messenger.Send(new UpdatePricesMessage(coin));
-                });
+                //MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+                //{
+                //    _messenger.Send(new UpdatePricesMessage(coin));
+                //});
             }
             return coin;
         }

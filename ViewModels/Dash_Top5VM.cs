@@ -33,8 +33,10 @@ public partial class DashboardViewModel : BaseViewModel
     }
     public void Top5ControlUnloaded()
     {
-        TopWinners.Clear();
-        TopLosers.Clear();
+        //TopWinners.Clear();
+        TopWinners = new();
+        //TopLosers.Clear();
+        TopLosers = new();
     }
 
     public async Task GetTop5()

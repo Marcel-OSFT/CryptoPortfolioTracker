@@ -56,14 +56,16 @@ public partial class AccountService : ObservableObject, IAccountService
 
     public void ClearAccountsList()
     {
-        ListAccounts?.Clear();
+        //ListAccounts?.Clear();
         ListAccounts = null;
+        OnPropertyChanged(nameof(ListAccounts));
     }
 
     public void ClearAccountsByAssetList()
     {
-        ListAssetAccounts?.Clear();
+        //ListAssetAccounts?.Clear();
         ListAssetAccounts = null;
+        OnPropertyChanged(nameof(ListAssetAccounts));
     }
     public AssetAccount GetAffectedAccount(Transaction transaction)
     {

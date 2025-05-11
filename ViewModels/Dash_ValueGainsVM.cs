@@ -156,10 +156,10 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
         };
 
 
-        if (SeriesCapFlow is not null)
-        {
-            SeriesCapFlow.Clear();
-        }
+        //if (SeriesCapFlow is not null)
+        //{
+        //    SeriesCapFlow.Clear();
+        //}
         SeriesCapFlow = new ObservableCollection<ISeries>
         {
             new ColumnSeries<double>

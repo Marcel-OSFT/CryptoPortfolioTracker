@@ -56,8 +56,9 @@ public partial class LibraryService : ObservableObject, ILibraryService
 
     public void ClearCoinsList()
     {
-        ListCoins?.Clear();
+        //ListCoins?.Clear();
         ListCoins = null;
+        OnPropertyChanged(nameof(ListCoins));
     }
 
     public Task RemoveFromCoinsList(Coin coin)
