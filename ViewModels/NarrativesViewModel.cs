@@ -101,6 +101,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
 
     public void Terminate()
     {
+        _narrativeService.ClearNarrativesList();
         selectedNarrative = null;
         IsExtendedView = false;
     }

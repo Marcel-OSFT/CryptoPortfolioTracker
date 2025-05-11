@@ -104,6 +104,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
     public void Terminate()
     {
+        _accountService.ClearAccountsList();
         _accountService.ClearAccountsByAssetList();
         selectedAccount = null;
         IsExtendedView = false;

@@ -26,4 +26,5 @@ public interface IAccountService
     AssetAccount GetAffectedAccount(Transaction transaction);
     void ReloadValues();
     bool DoesAccountNameExist(string name);
+    void ClearAccountsList();
 }

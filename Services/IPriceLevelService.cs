@@ -21,9 +21,10 @@ public interface IPriceLevelService
     public bool IsCoinsListEmpty();
 
 
-    public Task<ObservableCollection<Coin>> PopulateCoinsList();
+    //public Task<ObservableCollection<Coin>> PopulateCoinsList();
 
-    public Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
+    //public Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
+    public Task PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
 
 
     public Task<Result<List<Coin>>> GetCoinsFromContext();
@@ -35,6 +36,8 @@ public interface IPriceLevelService
     void UpdateHeatMap();
     void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
     Portfolio GetPortfolio();
-    Task UpdateCoinsList(Coin coin, Coin updatedCoin = null);
+    Task UpdateCoinsList(Coin coin);
+    Task UpdateCoinsList(Coin coin, Coin updatedCoin);
     void ClearCoinsList();
+    bool ListCoinsHasAny();
 }

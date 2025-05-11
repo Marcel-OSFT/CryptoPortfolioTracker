@@ -1226,4 +1226,13 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="RestorePortfolioDialog_ExplError" xml:space="preserve">
     <value>Fout bij het uitpakken van de back-up. Kan niet doorgaan met herstellen.</value>
   </data>
+  <data name="Messages_ScheduledTask_Explainer" xml:space="preserve">
+    <value>De CryptoPortfolioTracker moet een geplande taak registreren om de marktgrafieken dagelijks bij te werken. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te registreren. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</value>
+  </data>
+  <data name="Messages_GraphUpdateService_InvalidChartsTitle" xml:space="preserve">
+    <value>Ongeldige MarketChart gevonden voor</value>
+  </data>
+  <data name="Messages_ScheduledTask_Title" xml:space="preserve">
+    <value>Beheerdersrechten vereist </value>
+  </data>
 </root>

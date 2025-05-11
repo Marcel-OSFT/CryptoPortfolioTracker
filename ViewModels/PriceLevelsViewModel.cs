@@ -53,7 +53,10 @@ public partial class PriceLevelsViewModel : BaseViewModel
 
         messenger.Register<UpdatePricesMessage>(this, (r, m) =>
         {
-            _priceLevelService.UpdateCoinsList(m.Coin);
+            if (_priceLevelService.ListCoinsHasAny())
+            {
+                _priceLevelService.UpdateCoinsList(m.Coin);
+            }
         });
 
     }
@@ -67,7 +70,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
 
     public void Terminate()
     {
-        _priceLevelService.ClearCoinsList();
+       _priceLevelService.ClearCoinsList();
     }
 
     [RelayCommand]

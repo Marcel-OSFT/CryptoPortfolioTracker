@@ -44,13 +44,20 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         return ListNarratives;
     }
 
-    public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false)
+    //public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false)
+    public async Task PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false)
     {
         var getResult = await GetNarratives(onlyAssets);
         ListNarratives = getResult.Match(
             list => SortedList(list, sortingOrder, sortFunc),
             err => new ObservableCollection<Narrative>()); 
-        return ListNarratives;
+      //  return ListNarratives;
+    }
+
+    public void ClearNarrativesList()
+    {
+        ListNarratives?.Clear();
+        ListNarratives = null;
     }
 
     private ObservableCollection<Narrative> SortedList(List<Narrative> list, SortingOrder sortingOrder = SortingOrder.None, Func<Narrative, object>? sortFunc = null)

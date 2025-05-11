@@ -28,6 +28,8 @@ public interface INarrativeService
     bool DoesNarrativeNameExist(string name);
     void SortList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc);
     void SortList();
-    Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false);
+    Task PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false);
+    //Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false);
     Narrative GetDefaultNarrative();
+    void ClearNarrativesList();
 }

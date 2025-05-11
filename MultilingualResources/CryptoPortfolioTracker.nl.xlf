@@ -1636,15 +1636,15 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="Messages_ScheduledTask_Explainer" translate="yes" xml:space="preserve">
           <source>The CryptoPortfolioTracker needs to register a scheduled task to perform a daily update of the Market Charts. The application needs to run once as an administrator to register the scheduled task. It will restart and prompt you to accept changes. </source>
-          <target state="new">The CryptoPortfolioTracker needs to register a scheduled task to perform a daily update of the Market Charts. The application needs to run once as an administrator to register the scheduled task. It will restart and prompt you to accept changes. </target>
+          <target state="translated">De CryptoPortfolioTracker moet een geplande taak registreren om de marktgrafieken dagelijks bij te werken. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te registreren. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</target>
         </trans-unit>
         <trans-unit id="Messages_GraphUpdateService_InvalidChartsTitle" translate="yes" xml:space="preserve">
           <source>Invalid MarketChart Found for</source>
-          <target state="new">Invalid MarketChart Found for</target>
+          <target state="translated">Ongeldige MarketChart gevonden voor</target>
         </trans-unit>
         <trans-unit id="Messages_ScheduledTask_Title" translate="yes" xml:space="preserve">
           <source>Administrator Privileges Required  </source>
-          <target state="new">Administrator Privileges Required  </target>
+          <target state="translated">Beheerdersrechten vereist </target>
         </trans-unit>
       </group>
     </body>

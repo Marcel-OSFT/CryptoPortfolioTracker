@@ -182,14 +182,46 @@ public partial class MainPage : Page, INotifyPropertyChanged
         }
     }
 
+    //private void LoadView(Type pageType)
+    //{
+    //    if (pageType.Name == "CoinLibraryView" || pageType.Name == "PriceLevelsView")
+    //    {
+    //        _graphUpdateService.Pause();
+    //        _priceUpdateService.Pause();
+    //    }
+    //    else if (lastPageType is not null && (lastPageType.Name == "CoinLibraryView" || lastPageType.Name == "PriceLevelsView"))
+    //    {
+    //        if (_graphUpdateService != null)
+    //        {
+    //            _graphUpdateService.Resume();
+    //        }
+    //        else
+    //        {
+    //            _graphUpdateService = App.Container.GetService<IGraphUpdateService>();
+    //            _graphUpdateService?.Start();
+    //        }
+
+    //        if (_priceUpdateService != null)
+    //        {
+    //            _priceUpdateService.Resume();
+    //        }
+    //        else
+    //        {
+    //            _priceUpdateService = App.Container.GetService<IPriceUpdateService>();
+    //            _priceUpdateService?.Start();
+    //        }
+    //    }
+    //    lastPageType = pageType;
+    //    contentFrame.Content = App.Container.GetService(pageType);
+    //}
     private void LoadView(Type pageType)
     {
-        if (pageType.Name == "CoinLibraryView" || pageType.Name == "PriceLevelsView")
+        if (pageType.Name == "CoinLibraryView")
         {
             _graphUpdateService.Pause();
             _priceUpdateService.Pause();
         }
-        else if (lastPageType is not null && (lastPageType.Name == "CoinLibraryView" || lastPageType.Name == "PriceLevelsView"))
+        else if (lastPageType is not null && (lastPageType.Name == "CoinLibraryView"))
         {
             if (_graphUpdateService != null)
             {

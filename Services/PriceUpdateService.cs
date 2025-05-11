@@ -334,7 +334,6 @@ public class PriceUpdateService : IPriceUpdateService
 
         try
         {
-           
             var coin = await context.Coins
                 .Include(x => x.PriceLevels)
                 .SingleAsync(c => c.ApiId.ToLower() == coinData.Id.ToLower());

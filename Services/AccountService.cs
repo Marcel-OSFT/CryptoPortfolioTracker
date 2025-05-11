@@ -54,13 +54,16 @@ public partial class AccountService : ObservableObject, IAccountService
         return ListAssetAccounts;
     }
 
+    public void ClearAccountsList()
+    {
+        ListAccounts?.Clear();
+        ListAccounts = null;
+    }
 
     public void ClearAccountsByAssetList()
     {
-        if (ListAssetAccounts != null && ListAssetAccounts.Any())
-        {
-            ListAssetAccounts.Clear(); 
-        }
+        ListAssetAccounts?.Clear();
+        ListAssetAccounts = null;
     }
     public AssetAccount GetAffectedAccount(Transaction transaction)
     {

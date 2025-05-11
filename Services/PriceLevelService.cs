@@ -21,6 +21,7 @@ using CryptoPortfolioTracker.Dialogs;
 using WinRT;
 using CryptoPortfolioTracker.Helpers;
 using LanguageExt;
+using WinRT.CryptoPortfolioTrackerGenericHelpers;
 
 namespace CryptoPortfolioTracker.Services;
 
@@ -79,16 +80,17 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return !ListCoins.Any();
     }
 
-    public async Task<ObservableCollection<Coin>> PopulateCoinsList()
-    {
-        var getResult = await GetCoinsFromContext();
-        ListCoins = getResult.Match(
-            list => new ObservableCollection<Coin>(SortedList(list)),
-            err => ListCoins = new());
+    //public async Task<ObservableCollection<Coin>> PopulateCoinsList()
+    //{
+    //    var getResult = await GetCoinsFromContext();
+    //    ListCoins = getResult.Match(
+    //        list => new ObservableCollection<Coin>(SortedList(list)),
+    //        err => ListCoins = new());
         
-        return ListCoins;
-    }
-    public async Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
+    //    return ListCoins;
+    //}
+    //public async Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
+    public async Task PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
     {
         var getResult = await GetCoinsFromContext();
         ListCoins = getResult.Match(list =>
@@ -102,33 +104,45 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         },
         err => new());
 
-        return ListCoins;
+       // return ListCoins;
     }
 
-    public Task UpdateCoinsListOld(Coin coin)
+    public async Task UpdateCoinsList(Coin coin)
     {
-        if (ListCoins == null) return Task.CompletedTask;
-
-        var coinToUpdate = ListCoins.Where(a => a.ApiId == coin.ApiId).SingleOrDefault();
-        if (coinToUpdate != null)
+        if (ListCoins == null || coin is null) return;
+        try
         {
-            var index = -1;
-            for (var i = 0; i < ListCoins.Count; i++)
+            var getResult = await GetCoinFromContext(coin);
+            var _coinWithAssetData = getResult.Match(
+                coin => coin,
+                err => null);
+
+            var coinToUpdate = ListCoins.Where(a => a.ApiId == coin.ApiId).SingleOrDefault();
+            if (coinToUpdate != null)
             {
-                if (ListCoins[i].ApiId == coinToUpdate.ApiId)
+                var index = -1;
+                for (var i = 0; i < ListCoins.Count; i++)
                 {
-                    index = i;
-                    break;
+                    if (ListCoins[i].ApiId == coinToUpdate.ApiId)
+                    {
+                        index = i;
+                        break;
+                    }
                 }
+                ListCoins[index] = _coinWithAssetData;
             }
-            ListCoins[index] = coin;
         }
-        return Task.CompletedTask;
+        catch (Exception)
+        {
+            Task.FromResult(false);
+        }
+        
+        return;
     }
 
-    public Task UpdateCoinsList(Coin coin, Coin updatedCoin = null)
+    public Task UpdateCoinsList(Coin coin, Coin updatedCoin)
     {
-        if (ListCoins is null || !ListCoins.Any() || coin is null) { return Task.FromResult(false); }
+        if (ListCoins is null || !ListCoins.Any() || coin is null || updatedCoin is null) { return Task.FromResult(false); }
         try
         {
             //var context = _portfolioService.Context;
@@ -141,9 +155,16 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             ListCoins.RemoveAt(coinToUpdateIndex);
             ListCoins.Insert(coinToUpdateIndex, updatedCoin);
         }
-        catch (Exception) { Task.FromResult(false); }
+        catch (Exception) 
+        { 
+            Task.FromResult(false); 
+        }
 
-        return Task.FromResult(true);
+        return Task.CompletedTask;
+    }
+    public bool ListCoinsHasAny()
+    {
+        return ListCoins != null && ListCoins.Any();
     }
 
 
@@ -187,6 +208,32 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             return new Result<List<Coin>>(ex);
         }
         return coinList is not null ? coinList : new List<Coin>();
+    }
+    public async Task<Result<Coin>> GetCoinFromContext(Coin coin)
+    {
+        var context = _portfolioService.Context;
+        Coin? _coin;
+        try
+        {
+            //coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
+            _coin = await context.Coins
+                .AsNoTracking()
+                .Where(x => x.ApiId == coin.ApiId)
+                .Include(x => x.PriceLevels)
+                .Include(x => x.Narrative)
+                .Include(x => x.Assets)
+                .ThenInclude(x => x.Account)
+                .OrderBy(x => x.Rank)
+                .FirstAsync();
+            
+            _coin.EvaluatePriceLevels(_coin.Price);
+            
+        }
+        catch (Exception ex)
+        {
+            return new Result<Coin>(ex);
+        }
+        return _coin is not null ? _coin : new Coin();
     }
 
     public async Task<Either<Error,Coin>> ResetPriceLevels(Coin coin)
@@ -384,6 +431,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     public void ClearCoinsList()
     {
         ListCoins?.Clear();
+        ListCoins = null;
     }
 
 }
