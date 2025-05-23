@@ -447,7 +447,7 @@ public partial class App : Application
 
         //services.AddDbContext<PortfolioContext>(options =>
         //{
-        //    options.UseSqlite("Data Source=|DataDirectory|" + Current.DbName);
+        //    options.UseSqlite("Data Source=|DataDirectory|" + DbName);
         //});
 
         services.AddScoped<ITransactionService, TransactionService>();

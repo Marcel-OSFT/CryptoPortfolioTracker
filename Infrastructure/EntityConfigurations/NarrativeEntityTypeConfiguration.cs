@@ -27,8 +27,6 @@ class NarrativeEntityTypeConfiguration : IEntityTypeConfiguration<Narrative>
             .HasColumnName("About")
             .HasColumnType("TEXT");
 
-        configuration.Navigation("Coins");
-
         configuration
             .Ignore("IsHoldingCoins");
 
@@ -41,5 +39,6 @@ class NarrativeEntityTypeConfiguration : IEntityTypeConfiguration<Narrative>
         configuration
             .Ignore("ProfitLossPerc");
 
+        configuration.Navigation("Coins");
     }
 }

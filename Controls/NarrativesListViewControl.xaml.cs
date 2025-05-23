@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Controls;
 
@@ -82,9 +83,12 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
 
     private void IconGrid_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
-        if (sender is GridView gridView && gridView.Items.Count == 0) return; 
+        //if (sender is GridView gridView && gridView.Items.Count == 0) return;
+        if (sender is GridView gridView) return;
 
-        //// use the chached ScrollViewer to set the HorizontalScrollBarVisibility
+       // Task.Delay(100);
+
+        //// use the cached ScrollViewer to set the HorizontalScrollBarVisibility
         foreach (var scrollViewer in gridViewScrollViewers)
         {
             var pointerPosition = e.GetCurrentPoint(scrollViewer).Position;
@@ -102,16 +106,19 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
                 scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
             }
         }
+        
     }
 
     private void IconGrid_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         if (sender is GridView gridView && gridView.Items.Count == 0) return;
-        // use the chached ScrollViewer to set the HorizontalScrollBarVisibility
+        
+        // use the cached ScrollViewer to set the HorizontalScrollBarVisibility
         foreach (var scrollViewer in gridViewScrollViewers)
         {
             scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
         }
+        
     }
 
     private ScrollViewer GetScrollViewerFromGridView(GridView gridView)

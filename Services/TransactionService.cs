@@ -608,14 +608,29 @@ public partial class TransactionService :  ObservableObject, ITransactionService
         //*** In that case the qty for this coin in that specific account will also be zero and the asset can be removed as well
         try
         {
-            var assetsWithoutMutations = await context.Assets.Where(x => x.Mutations.Count == 0).ToListAsync();
+            var assetsWithoutMutations = await context.Assets
+                .Where(x => x.Mutations.Count == 0)
+                .Include(x => x.Coin)
+                .ToListAsync();
             if (assetsWithoutMutations != null)
             {
                 foreach (var asset in assetsWithoutMutations)
                 {
                     context.Assets.Remove(asset);
+                    //*** if this assets coin does not exists in any other Asset having mutations, then set 'IsAsset' to false
+                    var assetCoin = await context.Assets
+                        .Where(x => x.Coin.Id == asset.Coin.Id && x.Mutations.Count > 0)
+                        .ToListAsync();
+                    if (assetCoin is null || assetCoin.Count == 0)
+                    {
+                        var coin = await context.Coins
+                            .Where(x => x.Id == asset.Coin.Id)
+                            .SingleAsync();
+                        coin.IsAsset = false;
+                        context.Coins.Update(coin);
+                    }
                 }
-                result = context.SaveChanges();
+                result = await context.SaveChangesAsync();
                 
             }
         }

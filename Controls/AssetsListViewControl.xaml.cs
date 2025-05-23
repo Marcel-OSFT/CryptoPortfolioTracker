@@ -53,6 +53,10 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
         //DataContext = _viewModel;
     }
 
+    private void AssetsListView_Loaded(object sender, RoutedEventArgs e)
+    {
+       // selectedItemIndex = 0;
+    }
     private void AssetsListView_Loading(FrameworkElement sender, object args)
     {
         selectedItemIndex = 0;
@@ -84,21 +88,29 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
     {
         if (sender is ListView listView)
         {
-            if (listView.SelectedItem is AssetTotals asset)
+            try
             {
-                selectedItemIndex = listView.SelectedIndex;
-
-                if (isSettingIndex)
+                if (listView.SelectedItem is AssetTotals asset)
                 {
-                    KeepIntoView(listView);
-                    isSettingIndex = false;
+                    selectedItemIndex = listView.SelectedIndex;
+
+                    if (isSettingIndex)
+                    {
+                        KeepIntoView(listView);
+                        isSettingIndex = false;
+                    }
+                }
+                else
+                {
+                    isSettingIndex = true;
+                    listView.SelectedIndex = selectedItemIndex;
                 }
             }
-            else
+            catch (ArgumentException ex)
             {
-                isSettingIndex = true;
-                listView.SelectedIndex = selectedItemIndex;
+                listView.SelectedIndex = -1;
             }
+
         }
     }
 
@@ -124,5 +136,5 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-
+    
 }

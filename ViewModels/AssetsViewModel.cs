@@ -23,15 +23,6 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-//public class UpdatePricesMessage
-//{
-//    public Coin Coin { get; }
-//    public UpdatePricesMessage(Coin coin)
-//    {
-//        Coin = coin;
-//    }
-//}
-
 [ObservableRecipient]
 public sealed partial class AssetsViewModel : BaseViewModel
 {
@@ -107,20 +98,11 @@ public sealed partial class AssetsViewModel : BaseViewModel
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
 
-        //messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
-        //{
-        //    await _assetService.UpdatePricesAssetTotals(m.Coin);
-        //    await GetPortfolioTotals();
-        //});
         messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
         {
             await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
             await GetPortfolioTotals();
         });
-
-
-
-
 
         messenger.Register<PortfolioConnectionChangedMessage>(this, async (r, m) =>
         {
@@ -130,7 +112,6 @@ public sealed partial class AssetsViewModel : BaseViewModel
         {
             await RefreshViewAfterChangeOfPreferences();
         });
-
 
         _assetService = assetService;
         _transactionService = transactionService;
@@ -552,6 +533,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public void HideZeroBalances(bool param)
     {
         _assetService.IsHidingZeroBalances = param;
+        _assetService.PopulateAssetTotalsList();
+        VisibleAssetsCount = _assetService.VisibleAssetsCount;
     }
 
     [RelayCommand]

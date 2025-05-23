@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Controls;
 
@@ -27,6 +28,7 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
     {
         //await _viewModel.Top5ControlLoading();
     }
+
     private async void Control_Loaded(object sender, RoutedEventArgs e)
     {
         await _viewModel.Top5ControlLoaded();
@@ -34,7 +36,7 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
 
     private void Control_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        _viewModel.Top5ControlUnloaded();
+       // _viewModel.Top5ControlUnloaded();
     }
 
 

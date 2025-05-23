@@ -20,14 +20,14 @@ namespace CryptoPortfolioTracker.Infrastructure
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
-        //    optionsBuilder.UseSqlite("Data Source=" + App.appDataPath + "\\" + App.DbName);
+        //    optionsBuilder.UseSqlite("Data Source=" + App.AppDataPath + "\\" + App.DbName);
         //}
 
 
-       public PortfolioContext(DbContextOptions<PortfolioContext> connection) : base(connection) { }
+        public PortfolioContext(DbContextOptions<PortfolioContext> connection) : base(connection) { }
 
 
-       
+
         public DbSet<Coin> Coins  { get; set; }
         public DbSet<Asset> Assets { get; set; }
         public DbSet<Account> Accounts { get; set; }

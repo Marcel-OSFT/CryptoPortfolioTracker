@@ -86,25 +86,51 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     //    ListCoins = getResult.Match(
     //        list => new ObservableCollection<Coin>(SortedList(list)),
     //        err => ListCoins = new());
-        
+
     //    return ListCoins;
     //}
-    //public async Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
-    public async Task PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
+
+    public async Task PopulateCoinsList()
     {
         var getResult = await GetCoinsFromContext();
-        ListCoins = getResult.Match(list =>
-        {
-            //*** extract the Infinity values from the collection
-            //*** so that they appended at the end of the sorted collection
-            var infinityValues = list.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
-            var valuesList = list.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
+        ListCoins = getResult.Match(
+            list =>
+            {
+                if (!list.Any()) return new();
+                if (currentSortFunc(list.First()) is double)
+                {
+                    //*** extract the Infinity values from the collection
+                    //*** so that they appended at the end of the sorted collection
+                    var infinityValues = list.Where(x => double.IsInfinity((double)currentSortFunc(x))).ToList();
+                    var valuesList = list.Where(x => !double.IsInfinity((double)currentSortFunc(x))).ToList();
 
-            return new ObservableCollection<Coin>(SortedList(valuesList, sortingOrder, sortFunc).Concat(infinityValues));
-        },
-        err => new());
+                    return new ObservableCollection<Coin>(SortedList(valuesList, currentSortingOrder, currentSortFunc).Concat(infinityValues));
+                }
+                else
+                {
+                    return new ObservableCollection<Coin>(SortedList(list, currentSortingOrder, currentSortFunc));
+                }
+            },
+            err => new());
+    }
 
-       // return ListCoins;
+
+
+    //public async Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
+    public async Task PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object>? sortFunc)
+    {
+        var getResult = await GetCoinsFromContext();
+        ListCoins = getResult.Match(
+            list =>
+            {
+                //*** extract the Infinity values from the collection
+                //*** so that they appended at the end of the sorted collection
+                var infinityValues = list.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
+                var valuesList = list.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
+
+                return new ObservableCollection<Coin>(SortedList(valuesList, sortingOrder, sortFunc).Concat(infinityValues));
+            },
+            err => new());
     }
 
     public async Task UpdateCoinsList(Coin coin)
@@ -155,7 +181,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             ListCoins.RemoveAt(coinToUpdateIndex);
             ListCoins.Insert(coinToUpdateIndex, updatedCoin);
         }
-        catch (Exception) 
+        catch (Exception ex) 
         { 
             Task.FromResult(false); 
         }
@@ -240,7 +266,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     {
         if (coin == null) return Error.New("Coin is null"); ;
 
-        await App.UpdateSemaphore.WaitAsync();
+       // await App.UpdateSemaphore.WaitAsync();
         var context = _portfolioService.Context;
         context.ChangeTracker?.Clear();
         bool result;
@@ -270,7 +296,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         finally
         {
             context.ChangeTracker?.Clear();
-            App.UpdateSemaphore.Release();
+            //App.UpdateSemaphore.Release();
         }
 
         return coinToReset;
@@ -278,7 +304,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public async Task<Either<Error,Coin>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels)
     {
-        await App.UpdateSemaphore.WaitAsync();
+        //await App.UpdateSemaphore.WaitAsync();
         Debug.WriteLine("PriceLevels Locked");
 
         var context = _portfolioService.Context;
@@ -288,12 +314,20 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         Coin coinToUpdate;
         if (coin == null || priceLevels == null || priceLevels.Count == 0)
         {
-            App.UpdateSemaphore.Release();
+            //App.UpdateSemaphore.Release();
             return Error.New("Coin is null");
         }
         try
         {
-            coinToUpdate = context.Coins.Where(x => x.ApiId == coin.ApiId).Include(x => x.PriceLevels).First(); 
+            coinToUpdate = await context.Coins
+                .Where(x => x.ApiId == coin.ApiId)
+                .Include(x => x.PriceLevels)
+                .Include(x => x.Narrative)
+                .Include(x => x.Assets)
+                .ThenInclude(x => x.Account)
+                .FirstAsync(); 
+
+
             //ensure that the Coin is tracked before updating the Coin.
             // Using 'Find' will result in adding it to the tracked entities.
             //foreach (var level in priceLevels)
@@ -303,6 +337,8 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             //    priceLevelToUpdate.Note = level.Note;
             //}
             coinToUpdate.PriceLevels = priceLevels;
+
+            coinToUpdate.EvaluatePriceLevels(coinToUpdate.Price);
 
             context.Coins.Update(coinToUpdate);
             await context.SaveChangesAsync();
@@ -315,7 +351,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         finally
         {
             context.ChangeTracker?.Clear();
-            App.UpdateSemaphore.Release();
+            //App.UpdateSemaphore.Release();
         }
         return coinToUpdate;
     }

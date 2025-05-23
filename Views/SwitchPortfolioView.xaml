@@ -107,6 +107,7 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+                    <ProgressRing x:Name="InProgress" IsActive="False" />
                 </Grid>
             </Border>
         </Grid>

@@ -15,6 +15,7 @@
     xmlns:controls="using:CryptoPortfolioTracker.Controls" 
     xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    Loaded="View_Loaded"
     Loading="View_Loading"
     mc:Ignorable="d">
 

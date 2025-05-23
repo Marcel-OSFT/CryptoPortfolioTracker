@@ -304,7 +304,7 @@ public class GraphUpdateService : IGraphUpdateService
         }
         finally
         {
-            App.UpdateSemaphore.Release();
+           App.UpdateSemaphore.Release();
         }
         
     }
@@ -701,7 +701,7 @@ public class GraphUpdateService : IGraphUpdateService
         }
         finally
         {
-            App.UpdateSemaphore.Release();
+           App.UpdateSemaphore.Release();
         }
 
 
@@ -733,7 +733,7 @@ public class GraphUpdateService : IGraphUpdateService
         }
         finally
         {
-            App.UpdateSemaphore.Release();
+           App.UpdateSemaphore.Release();
         }
     }
     private async Task<int> GetDaysBasedOnOldestTransaction()

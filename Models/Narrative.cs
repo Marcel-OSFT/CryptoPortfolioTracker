@@ -23,9 +23,6 @@ public partial class Narrative : BaseModel
     [ObservableProperty] private string name;
     [ObservableProperty] private string about;
 
-    //*** Navigation property
-    [ObservableProperty] private ICollection<Coin> coins;
-
     //*** Set To NotMapped in EntityTypeBuilder
     [ObservableProperty] [NotMapped] private bool isHoldingCoins;
     //*** Set To NotMapped in EntityTypeBuilder
@@ -36,6 +33,12 @@ public partial class Narrative : BaseModel
     [ObservableProperty] private double profitLoss;
     //*** Set To NotMapped in EntityTypeBuilder
     [ObservableProperty] private double profitLossPerc;
+
+    //*** Navigation property
+    [ObservableProperty] private ICollection<Coin> coins;
+
+
+
 
 
     partial void OnCostBaseChanged(double value)
@@ -48,6 +51,5 @@ public partial class Narrative : BaseModel
         ProfitLoss = value - CostBase;
         ProfitLossPerc = 100 * ((value - CostBase) / CostBase);
     }
-
 
 }

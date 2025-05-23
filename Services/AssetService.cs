@@ -41,34 +41,47 @@ public partial class AssetService : ObservableObject, IAssetService
     public long VisibleAssetsCount { get; set; }
 
 
-
     partial void OnIsHidingZeroBalancesChanged(bool value)
     {
-        if (ListAssetTotals == null)
-        {
-            return;
-        }
+        //if (ListAssetTotals == null)
+        //{
+        //    return;
+        //}
+        //switch (_assetTotalsByType)
+        //{
+        //    case AssetTotalsByType.General:
+        //        PopulateAssetTotalsList();
+        //        VisibleAssetsCount = ListAssetTotals.Count;
+        //        break;
+        //    case AssetTotalsByType.ByAccount:
+        //        PopulateAssetTotalsByAccountList();
+        //        break;
+        //    case AssetTotalsByType.ByNarrative:
+        //        break;
+        //    default:
+        //        break;
+        //}
 
-        VisibleAssetsCount = ListAssetTotals.Count;
-        if (value)
-        {
-            var itemsToHide = ListAssetTotals?.Where(x => x.MarketValue <= 0).ToList();
-            foreach (var item in itemsToHide)
-            {
-                item.IsHidden = true;
-            }
-            if (itemsToHide != null)
-            {
-                VisibleAssetsCount -= itemsToHide.Count;
-            }
-        }
-        else
-        {
-            foreach (var item in ListAssetTotals)
-            {
-                item.IsHidden = false;
-            }
-        }
+        
+        //if (value)
+        //{
+        //    var itemsToHide = ListAssetTotals?.Where(x => x.MarketValue <= 0).ToList();
+        //    foreach (var item in itemsToHide)
+        //    {
+        //        item.IsHidden = true;
+        //    }
+        //    if (itemsToHide != null)
+        //    {
+        //        VisibleAssetsCount -= itemsToHide.Count;
+        //    }
+        //}
+        //else
+        //{
+        //    foreach (var item in ListAssetTotals)
+        //    {
+        //        item.IsHidden = false;
+        //    }
+        //}
     }
 
     public AssetService(PortfolioService portfolioService)
@@ -94,38 +107,24 @@ public partial class AssetService : ObservableObject, IAssetService
 
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList()
     {
-        var getResult = await GetAssetTotalsFromContext();
+        var getResult = await GetAssetTotalsFromContext(IsHidingZeroBalances);
         ListAssetTotals = getResult.Match(
            list => SortedList(list),
            err => new());
+        VisibleAssetsCount = ListAssetTotals.Count();
         return ListAssetTotals;
     }
 
 
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
     {
-        var getResult = await GetAssetTotalsFromContext();
+        var getResult = await GetAssetTotalsFromContext(IsHidingZeroBalances);
         ListAssetTotals = getResult.Match(
             list => SortedList(list, sortingOrder, sortFunc),
             err => new());
+        VisibleAssetsCount = ListAssetTotals.Count();
         return ListAssetTotals;
     }
-    //public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account)
-    //{
-    //    var getResult = await GetAssetsByAccountFromContext(account.Id);
-    //    ListAssetTotals = getResult.Match(
-    //       list => SortedList(list),
-    //       err => new());
-    //    return ListAssetTotals;
-    //}
-    //public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative)
-    //{
-    //    var getResult = await GetAssetsByNarrativeFromContext(narrative.Id);
-    //    ListAssetTotals = getResult.Match(
-    //        list => SortedList(list),
-    //        err => new());
-    //    return ListAssetTotals;
-    //}
 
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
     {
@@ -133,6 +132,7 @@ public partial class AssetService : ObservableObject, IAssetService
         ListAssetTotals = getResult.Match(
             list => SortedList(list, sortingOrder, sortFunc),
             err => new());
+        VisibleAssetsCount = ListAssetTotals.Count();
         return ListAssetTotals;
     }
     public async Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
@@ -141,6 +141,7 @@ public partial class AssetService : ObservableObject, IAssetService
         ListAssetTotals = getResult.Match(
             list => SortedList(list, sortingOrder, sortFunc),
             err => new());
+        VisibleAssetsCount = ListAssetTotals.Count();
         return ListAssetTotals;
     }
 
@@ -159,7 +160,9 @@ public partial class AssetService : ObservableObject, IAssetService
     public void ClearAssetTotalsList()
     {
         //ListAssetTotals?.Clear();
-        ListAssetTotals = new();
+        //ListAssetTotals = new();
+        ListAssetTotals = null;
+        OnPropertyChanged(nameof(ListAssetTotals));
     }
     public double GetTotalsAssetsValue()
     {
@@ -272,9 +275,6 @@ public partial class AssetService : ObservableObject, IAssetService
 
         return;
     }
-
-
-
 
     private async Task<Result<List<AssetTotals>>> GetAssetsByAccountFromContext(int accountId)
     {
@@ -428,26 +428,12 @@ public partial class AssetService : ObservableObject, IAssetService
             }
         }
     }
-    private async Task<Result<List<AssetTotals>>> GetAssetTotalsFromContext()
+    private async Task<Result<List<AssetTotals>>> GetAssetTotalsFromContext(bool excludeZeroBalance)
     {
         var context = _portfolioService.Context;
         List<AssetTotals> assetsTotals = null;
         try
         {
-            //assetsTotals = await context.Assets
-            //    .Include(x => x.Coin)
-            //    .ThenInclude(y => y.PriceLevels)
-            //    .GroupBy(asset => asset.Coin)
-            //    .Select(assetGroup => new AssetTotals
-            //    {
-            //        Qty = assetGroup.Sum(x => x.Qty),
-            //        CostBase = assetGroup.Sum(x => x.AverageCostPrice * x.Qty),
-            //        Coin = assetGroup.Key
-            //    })
-            //    .ToListAsync();
-
-            // GetPriceLevels(assetsTotals);
-
             // Select clause after a GroupBy is seen as a 2nd projection causing in 
             //the 'ThenInclude' to be ignored'/lost. For that reason the query is in 2 steps.
             var groupedAssets = await context.Assets
@@ -456,29 +442,45 @@ public partial class AssetService : ObservableObject, IAssetService
                 .GroupBy(asset => asset.Coin)
                 .ToListAsync();
 
-            assetsTotals = groupedAssets.Select(groupedAsset => new AssetTotals
+            if (IsHidingZeroBalances)
             {
-                Coin = groupedAsset.Key,
-                Qty = groupedAsset.Sum(x => x.Qty),
-                CostBase = groupedAsset.Sum(x => x.AverageCostPrice * x.Qty)
-            }).ToList();
+                assetsTotals = groupedAssets
+                    .Select(groupedAsset => new AssetTotals
+                    {
+                        Coin = groupedAsset.Key,
+                        Qty = groupedAsset.Sum(x => x.Qty),
+                        CostBase = groupedAsset.Sum(x => x.AverageCostPrice * x.Qty)
+                    })
+                    .Where(x => x.Qty > 0)
+                    .ToList();
+            }
+            else
+            {
+                assetsTotals = groupedAssets
+                    .Select(groupedAsset => new AssetTotals
+                    {
+                        Coin = groupedAsset.Key,
+                        Qty = groupedAsset.Sum(x => x.Qty),
+                        CostBase = groupedAsset.Sum(x => x.AverageCostPrice * x.Qty)
+                    })
+                    .ToList();
+            }
 
             GetNetInvestments(assetsTotals);
 
-
             VisibleAssetsCount = assetsTotals is not null ? assetsTotals.Count : 0;
-            if (IsHidingZeroBalances)
-            {
-                var assetsWithZero = assetsTotals.Where(x => x.MarketValue <= 0);
-                if (assetsWithZero is not null)
-                {
-                    foreach (var asset in assetsWithZero)
-                    {
-                        asset.IsHidden = true;
-                    }
-                    VisibleAssetsCount -= assetsWithZero.ToList().Count;
-                }
-            }
+            //if (IsHidingZeroBalances)
+            //{
+            //    var assetsWithZero = assetsTotals.Where(x => x.MarketValue <= 0);
+            //    if (assetsWithZero is not null)
+            //    {
+            //        foreach (var asset in assetsWithZero)
+            //        {
+            //            asset.IsHidden = true;
+            //        }
+            //        VisibleAssetsCount -= assetsWithZero.ToList().Count;
+            //    }
+            //}
         }
        
         catch (Exception ex)
@@ -490,18 +492,6 @@ public partial class AssetService : ObservableObject, IAssetService
         return assetsTotals;
     }
 
-    //private void GetPriceLevels(List<AssetTotals> assetsTotals)
-    //{
-    //    var context = _portfolioService.Context;
-    //    foreach (var assetTotal in assetsTotals)
-    //    {
-
-    //        assetTotal.Coin.PriceLevels = context.PriceLevels
-    //            .AsNoTracking()
-    //            .Where(x => x.Coin.Id == assetTotal.Coin.Id)
-    //            .ToList();
-    //    }
-    //}
     private void GetPriceLevels(AssetTotals assetTotals)
     {
         var context = _portfolioService.Context;

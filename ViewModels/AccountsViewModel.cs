@@ -335,6 +335,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     public void HideZeroBalances(bool param)
     {
         _assetService.IsHidingZeroBalances = param;
+        _assetService.PopulateAssetTotalsByAccountList(selectedAccount, currentSortingOrder, currentSortFunc);
 
     }
 

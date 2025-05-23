@@ -43,29 +43,41 @@ namespace CryptoPortfolioTracker.Views
             if (sender is not ListView listView) return;
 
             var tappedPortfolio = listView.SelectedItem as Portfolio;
-            if (tappedPortfolio == selectedPortfolio) return;
+            if (tappedPortfolio == selectedPortfolio)
+            {
+                return;
+            }
 
-            deselectedPortfolio = selectedPortfolio;
-            selectedPortfolio = tappedPortfolio;
+            try
+            {
+                InProgress.IsActive = true;
 
-            await AnimatePortfolio(Colors.Transparent, listView, deselectedPortfolio);
+                deselectedPortfolio = selectedPortfolio;
+                selectedPortfolio = tappedPortfolio;
 
-            var switchResult = await _viewModel.SwitchPortfolioAsync(selectedPortfolio);
+                await AnimatePortfolio(Colors.Transparent, listView, deselectedPortfolio);
 
-            await switchResult.Match(
-                Succ: async _ =>
-                {
-                    await AnimatePortfolio(Colors.Green, listView, selectedPortfolio, true);
-                },
-                Fail: async _ =>
-                {
-                    await AnimatePortfolio(Colors.Red, listView, selectedPortfolio);
+                var switchResult = await _viewModel.SwitchPortfolioAsync(selectedPortfolio);
 
-                    // Revert back to the previous selected portfolio
-                    selectedPortfolio = deselectedPortfolio;
-                    deselectedPortfolio = tappedPortfolio;
-                    await AnimatePortfolio(Colors.Green, listView, selectedPortfolio, true);
-                });
+                await switchResult.Match(
+                    Succ: async _ =>
+                    {
+                        await AnimatePortfolio(Colors.Green, listView, selectedPortfolio, true);
+                    },
+                    Fail: async _ =>
+                    {
+                        await AnimatePortfolio(Colors.Red, listView, selectedPortfolio);
+
+                        // Revert back to the previous selected portfolio
+                        selectedPortfolio = deselectedPortfolio;
+                        deselectedPortfolio = tappedPortfolio;
+                        await AnimatePortfolio(Colors.Green, listView, selectedPortfolio, true);
+                    });
+            }
+            finally
+            {
+                InProgress.IsActive = false;
+            }
         }
 
         private async Task AnimatePortfolio(Color color, ListView listView, Portfolio? portfolio, bool animateTitle = false)
@@ -156,6 +168,8 @@ namespace CryptoPortfolioTracker.Views
         private async void ListView_Loaded(object sender, RoutedEventArgs e)
         {
             if (sender is not ListView listView) return;
+
+            InProgress.IsActive = false;
 
             listView.ItemsSource = _viewModel._portfolioService.Portfolios;
 

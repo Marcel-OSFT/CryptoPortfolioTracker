@@ -235,17 +235,17 @@
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                   ScrollViewer.VerticalScrollMode="{x:Bind converters:Functions.TrueToScrollModeDisabled(IsAssetsExtendedView), Mode=OneWay}"
                         CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" 
-                  SelectionChanged="AssetsListView_SelectionChanged" Loading="AssetsListView_Loading">
+                  SelectionChanged="AssetsListView_SelectionChanged" Loading="AssetsListView_Loading" Loaded="AssetsListView_Loaded" >
 
             <ListView.ItemTemplate>
             <DataTemplate x:DataType="models:AssetTotals" >
                 <UserControl>
                     <Grid >
-                        <SwipeControl x:Name="AssetsListHoverSwipeContainer" Visibility="{x:Bind converters:Functions.FalseToVisible(IsHidden), Mode=OneWay}" >
+                        <SwipeControl x:Name="AssetsListHoverSwipeContainer" >
                             <Grid >
                                 <Grid Name="theGrid"  x:FieldModifier="public"  VerticalAlignment="Center" Margin="2,3,0,5" HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" MinWidth="42"/>

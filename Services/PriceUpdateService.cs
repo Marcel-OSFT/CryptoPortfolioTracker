@@ -154,7 +154,7 @@ public class PriceUpdateService : IPriceUpdateService
     private async Task UpdatePricesAllCoins()
     {
         IsUpdating = true;
-
+        await Task.Delay(100);
         await App.UpdateSemaphore.WaitAsync();
         bool isReleased = false;
         
@@ -222,7 +222,7 @@ public class PriceUpdateService : IPriceUpdateService
         }
         finally
         {
-            if (!isReleased) 
+            if (!isReleased)
             {
                 App.UpdateSemaphore.Release();
             };
@@ -343,7 +343,7 @@ public class PriceUpdateService : IPriceUpdateService
     private async Task<Result<Coin>> UpdatePriceCoin(CoinMarkets coinData)
     {
         await App.UpdateSemaphore.WaitAsync();
-        await Task.Delay(100);
+        await Task.Delay(10);
         var context = _portfolioService.UpdateContext;
         context.ChangeTracker?.Clear();
 

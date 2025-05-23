@@ -10,6 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:CryptoPortfolioTracker.Controls"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    Loaded="View_Loaded"
     Loading="View_Loading"
     Unloaded="View_Unloaded"
     mc:Ignorable="d">

@@ -96,7 +96,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         PortfolioName = CurrentPortfolio.Name;
 
         IsPrivacyMode = _preferencesService.GetAreValesMasked();
-        await _narrativeService.PopulateNarrativesList(currentSortingOrderNarr, currentSortFuncNarr, _narrativeService.ShowOnlyAssets);
+        await _narrativeService.PopulateNarrativesList(currentSortingOrderNarr, currentSortFuncNarr);
     }
 
     public void Terminate()
@@ -199,11 +199,11 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         //*** disabled in NarrativesView
     }
 
-    [RelayCommand]
-    public void ShowOnlyAssets(bool param)
-    {
-        _narrativeService.ShowOnlyAssets = param;
-    }
+    //[RelayCommand]
+    //public void ShowOnlyAssets(bool param)
+    //{
+    //    _narrativeService.ShowOnlyAssets = param;
+    //}
 
    
 
@@ -374,8 +374,8 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
             }
             else //if Assets are shown -> close Assets List and resize Narratives Listview to full-size
             {
-                _assetService.ClearAssetTotalsList();
                 IsExtendedView = false;
+                _assetService.ClearAssetTotalsList();
             }
         }
         selectedNarrative = clickedNarrative;
@@ -385,6 +385,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     public void HideZeroBalances(bool param)
     {
         _assetService.IsHidingZeroBalances = param;
+        _assetService.PopulateAssetTotalsByNarrativeList(selectedNarrative, currentSortingOrder, currentSortFunc);
 
     }
 

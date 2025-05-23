@@ -60,7 +60,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
         //}); 
         messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
         {
-            await _priceLevelService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
+            await _priceLevelService.PopulateCoinsList();
             CoinsCount = _priceLevelService.ListCoins.Count;
         });
 

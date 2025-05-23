@@ -313,6 +313,24 @@ public static class Functions
         }
 
     }
+
+    public static ICollection<Coin> FilterAssetCoins(ICollection<Coin> value)
+    {
+        //*** TotalValue is taken into account to avoid rare layoutCycle error in case of Coin is an Asset (has mutations) but TotalValue of Narrative is 0.
+        ICollection<Coin> assetCoins = new List<Coin>();
+
+        if (value is null || !value.Any()) return assetCoins; 
+        
+        foreach (var coin in value)
+        {
+            if (coin.IsAsset)
+            {
+                assetCoins.Add(coin);
+            }
+        }
+        return assetCoins;
+    }
+
     public static SolidColorBrush PriceLevelToColor(ICollection<PriceLevel> value1, int index, string parameter)
     {
         var value = (value1 as List<PriceLevel>)[index].DistanceToValuePerc;

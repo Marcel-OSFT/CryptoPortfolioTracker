@@ -174,20 +174,6 @@ namespace CryptoPortfolioTracker.ViewModels
             }
         }
 
-        //private void UpdatePortfoliosExt(Portfolio oldPortfolio, Portfolio newPortfolio)
-        //{
-        //    var portfolioExt = Portfolios.FirstOrDefault(x => x.Name.ToLower() == oldPortfolio.Name.ToLower());
-
-        //    if (portfolioExt != null)
-        //    {
-        //        portfolioExt.Name = newPortfolio.Name;
-        //        // Notify the UI that the collection has changed
-        //        var index = Portfolios.IndexOf(portfolioExt);
-        //        Portfolios.RemoveAt(index);
-        //        Portfolios.Insert(index, portfolioExt);
-        //    }
-        //}
-
         [RelayCommand]
         private async Task CopyPortfolio(Portfolio portfolio)
         {
@@ -752,10 +738,6 @@ namespace CryptoPortfolioTracker.ViewModels
                             _messenger.Send(new ShowAnimationMessage(Colors.Red, true, dialog.Portfolio));
                         });
                 }
-
-
-
-
                
             }
         }

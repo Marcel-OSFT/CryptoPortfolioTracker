@@ -23,6 +23,8 @@ namespace CryptoPortfolioTracker.Infrastructure
                 .UseSqlite($"{connectionString};Pooling=False");
 
             return new PortfolioContext(optionsBuilder.Options);
+           // return new PortfolioContext();
+
         }
     }
 

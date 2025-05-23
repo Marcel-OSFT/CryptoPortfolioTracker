@@ -40,4 +40,5 @@ public interface IPriceLevelService
     Task UpdateCoinsList(Coin coin, Coin updatedCoin);
     void ClearCoinsList();
     bool ListCoinsHasAny();
+    Task PopulateCoinsList();
 }

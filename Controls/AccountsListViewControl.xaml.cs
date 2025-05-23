@@ -68,7 +68,7 @@ public partial class AccountsListViewControl : UserControl
     
     private void IconGrid_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
-        if (sender is GridView gridView && gridView.Items.Count == 0) return;
+        if (sender is GridView gridView) return;
 
         //// use the chached ScrollViewer to set the HorizontalScrollBarVisibility
         foreach (var scrollViewer in gridViewScrollViewers)

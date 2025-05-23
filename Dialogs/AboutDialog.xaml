@@ -49,7 +49,7 @@
                                 HorizontalTextAlignment="Center" 
                                 FontSize="14"/>
                 </StackPanel>
-                <TextBlock Text="mk-osft © 2024" Foreground="Gray" HorizontalTextAlignment="Center" FontSize="14"/>
+                <TextBlock Text="mk-osft © 2025" Foreground="Gray" HorizontalTextAlignment="Center" FontSize="14"/>
             </StackPanel>
         </StackPanel>
 

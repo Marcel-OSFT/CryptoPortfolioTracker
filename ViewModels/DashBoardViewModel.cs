@@ -18,31 +18,6 @@ using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-//public class UpdateDashboardMessage
-//{
-  
-//}
-
-//public class UpdateProgressValueMessage
-//{
-//    public int ProgressValue { get;}
-
-//    public UpdateProgressValueMessage(int value)
-//    {
-//        ProgressValue = value;
-//    }
-//}
-
-//public class IsUpdatingGraphMessage
-//{
-//    public bool IsUpdating { get; }
-
-//    public IsUpdatingGraphMessage(bool value)
-//    {
-//        IsUpdating = value;
-//    }
-//}
-
 [ObservableRecipient]
 public partial class DashboardViewModel : BaseViewModel
 {

@@ -25,6 +25,7 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
+
     </UserControl.Resources>
 
     <Grid Name="ColumnHeadersAndListView" Margin="15,0,5,0" Padding="10,8,0,0">
@@ -55,13 +56,13 @@
                 Group="{Binding SortGroup}"
                 Command="{Binding SortOnNameNarrCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"/>
-            <CheckBox 
+            <!--<CheckBox 
                 x:Name="chkOnlyAssets"
                 l:Uids.Uid="NarrativesLV_ShowOnlyAssets" x:FieldModifier="public" FontSize="12" FontStyle="Normal" 
                 Margin="15,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center"
                 IsChecked="{Binding _narrativeService.ShowOnlyAssets, Mode=TwoWay}" 
                 Command="{Binding ShowOnlyAssetsCommand}" 
-                CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"/>
+                CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"/>-->
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" VerticalAlignment="Bottom">
@@ -151,12 +152,15 @@
                                     </Grid.ColumnDefinitions>
                                         
                                     <TextBlock x:Name="proxy" Text="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed"/>
+                                    
                                     <Border Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center">    
+                                        
                                         <RelativePanel Tag="{Binding}">
                                             <TextBlock Name="txtName" Height="30" Text="{Binding Name}" ToolTipService.ToolTip="{Binding About}" 
                                                        FontWeight="Bold" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
                                                        TextWrapping="Wrap" Margin="10,5,0,0"/>
-                                            <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{Binding Coins}"
+
+                                            <GridView x:Name="IconGrid" x:FieldModifier="public" ItemsSource="{x:Bind converters:Functions.FilterAssetCoins(Coins), Mode=OneWay}"
                                                       RelativePanel.RightOf="txtName" RelativePanel.AlignTopWithPanel="True" VerticalAlignment="Stretch"
                                                       Margin="0,0,0,0" IsItemClickEnabled="True" SelectionMode="None" ItemClick="IconGrid_ItemClick"
                                                       PointerEntered="IconGrid_PointerEntered" PointerExited="IconGrid_PointerExited" 
@@ -172,12 +176,14 @@
                                                     <ItemsPanelTemplate>
                                                         <ItemsWrapGrid x:Name="MaxItemsWrapGrid" MaximumRowsOrColumns="1" Orientation="Vertical"
                                                             ItemWidth="24" ItemHeight="34" Margin="5,0,0,0" GroupPadding="0,0,0,0"
-                                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                     </ItemsPanelTemplate>
                                                 </GridView.ItemsPanel>
                                                 <GridView.ItemTemplate>
-                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Coin">
-                                                        <Image Name="Image" HorizontalAlignment="Left" Height="20" Width="39" Source="{x:Bind converters:Functions.StringToImageSource(ImageUri), Mode=OneWay}"/>
+                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Coin" >
+                                                        <Image Name="Image" HorizontalAlignment="Left" Height="20" Width="39" 
+                                                               Source="{x:Bind converters:Functions.StringToImageSource(ImageUri), Mode=OneWay}"
+                                                               />
                                                     </DataTemplate>
                                                 </GridView.ItemTemplate>
                                             </GridView>

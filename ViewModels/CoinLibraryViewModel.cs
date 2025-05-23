@@ -363,13 +363,14 @@ public partial class CoinLibraryViewModel : BaseViewModel
             if (result == ContentDialogResult.Primary)
             {
                 Logger.Information("Assigning Narrative {0} to {1}", dialog.selectedNarrative.Name, coin.Name);
-                (await _narrativeService.AssignNarrative(coin, dialog.selectedNarrative))
-                    .IfFail(async err =>
+                await (await _narrativeService.AssignNarrative(coin, dialog.selectedNarrative))
+                    .Match(Succ: succ => _libraryService.UpdateCoinsList(coin),
+                    Fail: async err =>
                     {
                         await ShowMessageDialog(
-                        loc.GetLocalizedString("Messages_AssignNarrativeFailed_Title"),
-                        err.Message,
-                        loc.GetLocalizedString("Common_CloseButton"));
+                       loc.GetLocalizedString("Messages_AssignNarrativeFailed_Title"),
+                       err.Message,
+                       loc.GetLocalizedString("Common_CloseButton"));
 
                         Logger.Error(err, "Assigning Narrative failed");
                     });

@@ -19,10 +19,12 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class DashboardViewModel : BaseViewModel
 {
-    [ObservableProperty] List<Coin> topWinners = new();
-    [ObservableProperty] List<Coin> topLosers = new();
+    //[ObservableProperty] public partial ObservableCollection<Coin> TopWinners { get; set; } = new();
+    //[ObservableProperty] public partial ObservableCollection<Coin> TopLosers { get; set; } = new();
+    [ObservableProperty] public partial List<Coin> TopWinners { get; set; } = new();
+    [ObservableProperty] public partial List<Coin> TopLosers { get; set; } = new();
 
-    
+
 
     /// <summary>   
     /// This method is called by the Top5Control_Loaded event.  
@@ -33,16 +35,21 @@ public partial class DashboardViewModel : BaseViewModel
     }
     public void Top5ControlUnloaded()
     {
-        //TopWinners.Clear();
-        TopWinners = new();
-        //TopLosers.Clear();
-        TopLosers = new();
+        //TopWinners = null;
+        //TopLosers = null;
+
+        //OnPropertyChanged(nameof(TopWinners));
+        //OnPropertyChanged(nameof(TopLosers));
+
+        //TopWinners = new();
+        //TopLosers = new();
     }
 
     public async Task GetTop5()
     {
-        TopWinners = await _dashboardService.GetTopWinners();
-        TopLosers = await _dashboardService.GetTopLosers();
+        
+        TopWinners = new(await _dashboardService.GetTopWinners());
+        TopLosers = new(await _dashboardService.GetTopLosers());
     }
 
 }

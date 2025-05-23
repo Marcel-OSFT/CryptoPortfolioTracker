@@ -253,6 +253,39 @@ namespace CryptoPortfolioTracker.Services
             {
                 Logger?.Information("Applied Migrations {0}", migration);
             }
+
+            //*** location to implement a kind of HealthCheck/Cleanup for the database
+            //*** The IsAsset status is not used properly for a while causing faulty settings. For the Narratives Overview it is important to be correct.
+            await RepairCoinIsAssetStatus();
+
+        }
+
+        private async Task RepairCoinIsAssetStatus()
+        {
+            var context = Context;
+            if (context == null) return;
+            context.ChangeTracker.Clear();
+
+            try
+            {
+                var coins = await context.Coins.ToListAsync();  
+
+                foreach (var coin in coins)
+                {
+                    var isAsset = Context.Assets.Any(a => a.Coin.ApiId == coin.ApiId);
+                    if (coin.IsAsset != isAsset)
+                    {
+                        coin.IsAsset = isAsset;
+                        Context.Update(coin);
+                    }
+                }
+                await Context.SaveChangesAsync();
+            }
+            finally
+            {
+                context.ChangeTracker.Clear();
+            }
+
         }
 
         private static void CreateRestorePoint(string portfolioSignature)
@@ -547,7 +580,7 @@ namespace CryptoPortfolioTracker.Services
 
         public static ObservableCollection<Backup> GetBackups(string portfolioSignature)
         {
-            ObservableCollection<Backup> backups = new();
+            List<Backup> backups = new();
             var backupPath = Path.Combine(App.PortfoliosPath, portfolioSignature, App.BackupFolder);
             if (Directory.Exists(backupPath))
             {
@@ -557,7 +590,7 @@ namespace CryptoPortfolioTracker.Services
                     var backup = new Backup { FileName = Path.GetFileName(file), BackupDate = File.GetCreationTime(file) };
                     backups.Add(backup);
                 }
-                return backups;
+                return new ObservableCollection<Backup>(backups.OrderByDescending(x => x.BackupDate).ToList());
             }
             else return new();
         }
