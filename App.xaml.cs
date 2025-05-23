@@ -56,8 +56,8 @@ public partial class App : Application
     public static ILocalizer? Localizer { get; private set; }
     public static IServiceProvider Container { get; private set; }
 
-    private static TaskCompletionSource<bool> dialogCompletionSource = new TaskCompletionSource<bool>();
-    public static Task DialogCompletionTask => dialogCompletionSource.Task;
+    private static TaskCompletionSource<bool>? dialogCompletionSource; // = new TaskCompletionSource<bool>();
+    public static Task DialogCompletionTask => dialogCompletionSource?.Task ?? Task.CompletedTask;
 
     //public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version_onedrive.txt";
     public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
@@ -544,13 +544,28 @@ public partial class App : Application
         tempWindow?.Close();
     }
 
+    //public static async Task<ContentDialogResult> ShowContentDialogAsync(ContentDialog dialog)
+    //{
+    //    dialogCompletionSource.TrySetResult(false); // Reset the completion source
+    //    dialog.Opened += (s, e) => dialogCompletionSource = new TaskCompletionSource<bool>();
+    //    dialog.Closed += (s, e) => dialogCompletionSource.TrySetResult(true);
+
+    //    return await dialog.ShowAsync();
+    //}
+
     public static async Task<ContentDialogResult> ShowContentDialogAsync(ContentDialog dialog)
     {
-        dialogCompletionSource.TrySetResult(false); // Reset the completion source
-        dialog.Opened += (s, e) => dialogCompletionSource = new TaskCompletionSource<bool>();
+        dialogCompletionSource = new TaskCompletionSource<bool>();
+
         dialog.Closed += (s, e) => dialogCompletionSource.TrySetResult(true);
 
-        return await dialog.ShowAsync();
+        var result = await dialog.ShowAsync();
+
+        // Ensure the completion source is set in case Closed wasn't triggered
+        if (!dialogCompletionSource.Task.IsCompleted)
+            dialogCompletionSource.TrySetResult(true);
+
+        return result;
     }
 
 }

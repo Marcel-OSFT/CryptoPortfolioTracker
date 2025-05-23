@@ -159,7 +159,7 @@ public class AppUpdater
         {
             Process process = new();
             process.StartInfo.FileName = downloadsFolderPath + fileName;
-            process.StartInfo.Arguments = "/SP- /silent /noicons";
+            process.StartInfo.Arguments = "/SP- /silent /noicons /restartapplications";
             process.StartInfo.WorkingDirectory = App.AppPath;
             process.Start();
         }
