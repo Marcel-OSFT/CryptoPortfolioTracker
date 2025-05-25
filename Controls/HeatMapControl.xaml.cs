@@ -43,6 +43,7 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
     {
         var teachingTipInitial = _viewModel._preferencesService.GetTeachingTip("TeachingTipBlank");
         var teachingTipRsi = _viewModel._preferencesService.GetTeachingTip("TeachingTipRsiHeat");
+        var teachingTipEma = _viewModel._preferencesService.GetTeachingTip("TeachingTipEmaHeat");
 
         if (teachingTipInitial == null || !teachingTipInitial.IsShown)
         {
@@ -51,8 +52,11 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
         }
         else if (teachingTipRsi != null && !teachingTipRsi.IsShown)
         {
-
             MyTeachingTipRsi.IsOpen = true;
+        }
+        else if (teachingTipEma != null && !teachingTipEma.IsShown)
+        {
+            MyTeachingTipEma.IsOpen = true;
         }
     }
 
@@ -66,6 +70,14 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
         // Handle the 'Get it' button click
         MyTeachingTipRsi.IsOpen = false;
         _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipRsiHeat");
+
+        // Navigate to the new feature or provide additional information
+    }
+    private void OnGetItClickedEma(object sender, RoutedEventArgs e)
+    {
+        // Handle the 'Get it' button click
+        MyTeachingTipEma.IsOpen = false;
+        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipEmaHeat");
 
         // Navigate to the new feature or provide additional information
     }

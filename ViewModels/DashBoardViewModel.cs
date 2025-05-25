@@ -33,7 +33,7 @@ public partial class DashboardViewModel : BaseViewModel
 
     async partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
     {
-        await _dashboardService.CalculateRsiAllCoins();
+        await _dashboardService.CalculateIndicatorsAllCoins();
         await UpdateDashboardAsync();
         PortfolioName = newValue.Name;
     }

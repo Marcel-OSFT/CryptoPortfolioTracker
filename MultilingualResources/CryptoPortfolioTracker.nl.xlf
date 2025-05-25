@@ -1276,7 +1276,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="dummy" translate="yes" xml:space="preserve">
           <source>dummy</source>
-          <target state="new">dummy</target>
+          <target state="translated">dummy</target>
         </trans-unit>
         <trans-unit id="CoinDialog_Narrative.Header" translate="yes" xml:space="preserve">
           <source>Narrative</source>
@@ -1645,6 +1645,26 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="Messages_ScheduledTask_Title" translate="yes" xml:space="preserve">
           <source>Administrator Privileges Required  </source>
           <target state="translated">Beheerdersrechten vereist </target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_EmaLevel.Text" translate="yes" xml:space="preserve">
+          <source>50 EMA</source>
+          <target state="translated">50 EMA</target>
+        </trans-unit>
+        <trans-unit id="PriceLevelsLV_DistanceToEmaLevel.Text" translate="yes" xml:space="preserve">
+          <source>Distance</source>
+          <target state="translated">Afstand</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView_Ema_YAxisTitle" translate="yes" xml:space="preserve">
+          <source>Distance to 50 EMA [%]</source>
+          <target state="translated">Afstand tot 50 EMA [%]</target>
+        </trans-unit>
+        <trans-unit id="HeatMap_TeachEma.Title" translate="yes" xml:space="preserve">
+          <source>New Feature: daily EMA bubbles</source>
+          <target state="translated">Nieuw: dagelijkse 50 EMA bubbles</target>
+        </trans-unit>
+        <trans-unit id="HeatMapType_Ema.Content" translate="yes" xml:space="preserve">
+          <source>daily 50 EMA</source>
+          <target state="translated">dagelijkse 50 EMA</target>
         </trans-unit>
       </group>
     </body>

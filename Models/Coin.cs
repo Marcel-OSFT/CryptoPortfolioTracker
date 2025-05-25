@@ -49,6 +49,7 @@ public partial class Coin : BaseModel
     [ObservableProperty] private bool isAsset;
 
     [NotMapped] public double Rsi { get; set; }
+    [NotMapped] public double Ema { get; set; }
     [NotMapped] private List<double> ClosingPrices { get; set; } = new();
     [NotMapped] private DateTime FileDateMarketChart { get; set; } = DateTime.MinValue;
 
@@ -75,10 +76,50 @@ public partial class Coin : BaseModel
             Narrative = new(),
         };
 
-    partial void OnPriceChanged(double oldValue, double newValue)
+    //async partial void OnPriceChanged(double oldValue, double newValue)
+    //{
+    //    Rsi = await CalculateRsi();
+    //    Ema = await CalculateEma();
+    //    UpdatePriceLevelEma();
+    //    EvaluatePriceLevels(newValue);
+    //}
+    async partial void OnPriceChanged(double oldValue, double newValue)
     {
+        await CalculateRsi();
+        await CalculateEma();
+        
         EvaluatePriceLevels(newValue);
-        CalculateRsiAsync();
+    }
+
+    //public async Task CalculateRsiAsync()
+    //{
+    //    Rsi = await CalculateRsi();
+    //}
+
+    //public async void CalculateEmaAsync()
+    //{
+    //    Ema = await CalculateEma();
+    //}
+
+    private void UpdatePriceLevelEma()
+    {
+        var priceLevelEma = PriceLevels.FirstOrDefault(p => p.Type == PriceLevelType.Ema);
+        if (priceLevelEma != null)
+        {
+            priceLevelEma.Value = Ema;
+            priceLevelEma.DistanceToValuePerc = (100 * (Price - Ema) / Ema);
+        }
+        else
+        {
+            var newPriceLevel = new PriceLevel
+            {
+                Type = PriceLevelType.Ema,
+                Value = Ema,
+                Coin = this,
+                DistanceToValuePerc = (100 * (Price - Ema) / Ema)
+            };
+            PriceLevels.Add(newPriceLevel);
+        }
     }
 
     public void EvaluatePriceLevels(double newValue)
@@ -100,7 +141,8 @@ public partial class Coin : BaseModel
             {
                 if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
                     (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
-                    (level.Type == PriceLevelType.Stop && newValue <= level.Value))
+                    (level.Type == PriceLevelType.Stop && newValue <= level.Value) ||
+                    (level.Type == PriceLevelType.Ema && newValue <= level.Value))
                 {
                     level.Status = PriceLevelStatus.TaggedPrice;
                     continue;
@@ -122,49 +164,21 @@ public partial class Coin : BaseModel
         OnPropertyChanged(nameof(PriceLevels));
     }
 
-    public async void CalculateRsiAsync()
+    public async Task CalculateRsi()
     {
-        Rsi = await CalculateRsi();
-    }
-
-
-    public async Task<double> CalculateRsi()
-    {
-        int period = 14;
         try
         {
-            var fileName = Path.Combine(App.ChartsFolder, $"MarketChart_" + ApiId + ".json");
-
-            if (!File.Exists(fileName))
-            {
-                return 0;
-            }
-
-            FileInfo fi = new(fileName);
-            DateTime fileDate = fi.LastWriteTime;
-
-            if (FileDateMarketChart != fileDate || !ClosingPrices.Any())
-            {
-                MarketChartById marketChart = new();
-
-                var suffix = Name.Contains("_pre-listing") ? "-prelisting" : "";
-
-                await marketChart.LoadMarketChartJson(ApiId + suffix);
-
-                if (marketChart.Prices.Length>0)
-                {
-                    ClosingPrices = marketChart.Prices.TakeLast(2 * period + 50).Select(p => (double)p[1].Value).ToList();
-                    FileDateMarketChart = fileDate;
-                }
-            }
+            await GetClosingPrices();
 
             var prices = ClosingPrices.ToList();
             prices.Add(Price);
 
+            //*** RSI calculation
+            int period = 14;
             if (prices == null || prices.Count < period + 1)
             {
                 Rsi = 0;
-                return Rsi;
+                return;
             }
 
             List<double> rsiValues = new List<double>();
@@ -209,13 +223,81 @@ public partial class Coin : BaseModel
                 rsiValues.Add(rsi);
             }
 
-            Rsi =  rsiValues.Last();
-            return Rsi;
+            Rsi = rsiValues.Last();
+            return;
         }
         catch (Exception ex)
         {
             Rsi = 0;
-            return Rsi;
+            return;
         }
     }
+
+    private async Task GetClosingPrices()
+    {
+        var fileName = Path.Combine(App.ChartsFolder, $"MarketChart_" + ApiId + ".json");
+
+        if (!File.Exists(fileName))
+        {
+            ClosingPrices = new List<double>();
+            return;
+        }
+
+        FileInfo fi = new(fileName);
+        DateTime fileDate = fi.LastWriteTime;
+
+        if (FileDateMarketChart != fileDate || !ClosingPrices.Any())
+        {
+            MarketChartById marketChart = new();
+
+            var suffix = Name.Contains("_pre-listing") ? "-prelisting" : "";
+
+            await marketChart.LoadMarketChartJson(ApiId + suffix);
+
+            if (marketChart.Prices.Length > 0)
+            {
+                ClosingPrices = marketChart.Prices.TakeLast(150).Select(p => (double)p[1].Value).ToList();
+                FileDateMarketChart = fileDate;
+            }
+        }
+    }
+
+
+    public async Task CalculateEma()
+    {
+        await GetClosingPrices();
+
+        var prices = ClosingPrices.ToList();
+        prices.Add(Price);
+
+        //*** EMA calculation
+        int period = 50;
+
+        if (prices == null || prices.Count < period + 1)
+        {
+            Ema = 0;
+            return;
+        }
+
+        // Calculate the initial SMA (Simple Moving Average) for the first 'period' values
+        double sma = prices.Take(period).Average();
+
+        // Multiplier for weighting the EMA
+        double multiplier = 2.0 / (period + 1);
+
+        // Start EMA with the SMA
+        double ema = sma;
+
+        // Calculate EMA for the rest of the prices
+        for (int i = period; i < prices.Count; i++)
+        {
+            ema = ((prices[i] - ema) * multiplier) + ema;
+        }
+
+        Ema = ema;
+        UpdatePriceLevelEma();
+        return;
+    }
+
+
 }

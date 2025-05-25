@@ -24,7 +24,7 @@ namespace CryptoPortfolioTracker.Services
         Task<List<CapitalFlowPoint>> GetYearlyMutationsByTransactionKind(TransactionKind transactionKind);
         PortfolioContext GetContext();
         Portfolio GetPortfolio();
-        Task CalculateRsiAllCoins();
+        Task CalculateIndicatorsAllCoins();
         Task EvaluatePriceLevels();
     }
 }

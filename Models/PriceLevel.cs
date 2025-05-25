@@ -33,12 +33,5 @@ namespace CryptoPortfolioTracker.Models
             DistanceToValuePerc = dist;
         }
 
-        //partial void OnCoinChanged(Coin newCoin)
-        //{
-        //    if (newCoin == null || newCoin.ApiId == string.Empty) return;
-        //    var dist = (100 * (newCoin.Price - Value) / Value);
-        //    DistanceToValuePerc = dist;
-        //}
-
     }
 }

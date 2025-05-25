@@ -226,6 +226,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
             foreach (var coin in coinList)
             {
+                coin.CalculateEma();
                 coin.EvaluatePriceLevels(coin.Price);
             }
         }
@@ -391,10 +392,15 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 {
                     index = AddHeatMapPointTarget(index, heatMapPoints, sumMarketValue, asset);
                 }
-                else
+                else if (selectedHeatMapIndex == 1)
                 {
                     
                     index = AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
+                }
+                else if (selectedHeatMapIndex == 2)
+                {
+                    // Add other heat map points if needed
+                    index = AddHeatMapPointEma(index, heatMapPoints, sumMarketValue, asset);
                 }
             }
         }
@@ -441,6 +447,41 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         var perc = priceLevel.DistanceToValuePerc;
         //var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
 
+
+        var weight = 100 * asset.MarketValue / sumMarketValue;
+
+        if (!double.IsInfinity(perc))
+        {
+            var hmPoint = new HeatMapPoint
+            {
+                X = index += 1,
+                Y = perc,
+                // Y = -1 * perc,
+                Weight = weight,
+                Label = asset.Coin.Symbol
+            };
+            heatMapPoints.Add(hmPoint);
+        }
+        return index;
+    }
+
+    private static int AddHeatMapPointEma(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    {
+        if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0)
+        {
+            return index;
+        }
+
+        var priceLevel = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.Ema).FirstOrDefault();
+
+        if (priceLevel == null)
+        {
+            return index;
+        }
+
+        priceLevel.DistanceToValuePerc = (100 * (asset.Coin.Price - priceLevel.Value) / priceLevel.Value);
+
+        var perc = priceLevel.DistanceToValuePerc;
 
         var weight = 100 * asset.MarketValue / sumMarketValue;
 

@@ -1163,6 +1163,9 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="HeatMapType_Rsi.Content" xml:space="preserve">
     <value>daily RSI</value>
   </data>
+  <data name="HeatMapType_Ema.Content" xml:space="preserve">
+    <value>daily 50 EMA</value>
+  </data>
   <data name="HeatMapView_Rsi_YAxisTitle" xml:space="preserve">
     <value>daily RSI</value>
   </data>
@@ -1345,5 +1348,17 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   </data>
   <data name="Messages_ScheduledTask_Title" xml:space="preserve">
     <value>Administrator Privileges Required  </value>
+  </data>
+  <data name="PriceLevelsLV_EmaLevel.Text" xml:space="preserve">
+    <value>50 EMA</value>
+  </data>
+  <data name="PriceLevelsLV_DistanceToEmaLevel.Text" xml:space="preserve">
+    <value>Distance</value>
+  </data>
+  <data name="HeatMapView_Ema_YAxisTitle" xml:space="preserve">
+    <value>Distance to 50 EMA [%]</value>
+  </data>
+  <data name="HeatMap_TeachEma.Title" xml:space="preserve">
+    <value>New Feature: daily EMA bubbles</value>
   </data>
 </root>

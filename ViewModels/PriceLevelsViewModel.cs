@@ -51,13 +51,6 @@ public partial class PriceLevelsViewModel : BaseViewModel
         initialSortFunc = x => x.PriceLevels.Where(t => t.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
         initialSortingOrder = SortingOrder.Descending;
 
-        //messenger.Register<UpdatePricesMessage>(this, (r, m) =>
-        //{
-        //    if (_priceLevelService.ListCoinsHasAny())
-        //    {
-        //        _priceLevelService.UpdateCoinsList(m.Coin);
-        //    }
-        //}); 
         messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
         {
             await _priceLevelService.PopulateCoinsList();
@@ -107,7 +100,21 @@ public partial class PriceLevelsViewModel : BaseViewModel
         _priceLevelService.SortList(sortingOrder, sortFunc);
     }
 
-    
+    [RelayCommand]
+    public void SortOnDistanceToEmaLevel(SortingOrder sortingOrder)
+    {
+        try
+        {
+            Func<Coin, object> sortFunc = x => x.PriceLevels.Where(t => t.Type == PriceLevelType.Ema).First().DistanceToValuePerc;
+            _priceLevelService.SortList(sortingOrder, sortFunc);
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+
+
     [RelayCommand]
     public async Task ShowAddLevelsDialog(Coin coin)
     {

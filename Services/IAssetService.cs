@@ -18,7 +18,7 @@ public interface IAssetService
     long VisibleAssetsCount { get; set; }
 
     //public Task<Result<AssetTotals>> GetAssetTotalsByCoinAndAccountFromContext(Coin coin, Account account);
-    Task UpdatePricesAssetTotals(Coin coin);
+    //Task UpdatePricesAssetTotals(Coin coin);
     Task CalculateAssetsTotalValues();
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsList();
     //Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByAccountList(Account account);
@@ -37,6 +37,7 @@ public interface IAssetService
     Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative, SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc);
     //Task<ObservableCollection<AssetTotals>> PopulateAssetTotalsByNarrativeList(Narrative narrative);
     Portfolio? GetPortfolio();
-   // Task UpdatePricesAssetTotals();
+    //Task UpdatePricesAssetTotals();
+    // Task UpdatePricesAssetTotals();
 }
 

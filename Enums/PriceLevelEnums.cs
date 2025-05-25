@@ -15,8 +15,9 @@ namespace CryptoPortfolioTracker.Enums
     {
         TakeProfit = 0,
         Stop = 1,
-        Buy = 2
-        
+        Buy = 2,
+        Ema = 3,
+
     }
 
 }

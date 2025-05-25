@@ -20,6 +20,7 @@ public partial class DashboardViewModel : BaseViewModel
 {
     public static double[] SeparatorsTarget = new double[5];
     public static double[] SeparatorsRsi = new double[5];
+    public static double[] SeparatorsEma = new double[5];
     private ObservableCollection<HeatMapPoint> HeatMapPoints = new();
 
     private double bubbleSizeMax = 100;
@@ -76,6 +77,19 @@ public partial class DashboardViewModel : BaseViewModel
 
         },
         };
+
+    public RectangularSection[] sectionsEma = new RectangularSection[]
+    {
+        new()
+        {
+            // creates a section from 3 to 4 in the y axis
+            Yi = 0,
+            Yj = 0,
+            //Fill = new SolidColorPaint(new SKColor(180,207,186)),
+            Fill = new SolidColorPaint(SKColors.DarkRed.WithAlpha(100)),
+
+        },
+    };
 
     public Axis[] yAxesTarget = new Axis[]
     {
@@ -141,12 +155,42 @@ public partial class DashboardViewModel : BaseViewModel
 
     };
 
-    
+    public Axis[] yAxesEma = new Axis[]
+    {
+        new Axis
+        {
+            MinLimit=-50,
+            MaxLimit=10,
+            Name = loc.GetLocalizedString("HeatMapView_Ema_YAxisTitle"),
+            NamePadding = new LiveChartsCore.Drawing.Padding(0, 0),
+
+            NamePaint = new SolidColorPaint
+            {
+                Color = SKColors.DarkGoldenrod,
+            },
+            NameTextSize = 15,
+            TextSize = 12,
+            LabelsPaint = new SolidColorPaint
+            {
+                Color = SKColors.DarkGoldenrod,
+                FontFamily = "Times New Roman",
+                SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
+            },
+            Padding =  new LiveChartsCore.Drawing.Padding(1),
+            Labeler = value => string.Format("{0:N0}", value),
+            SeparatorsPaint = new SolidColorPaint
+            {
+                Color = SKColors.DarkGoldenrod,
+                StrokeThickness = 1
+            },
+        }
+
+    };
 
     private void SetCustomSeparators()
     {
-        //*** Target
         var withinRangePerc = _preferencesService.GetWithinRangePerc();
+        //*** Target
         SeparatorsTarget = new double[] { -100, -50, -1 * withinRangePerc, 0, 100 };
 
         var targetSection = sectionsTarget.First();
@@ -165,6 +209,17 @@ public partial class DashboardViewModel : BaseViewModel
 
         var rsiAxis = yAxesRsi.First();
         rsiAxis.CustomSeparators = SeparatorsRsi;
+
+        //*** Ema
+        SeparatorsEma = new double[] { -100, -0.5 * withinRangePerc, 0, 0.5 * withinRangePerc, 100 };
+
+        var emaSection = sectionsEma.First();
+        emaSection.Yi = SeparatorsEma[1];
+        emaSection.Yj = SeparatorsEma[3];
+
+        var emaAxis = yAxesEma.First();
+        emaAxis.CustomSeparators = SeparatorsEma;
+
     }
 
     /// <summary>   
@@ -231,7 +286,7 @@ public partial class DashboardViewModel : BaseViewModel
 
         if (HeatMapPoints is null || HeatMapPoints.Count == 0) return;
       
-        if (selectedHeatMapIndex == 0)
+        if (selectedHeatMapIndex == 0) //*** Target
         {
             var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
 
@@ -244,6 +299,37 @@ public partial class DashboardViewModel : BaseViewModel
             var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
             separators[^1] = (double)maxLimit;
             YAxesHeatMap.First().CustomSeparators = separators;
+        }
+        else if (selectedHeatMapIndex == 2) //*** EMA
+        {
+            var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
+
+            YAxesHeatMap.First().MaxLimit = maxYValuePoint?.Y > 10 ? maxYValuePoint.Y + 10 : 10;
+
+            //*** Normalize the value to a multiple of 10
+            YAxesHeatMap.First().MaxLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) * 10;
+            var separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
+
+            var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
+            separators[^1] = (double)maxLimit;
+            YAxesHeatMap.First().CustomSeparators = separators;
+
+            //*** likewise for the min value
+            var minYValuePoint = HeatMapPoints.OrderBy(x => x.Y).FirstOrDefault();
+
+            YAxesHeatMap.First().MinLimit = minYValuePoint?.Y < -10 ? minYValuePoint.Y - 10 : -10;
+
+            //*** Normalize the value to a multiple of 10
+            YAxesHeatMap.First().MinLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MinLimit ?? 0) / 20) * 20;
+            separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
+
+            var minLimit = YAxesHeatMap.First().MinLimit ?? 0;
+            separators[0] = (double)minLimit;
+            YAxesHeatMap.First().CustomSeparators = separators;
+
+
+
+
         }
 
         HasTargets = HeatMapPoints.Count > 0;
@@ -283,9 +369,13 @@ public partial class DashboardViewModel : BaseViewModel
         {
             serie.YToolTipLabelFormatter = (point) => $"{point.Model!.Label} {point.Model!.Y:N2} % ({point.Model!.Weight:N1} % of Portfolio)";
         }
-        else
+        else if (selectedHeatMapIndex == 1)
         {
             serie.YToolTipLabelFormatter = (point) => $"{point.Model!.Label}  RSI: {point.Model!.Y:N2}";
+        }
+        else
+        {
+            serie.YToolTipLabelFormatter = (point) => $"{point.Model!.Label}  Dist to EMA: {point.Model!.Y:N2} %";
         }
         return ;
 
@@ -328,13 +418,21 @@ public partial class DashboardViewModel : BaseViewModel
             YAxesHeatMap = yAxesTarget;
             await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
-        else
+        else if (SelectedHeatMapIndex == 1)
         {
             HeatMapTitle = "RSI Bubbles";
             SectionsHeatMap = sectionsRsi;
             YAxesHeatMap = yAxesRsi;
             await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
+        else
+        {
+            HeatMapTitle = "EMA Bubbles";
+            SectionsHeatMap = sectionsEma;
+            YAxesHeatMap = yAxesEma;
+            await SetSeriesHeatMap(SelectedHeatMapIndex);
+        }
+        
     }
 
 

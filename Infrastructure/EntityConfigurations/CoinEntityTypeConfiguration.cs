@@ -75,6 +75,8 @@ class CoinEntityTypeConfiguration : IEntityTypeConfiguration<Coin>
         configuration
             .Ignore("Rsi");
         configuration
+            .Ignore("Ema");
+        configuration
             .Ignore("ClosingPrices");
         configuration
             .Ignore("FileDateMarketChart");

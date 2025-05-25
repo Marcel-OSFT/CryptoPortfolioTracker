@@ -44,13 +44,14 @@ public partial class DashboardService : ObservableObject, IDashboardService
         return _portfolioService.Context;
     }
 
-    public async Task CalculateRsiAllCoins()
+    public async Task CalculateIndicatorsAllCoins()
     {
         var coins = _portfolioService.Context.Coins.ToList();
 
         foreach(var coin in coins)
         {
             await coin.CalculateRsi();
+            await coin.CalculateEma();
             await Task.Delay(10);
         }
     }

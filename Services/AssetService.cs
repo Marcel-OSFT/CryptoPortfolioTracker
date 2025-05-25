@@ -246,35 +246,72 @@ public partial class AssetService : ObservableObject, IAssetService
 
         
     }
-    public async Task UpdatePricesAssetTotals(Coin coin)
-    {
-        var asset = ListAssetTotals?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
-        if (asset != null && ListAssetTotals != null)
-        {
-            //Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
-            var index = -1;
-            for (var i = 0; i < ListAssetTotals.Count; i++)
-            {
-                if (ListAssetTotals[i].Coin.Id == asset.Coin.Id)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            // ListAssetTotals[index].Coin.Price = coin.Price;
-            ListAssetTotals[index].Coin = coin;
-            ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
-        }
+    //public async Task UpdatePricesAssetTotals(Coin coin)
+    //{
+    //    var asset = ListAssetTotals?.Where(a => a.Coin.Id == coin.Id).SingleOrDefault();
+    //    if (asset != null && ListAssetTotals != null)
+    //    {
+    //        Logger.Information("Updating {0} {1} => {2}", coin.Name, oldPrice, newPrice);
+    //        var index = -1;
+    //        for (var i = 0; i < ListAssetTotals.Count; i++)
+    //        {
+    //            if (ListAssetTotals[i].Coin.Id == asset.Coin.Id)
+    //            {
+    //                index = i;
+    //                break;
+    //            }
+    //        }
+    //        ListAssetTotals[index].Coin.Price = coin.Price;
+    //        ListAssetTotals[index].Coin = coin;
+    //        ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
+    //    }
 
-        GetTotalsAssetsValue();
-        GetTotalsAssetsCostBase();
-        GetTotalsAssetsPnLPerc();
+    //    GetTotalsAssetsValue();
+    //    GetTotalsAssetsCostBase();
+    //    GetTotalsAssetsPnLPerc();
 
-        await GetInFlow();
-        await GetOutFlow();
+    //    await GetInFlow();
+    //    await GetOutFlow();
 
-        return;
-    }
+    //    return;
+    //}
+
+    //public async Task UpdatePricesAssetTotals()
+    //{
+    //    if (ListAssetTotals == null || !ListAssetTotals.Any())
+    //    {
+    //        return;
+    //    }
+    //    var context = _portfolioService.Context;
+    //    var coins = await context.Coins
+    //        .AsNoTracking()
+    //        .ToListAsync();
+
+       
+    //    foreach (var coin in coins)
+    //    {
+    //        var asset = ListAssetTotals?.FirstOrDefault(a => a.Coin.Id == coin.Id);
+    //        if (asset != null && ListAssetTotals != null)
+    //        {
+    //            var index = ListAssetTotals.IndexOf(asset);
+    //            if (index >= 0)
+    //            {
+    //                ListAssetTotals[index].Coin = coin;
+    //                ListAssetTotals[index].MarketValue = ListAssetTotals[index].Qty * coin.Price;
+    //            }
+    //        }
+            
+    //    }
+
+    //    GetTotalsAssetsValue();
+    //    GetTotalsAssetsCostBase();
+    //    GetTotalsAssetsPnLPerc();
+
+    //    await GetInFlow();
+    //    await GetOutFlow();
+
+    //    return;
+    //}
 
     private async Task<Result<List<AssetTotals>>> GetAssetsByAccountFromContext(int accountId)
     {

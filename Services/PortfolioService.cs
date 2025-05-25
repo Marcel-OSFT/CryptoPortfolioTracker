@@ -19,6 +19,7 @@ using CryptoPortfolioTracker.ViewModels;
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
+using CryptoPortfolioTracker.Enums;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -257,7 +258,43 @@ namespace CryptoPortfolioTracker.Services
             //*** location to implement a kind of HealthCheck/Cleanup for the database
             //*** The IsAsset status is not used properly for a while causing faulty settings. For the Narratives Overview it is important to be correct.
             await RepairCoinIsAssetStatus();
+           // await AddPriceLevelsEmaToDatabase();
 
+        }
+
+        private async Task AddPriceLevelsEmaToDatabase()
+        {
+            var context = Context;
+            if (context == null) return;
+            context.ChangeTracker.Clear();
+
+            try
+            {
+                var coinsWithoutEma = await context.Coins
+                    .Where(coin => !coin.PriceLevels.Any(pl => pl.Type == PriceLevelType.Ema))
+                    .ToListAsync();
+                
+                if (!coinsWithoutEma.Any()) return;
+
+                foreach (var coin in coinsWithoutEma)
+                {
+                    var priceLevel = new PriceLevel
+                    {
+                        Coin = coin,
+                        Type = PriceLevelType.Ema,
+                        Value = 0,
+                        Note = string.Empty,
+                        Status = PriceLevelStatus.NotWithinRange
+                    };
+                    coin.PriceLevels.Add(priceLevel);
+                    context.Coins.Update(coin);
+                }
+                await Context.SaveChangesAsync();
+            }
+            finally
+            {
+                context.ChangeTracker.Clear();
+            }
         }
 
         private async Task RepairCoinIsAssetStatus()

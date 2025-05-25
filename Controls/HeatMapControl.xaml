@@ -283,6 +283,7 @@
                               FontWeight="SemiBold" SelectionChanged="HeatMapType_SelectionChanged" Margin="0,10,0,0" SelectedIndex="{Binding SelectedHeatMapIndex, Mode=TwoWay}">
                     <RadioButton l:Uids.Uid="HeatMapType_Target" Style="{StaticResource CustomRadioButtonStyle}"/>
                     <RadioButton l:Uids.Uid="HeatMapType_Rsi" Style="{StaticResource CustomRadioButtonStyle}"/>
+                    <RadioButton l:Uids.Uid="HeatMapType_Ema" Style="{StaticResource CustomRadioButtonStyle}"/>
                 </RadioButtons>
             </StackPanel>
 
@@ -304,9 +305,15 @@
         </lvc:CartesianChart>
 
         <muxc:TeachingTip x:Name="MyTeachingTipRsi" l:Uids.Uid="HeatMap_TeachRsi" Target="{x:Bind rbtHeatMap}"
-            PreferredPlacement="RightTop" PlacementMargin="-20" Background="DarkGoldenrod">
+    PreferredPlacement="RightTop" PlacementMargin="-20" Background="DarkGoldenrod">
             <muxc:TeachingTip.ActionButtonContent>
                 <Button Content="Get it" Click="OnGetItClickedRsi"/>
+            </muxc:TeachingTip.ActionButtonContent>
+        </muxc:TeachingTip>
+        <muxc:TeachingTip x:Name="MyTeachingTipEma" l:Uids.Uid="HeatMap_TeachEma" Target="{x:Bind rbtHeatMap}"
+    PreferredPlacement="RightTop" PlacementMargin="-20" Background="DarkGoldenrod">
+            <muxc:TeachingTip.ActionButtonContent>
+                <Button Content="Get it" Click="OnGetItClickedEma"/>
             </muxc:TeachingTip.ActionButtonContent>
         </muxc:TeachingTip>
 

@@ -179,6 +179,8 @@ public partial class AddCoinDialog : ContentDialog
                         .OfType(PriceLevelType.Buy))
                     .WithPriceLevel(priceLevel => priceLevel
                         .OfType(PriceLevelType.Stop))
+                    .WithPriceLevel(priceLevel => priceLevel
+                        .OfType(PriceLevelType.Ema))
                     .OfNarrative(cbNarratives.SelectedItem as Narrative)
                     .Build();
 

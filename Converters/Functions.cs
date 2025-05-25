@@ -333,12 +333,13 @@ public static class Functions
 
     public static SolidColorBrush PriceLevelToColor(ICollection<PriceLevel> value1, int index, string parameter)
     {
-        var value = (value1 as List<PriceLevel>)[index].DistanceToValuePerc;
-
         var baseColor = new SolidColorBrush(Colors.White);
         var grayedOutColor = new SolidColorBrush(Colors.Gray);
         SolidColorBrush withinRangeColor;
         SolidColorBrush closeToColor;
+
+        if (index > value1.Count - 1) return grayedOutColor;
+        var value = (value1 as List<PriceLevel>)[index].DistanceToValuePerc;
 
         bool isDarkTheme = App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark;
 
@@ -349,13 +350,14 @@ public static class Functions
                 : (new SolidColorBrush(Colors.DarkGreen), new SolidColorBrush(Colors.LimeGreen)),
             "BuyLevel" or "BuyDist" => (new SolidColorBrush(Colors.MediumBlue), new SolidColorBrush(Colors.LightBlue)),
             "StopLevel" or "StopDist" => (new SolidColorBrush(Colors.DarkRed), new SolidColorBrush(Colors.Red)),
+            "EmaLevel" or "EmaDist" => (new SolidColorBrush(Colors.DarkRed), new SolidColorBrush(Colors.Red)),
             _ => (baseColor, baseColor)
         };
 
         var WithinRangePerc = App.PreferencesService.GetWithinRangePerc();
         var CloseToLevelPerc = App.PreferencesService.GetCloseToPerc();
 
-        if (value is double val)
+        if (index < 3 && value is double val)
         {
             if (double.IsInfinity(val))
             {
@@ -370,13 +372,28 @@ public static class Functions
                 return withinRangeColor;
             }
         }
+        else if (index == 3 && value is double val2 )
+        {
+            if (double.IsInfinity(val2))
+            {
+                return grayedOutColor;
+            }
+            if (val2 <= (-1 * CloseToLevelPerc))
+            {
+                return closeToColor;
+            }
+            if (val2 <= (-1 * WithinRangePerc))
+            {
+                return withinRangeColor;
+            }
+        }
 
         return baseColor;
     }
     public static string FormatDistanceToLevelToString(ICollection<PriceLevel> value1, int index, string format)
     {
+        if (index > value1.Count - 1) return "-";
         var value = (value1.ElementAt(index) as PriceLevel).DistanceToValuePerc;
-        
         
         if (format == null || format == string.Empty)
         {
@@ -401,6 +418,8 @@ public static class Functions
     }
     public static string FormatPriceLevelToString(ICollection<PriceLevel> value1, int index, string format)
     {
+        if (index > value1.Count - 1) return "-";
+
         var value = (value1.ElementAt(index) as PriceLevel).Value;
 
 
@@ -422,6 +441,15 @@ public static class Functions
         if (double.IsInfinity((double)value))
         {
             return "-";
+        }
+
+        if (value is double number && format == "$ {0:0.########}" && number > 0)
+        {
+            long integerPartLength = Math.Abs((long)number).ToString().Length;
+            int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
+            decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
+            format = "$ {0:F" + decimalPlaces.ToString() + "}";
+            // '$ {0:F5}'
         }
         return string.Format(ci, format, value);
     }
