@@ -375,9 +375,6 @@
     <None Update="Fonts\Segoe Fluent Icons.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="RegisterScheduledTask.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Page Update="Views\SwitchPortfolioView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
