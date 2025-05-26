@@ -36,7 +36,7 @@ public interface IPriceLevelService
     void UpdateHeatMap();
     void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
     Portfolio GetPortfolio();
-    Task UpdateCoinsList(Coin coin);
+   // Task UpdateCoinsList(Coin coin);
     Task UpdateCoinsList(Coin coin, Coin updatedCoin);
     void ClearCoinsList();
     bool ListCoinsHasAny();

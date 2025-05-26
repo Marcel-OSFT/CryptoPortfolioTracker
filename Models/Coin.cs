@@ -263,7 +263,7 @@ public partial class Coin : BaseModel
     }
 
 
-    public async Task CalculateEma()
+    public async Task<double> CalculateEma()
     {
         await GetClosingPrices();
 
@@ -276,7 +276,7 @@ public partial class Coin : BaseModel
         if (prices == null || prices.Count < period + 1)
         {
             Ema = 0;
-            return;
+            return 0;
         }
 
         // Calculate the initial SMA (Simple Moving Average) for the first 'period' values
@@ -296,7 +296,7 @@ public partial class Coin : BaseModel
 
         Ema = ema;
         UpdatePriceLevelEma();
-        return;
+        return ema;
     }
 
 

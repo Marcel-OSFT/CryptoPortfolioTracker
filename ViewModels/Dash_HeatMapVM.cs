@@ -233,7 +233,7 @@ public partial class DashboardViewModel : BaseViewModel
             bubbleSizeMin = 1;
             SetCustomSeparators();
             SelectedHeatMapIndex = _preferencesService.GetHeatMapIndex();
-            _dashboardService.EvaluatePriceLevels();
+            await _dashboardService.EvaluatePriceLevels();
             await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
         catch (Exception )
@@ -253,7 +253,11 @@ public partial class DashboardViewModel : BaseViewModel
         else
         {
             HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(SelectedHeatMapIndex));
+            ObservableCollection<HeatMapPoint> dummyPoints;
+            SetMinMaxY(SelectedHeatMapIndex, out dummyPoints);
             SeriesHeatMap[0].Values = HeatMapPoints;
+            SeriesHeatMap[1].Values = dummyPoints;
+
         }
     }
 
@@ -261,76 +265,11 @@ public partial class DashboardViewModel : BaseViewModel
     {
         var loc = Localizer.Get();
 
-        SolidColorPaint labelColor = _preferencesService.GetAppTheme() ==  ElementTheme.Dark ? new SolidColorPaint(SKColors.White) : new SolidColorPaint(SKColors.Black);
+        SolidColorPaint labelColor = _preferencesService.GetAppTheme() == ElementTheme.Dark ? new SolidColorPaint(SKColors.White) : new SolidColorPaint(SKColors.Black);
 
         HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(selectedHeatMapIndex));
-
-        //*** Introduce dummyPoints for a second (not-visible) serie to force Bubble Geometry for weight 100
-        //*** and MinGeometry to weight 1. In this way interpolation is in range 1 to 100.
-        //*** example: 3 almost equal weights will now return in also 3 almost equal sized bubbels.
-        HeatMapPoint dummyMax = new()
-        {
-            X = 0,
-            Y = -150,
-            Weight = 100
-        };
-
-        HeatMapPoint dummyMin = new()
-        {
-            X = 0,
-            Y = -150,
-            Weight = 1
-        };
-
-        var dummyPoints = new ObservableCollection<HeatMapPoint>() {dummyMin, dummyMax};
-
-        if (HeatMapPoints is null || HeatMapPoints.Count == 0) return;
-      
-        if (selectedHeatMapIndex == 0) //*** Target
-        {
-            var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
-
-            YAxesHeatMap.First().MaxLimit = maxYValuePoint?.Y > 10 ? maxYValuePoint.Y + 10 : 10;
-
-            //*** Normalize the value to a multiple of 10
-            YAxesHeatMap.First().MaxLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) * 10;
-            var separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
-
-            var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
-            separators[^1] = (double)maxLimit;
-            YAxesHeatMap.First().CustomSeparators = separators;
-        }
-        else if (selectedHeatMapIndex == 2) //*** EMA
-        {
-            var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
-
-            YAxesHeatMap.First().MaxLimit = maxYValuePoint?.Y > 10 ? maxYValuePoint.Y + 10 : 10;
-
-            //*** Normalize the value to a multiple of 10
-            YAxesHeatMap.First().MaxLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) * 10;
-            var separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
-
-            var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
-            separators[^1] = (double)maxLimit;
-            YAxesHeatMap.First().CustomSeparators = separators;
-
-            //*** likewise for the min value
-            var minYValuePoint = HeatMapPoints.OrderBy(x => x.Y).FirstOrDefault();
-
-            YAxesHeatMap.First().MinLimit = minYValuePoint?.Y < -10 ? minYValuePoint.Y - 10 : -10;
-
-            //*** Normalize the value to a multiple of 10
-            YAxesHeatMap.First().MinLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MinLimit ?? 0) / 20) * 20;
-            separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
-
-            var minLimit = YAxesHeatMap.First().MinLimit ?? 0;
-            separators[0] = (double)minLimit;
-            YAxesHeatMap.First().CustomSeparators = separators;
-
-
-
-
-        }
+        ObservableCollection<HeatMapPoint> dummyPoints;
+        SetMinMaxY(selectedHeatMapIndex, out dummyPoints);
 
         HasTargets = HeatMapPoints.Count > 0;
 
@@ -377,8 +316,73 @@ public partial class DashboardViewModel : BaseViewModel
         {
             serie.YToolTipLabelFormatter = (point) => $"{point.Model!.Label}  Dist to EMA: {point.Model!.Y:N2} %";
         }
-        return ;
+        return;
 
+    }
+
+    private void SetMinMaxY(int selectedHeatMapIndex, out ObservableCollection<HeatMapPoint> dummyPoints)
+    {
+        //*** Introduce dummyPoints for a second (not-visible) serie to force Bubble Geometry for weight 100
+        //*** and MinGeometry to weight 1. In this way interpolation is in range 1 to 100.
+        //*** example: 3 almost equal weights will now return in also 3 almost equal sized bubbels.
+        HeatMapPoint dummyMax = new()
+        {
+            X = 0,
+            Y = -150,
+            Weight = 100
+        };
+
+        HeatMapPoint dummyMin = new()
+        {
+            X = 0,
+            Y = -150,
+            Weight = 1
+        };
+
+        dummyPoints = new ObservableCollection<HeatMapPoint>() { dummyMin, dummyMax };
+        if (HeatMapPoints is null || HeatMapPoints.Count == 0) return;
+
+        if (selectedHeatMapIndex == 0) //*** Target
+        {
+            var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
+
+            YAxesHeatMap.First().MaxLimit = maxYValuePoint?.Y > 10 ? maxYValuePoint.Y + 10 : 10;
+
+            //*** Normalize the value to a multiple of 10
+            YAxesHeatMap.First().MaxLimit = ((double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) + 1) * 10;
+            var separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
+
+            var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
+            separators[^1] = (double)maxLimit;
+            YAxesHeatMap.First().CustomSeparators = separators;
+        }
+        else if (selectedHeatMapIndex == 2) //*** EMA
+        {
+            var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
+
+            YAxesHeatMap.First().MaxLimit = maxYValuePoint?.Y > 10 ? maxYValuePoint.Y + 10 : 10;
+
+            //*** Normalize the value to a multiple of 10
+            YAxesHeatMap.First().MaxLimit = ((double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) + 1) * 10;
+            var separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
+
+            var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
+            separators[^1] = (double)maxLimit;
+            YAxesHeatMap.First().CustomSeparators = separators;
+
+            //*** likewise for the min value
+            var minYValuePoint = HeatMapPoints.OrderBy(x => x.Y).FirstOrDefault();
+
+            YAxesHeatMap.First().MinLimit = minYValuePoint?.Y < -10 ? minYValuePoint.Y - 10 : -10;
+
+            //*** Normalize the value to a multiple of 10
+            YAxesHeatMap.First().MinLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MinLimit ?? 0) / 10) * 10;
+            separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
+
+            var minLimit = YAxesHeatMap.First().MinLimit ?? 0;
+            separators[0] = (double)minLimit;
+            YAxesHeatMap.First().CustomSeparators = separators;
+        }
     }
 
     public void ChangeBubbleSize(SizeChangedEventArgs e)

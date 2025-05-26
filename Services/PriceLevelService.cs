@@ -133,45 +133,48 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             err => new());
     }
 
-    public async Task UpdateCoinsList(Coin coin)
-    {
-        if (ListCoins == null || coin is null) return;
-        try
-        {
-            var getResult = await GetCoinFromContext(coin);
-            var _coinWithAssetData = getResult.Match(
-                coin => coin,
-                err => null);
+    //public async Task UpdateCoinsList(Coin coin)
+    //{
+    //    if (ListCoins == null || coin is null) return;
+    //    try
+    //    {
+    //        var getResult = await GetCoinFromContext(coin);
+    //        var _coinWithAssetData = getResult.Match(
+    //            coin => coin,
+    //            err => null);
 
-            var coinToUpdate = ListCoins.Where(a => a.ApiId == coin.ApiId).SingleOrDefault();
-            if (coinToUpdate != null)
-            {
-                var index = -1;
-                for (var i = 0; i < ListCoins.Count; i++)
-                {
-                    if (ListCoins[i].ApiId == coinToUpdate.ApiId)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                ListCoins[index] = _coinWithAssetData;
-            }
-        }
-        catch (Exception)
-        {
-            Task.FromResult(false);
-        }
+    //        var coinToUpdate = ListCoins.Where(a => a.ApiId == coin.ApiId).SingleOrDefault();
+    //        if (coinToUpdate != null)
+    //        {
+    //            var index = -1;
+    //            for (var i = 0; i < ListCoins.Count; i++)
+    //            {
+    //                if (ListCoins[i].ApiId == coinToUpdate.ApiId)
+    //                {
+    //                    index = i;
+    //                    break;
+    //                }
+    //            }
+    //            ListCoins[index] = _coinWithAssetData;
+    //        }
+    //    }
+    //    catch (Exception)
+    //    {
+    //        Task.FromResult(false);
+    //    }
         
-        return;
-    }
+    //    return;
+    //}
 
-    public Task UpdateCoinsList(Coin coin, Coin updatedCoin)
+    public async Task UpdateCoinsList(Coin coin, Coin updatedCoin)
     {
-        if (ListCoins is null || !ListCoins.Any() || coin is null || updatedCoin is null) { return Task.FromResult(false); }
+        if (ListCoins is null || !ListCoins.Any() || coin is null || updatedCoin is null) { return; }
         try
         {
             //var context = _portfolioService.Context;
+
+            updatedCoin.Ema = await updatedCoin.CalculateEma();
+            updatedCoin.EvaluatePriceLevels(updatedCoin.Price);
 
             var coinToUpdateIndex = ListCoins.IndexOf(coin);
             //var updatedCoin = context.Coins.AsNoTracking()
@@ -186,8 +189,9 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             Task.FromResult(false); 
         }
 
-        return Task.CompletedTask;
+        return;
     }
+
     public bool ListCoinsHasAny()
     {
         return ListCoins != null && ListCoins.Any();
@@ -226,7 +230,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
             foreach (var coin in coinList)
             {
-                coin.CalculateEma();
+                coin.Ema = await coin.CalculateEma();
                 coin.EvaluatePriceLevels(coin.Price);
             }
         }
@@ -252,7 +256,8 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 .ThenInclude(x => x.Account)
                 .OrderBy(x => x.Rank)
                 .FirstAsync();
-            
+
+            _coin.Ema = await _coin.CalculateEma();
             _coin.EvaluatePriceLevels(_coin.Price);
             
         }

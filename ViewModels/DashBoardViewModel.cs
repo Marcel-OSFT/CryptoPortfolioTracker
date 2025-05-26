@@ -3,11 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Converters;
+using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
+using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
 using System;
@@ -171,6 +173,38 @@ public partial class DashboardViewModel : BaseViewModel
         }
         ToggleFsMode = ToggleFsMode == requestedMode ? FullScreenMode.None : requestedMode;
     }
+
+    [RelayCommand]
+    public async Task ShowSettingsDialog()
+    {
+        var loc = Localizer.Get();
+        try
+        {
+            // Adjusted the type to match the expected constructor parameter type  
+            var settings = new DashboardSettings();
+
+            Logger.Information("Showing DashboardSettings Dialog");
+            var dialog = new DashboardSettingsDialog(settings, _preferencesService)
+            {
+                XamlRoot = DashboardView.Current.XamlRoot
+            };
+            var result = await App.ShowContentDialogAsync(dialog);
+
+            if (result == ContentDialogResult.Primary)
+            {
+                // Handle the result if needed  
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to show DashboardSettings Dialog");
+            await ShowMessageDialog(
+                loc.GetLocalizedString("Messages_DashboardSettingsDialogFailed_Title"),
+                ex.Message,
+                loc.GetLocalizedString("Common_CloseButton"));
+        }
+    }
+
 
     private void ReloadAffectedControls()
     {
