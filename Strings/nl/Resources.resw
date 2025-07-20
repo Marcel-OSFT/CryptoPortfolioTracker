@@ -1253,4 +1253,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="HeatMapType_Ema.Content" xml:space="preserve">
     <value>dagelijkse 50 EMA</value>
   </data>
+  <data name="Messages_ScheduledTaskMod_Explainer" xml:space="preserve">
+    <value>De CryptoPortfolioTracker moet de geplande taak voor de dagelijkse update van de marktgrafieken aanpassen. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te wijzigen. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</value>
+  </data>
 </root>

@@ -562,15 +562,17 @@ public static class Functions
             return GridLength.Auto;
         }
         
-        GridLength gridDef;
-        if (parameter.Contains('*'))
-        {
-            gridDef = new GridLength(Convert.ToDouble(parameter.Replace("*", "")), GridUnitType.Star);
-        }
-        else
-        {
-            gridDef = new GridLength(Convert.ToDouble(parameter));
-        }
+        GridLength gridDef = parameter.EndsWith('*')
+       ? new GridLength(Convert.ToDouble(parameter.Substring(0, parameter.Length - 1)), GridUnitType.Star)
+       : new GridLength(Convert.ToDouble(parameter));
+        //if (parameter.Contains('*'))
+        //{
+        //    gridDef = new GridLength(Convert.ToDouble(parameter.Replace("*", "")), GridUnitType.Star);
+        //}
+        //else
+        //{
+        //    gridDef = new GridLength(Convert.ToDouble(parameter));
+        //}
 
         switch (value)
         {

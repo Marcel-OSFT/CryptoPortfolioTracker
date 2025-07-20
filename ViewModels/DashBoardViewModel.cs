@@ -43,7 +43,7 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] private string glyph = "\uEE47";
     [ObservableProperty] private string glyphPrivacy = "\uE890";
 
-    [ObservableProperty] private FullScreenMode toggleFsMode;
+    [ObservableProperty] private FullScreenMode toggleFsMode = FullScreenMode.None;
 
     partial void OnToggleFsModeChanged(FullScreenMode value)
     {

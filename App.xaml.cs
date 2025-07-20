@@ -122,14 +122,11 @@ public partial class App : Application
 
         PreferencesService.LoadUserPreferencesFromXml();
 
-
-
         AddNewTeachingTips();
 
         InitializeLogger();
         await InitializeLocalizer();
         await SetupScheduledTask();
-
         await InitializePortfolioService();
 
         CacheLibraryIconsAsync();
@@ -160,14 +157,64 @@ public partial class App : Application
                 };
 
                 await dialog.ShowAsync();
-
                 RestartAsAdmin();
+                return;
             }
-            else
-            {
-                RegisterScheduledTask(ScheduledTaskName, "Daily price update for the Market Charts", ScheduledTaskExe, TriggerTime);
-            }
+
+            RegisterScheduledTask(ScheduledTaskName, "Daily price update for the Market Charts", ScheduledTaskExe, TriggerTime);
+            return;
         }
+
+        await CheckAndUpdateScheduledTaskTriggers();
+    }
+
+    private async Task CheckAndUpdateScheduledTaskTriggers()
+    {
+        using var ts = new TaskService();
+        var task = ts.GetFolder(@"\").Tasks.FirstOrDefault(t => t.Name == ScheduledTaskName);
+        if (task == null)
+            return;
+
+        var td = task.Definition;
+        if (td.Triggers.Count != 1) return;
+
+        if (!AdminCheck.IsRunAsAdmin())
+        {
+            var dialog = new ContentDialog
+            {
+                Title = Localizer.GetLocalizedString("Messages_ScheduledTask_Title"),
+                Content = Localizer.GetLocalizedString("Messages_ScheduledTaskMod_Explainer"),
+                XamlRoot = Splash?.Content.XamlRoot,
+                CloseButtonText = "OK"
+            };
+
+            await dialog.ShowAsync();
+            RestartAsAdmin();
+            return;
+        }
+
+        UpdateTaskTriggers(ts, td);
+    }
+
+    private static void UpdateTaskTriggers(TaskService ts, TaskDefinition td)
+    {
+        Logger?.Warning("Scheduled task {0} has 1 trigger. Re-registering the task.", ScheduledTaskName);
+
+        td.Triggers.Clear();
+
+        td.Triggers.Add(new LogonTrigger
+        {
+            StartBoundary = DateTime.Now,
+            Repetition = new RepetitionPattern(TimeSpan.FromHours(1), TimeSpan.Zero)
+            //Repetition = new RepetitionPattern(TimeSpan.FromHours(1), TimeSpan.FromDays(1))
+        });
+
+        var startTime = DateTime.Today.AddHours(9).AddMinutes(5);
+        td.Triggers.Add(new DailyTrigger { StartBoundary = startTime });
+
+        td.Settings.StartWhenAvailable = true;
+
+        ts.RootFolder.RegisterTaskDefinition(ScheduledTaskName, td);
     }
 
     private void RestartAsAdmin()
@@ -223,13 +270,26 @@ public partial class App : Application
 
             td.Principal.RunLevel = TaskRunLevel.Highest;
 
-            RepetitionPattern repetition = new RepetitionPattern(TimeSpan.FromHours(1), TimeSpan.FromHours(20));
-            DailyTrigger dailyTrigger = new DailyTrigger { Repetition = repetition, StartBoundary = DateTime.Today.AddHours(3) /* Adjust time as needed */ };
-            td.Triggers.Add(dailyTrigger);
+            // Trigger 1: At logon, repeat every 1 hour for a very long time (effectively endless)
+            LogonTrigger logonTrigger = new LogonTrigger
+            {
+                StartBoundary = DateTime.Now,
+                Repetition = new RepetitionPattern(TimeSpan.FromHours(1), TimeSpan.Zero)
+            };
+            td.Triggers.Add(logonTrigger);
 
+            // Trigger 2: to start at 09:05 AM with no repetition
+            var startTime = DateTime.Today.AddHours(9).AddMinutes(5);
+            DailyTrigger dailyTrigger = new DailyTrigger
+            {
+                StartBoundary = startTime,
+                // No repetition pattern set
+            };
+            td.Triggers.Add(dailyTrigger);
+            
             td.Actions.Add(new ExecAction(exePath, null, null));
 
-           // td.Settings.StartWhenAvailable = true;
+            td.Settings.StartWhenAvailable = true;
             td.Settings.DisallowStartIfOnBatteries = false;
             td.Settings.StopIfGoingOnBatteries = false;
             td.Settings.RunOnlyIfIdle = false;

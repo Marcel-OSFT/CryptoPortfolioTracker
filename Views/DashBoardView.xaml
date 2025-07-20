@@ -34,15 +34,15 @@
         <Grid x:Name="dashboardGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
               Margin="0,0,5,0" VerticalAlignment="Stretch" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'0.13*','Other'), Mode=OneWay}"/>
-                <RowDefinition Height="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'0.33*','HeatMap+PiePortfolio'), Mode=OneWay}"/>
-                <RowDefinition Height="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'0.33*','Graph+PieAccounts'), Mode=OneWay}"/>
-                <RowDefinition Height="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'0.33*','PieNarratives'), Mode=OneWay}"/>
+                <RowDefinition Height="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'13*','Other'), Mode=OneWay}"/>
+                <RowDefinition Height="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'33*','HeatMap+PiePortfolio'), Mode=OneWay}"/>
+                <RowDefinition Height="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'33*','Graph+PieAccounts'), Mode=OneWay}"/>
+                <RowDefinition Height="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'33*','PieNarratives'), Mode=OneWay}"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'0.41*','HeatMap+Graph'), Mode=OneWay}"/>
-                <ColumnDefinition Width="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'0.26*','PiePortfolio+PieAccounts'), Mode=OneWay}"/>
-                <ColumnDefinition Width="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'0.33*','PieNarratives'), Mode=OneWay}"/>
+                <ColumnDefinition Width="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'41*','HeatMap+Graph'), Mode=OneWay}"/>
+                <ColumnDefinition Width="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'26*','PiePortfolio+PieAccounts'), Mode=OneWay}"/>
+                <ColumnDefinition Width="{x:Bind converters:Functions.FullScreenToGridDef(_viewModel.ToggleFsMode,'33*','PieNarratives'), Mode=OneWay}"/>
             </Grid.ColumnDefinitions>
             
             <controls:HomePageHeaderImage Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3" 

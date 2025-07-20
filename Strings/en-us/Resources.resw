@@ -1343,6 +1343,9 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Messages_ScheduledTask_Explainer" xml:space="preserve">
     <value>The CryptoPortfolioTracker needs to register a scheduled task to perform a daily update of the Market Charts. The application needs to run once as an administrator to register the scheduled task. It will restart and prompt you to accept changes. </value>
   </data>
+  <data name="Messages_ScheduledTaskMod_Explainer" xml:space="preserve">
+    <value>The CryptoPortfolioTracker needs to modify the scheduled task that perform the daily update of the Market Charts. The application needs to run once as an administrator to modify the scheduled task. It will restart and prompt you to accept changes. </value>
+  </data>
   <data name="Messages_GraphUpdateService_InvalidChartsTitle" xml:space="preserve">
     <value>Invalid MarketChart Found for</value>
   </data>
