@@ -102,12 +102,11 @@ public partial class App : Application
             return;
         }
 
-        
         var scheduledTaskService = new ScheduledTaskService(
-            ScheduledTaskName, 
-            ScheduledTaskExe, 
-            TriggerTime, 
-            "Daily price update for the Market Charts", 
+            ScheduledTaskName,
+            ScheduledTaskExe,
+            TriggerTime,
+            "Daily price update for the Market Charts",
             key => Localizer?.GetLocalizedString(key) ?? key
         );
         await scheduledTaskService.SetupScheduledTaskAsync(Splash);
@@ -117,205 +116,41 @@ public partial class App : Application
         var iconCacheService = new IconCacheService(App.IconsFolder, App.Container.GetService<PortfolioService>(), Logger);
         await iconCacheService.CacheLibraryIconsAsync();
 
-        InitializeLogger();
-        await InitializeLocalizer();
-        await SetupScheduledTask();
-
-        await InitializePortfolioService();
-
-        CacheLibraryIconsAsync();
         Window = Container.GetService<MainWindow>();
         Window?.Activate();
-
-    private async Task SetupScheduledTask()
-    {
-        var registered = await IsTaskRegistered(ScheduledTaskName);
-        if (!registered)
-        {
-            if (!AdminCheck.IsRunAsAdmin())
-            {
-                var dialog = new ContentDialog
-                {
-                    Title = Localizer.GetLocalizedString("Messages_ScheduledTask_Title"),
-                    Content = Localizer.GetLocalizedString("Messages_ScheduledTask_Explainer"),
-                    XamlRoot = Splash?.Content.XamlRoot,
-                    CloseButtonText = "OK"
-                };
-
-                await dialog.ShowAsync();
-
-                RestartAsAdmin();
-            }
-            else
-            {
-                RegisterScheduledTask(ScheduledTaskName, "Daily price update for the Market Charts", ScheduledTaskExe, TriggerTime);
-            }
-        }
     }
+
+
 
     private async Task<bool> EnsureSingleInstanceAsync()
     {
-        _mutex = new Mutex(false, MutexName, out bool createdNew);
-
-        if (!createdNew && !AdminCheck.IsRunAsAdmin())
+        try
         {
-            await ShowErrorMessage("Another instance of the application is already running.");
-            _mutex.Close();
-            _mutex = null;
-            Application.Current.Exit();
+            _mutex = new Mutex(false, MutexName, out bool createdNew);
+
+            if (!createdNew && !AdminCheck.IsRunAsAdmin())
+            {
+                await ShowErrorMessage("Another instance of the application is already running.");
+                _mutex.Close();
+                _mutex = null;
+                Application.Current.Exit();
+                return false;
+            }
+
+            return true;
         }
         catch (Exception ex)
         {
             var dialog = new ContentDialog
             {
                 Title = "Error",
-                Content = $"Failed to restart application as administrator: {ex.Message}",
+                Content = $"Failed to check for single instance: {ex.Message}",
                 CloseButtonText = "OK"
             };
 
-            dialog.ShowAsync();
-        }
-    }
-
-    private async Task<bool> IsTaskRegistered(string taskName)
-    {
-        using (TaskService ts = new TaskService())
-        {
-            TaskFolder folder = ts.GetFolder(@"\");
-            var task = folder.Tasks.Where(t => t.Name == taskName).FirstOrDefault();
-
-            return (task != null);
-        }
-    }
-
-    private void RegisterScheduledTask(string taskName, string taskDescription, string exePath, string triggerTime)
-    {
-        using (TaskService ts = new TaskService())
-        {
-            TaskDefinition td = ts.NewTask();
-            td.RegistrationInfo.Description = taskDescription;
-
-            td.Principal.LogonType = TaskLogonType.InteractiveToken;
-            td.Principal.UserId = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-
-            //td.Principal.LogonType = TaskLogonType.ServiceAccount;
-            //td.Principal.UserId = "SYSTEM";
-
-            td.Principal.RunLevel = TaskRunLevel.Highest;
-
-            RepetitionPattern repetition = new RepetitionPattern(TimeSpan.FromHours(1), TimeSpan.FromHours(20));
-            DailyTrigger dailyTrigger = new DailyTrigger { Repetition = repetition, StartBoundary = DateTime.Today.AddHours(3) /* Adjust time as needed */ };
-            td.Triggers.Add(dailyTrigger);
-
-            td.Actions.Add(new ExecAction(exePath, null, null));
-
-           // td.Settings.StartWhenAvailable = true;
-            td.Settings.DisallowStartIfOnBatteries = false;
-            td.Settings.StopIfGoingOnBatteries = false;
-            td.Settings.RunOnlyIfIdle = false;
-            td.Settings.IdleSettings.StopOnIdleEnd = false;
-
-            ts.RootFolder.RegisterTaskDefinition(taskName, td);
-        }
-    }
-
-    private static async void CacheLibraryIconsAsync()
-    {
-        await CacheLibraryIcons();
-    }
-    private static async Task CacheLibraryIcons()
-    {
-        var iconsFolderPath = Path.Combine(AppDataPath, IconsFolder);
-        if (Directory.Exists(iconsFolderPath))
-        {
-            foreach (var file in Directory.GetFiles(iconsFolderPath))
-            {
-                File.Delete(file);
-            }
-        }
-        else
-        {
-            Directory.CreateDirectory(iconsFolderPath);
-        }
-
-        var portfolioService = App.Container.GetService<PortfolioService>();
-
-        var context = portfolioService.Context;
-
-
-        var coins = context?.Coins
-            //.AsNoTracking()
-            .Where(coin => !string.IsNullOrEmpty(coin.ImageUri))
-            .ToList();
-
-        if (coins != null)
-        {
-            var tasks = coins.Select(async coin =>
-            {
-                var fileName = ExtractFileNameFromUri(coin.ImageUri);
-                if (fileName != "QuestionMarkBlue.png")
-                {
-                    var iconPath = Path.Combine(iconsFolderPath, fileName);
-                    if (!File.Exists(iconPath))
-                    {
-                        if (!await RetrieveCoinIconAsync(coin, iconPath))
-                        {
-                            Logger?.Warning("Failed to cache icon for {0}", coin.Name);
-                        }
-                    }
-                }
-
-            });
-
-            await Task.WhenAll(tasks);
-        }
-    }
-
-    private async static Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
-    {
-        using var httpClient = new HttpClient();
-        try
-        {
-            var response = await httpClient.GetAsync(coin?.ImageUri);
-            if (!response.IsSuccessStatusCode)
-            {
-                return false;
-            }
-
-            await using var fs = new FileStream(iconPath, FileMode.Create);
-            await response.Content.CopyToAsync(fs);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Logger?.Error(ex, "Failed to retrieve coin icon for {0}", coin?.Name);
+            await dialog.ShowAsync();
             return false;
         }
-    }
-
-    private static string ExtractFileNameFromUri(string uri)
-    {
-        var uriWithoutQuery = uri.Split('?')[0];
-        return Path.GetFileName(uriWithoutQuery);
-    }
-
-    private static void AddNewTeachingTips()
-    {
-        var tips = new List<TeachingTipCPT>
-        {
-            //*** version 1.2.7
-            new() { Name = "TeachingTipNarrLibr", IsShown = false },
-            new() { Name = "TeachingTipNarrDash", IsShown = false },
-            new() { Name = "TeachingTipNarrNarr", IsShown = false },
-            new() { Name = "TeachingTipPortDash", IsShown = false },
-            new() { Name = "TeachingTipNarrNavi", IsShown = false },
-
-            //*** version 1.2.9
-            new() { Name = "TeachingTipRsiHeat", IsShown = false },
-
-        };
-
-        PreferencesService.AddTeachingTipsIfNotExist(tips);
     }
 
     private async static Task InitializeLocalizer()
