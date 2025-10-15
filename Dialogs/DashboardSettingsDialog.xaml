@@ -13,16 +13,14 @@
     xmlns:ct="using:CommunityToolkit.WinUI.Controls"
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:toolkit="using:AK.Toolkit.WinUI3"
-    d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     Name="Root"
     Loading="Dialog_Loading"
     mc:Ignorable="d">
 
     <ContentDialog.Resources>
         <!-- Overriding values -->
-        <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
+        <x:Double x:Key="ContentDialogMaxWidth">1200</x:Double>
         <x:Double x:Key="ContentDialogMaxHeight">1200</x:Double>
-        
         <Style x:Key="HorizontalSwipe" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
             <Setter Property="Height" Value="60"/>
             <Setter Property="Padding" Value="0"/>
@@ -32,22 +30,25 @@
         </Style>
     </ContentDialog.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="600">
         <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-          Margin="0,0,5,0" VerticalAlignment="Stretch" >
+          Margin="0,0,5,0" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="700"/>
+            </Grid.ColumnDefinitions>
 
-            <TextBlock l:Uids.Uid="DashboardSettings_Title" Text="Dashboard Settings" x:Name="txtSettings" Margin="36,0,0,10" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" />
-            <Border Grid.Row="2"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10,0,0,0">
-                <ScrollViewer HorizontalAlignment="Stretch" Margin="0,0,0,0" Padding="0,0,20,0" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
-                    <StackPanel Spacing="4" >
+            <TextBlock l:Uids.Uid="DashboardSettings_Title" Text="Dashboard Settings" Grid.Row="0" x:Name="txtSettings" Margin="8,0,0,10" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" />
+            <Border Grid.Row="1" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0">
+                <ScrollViewer HorizontalAlignment="Stretch" Margin="0" Padding="0" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}">
+                    <StackPanel Spacing="4">
 
                         <ct:SettingsExpander l:Uids.Uid="settingsExpander_PriceLevels" x:Name="settingsExpander_PriceLevels"
                         VerticalAlignment="Top"
+                        HorizontalAlignment="Stretch"
                         HeaderIcon="{ui:FontIcon Glyph=}"
                         IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
                         IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
@@ -74,6 +75,7 @@
 
                         <ct:SettingsExpander l:Uids.Uid="settingsExpander_DashBoard" x:Name="settingsExpander_DashBoard"
                         VerticalAlignment="Top"
+                        HorizontalAlignment="Stretch"
                         HeaderIcon="{ui:FontIcon Glyph=}"
                         IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
                         IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
@@ -96,9 +98,4 @@
             </Border>
         </Grid>
     </Grid>
-
-
-
-
-
 </ContentDialog>

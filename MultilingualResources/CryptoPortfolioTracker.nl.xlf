@@ -1666,6 +1666,166 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>daily 50 EMA</source>
           <target state="translated">dagelijkse 50 EMA</target>
         </trans-unit>
+        <trans-unit id="Messages_DashboardSettingsDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to show DashboardSettings Dialog</source>
+          <target state="translated">Fout bij het openen van het Dashboard Settings Dialoogvenster</target>
+        </trans-unit>
+        <trans-unit id="Messages_PortfolioSettingsDialogFailed_Title" translate="yes" xml:space="preserve">
+          <source>Failed to show PortfolioSettings Dialog</source>
+          <target state="translated">Fout bij het openen van het Portefeuille Settings Dialoogvenster</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_Password.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get access to password settings. Protect your app and configure also a duress password</source>
+          <target state="translated">Vouw dit uit om toegang te krijgen tot de wachtwoordinstellingen. Bescherm je app en configureer ook een dwangwachtwoord.</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_Password.Header" translate="yes" xml:space="preserve">
+          <source>Security</source>
+          <target state="translated">Veiligheid</target>
+        </trans-unit>
+        <trans-unit id="Settings_Password.Description" translate="yes" xml:space="preserve">
+          <source>Protect access to the app with a password</source>
+          <target state="translated">Beveilig de toegang tot de app met een wachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Settings_Password.Header" translate="yes" xml:space="preserve">
+          <source>Access Password</source>
+          <target state="translated">Toegangswachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Settings_duressPassword.Description" translate="yes" xml:space="preserve">
+          <source>Access to your app under duress? Using the duress password will open the app with a decoy portfolio. This one is initialy empty but if you prefer, you can add some small positions. </source>
+          <target state="translated">Toegang tot je app onder dwang? Met het dwangwachtwoord open je de app met een nepportfolio. Deze is in eerste instantie leeg, maar je kunt er desgewenst kleine posities aan toevoegen.</target>
+        </trans-unit>
+        <trans-unit id="Settings_duressPassword.Header" translate="yes" xml:space="preserve">
+          <source>Duress Password</source>
+          <target state="translated">Dwangwachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Messages_duressPassword_Changed_Msg" translate="yes" xml:space="preserve">
+          <source>Your duress password has been updated.</source>
+          <target state="translated">Uw dwangwachtwoord is bijgewerkt.</target>
+        </trans-unit>
+        <trans-unit id="Messages_duressPassword_Changed_Title" translate="yes" xml:space="preserve">
+          <source>Duress Password Changed</source>
+          <target state="translated">Dwangwachtwoord gewijzigd</target>
+        </trans-unit>
+        <trans-unit id="Messages_duressPassword_Incorrect_Msg" translate="yes" xml:space="preserve">
+          <source>The current duress password is incorrect.</source>
+          <target state="translated">Het huidige dwangwachtwoord is onjuist.</target>
+        </trans-unit>
+        <trans-unit id="Messages_duressPassword_Incorrect_Title" translate="yes" xml:space="preserve">
+          <source>Incorrect Duress Password</source>
+          <target state="translated">Onjuist dwangwachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Messages_Password_Changed_Msg" translate="yes" xml:space="preserve">
+          <source>Your password has been updated.</source>
+          <target state="translated">Uw wachtwoord is bijgewerkt.</target>
+        </trans-unit>
+        <trans-unit id="Messages_Password_Changed_Title" translate="yes" xml:space="preserve">
+          <source>Password Changed</source>
+          <target state="translated">Wachtwoord gewijzigd</target>
+        </trans-unit>
+        <trans-unit id="Messages_Password_Incorrect_Msg" translate="yes" xml:space="preserve">
+          <source>The current password is incorrect.</source>
+          <target state="translated">Het huidige wachtwoord is onjuist.</target>
+        </trans-unit>
+        <trans-unit id="Messages_Password_Incorrect_Title" translate="yes" xml:space="preserve">
+          <source>Incorrect Password</source>
+          <target state="translated">Onjuist wachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Settings_duressPasswordBox_Current.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Current duress password</source>
+          <target state="translated">Huidig dwangwachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Settings_PasswordBox_Current.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Current password</source>
+          <target state="translated">Huidig wachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Settings_duressPasswordBox_New.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>New duress password</source>
+          <target state="translated">Nieuw dwangwachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Settings_PasswordBox_New.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>New password</source>
+          <target state="translated">Nieuw wachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Messages_duressPassword_New_Required_Msg" translate="yes" xml:space="preserve">
+          <source>Duress Password cannot be blank or whitespace</source>
+          <target state="translated">Dwangwachtwoord mag niet leeg of met spaties zijn</target>
+        </trans-unit>
+        <trans-unit id="Messages_duressPassword_New_Required_Title" translate="yes" xml:space="preserve">
+          <source>Incorrect duress password</source>
+          <target state="translated">Onjuist dwangwachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Messages_duressPassword_Set_Msg" translate="yes" xml:space="preserve">
+          <source>The new duress password has been set</source>
+          <target state="translated">Het nieuwe dwangwachtwoord is ingesteld</target>
+        </trans-unit>
+        <trans-unit id="Messages_duressPassword_Set_Title" translate="yes" xml:space="preserve">
+          <source>Duress Password Set</source>
+          <target state="translated">Dwangwachtwoord ingesteld</target>
+        </trans-unit>
+        <trans-unit id="Messages_Password_New_Required_Msg" translate="yes" xml:space="preserve">
+          <source>Password cannot be blank or whitespace</source>
+          <target state="translated">Wachtwoord mag niet leeg of met spaties zijn</target>
+        </trans-unit>
+        <trans-unit id="Messages_Password_New_Required_Title" translate="yes" xml:space="preserve">
+          <source>Incorrect password</source>
+          <target state="translated">Onjuist wachtwoord</target>
+        </trans-unit>
+        <trans-unit id="Messages_Password_Set_Msg" translate="yes" xml:space="preserve">
+          <source>The new password has been set</source>
+          <target state="translated">Het nieuwe wachtwoord is ingesteld</target>
+        </trans-unit>
+        <trans-unit id="Messages_Password_Set_Title" translate="yes" xml:space="preserve">
+          <source>Password Set</source>
+          <target state="translated">Wachtwoord Ingesteld</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_Attempts_MsgPrefix" translate="yes" xml:space="preserve">
+          <source>Please try again in</source>
+          <target state="translated">Probeer het opnieuw na</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_Attempts_MsgPrefix1" translate="yes" xml:space="preserve">
+          <source>Locked out for</source>
+          <target state="translated">Buitengesloten voor</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_Attempts_MsgSuffix" translate="yes" xml:space="preserve">
+          <source>minutes.</source>
+          <target state="translated">minuten.</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_Attempts_Title" translate="yes" xml:space="preserve">
+          <source>Too many failed attempts</source>
+          <target state="translated">Te veel mislukte pogingen</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_Failed" translate="yes" xml:space="preserve">
+          <source>Authentication Failed</source>
+          <target state="translated">Authenticatie mislukt</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_ForgotPassword" translate="yes" xml:space="preserve">
+          <source>Forgot password?</source>
+          <target state="translated">Wachtwoord vergeten?</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_InvalidCode_Msg" translate="yes" xml:space="preserve">
+          <source>Check provided reset code. (Case sensitive and limited time valid)</source>
+          <target state="translated">Controleer de verstrekte resetcode. (Hoofdlettergevoelig en geldig voor een beperkte tijd)</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_InvalidCode_Title" translate="yes" xml:space="preserve">
+          <source>Invalid reset code</source>
+          <target state="translated">Ongeldige resetcode</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_PasswordReset_Msg" translate="yes" xml:space="preserve">
+          <source>Please set a new password in Settings.</source>
+          <target state="translated">Stel een nieuw wachtwoord in via Instellingen.</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_PasswordReset_Title" translate="yes" xml:space="preserve">
+          <source>Password has been reset</source>
+          <target state="translated">Wachtwoord is gereset</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Enter your password</source>
+          <target state="translated">Voer uw wachtwoord in</target>
+        </trans-unit>
+        <trans-unit id="Messages_Authentication_Required" translate="yes" xml:space="preserve">
+          <source>Authentication Required</source>
+          <target state="translated">Authenticatie vereist</target>
+        </trans-unit>
       </group>
     </body>
   </file>

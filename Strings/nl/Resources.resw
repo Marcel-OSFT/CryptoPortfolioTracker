@@ -1253,4 +1253,124 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="HeatMapType_Ema.Content" xml:space="preserve">
     <value>dagelijkse 50 EMA</value>
   </data>
+  <data name="Messages_DashboardSettingsDialogFailed_Title" xml:space="preserve">
+    <value>Fout bij het openen van het Dashboard Settings Dialoogvenster</value>
+  </data>
+  <data name="Messages_PortfolioSettingsDialogFailed_Title" xml:space="preserve">
+    <value>Fout bij het openen van het Portefeuille Settings Dialoogvenster</value>
+  </data>
+  <data name="settingsExpander_Password.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot de wachtwoordinstellingen. Bescherm je app en configureer ook een dwangwachtwoord.</value>
+  </data>
+  <data name="settingsExpander_Password.Header" xml:space="preserve">
+    <value>Veiligheid</value>
+  </data>
+  <data name="Settings_Password.Description" xml:space="preserve">
+    <value>Beveilig de toegang tot de app met een wachtwoord</value>
+  </data>
+  <data name="Settings_Password.Header" xml:space="preserve">
+    <value>Toegangswachtwoord</value>
+  </data>
+  <data name="Settings_duressPassword.Description" xml:space="preserve">
+    <value>Toegang tot je app onder dwang? Met het dwangwachtwoord open je de app met een nepportfolio. Deze is in eerste instantie leeg, maar je kunt er desgewenst kleine posities aan toevoegen.</value>
+  </data>
+  <data name="Settings_duressPassword.Header" xml:space="preserve">
+    <value>Dwangwachtwoord</value>
+  </data>
+  <data name="Messages_duressPassword_Changed_Msg" xml:space="preserve">
+    <value>Uw dwangwachtwoord is bijgewerkt.</value>
+  </data>
+  <data name="Messages_duressPassword_Changed_Title" xml:space="preserve">
+    <value>Dwangwachtwoord gewijzigd</value>
+  </data>
+  <data name="Messages_duressPassword_Incorrect_Msg" xml:space="preserve">
+    <value>Het huidige dwangwachtwoord is onjuist.</value>
+  </data>
+  <data name="Messages_duressPassword_Incorrect_Title" xml:space="preserve">
+    <value>Onjuist dwangwachtwoord</value>
+  </data>
+  <data name="Messages_Password_Changed_Msg" xml:space="preserve">
+    <value>Uw wachtwoord is bijgewerkt.</value>
+  </data>
+  <data name="Messages_Password_Changed_Title" xml:space="preserve">
+    <value>Wachtwoord gewijzigd</value>
+  </data>
+  <data name="Messages_Password_Incorrect_Msg" xml:space="preserve">
+    <value>Het huidige wachtwoord is onjuist.</value>
+  </data>
+  <data name="Messages_Password_Incorrect_Title" xml:space="preserve">
+    <value>Onjuist wachtwoord</value>
+  </data>
+  <data name="Settings_duressPasswordBox_Current.PlaceholderText" xml:space="preserve">
+    <value>Huidig dwangwachtwoord</value>
+  </data>
+  <data name="Settings_PasswordBox_Current.PlaceholderText" xml:space="preserve">
+    <value>Huidig wachtwoord</value>
+  </data>
+  <data name="Settings_duressPasswordBox_New.PlaceholderText" xml:space="preserve">
+    <value>Nieuw dwangwachtwoord</value>
+  </data>
+  <data name="Settings_PasswordBox_New.PlaceholderText" xml:space="preserve">
+    <value>Nieuw wachtwoord</value>
+  </data>
+  <data name="Messages_duressPassword_New_Required_Msg" xml:space="preserve">
+    <value>Dwangwachtwoord mag niet leeg of met spaties zijn</value>
+  </data>
+  <data name="Messages_duressPassword_New_Required_Title" xml:space="preserve">
+    <value>Onjuist dwangwachtwoord</value>
+  </data>
+  <data name="Messages_duressPassword_Set_Msg" xml:space="preserve">
+    <value>Het nieuwe dwangwachtwoord is ingesteld</value>
+  </data>
+  <data name="Messages_duressPassword_Set_Title" xml:space="preserve">
+    <value>Dwangwachtwoord ingesteld</value>
+  </data>
+  <data name="Messages_Password_New_Required_Msg" xml:space="preserve">
+    <value>Wachtwoord mag niet leeg of met spaties zijn</value>
+  </data>
+  <data name="Messages_Password_New_Required_Title" xml:space="preserve">
+    <value>Onjuist wachtwoord</value>
+  </data>
+  <data name="Messages_Password_Set_Msg" xml:space="preserve">
+    <value>Het nieuwe wachtwoord is ingesteld</value>
+  </data>
+  <data name="Messages_Password_Set_Title" xml:space="preserve">
+    <value>Wachtwoord Ingesteld</value>
+  </data>
+  <data name="Messages_Authentication_Attempts_MsgPrefix" xml:space="preserve">
+    <value>Probeer het opnieuw na</value>
+  </data>
+  <data name="Messages_Authentication_Attempts_MsgPrefix1" xml:space="preserve">
+    <value>Buitengesloten voor</value>
+  </data>
+  <data name="Messages_Authentication_Attempts_MsgSuffix" xml:space="preserve">
+    <value>minuten.</value>
+  </data>
+  <data name="Messages_Authentication_Attempts_Title" xml:space="preserve">
+    <value>Te veel mislukte pogingen</value>
+  </data>
+  <data name="Messages_Authentication_Failed" xml:space="preserve">
+    <value>Authenticatie mislukt</value>
+  </data>
+  <data name="Messages_Authentication_ForgotPassword" xml:space="preserve">
+    <value>Wachtwoord vergeten?</value>
+  </data>
+  <data name="Messages_Authentication_InvalidCode_Msg" xml:space="preserve">
+    <value>Controleer de verstrekte resetcode. (Hoofdlettergevoelig en geldig voor een beperkte tijd)</value>
+  </data>
+  <data name="Messages_Authentication_InvalidCode_Title" xml:space="preserve">
+    <value>Ongeldige resetcode</value>
+  </data>
+  <data name="Messages_Authentication_PasswordReset_Msg" xml:space="preserve">
+    <value>Stel een nieuw wachtwoord in via Instellingen.</value>
+  </data>
+  <data name="Messages_Authentication_PasswordReset_Title" xml:space="preserve">
+    <value>Wachtwoord is gereset</value>
+  </data>
+  <data name="Messages_Authentication_PlaceholderText" xml:space="preserve">
+    <value>Voer uw wachtwoord in</value>
+  </data>
+  <data name="Messages_Authentication_Required" xml:space="preserve">
+    <value>Authenticatie vereist</value>
+  </data>
 </root>

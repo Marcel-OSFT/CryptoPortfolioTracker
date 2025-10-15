@@ -29,6 +29,11 @@ namespace CryptoPortfolioTracker.Models
 
         partial void OnValueChanged(double oldValue, double newValue)
         {
+            if (Coin == null || Coin.Price == 0 || newValue == 0)
+            {
+                DistanceToValuePerc = 0;
+                return;
+            }
             var dist = (100 * (Coin.Price - newValue) / Value);
             DistanceToValuePerc = dist;
         }

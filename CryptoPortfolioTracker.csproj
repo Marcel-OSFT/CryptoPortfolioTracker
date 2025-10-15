@@ -72,6 +72,7 @@
     <None Remove="Dialogs\AddPrereleaseCoinDialog.xaml" />
     <None Remove="Dialogs\AddPriceLevelsDialog.xaml" />
     <None Remove="Dialogs\BlankWindow1.xaml" />
+    <None Remove="Dialogs\PortfolioSettingsDialog.xaml" />
     <None Remove="Dialogs\TransactionDialog.xaml" />
     <None Remove="MK_Styles.xaml" />
     <None Remove="SplashScreen.xaml" />
@@ -219,6 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Fonts\" />
+    <Folder Include="docs\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -374,6 +376,9 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Dialogs\PortfolioSettingsDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Update="Fonts\Segoe Fluent Icons.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1361,4 +1361,124 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="HeatMap_TeachEma.Title" xml:space="preserve">
     <value>New Feature: daily EMA bubbles</value>
   </data>
+  <data name="Messages_DashboardSettingsDialogFailed_Title" xml:space="preserve">
+    <value>Failed to show DashboardSettings Dialog</value>
+  </data>
+  <data name="Messages_PortfolioSettingsDialogFailed_Title" xml:space="preserve">
+    <value>Failed to show PortfolioSettings Dialog</value>
+  </data>
+  <data name="settingsExpander_Password.Description" xml:space="preserve">
+    <value>Expand this to get access to password settings. Protect your app and configure also a duress password</value>
+  </data>
+  <data name="settingsExpander_Password.Header" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="Settings_duressPassword.Description" xml:space="preserve">
+    <value>Access to your app under duress? Using the duress password will open the app with a decoy portfolio. This one is initialy empty but if you prefer, you can add some small positions. </value>
+  </data>
+  <data name="Settings_duressPassword.Header" xml:space="preserve">
+    <value>Duress Password</value>
+  </data>
+  <data name="Settings_Password.Description" xml:space="preserve">
+    <value>Protect access to the app with a password</value>
+  </data>
+  <data name="Settings_Password.Header" xml:space="preserve">
+    <value>Access Password</value>
+  </data>
+  <data name="Messages_duressPassword_Changed_Msg" xml:space="preserve">
+    <value>Your duress password has been updated.</value>
+  </data>
+  <data name="Messages_duressPassword_Changed_Title" xml:space="preserve">
+    <value>Duress Password Changed</value>
+  </data>
+  <data name="Messages_duressPassword_Incorrect_Msg" xml:space="preserve">
+    <value>The current duress password is incorrect.</value>
+  </data>
+  <data name="Messages_duressPassword_Incorrect_Title" xml:space="preserve">
+    <value>Incorrect Duress Password</value>
+  </data>
+  <data name="Messages_Password_Changed_Msg" xml:space="preserve">
+    <value>Your password has been updated.</value>
+  </data>
+  <data name="Messages_Password_Changed_Title" xml:space="preserve">
+    <value>Password Changed</value>
+  </data>
+  <data name="Messages_Password_Incorrect_Msg" xml:space="preserve">
+    <value>The current password is incorrect.</value>
+  </data>
+  <data name="Messages_Password_Incorrect_Title" xml:space="preserve">
+    <value>Incorrect Password</value>
+  </data>
+  <data name="Settings_duressPasswordBox_Current.PlaceholderText" xml:space="preserve">
+    <value>Current duress password</value>
+  </data>
+  <data name="Settings_duressPasswordBox_New.PlaceholderText" xml:space="preserve">
+    <value>New duress password</value>
+  </data>
+  <data name="Settings_PasswordBox_Current.PlaceholderText" xml:space="preserve">
+    <value>Current password</value>
+  </data>
+  <data name="Settings_PasswordBox_New.PlaceholderText" xml:space="preserve">
+    <value>New password</value>
+  </data>
+  <data name="Messages_duressPassword_New_Required_Msg" xml:space="preserve">
+    <value>Duress Password cannot be blank or whitespace</value>
+  </data>
+  <data name="Messages_duressPassword_New_Required_Title" xml:space="preserve">
+    <value>Incorrect duress password</value>
+  </data>
+  <data name="Messages_duressPassword_Set_Msg" xml:space="preserve">
+    <value>The new duress password has been set</value>
+  </data>
+  <data name="Messages_duressPassword_Set_Title" xml:space="preserve">
+    <value>Duress Password Set</value>
+  </data>
+  <data name="Messages_Password_New_Required_Msg" xml:space="preserve">
+    <value>Password cannot be blank or whitespace</value>
+  </data>
+  <data name="Messages_Password_New_Required_Title" xml:space="preserve">
+    <value>Incorrect password</value>
+  </data>
+  <data name="Messages_Password_Set_Msg" xml:space="preserve">
+    <value>The new password has been set</value>
+  </data>
+  <data name="Messages_Password_Set_Title" xml:space="preserve">
+    <value>Password Set</value>
+  </data>
+  <data name="Messages_Authentication_Attempts_MsgPrefix" xml:space="preserve">
+    <value>Please try again in</value>
+  </data>
+  <data name="Messages_Authentication_Attempts_MsgPrefix1" xml:space="preserve">
+    <value>Locked out for</value>
+  </data>
+  <data name="Messages_Authentication_Attempts_MsgSuffix" xml:space="preserve">
+    <value>minutes.</value>
+  </data>
+  <data name="Messages_Authentication_Attempts_Title" xml:space="preserve">
+    <value>Too many failed attempts</value>
+  </data>
+  <data name="Messages_Authentication_Failed" xml:space="preserve">
+    <value>Authentication Failed</value>
+  </data>
+  <data name="Messages_Authentication_ForgotPassword" xml:space="preserve">
+    <value>Forgot password?</value>
+  </data>
+  <data name="Messages_Authentication_InvalidCode_Msg" xml:space="preserve">
+    <value>Check provided reset code. (Case sensitive and limited time valid)</value>
+  </data>
+  <data name="Messages_Authentication_InvalidCode_Title" xml:space="preserve">
+    <value>Invalid reset code</value>
+  </data>
+  <data name="Messages_Authentication_PasswordReset_Msg" xml:space="preserve">
+    <value>Please set a new password in Settings.</value>
+  </data>
+  <data name="Messages_Authentication_PasswordReset_Title" xml:space="preserve">
+    <value>Password has been reset</value>
+  </data>
+  <data name="Messages_Authentication_PlaceholderText" xml:space="preserve">
+    <value>Enter your password</value>
+  </data>
+  <data name="Messages_Authentication_Required" xml:space="preserve">
+    <value>Authentication Required</value>
+  </data>
 </root>

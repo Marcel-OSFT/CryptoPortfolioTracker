@@ -46,6 +46,8 @@ public class UserPreferences
         LastPortfolio = null;
 
     }
+    public string? PasswordHash { get; set; }
+    public string? DuressPasswordHash { get; set; }
 
     private int refreshIntervalMinutes;
     public int RefreshIntervalMinutes
@@ -69,6 +71,19 @@ public class UserPreferences
             if (value != appTheme)
             {
                 appTheme = value;
+            }
+        }
+    }
+
+    private string userID = string.Empty;
+    public string UserID
+    {
+        get => userID;
+        set
+        {
+            if (value != userID)
+            {
+                userID = value;
             }
         }
     }

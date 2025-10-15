@@ -52,11 +52,30 @@
                     Style="{StaticResource SubSampleHeaderTextStyle}" 
                     RelativePanel.Below="txtPortfolio" RelativePanel.RightOf="txtAssets"/>
                 <!--Grid HorizontalAlignment="Right" Width="{Binding ElementName=HeaderGrid,Path=ActualWidth}" Margin="0,10,0,0"-->
-                <helpers:CustomBtn Width="25" Padding="2,2,2,2" Margin="0,0,0,0" Style="{StaticResource MK_ButtonStyle}" BorderThickness="0"
-                    Command="{Binding TogglePrivacyModeCommand}" RelativePanel.RightOf="txtCount" RelativePanel.AlignBottomWith="txtCount" 
-                    ToolTipService.ToolTip="Toggle privacy" >
-                    <FontIcon x:Name="Icon" Glyph="{Binding GlyphPrivacy}" FontSize="15" FontWeight="Normal" Width="20" Foreground="Black"/>
+                <helpers:CustomBtn x:Name="btnPrivacy" 
+                    Padding="2,2,2,2" 
+                    Margin="8,5,0,0" 
+                    Width="25"
+                    Height="25"
+                    Style="{StaticResource MK_ButtonStyle}" 
+                    BorderThickness="0" 
+                    Command="{Binding TogglePrivacyModeCommand}" 
+                    RelativePanel.RightOf="txtCount" RelativePanel.AlignBottomWith="txtCount" 
+                    ToolTipService.ToolTip="Toggle privacy">
+                    <FontIcon Glyph="{Binding GlyphPrivacy}" FontSize="18" FontWeight="Normal" Height="20" Width="20" Foreground="Black"/>
+                </helpers:CustomBtn>
 
+                <helpers:CustomBtn x:Name="btnSettings"
+                    Padding="2,2,2,2"
+                    Margin="5,5,0,0"
+                    Width="25"
+                    Height="25"
+                    Style="{StaticResource MK_ButtonStyle}"
+                    BorderThickness="0"
+                    Command="{Binding ShowSettingsDialogCommand}"
+                    RelativePanel.RightOf="btnPrivacy" RelativePanel.AlignBottomWith="btnPrivacy"
+                    ToolTipService.ToolTip="Portfolio Settings">
+                    <FontIcon Glyph="&#xE713;" FontSize="18" FontWeight="Normal" Height="20" Width="20" Foreground="Black" />
                 </helpers:CustomBtn>
             </RelativePanel>
 

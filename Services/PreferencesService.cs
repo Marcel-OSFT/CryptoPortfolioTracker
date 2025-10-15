@@ -1,17 +1,17 @@
 ﻿
+using CommunityToolkit.Mvvm.Messaging;
+using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Xaml;
 using Serilog;
-using System.IO;
-using System.Xml.Serialization;
-
 using Serilog.Core;
-using System.Globalization;
-using CryptoPortfolioTracker.Enums;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
-using CommunityToolkit.Mvvm.Messaging;
+using System.Globalization;
+using System.IO;
+using System.Xml.Serialization;
+using Windows.Security.Credentials;
 
 
 namespace CryptoPortfolioTracker.Services;
@@ -32,6 +32,8 @@ public class PreferencesService : IPreferencesService
     {
         return userPreferences;
     }
+
+   
 
     public void SetNumberFormat(NumberFormatInfo nf)
     {

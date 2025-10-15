@@ -180,11 +180,8 @@ public partial class DashboardViewModel : BaseViewModel
         var loc = Localizer.Get();
         try
         {
-            // Adjusted the type to match the expected constructor parameter type  
-            var settings = new DashboardSettings();
-
             Logger.Information("Showing DashboardSettings Dialog");
-            var dialog = new DashboardSettingsDialog(settings, _preferencesService)
+            var dialog = new DashboardSettingsDialog(_preferencesService)
             {
                 XamlRoot = DashboardView.Current.XamlRoot
             };

@@ -549,7 +549,33 @@ public sealed partial class AssetsViewModel : BaseViewModel
         IsPrivacyMode = !IsPrivacyMode;
     }
 
+    [RelayCommand]
+    public async Task ShowSettingsDialog()
+    {
+        var loc = Localizer.Get();
+        try
+        {
+            Logger.Information("Showing PortfolioSettings Dialog");
+            var dialog = new PortfolioSettingsDialog(_preferencesService)
+            {
+                XamlRoot = AssetsView.Current.XamlRoot
+            };
+            var result = await App.ShowContentDialogAsync(dialog);
 
+            if (result == ContentDialogResult.Primary)
+            {
+                // Handle the result if needed  
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to show PortfolioSettings Dialog");
+            await ShowMessageDialog(
+                loc.GetLocalizedString("Messages_PortfolioSettingsDialogFailed_Title"),
+                ex.Message,
+                loc.GetLocalizedString("Common_CloseButton"));
+        }
+    }
 
 }
 

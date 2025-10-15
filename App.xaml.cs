@@ -1,39 +1,23 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Infrastructure;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Initializers;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
-using System.IO.Compression;
-using System.Linq;
-using System.Collections.Generic;
-using LanguageExt;
-using System.Net.Http;
-
-using WinUI3Localizer;
-using Microsoft.UI.Xaml;
+using System;
 using System.Diagnostics;
-using Microsoft.UI.Xaml.Controls;
-using CommunityToolkit.WinUI;
-using Newtonsoft.Json;
-using CommunityToolkit.Mvvm.Messaging;
+using System.IO;
+using System.Reflection;
 using System.Threading;
-using System.ServiceProcess;
-using Windows.UI.Popups;
-using Microsoft.Win32.TaskScheduler;
+using System.Threading.Tasks;
+using WinUI3Localizer;
 using Task = System.Threading.Tasks.Task;
-
-//using Microsoft.UI.Xaml.Markup;
-//using Microsoft.UI.Xaml;
 
 namespace CryptoPortfolioTracker;
 
@@ -58,6 +42,8 @@ public partial class App : Application
 
     private static TaskCompletionSource<bool>? dialogCompletionSource; // = new TaskCompletionSource<bool>();
     public static Task DialogCompletionTask => dialogCompletionSource?.Task ?? Task.CompletedTask;
+    private static string AuthStateFile => Path.Combine(AppDataPath, "authstate.json");
+    private static readonly byte[] keyBytes = { 77, 121, 83, 117, 112, 101, 114, 83, 101, 99, 114, 101, 116, 75, 101, 121, 49, 50, 51 };
 
     //public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version_onedrive.txt";
     public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
@@ -65,6 +51,7 @@ public partial class App : Application
     public const string ApiPath = "https://api.coingecko.com/api/v3/";
     public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
     public const string DefaultPortfolioGuid = "f52ee1a8-ea8d-4f21-849c-6e6429f88256";
+    public const string DefaultDuressPortfolioGuid = "08c1ac97-27e0-4922-93da-320c8a5e08ba";
 
     public const string DbName = "sqlCPT.db";
     public const string PrefFileName = "prefs.xml";
@@ -81,6 +68,7 @@ public partial class App : Application
     private const string TriggerTime = "02:00"; // 2 AM daily
     public const string ScheduledTaskName = "CryptoPortfolioTracker MarketCharts Update Task";
 
+    public static bool IsDuressMode { get; set; } = false;
 
     public App()
     {
@@ -94,248 +82,59 @@ public partial class App : Application
 
     }
 
-    /// <summary>
-    /// Invoked when the application is launched.
-    /// </summary>
-    /// <param name="args">Details about the launch request and process.</param>
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         Splash = new SplashScreen();
         Splash.Activate();
         await Task.Delay(1000);
 
-        // Create or open the mutex
-        _mutex = new Mutex(false, MutexName, out bool createdNew);
+        if (!await EnsureSingleInstanceAsync()) return;
+        PreferencesService.LoadUserPreferencesFromXml();
+        InitializeLogger();
+        await InitializeLocalizer();
 
-        // Check if a new mutex was created
-        if (!createdNew && !AdminCheck.IsRunAsAdmin())
+        var authService = new AuthenticationService(PreferencesService, keyBytes);
+        // ******* var code = await authService.GenerateResetCodeAsync("4fc3cd2e-4114-4683-88ab-bd7c57427649");
+        bool authenticated = await authService.AuthenticateUserAsync(Splash);
+        if (!authenticated)
         {
-            // Another instance is already running
-            await ShowErrorMessage("Another instance of the application is already running.");
-            _mutex.Close();
-            _mutex = null;
-
-            // Exit the current application
             Application.Current.Exit();
             return;
         }
 
-        PreferencesService.LoadUserPreferencesFromXml();
+        
+        var scheduledTaskService = new ScheduledTaskService(
+            ScheduledTaskName, 
+            ScheduledTaskExe, 
+            TriggerTime, 
+            "Daily price update for the Market Charts", 
+            key => Localizer?.GetLocalizedString(key) ?? key
+        );
+        await scheduledTaskService.SetupScheduledTaskAsync(Splash);
 
+        await App.Container.GetService<PortfolioService>().InitializeAsync();
 
+        var iconCacheService = new IconCacheService(App.IconsFolder, App.Container.GetService<PortfolioService>(), Logger);
+        await iconCacheService.CacheLibraryIconsAsync();
 
-        AddNewTeachingTips();
-
-        InitializeLogger();
-        await InitializeLocalizer();
-        await SetupScheduledTask();
-
-        await InitializePortfolioService();
-
-        CacheLibraryIconsAsync();
         Window = Container.GetService<MainWindow>();
-        if (Window != null)
-        {
-            Window.Activate();
-        }
-        else
-        {
-            Logger?.Error("Failed to retrieve MainWindow from the service container.");
-        }
+        Window?.Activate();
+
     }
 
-    private async Task SetupScheduledTask()
+    private async Task<bool> EnsureSingleInstanceAsync()
     {
-        var registered = await IsTaskRegistered(ScheduledTaskName);
-        if (!registered)
+        _mutex = new Mutex(false, MutexName, out bool createdNew);
+
+        if (!createdNew && !AdminCheck.IsRunAsAdmin())
         {
-            if (!AdminCheck.IsRunAsAdmin())
-            {
-                var dialog = new ContentDialog
-                {
-                    Title = Localizer.GetLocalizedString("Messages_ScheduledTask_Title"),
-                    Content = Localizer.GetLocalizedString("Messages_ScheduledTask_Explainer"),
-                    XamlRoot = Splash?.Content.XamlRoot,
-                    CloseButtonText = "OK"
-                };
-
-                await dialog.ShowAsync();
-
-                RestartAsAdmin();
-            }
-            else
-            {
-                RegisterScheduledTask(ScheduledTaskName, "Daily price update for the Market Charts", ScheduledTaskExe, TriggerTime);
-            }
-        }
-    }
-
-    private void RestartAsAdmin()
-    {
-        var exeName = Process.GetCurrentProcess().MainModule.FileName;
-        var startInfo = new ProcessStartInfo(exeName)
-        {
-            UseShellExecute = true,
-            Verb = "runas"
-        };
-
-        try
-        {
-            Process.Start(startInfo);
+            await ShowErrorMessage("Another instance of the application is already running.");
+            _mutex.Close();
+            _mutex = null;
             Application.Current.Exit();
-        }
-        catch (Exception ex)
-        {
-            var dialog = new ContentDialog
-            {
-                Title = "Error",
-                Content = $"Failed to restart application as administrator: {ex.Message}",
-                CloseButtonText = "OK"
-            };
-
-            dialog.ShowAsync();
-        }
-    }
-
-    private async Task<bool> IsTaskRegistered(string taskName)
-    {
-        using (TaskService ts = new TaskService())
-        {
-            TaskFolder folder = ts.GetFolder(@"\");
-            var task = folder.Tasks.Where(t => t.Name == taskName).FirstOrDefault();
-
-            return (task != null);
-        }
-    }
-
-    private void RegisterScheduledTask(string taskName, string taskDescription, string exePath, string triggerTime)
-    {
-        using (TaskService ts = new TaskService())
-        {
-            TaskDefinition td = ts.NewTask();
-            td.RegistrationInfo.Description = taskDescription;
-
-            td.Principal.LogonType = TaskLogonType.InteractiveToken;
-            td.Principal.UserId = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-
-            //td.Principal.LogonType = TaskLogonType.ServiceAccount;
-            //td.Principal.UserId = "SYSTEM";
-
-            td.Principal.RunLevel = TaskRunLevel.Highest;
-
-            RepetitionPattern repetition = new RepetitionPattern(TimeSpan.FromHours(1), TimeSpan.FromHours(20));
-            DailyTrigger dailyTrigger = new DailyTrigger { Repetition = repetition, StartBoundary = DateTime.Today.AddHours(3) /* Adjust time as needed */ };
-            td.Triggers.Add(dailyTrigger);
-
-            td.Actions.Add(new ExecAction(exePath, null, null));
-
-           // td.Settings.StartWhenAvailable = true;
-            td.Settings.DisallowStartIfOnBatteries = false;
-            td.Settings.StopIfGoingOnBatteries = false;
-            td.Settings.RunOnlyIfIdle = false;
-            td.Settings.IdleSettings.StopOnIdleEnd = false;
-
-            ts.RootFolder.RegisterTaskDefinition(taskName, td);
-        }
-    }
-
-    private static async void CacheLibraryIconsAsync()
-    {
-        await CacheLibraryIcons();
-    }
-    private static async Task CacheLibraryIcons()
-    {
-        var iconsFolderPath = Path.Combine(AppDataPath, IconsFolder);
-        if (Directory.Exists(iconsFolderPath))
-        {
-            foreach (var file in Directory.GetFiles(iconsFolderPath))
-            {
-                File.Delete(file);
-            }
-        }
-        else
-        {
-            Directory.CreateDirectory(iconsFolderPath);
-        }
-
-        var portfolioService = App.Container.GetService<PortfolioService>();
-
-        var context = portfolioService.Context;
-
-
-        var coins = context?.Coins
-            //.AsNoTracking()
-            .Where(coin => !string.IsNullOrEmpty(coin.ImageUri))
-            .ToList();
-
-        if (coins != null)
-        {
-            var tasks = coins.Select(async coin =>
-            {
-                var fileName = ExtractFileNameFromUri(coin.ImageUri);
-                if (fileName != "QuestionMarkBlue.png")
-                {
-                    var iconPath = Path.Combine(iconsFolderPath, fileName);
-                    if (!File.Exists(iconPath))
-                    {
-                        if (!await RetrieveCoinIconAsync(coin, iconPath))
-                        {
-                            Logger?.Warning("Failed to cache icon for {0}", coin.Name);
-                        }
-                    }
-                }
-
-            });
-
-            await Task.WhenAll(tasks);
-        }
-    }
-
-    private async static Task<bool> RetrieveCoinIconAsync(Coin? coin, string iconPath)
-    {
-        using var httpClient = new HttpClient();
-        try
-        {
-            var response = await httpClient.GetAsync(coin?.ImageUri);
-            if (!response.IsSuccessStatusCode)
-            {
-                return false;
-            }
-
-            await using var fs = new FileStream(iconPath, FileMode.Create);
-            await response.Content.CopyToAsync(fs);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Logger?.Error(ex, "Failed to retrieve coin icon for {0}", coin?.Name);
             return false;
         }
-    }
-
-    private static string ExtractFileNameFromUri(string uri)
-    {
-        var uriWithoutQuery = uri.Split('?')[0];
-        return Path.GetFileName(uriWithoutQuery);
-    }
-
-    private static void AddNewTeachingTips()
-    {
-        var tips = new List<TeachingTipCPT>
-        {
-            //*** version 1.2.7
-            new() { Name = "TeachingTipNarrLibr", IsShown = false },
-            new() { Name = "TeachingTipNarrDash", IsShown = false },
-            new() { Name = "TeachingTipNarrNarr", IsShown = false },
-            new() { Name = "TeachingTipPortDash", IsShown = false },
-            new() { Name = "TeachingTipNarrNavi", IsShown = false },
-
-            //*** version 1.2.9
-            new() { Name = "TeachingTipRsiHeat", IsShown = false },
-
-        };
-
-        PreferencesService.AddTeachingTipsIfNotExist(tips);
+        return true;
     }
 
     private async static Task InitializeLocalizer()
@@ -358,13 +157,6 @@ public partial class App : Application
         {
             Logger?.Error(ex, "Failed to set language.");
         }
-    }
-
-
-    private static async Task InitializePortfolioService()
-    {
-        var contextService = App.Container.GetService<PortfolioService>();
-        await contextService.InitializeAsync();
     }
 
 
@@ -529,7 +321,6 @@ public partial class App : Application
             await Task.Delay(1000);
             xamlRoot = tempWindow?.Content.XamlRoot;
         }
-        // Create a ContentDialog for the message box
         var dialog = new ContentDialog
         {
             Title = "Error",
@@ -540,18 +331,37 @@ public partial class App : Application
 
         await dialog.ShowAsync();
 
-        // Close the temporary window
         tempWindow?.Close();
     }
 
-    //public static async Task<ContentDialogResult> ShowContentDialogAsync(ContentDialog dialog)
-    //{
-    //    dialogCompletionSource.TrySetResult(false); // Reset the completion source
-    //    dialog.Opened += (s, e) => dialogCompletionSource = new TaskCompletionSource<bool>();
-    //    dialog.Closed += (s, e) => dialogCompletionSource.TrySetResult(true);
+    public static async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
+    {
+        Window? tempWindow = null;
+        var xamlRoot = MainPage.Current?.XamlRoot;
+        if (xamlRoot == null && Splash is not null)
+        {
+            xamlRoot = Splash.Content.XamlRoot;
+        }
+        else if (xamlRoot == null)
+        {
+            tempWindow = new SplashScreen();
+            tempWindow.Activate();
+            await Task.Delay(1000);
+            xamlRoot = tempWindow?.Content.XamlRoot;
+        }
+        var dialog = new ContentDialog()
+        {
+            Title = title,
+            XamlRoot = xamlRoot,
+            Content = message,
+            PrimaryButtonText = primaryButtonText,
+            CloseButtonText = closeButtonText,
+            RequestedTheme = PreferencesService.GetAppTheme(),
+        };
 
-    //    return await dialog.ShowAsync();
-    //}
+        var result = await App.ShowContentDialogAsync(dialog);
+        return result;
+    }
 
     public static async Task<ContentDialogResult> ShowContentDialogAsync(ContentDialog dialog)
     {
