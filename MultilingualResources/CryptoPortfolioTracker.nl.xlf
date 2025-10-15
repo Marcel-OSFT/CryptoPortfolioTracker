@@ -1826,6 +1826,10 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Authentication Required</source>
           <target state="translated">Authenticatie vereist</target>
         </trans-unit>
+        <trans-unit id="Messages_ScheduledTaskMod_Explainer" translate="yes" xml:space="preserve">
+          <source>The CryptoPortfolioTracker needs to modify the scheduled task that perform the daily update of the Market Charts. The application needs to run once as an administrator to modify the scheduled task. It will restart and prompt you to accept changes. </source>
+          <target state="new">The CryptoPortfolioTracker needs to modify the scheduled task that perform the daily update of the Market Charts. The application needs to run once as an administrator to modify the scheduled task. It will restart and prompt you to accept changes. </target>
+        </trans-unit>
       </group>
     </body>
   </file>
