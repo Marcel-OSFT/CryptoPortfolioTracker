@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Enums;
@@ -12,6 +8,14 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Serilog.Core;
+using System;
+using System.ComponentModel;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Security.Policy;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Security.Credentials;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
@@ -25,6 +29,28 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 
     private readonly IPreferencesService _preferencesService;
     //private UserPreferences userPref;
+
+    [ObservableProperty]
+    private string password;
+
+    [ObservableProperty]
+    private string duressPassword;
+
+    [ObservableProperty]
+    private string currentPassword;
+
+    [ObservableProperty]
+    private string newPassword;
+
+    [ObservableProperty]
+    private string currentDuressPassword;
+
+    [ObservableProperty]
+    private string newDuressPassword;
+
+    private const int SaltSize = 16; // 128 bit
+    private const int KeySize = 32;  // 256 bit
+    private const int Iterations = 100_000;
 
     [ObservableProperty]
     private ElementTheme appTheme;
@@ -43,37 +69,53 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     partial void OnFontSizeChanged(double value) => _preferencesService.SetFontSize((AppFontSize)value);
 
     [ObservableProperty]
-    private bool isHidingZeroBalances;
-    partial void OnIsHidingZeroBalancesChanged(bool value) => _preferencesService.SetHidingZeroBalances(value);
-
-    [ObservableProperty]
     private bool isCheckForUpdate;
     partial void OnIsCheckForUpdateChanged(bool value) => _preferencesService.SetCheckingForUpdate(value);
 
     [ObservableProperty]
     private bool isScrollBarsExpanded;
     partial void OnIsScrollBarsExpandedChanged(bool value) => _preferencesService.SetExpandingScrollBars(value);
-    
-    [ObservableProperty]
-    private bool isHidingCapitalFlow;
-    partial void OnIsHidingCapitalFlowChanged(bool value) => _preferencesService.SetHidingCapitalFlow(value);
-
-    [ObservableProperty]
-    private int withinRangePerc;
-    partial void OnWithinRangePercChanged(int value) => _preferencesService.SetWithinRangePerc(value);
-
-    [ObservableProperty]
-    private int closeToPerc;
-    partial void OnCloseToPercChanged(int value) => _preferencesService.SetCloseToPerc(value);
-    
-    [ObservableProperty]
-    private int maxPieCoins;
-    partial void OnMaxPieCoinsChanged(int value) => _preferencesService.SetMaxPieCoins(value);
 
     [ObservableProperty]
     private bool areValuesMasked;
     partial void OnAreValuesMaskedChanged(bool value) => _preferencesService.SetAreValuesMasked(value);
 
+    [ObservableProperty]
+    private bool isPasswordSet;
+
+    [ObservableProperty]
+    private bool isDuressPasswordSet;
+
+    /// <summary>
+    /// Checks if credentials exist in the Windows Credential Locker and sets IsPasswordSet/IsDuressPasswordSet accordingly.
+    /// Call this from InitializeFields or when loading the SettingsView.
+    /// </summary>
+    public void CheckPasswordCredentials()
+    {
+        var vault = new PasswordVault();
+
+        // Check main password
+        try
+        {
+            var credential = vault.Retrieve("CryptoPortfolioTracker", "Password");
+            IsPasswordSet = credential != null;
+        }
+        catch
+        {
+            IsPasswordSet = false;
+        }
+
+        // Check duress password
+        try
+        {
+            var credential = vault.Retrieve("CryptoPortfolioTracker", "DuressPassword");
+            IsDuressPasswordSet = credential != null;
+        }
+        catch
+        {
+            IsDuressPasswordSet = false;
+        }
+    }
 
     public SettingsViewModel(IPreferencesService preferencesService) : base(preferencesService)
     {
@@ -92,15 +134,12 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 
         NumberFormatIndex = numberFormat.NumberDecimalSeparator == "," ? 0 : 1;
         AppCultureIndex = appCulture[..2].ToLower() == "nl" ? 0 : 1;
-        IsHidingZeroBalances = preferences.GetHidingZeroBalances();
         IsCheckForUpdate = preferences.GetCheckingForUpdate();
         FontSize = (double)preferences.GetFontSize();
         IsScrollBarsExpanded = preferences.GetExpandingScrollBars();
         AppTheme = preferences.GetAppTheme();
-        IsHidingCapitalFlow = preferences.GetHidingCapitalFlow();
-        WithinRangePerc = preferences.GetWithinRangePerc();
-        CloseToPerc = preferences.GetCloseToPerc();
-        MaxPieCoins = preferences.GetMaxPieCoins();
+
+        CheckPasswordCredentials();
     }
 
     private void SetNumberSeparators(int index)
@@ -116,6 +155,68 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     {
         string culture = index == 0 ? "nl" : "en-US";
         _preferencesService.SetAppCultureLanguage(culture);
+    }
+
+    [RelayCommand]
+    private void SavePassword()
+    {
+        if (!string.IsNullOrWhiteSpace(Password))
+        {
+            var hash = HashPassword(Password);
+            var vault = new PasswordVault();
+            vault.Add(new PasswordCredential("CryptoPortfolioTracker", "Password", hash));
+            Password = string.Empty; // Clear after save
+        }
+    }
+
+    [RelayCommand]
+    private void SaveDuressPassword()
+    {
+        if (!string.IsNullOrWhiteSpace(DuressPassword))
+        {
+            var hash = HashPassword(DuressPassword);
+            var vault = new PasswordVault();
+            vault.Add(new PasswordCredential("CryptoPortfolioTracker", "DuressPassword", hash));
+            DuressPassword = string.Empty; // Clear after save
+        }
+    }
+    /// <summary>
+    /// Hashes a password using PBKDF2.
+    /// </summary>
+    private static string HashPassword(string password)
+    {
+        using var rng = RandomNumberGenerator.Create();
+        byte[] salt = new byte[SaltSize];
+        rng.GetBytes(salt);
+
+        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
+        byte[] key = pbkdf2.GetBytes(KeySize);
+
+        var hashBytes = new byte[SaltSize + KeySize];
+        Buffer.BlockCopy(salt, 0, hashBytes, 0, SaltSize);
+        Buffer.BlockCopy(key, 0, hashBytes, SaltSize, KeySize);
+
+        return Convert.ToBase64String(hashBytes);
+    }
+
+    public static bool VerifyPassword(string password, string? storedHash)
+    {
+        if (string.IsNullOrEmpty(storedHash))
+            return string.IsNullOrEmpty(password);
+
+        var hashBytes = Convert.FromBase64String(storedHash);
+        var salt = new byte[SaltSize];
+        Buffer.BlockCopy(hashBytes, 0, salt, 0, SaltSize);
+
+        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
+        byte[] key = pbkdf2.GetBytes(KeySize);
+
+        for (int i = 0; i < KeySize; i++)
+        {
+            if (hashBytes[i + SaltSize] != key[i])
+                return false;
+        }
+        return true;
     }
 
     [RelayCommand]
@@ -176,5 +277,118 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 loc.GetLocalizedString("Common_OkButton"));
         }
     }
+
+    [RelayCommand]
+    private async Task ChangePassword()
+    {
+        var vault = new PasswordVault();
+        var loc = Localizer.Get();
+
+        if (!IsPasswordSet)
+        {
+            // No password set yet, allow setting new password directly
+            if (string.IsNullOrWhiteSpace(NewPassword))
+            {
+                await ShowMessageDialog(
+                    loc.GetLocalizedString("Messages_Password_New_Required_Title"),
+                    loc.GetLocalizedString("Messages_Password_New_Required_Msg"),
+                    loc.GetLocalizedString("Common_OkButton"));
+                return;
+            }
+
+            var newHash = HashPassword(NewPassword);
+            vault.Add(new PasswordCredential("CryptoPortfolioTracker", "Password", newHash));
+            IsPasswordSet = true;
+            await ShowMessageDialog(
+                loc.GetLocalizedString("Messages_Password_Set_Title"),
+                loc.GetLocalizedString("Messages_Password_Set_Msg"),
+                loc.GetLocalizedString("Common_OkButton"));
+        }
+        else
+        {
+            // Password exists, require current password
+            if (string.IsNullOrWhiteSpace(CurrentPassword) || string.IsNullOrWhiteSpace(NewPassword))
+                return;
+            var credential = vault.Retrieve("CryptoPortfolioTracker", "Password");
+            string storedHash = credential.Password;
+            if (VerifyPassword(CurrentPassword, storedHash))
+            {
+                var newHash = HashPassword(NewPassword);
+                vault.Remove(credential);
+                vault.Add(new PasswordCredential("CryptoPortfolioTracker", "Password", newHash));
+                await ShowMessageDialog(
+                    loc.GetLocalizedString("Messages_Password_Changed_Title"),
+                    loc.GetLocalizedString("Messages_Password_Changed_Msg"),
+                    loc.GetLocalizedString("Common_OkButton"));
+            }
+            else
+            {
+                await ShowMessageDialog(
+                    loc.GetLocalizedString("Messages_Password_Incorrect_Title"),
+                    loc.GetLocalizedString("Messages_Password_Incorrect_Msg"),
+                    loc.GetLocalizedString("Common_OkButton"));
+            }
+        }
+
+        CurrentPassword = string.Empty;
+        NewPassword = string.Empty;
+    }
+
+    [RelayCommand]
+    private async Task ChangeDuressPassword()
+    {
+        var loc = Localizer.Get();
+        var vault = new PasswordVault();
+        if (!IsDuressPasswordSet)
+        {
+            // No password set yet, allow setting new password directly
+            if (string.IsNullOrWhiteSpace(NewDuressPassword))
+            {
+                await ShowMessageDialog(
+                    loc.GetLocalizedString("Messages_duressPassword_New_Required_Title"),
+                    loc.GetLocalizedString("Messages_duressPassword_New_Required_Msg"),
+                    loc.GetLocalizedString("Common_OkButton"));
+                return;
+            }
+
+            var newHash = HashPassword(NewDuressPassword);
+            vault.Add(new PasswordCredential("CryptoPortfolioTracker", "DuressPassword", newHash));
+            IsDuressPasswordSet = true;
+            await ShowMessageDialog(
+                loc.GetLocalizedString("Messages_duressPassword_Set_Title"),
+                loc.GetLocalizedString("Messages_duressPassword_Set_Msg"),
+                loc.GetLocalizedString("Common_OkButton"));
+        }
+        else
+        {
+            // Password exists, require current password
+            if (string.IsNullOrWhiteSpace(CurrentDuressPassword) || string.IsNullOrWhiteSpace(NewDuressPassword))
+                return;
+            var credential = vault.Retrieve("CryptoPortfolioTracker", "DuressPassword");
+            string storedHash = credential.Password;
+            if (VerifyPassword(CurrentDuressPassword, storedHash))
+            {
+                var newHash = HashPassword(NewDuressPassword);
+                vault.Remove(credential);
+                vault.Add(new PasswordCredential("CryptoPortfolioTracker", "DuressPassword", newHash));
+                await ShowMessageDialog(
+                    loc.GetLocalizedString("Messages_duressPassword_Changed_Title"),
+                    loc.GetLocalizedString("Messages_duressPassword_Changed_Msg"),
+                    loc.GetLocalizedString("Common_OkButton"));
+            }
+            else
+            {
+                await ShowMessageDialog(
+                    loc.GetLocalizedString("Messages_duressPassword_Incorrect_Title"),
+                    loc.GetLocalizedString("Messages_duressPassword_Incorrect_Msg"),
+                    loc.GetLocalizedString("Common_OkButton"));
+            }
+        }
+
+        CurrentDuressPassword = string.Empty;
+        NewDuressPassword = string.Empty;
+    }
+
+    
 }
 

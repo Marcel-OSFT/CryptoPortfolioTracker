@@ -1,25 +1,25 @@
-﻿
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using CryptoPortfolioTracker.Enums;
+using CryptoPortfolioTracker.Helpers;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Helpers;
+using CryptoPortfolioTracker.ViewModels;
+using LanguageExt;
+using LanguageExt.ClassInstances.Const;
+using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text.Json;
-using LanguageExt.Common;
-using LanguageExt;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.ViewModels;
-using System.Collections.ObjectModel;
-using Microsoft.Extensions.DependencyInjection;
-using CommunityToolkit.Mvvm.Messaging;
-using CryptoPortfolioTracker.Enums;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Services
 {
@@ -63,13 +63,23 @@ namespace CryptoPortfolioTracker.Services
         /// </summary>
         public async Task InitializeAsync()
         {
-            await GetPortfolios();
-            IsInitialPortfolioLoaded = await LoadInitialPortfolio();
-
+            if (!App.IsDuressMode)
+            {
+                await GetPortfolios();
+                IsInitialPortfolioLoaded = await LoadInitialPortfolio();
+            }
+            else
+            {
+                Portfolios = new ObservableCollection<Portfolio>();
+                IsInitialPortfolioLoaded = await LoadInitialPortfolio();
+            }
             _graphUpdateService = App.Container.GetService<IGraphUpdateService>();
            
             _priceUpdateService = App.Container.GetService<IPriceUpdateService>();
         }
+
+        
+
 
         public async Task<Result<bool>> SwitchPortfolio(Portfolio portfolio)
         {
@@ -109,7 +119,15 @@ namespace CryptoPortfolioTracker.Services
         {
             try
             {
-                var portfolio = _preferenceService.GetLastPortfolio() ?? Portfolios.FirstOrDefault();
+                var portfolio = new Portfolio();    
+                if (!App.IsDuressMode)
+                {
+                    portfolio = _preferenceService.GetLastPortfolio() ?? Portfolios.FirstOrDefault();
+                }
+                else
+                {
+                    portfolio = await GetDuressPortfolio();
+                }
                 if (portfolio == null)
                 {
                     Logger?.Error("No portfolio found to load.");
@@ -135,6 +153,37 @@ namespace CryptoPortfolioTracker.Services
             }
         }
 
+        public async Task<Portfolio> GetDuressPortfolio()
+        {
+            var duressPortfolio = new Portfolio
+            {
+                Name = "Default Portfolio",
+                Signature = App.DefaultDuressPortfolioGuid
+            };
+            try
+            {
+                // Build the expected duress portfolio path
+                var duressPath = Path.Combine(App.PortfoliosPath, App.DefaultDuressPortfolioGuid);
+
+                // Check if the directory exists (i.e., the duress portfolio exists on disk)
+                if (!Directory.Exists(duressPath))
+                { 
+                    _ = await AddDuressPortfolio();
+                }
+                return duressPortfolio;
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error(ex, "Failed to get or create duress portfolio.");
+                // Return a default Portfolio object in case of error
+                return duressPortfolio;
+            }
+            finally
+            {
+                Portfolios.Add(duressPortfolio);
+            }
+        }
+
         private async Task<Result<bool>> ConnectPortfolioDatabase(Portfolio portfolio)
         {
             var previousContext = Context;
@@ -143,21 +192,21 @@ namespace CryptoPortfolioTracker.Services
                 var connectResult = Connect(portfolio);
                 if (connectResult.IsFaulted) return new Result<bool>(connectResult.Exception);
 
-                //var relativePath = Path.GetRelativePath(App.AppDataPath, Path.Combine(App.PortfoliosPath, portfolio.Signature, App.DbName));
-                //Context = _contextFactory.Create($"Data Source=|DataDirectory|{relativePath}");
-                //await CheckDatabase(portfolio.Signature);
                 CurrentPortfolio = Portfolios.Where(x => x.Signature == portfolio.Signature).FirstOrDefault();
-
-                _preferenceService.SetLastPortfolio(CurrentPortfolio);
-                _messenger.Send(new PortfolioConnectionChangedMessage());
-
-
-                string portfoliosFile = Path.Combine(App.PortfoliosPath, App.PortfoliosFileName);
-                await SavePortfoliosAsync(portfoliosFile, async stream =>
+                if (!App.IsDuressMode)
                 {
-                    await JsonSerializer.SerializeAsync(stream, Portfolios);
-                    Logger.Information("Portfolios data serialized successfully. {0} portfolios)", Portfolios?.Count);
-                });
+                    _preferenceService.SetLastPortfolio(CurrentPortfolio);
+                    _messenger.Send(new PortfolioConnectionChangedMessage());
+
+
+                    string portfoliosFile = Path.Combine(App.PortfoliosPath, App.PortfoliosFileName);
+                    await SavePortfoliosAsync(portfoliosFile, async stream =>
+                    {
+                        await JsonSerializer.SerializeAsync(stream, Portfolios);
+                        Logger.Information("Portfolios data serialized successfully. {0} portfolios)", Portfolios?.Count);
+                    });
+                }
+
             }
             catch (Exception ex)
             {
@@ -667,13 +716,6 @@ namespace CryptoPortfolioTracker.Services
                         OnPropertyChanged("CurrentPortfolio");
                         _preferenceService.SetLastPortfolio(CurrentPortfolio);
                     }
-
-                    ////check if the name of the current portfolio was changed
-                    //if (CurrentPortfolio.Name == oldPortfolio.Name)
-                    //{
-                    //    CurrentPortfolio.Name = newPortfolio.Name;
-                    //    _preferenceService.SetLastPortfolio(CurrentPortfolio);
-                    //}
                 }
                 return true;
             }
@@ -701,12 +743,6 @@ namespace CryptoPortfolioTracker.Services
 
                     Portfolios.Add(portfolio);
                     await SavePortfoliosToJson();
-
-                    //// Notify the UI that the collection has changed
-                    //var index = Portfolios.IndexOf(portfolio);
-                    //Portfolios.RemoveAt(index);
-                    //Portfolios.Insert(index, portfolio);
-
                 }
                 return true;
             }
@@ -834,6 +870,29 @@ namespace CryptoPortfolioTracker.Services
                     ResumeUpdateServices();
                 }
                 return true;
+            }
+            catch (Exception ex)
+            {
+                return Error.New(ex);
+            }
+        }
+
+        public async Task<Either<Error, Portfolio>> AddDuressPortfolio()
+        {
+            try
+            {
+                var portfolio = new Portfolio
+                {
+                    Name = "Default Portfolio",
+                    Signature = App.DefaultDuressPortfolioGuid
+                };
+
+                var path = Path.Combine(App.PortfoliosPath, portfolio.Signature);
+                var backupPath = Path.Combine(path, App.BackupFolder);
+
+                MkOsft.DirectoryCreate(backupPath);
+                SavePidToJson(portfolio, true);
+                return portfolio;
             }
             catch (Exception ex)
             {

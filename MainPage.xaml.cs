@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
@@ -20,8 +21,8 @@ using WinUI3Localizer;
 
 
 namespace CryptoPortfolioTracker;
-
-public partial class MainPage : Page, INotifyPropertyChanged
+[ObservableObject]
+public partial class MainPage : Page //INotifyPropertyChanged
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static MainPage Current;
@@ -33,7 +34,8 @@ public partial class MainPage : Page, INotifyPropertyChanged
     private Type lastPageType;
     private NavigationViewItem lastSelectedNavigationItem;
     private ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
-    
+    [ObservableProperty] public partial Visibility NavigationVisibility { get; set; }
+    [ObservableProperty] public partial bool IsSettingsVisible { get; set; }
 
     public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IPreferencesService preferencesService)
     {
@@ -52,15 +54,26 @@ public partial class MainPage : Page, INotifyPropertyChanged
         _graphUpdateService.Start();
         _priceUpdateService.Start();
 
-        //navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().First();
         navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().Where(x => x.Name == "AssetsView").First();
         App.Splash?.Close();
         App.Splash = null;
 
-        if (_preferencesService.GetCheckingForUpdate())
+        // Hide items if duress mode is enabled
+        if (App.IsDuressMode)
         {
-            await CheckUpdateNow();
+            NavigationVisibility = Visibility.Collapsed;
+            IsSettingsVisible = false;
         }
+        else
+        {
+            NavigationVisibility = Visibility.Visible;
+            IsSettingsVisible = true;
+            if (_preferencesService.GetCheckingForUpdate())
+            {
+                await CheckUpdateNow();
+            }
+        }
+
     }
     private void SetupTeachingTips()
     {
@@ -182,38 +195,6 @@ public partial class MainPage : Page, INotifyPropertyChanged
         }
     }
 
-    //private void LoadView(Type pageType)
-    //{
-    //    if (pageType.Name == "CoinLibraryView" || pageType.Name == "PriceLevelsView")
-    //    {
-    //        _graphUpdateService.Pause();
-    //        _priceUpdateService.Pause();
-    //    }
-    //    else if (lastPageType is not null && (lastPageType.Name == "CoinLibraryView" || lastPageType.Name == "PriceLevelsView"))
-    //    {
-    //        if (_graphUpdateService != null)
-    //        {
-    //            _graphUpdateService.Resume();
-    //        }
-    //        else
-    //        {
-    //            _graphUpdateService = App.Container.GetService<IGraphUpdateService>();
-    //            _graphUpdateService?.Start();
-    //        }
-
-    //        if (_priceUpdateService != null)
-    //        {
-    //            _priceUpdateService.Resume();
-    //        }
-    //        else
-    //        {
-    //            _priceUpdateService = App.Container.GetService<IPriceUpdateService>();
-    //            _priceUpdateService?.Start();
-    //        }
-    //    }
-    //    lastPageType = pageType;
-    //    contentFrame.Content = App.Container.GetService(pageType);
-    //}
     private void LoadView(Type pageType)
     {
         if (pageType.Name == "CoinLibraryView")
@@ -326,11 +307,11 @@ public partial class MainPage : Page, INotifyPropertyChanged
     }
     
     
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+    //public event PropertyChangedEventHandler? PropertyChanged;
+    //protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    //{
+    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    //}
 
 
 }

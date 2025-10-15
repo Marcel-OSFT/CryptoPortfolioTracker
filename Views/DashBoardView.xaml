@@ -51,25 +51,34 @@
                 <TextBlock x:Name="txtDashboard" l:Uids.Uid="Dashboard_Title" Foreground="DarkGoldenrod" Margin="10,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
                 <TextBlock x:Name="txtPortfolio" Margin="10,0,0,0" Text="{Binding PortfolioName}"  Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" 
                            RelativePanel.Below="txtDashboard" />
-                 <helpers:CustomBtn x:Name="btnPrivacy" Padding="2,2,2,2" Margin="0,5,0,0" Width="25" Style="{StaticResource MK_ButtonStyle}" BorderThickness="0" Background="Transparent"
-                    Command="{Binding TogglePrivacyModeCommand}" RelativePanel.RightOf="txtDashboard" RelativePanel.AlignBottomWith="txtDashboard" 
+                 <helpers:CustomBtn x:Name="btnPrivacy" 
+                    Padding="2,2,2,2" 
+                    Margin="8,5,0,3" 
+                    Width="25"
+                    Height="25"
+                    Style="{StaticResource MK_ButtonStyle}" 
+                    BorderThickness="0" 
+                    Background="Transparent"
+                    Command="{Binding TogglePrivacyModeCommand}" 
+                    RelativePanel.RightOf="txtDashboard" RelativePanel.AlignBottomWith="txtDashboard" 
                     ToolTipService.ToolTip="Toggle privacy">
-                    <FontIcon Glyph="{Binding GlyphPrivacy}" FontSize="15" FontWeight="Normal" Width="20" />
+                    <FontIcon Glyph="{Binding GlyphPrivacy}" FontSize="18" FontWeight="Normal" Height="20" Width="20" />
                 </helpers:CustomBtn>
 
-                <!--<helpers:CustomBtn x:Name="btnSettings"
+                <helpers:CustomBtn x:Name="btnSettings"
                     Padding="2,2,2,2"
-                    Margin="5,5,0,0"
-                    Width="32"
-                    Height="32"
+                    Margin="5,5,0,3"
+                    Width="25"
+                    Height="25"
                     Style="{StaticResource MK_ButtonStyle}"
                     BorderThickness="0"
                     Background="Transparent"
                     Command="{Binding ShowSettingsDialogCommand}"
-                    RelativePanel.RightOf="btnPrivacy" RelativePanel.AlignBottomWith="btnPrivacy" >
-                    <FontIcon Glyph="&#xE713;" FontSize="18" FontWeight="Normal" Width="20" />
-                </helpers:CustomBtn>-->
-                
+                    RelativePanel.RightOf="btnPrivacy" RelativePanel.AlignBottomWith="btnPrivacy"
+                    ToolTipService.ToolTip="Dashboard Settings">
+                    <FontIcon Glyph="&#xE713;" FontSize="18" FontWeight="Normal" Height="20" Width="20" />
+                </helpers:CustomBtn>
+
             </RelativePanel>
 
             <controls:HeatMapControl  x:Name="heatMap" x:FieldModifier="public" Grid.Row="1" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Stretch" />

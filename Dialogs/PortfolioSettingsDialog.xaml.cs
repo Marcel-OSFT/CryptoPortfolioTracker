@@ -17,7 +17,7 @@ using WinUI3Localizer;
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public partial class DashboardSettingsDialog : ContentDialog
+public partial class PortfolioSettingsDialog : ContentDialog
 {
     private readonly ILocalizer loc = Localizer.Get();
     private readonly IPreferencesService _preferencesService;
@@ -26,22 +26,14 @@ public partial class DashboardSettingsDialog : ContentDialog
     [ObservableProperty] bool isCardEnabled;
 
     [ObservableProperty]
-    private bool isScrollBarsExpanded;
-    partial void OnIsScrollBarsExpandedChanged(bool value) => _preferencesService.SetExpandingScrollBars(value);
+    private bool isHidingZeroBalances;
+    partial void OnIsHidingZeroBalancesChanged(bool value) => _preferencesService.SetHidingZeroBalances(value);
 
     [ObservableProperty]
-    private int withinRangePerc;
-    partial void OnWithinRangePercChanged(int value) => _preferencesService.SetWithinRangePerc(value);
+    private bool isHidingCapitalFlow;
+    partial void OnIsHidingCapitalFlowChanged(bool value) => _preferencesService.SetHidingCapitalFlow(value);
 
-    [ObservableProperty]
-    private int closeToPerc;
-    partial void OnCloseToPercChanged(int value) => _preferencesService.SetCloseToPerc(value);
-
-    [ObservableProperty]
-    private int maxPieCoins;
-    partial void OnMaxPieCoinsChanged(int value) => _preferencesService.SetMaxPieCoins(value);
-
-    public DashboardSettingsDialog(IPreferencesService preferencesService)
+    public PortfolioSettingsDialog(IPreferencesService preferencesService)
     {
         _preferencesService = preferencesService;
         InitializeComponent();
@@ -57,7 +49,7 @@ public partial class DashboardSettingsDialog : ContentDialog
         var theme = _preferencesService.GetAppTheme();
         if (sender.ActualTheme != theme)
         {
-            sender.RequestedTheme = theme ;
+            sender.RequestedTheme = theme;
         }
     }
 
@@ -67,19 +59,19 @@ public partial class DashboardSettingsDialog : ContentDialog
         var numberFormat = preferences.GetNumberFormat();
         var appCulture = preferences.GetAppCultureLanguage();
 
-        WithinRangePerc = preferences.GetWithinRangePerc();
-        CloseToPerc = preferences.GetCloseToPerc();
-        MaxPieCoins = preferences.GetMaxPieCoins();
+        IsHidingZeroBalances = preferences.GetHidingZeroBalances();
+        IsHidingCapitalFlow = preferences.GetHidingCapitalFlow();
     }
 
     private void SetDialogTitleAndButtons()
     {
-        Title = loc.GetLocalizedString("DashboardSettingsDialog_Title");
+        Title = loc.GetLocalizedString("PortfolioSettingsDialog_Title");
         PrimaryButtonText = loc.GetLocalizedString("Common_CloseButton");
         IsPrimaryButtonEnabled = true;
     }
 
 
-    
+
 
 }
+

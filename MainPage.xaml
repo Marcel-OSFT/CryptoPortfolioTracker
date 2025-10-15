@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="CryptoPortfolioTracker.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -24,7 +23,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         
         <NavigationView x:Name="navigationView"
-                IsSettingsVisible="True"
+                IsSettingsVisible="{Binding IsSettingsVisible}"
                    
                 IsBackButtonVisible="Collapsed"
                 SelectionChanged="NavigationView_SelectionChanged"
@@ -80,15 +79,15 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                 <NavigationViewItemSeparator  Margin="0,5,0,5"/>
+                <NavigationViewItemSeparator  Margin="0,5,0,5" Visibility="{Binding NavigationVisibility}"/>
 
-                <NavigationViewItem l:Uids.Uid="Navigation_SwitchPortfolio" Tag="SwitchPortfolioView" Padding="0,0,-10,0">
+                <NavigationViewItem l:Uids.Uid="Navigation_SwitchPortfolio" Tag="SwitchPortfolioView" Padding="0,0,-10,0" Visibility="{Binding NavigationVisibility}">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8AB;" Margin="0,0,0,0"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem l:Uids.Uid="Navigation_Admin" Tag="AdminView" Padding="0,0,-10,0">
+                <NavigationViewItem l:Uids.Uid="Navigation_Admin" Tag="AdminView" Padding="0,0,-10,0"  Visibility="{Binding NavigationVisibility}">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE912;"/>
                     </NavigationViewItem.Icon>
@@ -98,7 +97,7 @@
 
             </NavigationView.MenuItems>
 
-            <NavigationView.FooterMenuItems>
+            <NavigationView.FooterMenuItems >
 
                 <NavigationViewItem l:Uids.Uid="Navigation_About" Tag="About" >
                     <NavigationViewItem.Icon>
