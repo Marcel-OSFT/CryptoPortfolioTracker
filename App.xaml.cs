@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Initializers;
 using CryptoPortfolioTracker.Services;
@@ -16,6 +17,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Storage;
 using WinUI3Localizer;
 using Task = System.Threading.Tasks.Task;
 
@@ -393,5 +395,7 @@ public partial class App : Application
 
         return result;
     }
+
+    
 
 }

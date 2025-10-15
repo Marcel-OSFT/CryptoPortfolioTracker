@@ -114,6 +114,11 @@ public class PreferencesService : IPreferencesService
         userPreferences.AreValuesMasked = value;
         SaveUserPreferences("AreValuesMasked", value);
     }
+    public void SetLastVersion(string value)
+    {
+        userPreferences.LastVersion = value;
+        SaveUserPreferences("LastVersion", value);
+    }
     public void SetLastPortfolio(Portfolio? value)
     {
         if (value == null)
@@ -123,7 +128,6 @@ public class PreferencesService : IPreferencesService
         userPreferences.LastPortfolio = value;
         SaveUserPreferences("LastPortfolio", value);
     }
-
     public NumberFormatInfo GetNumberFormat()
     {
         return userPreferences.NumberFormat;
@@ -182,6 +186,10 @@ public class PreferencesService : IPreferencesService
     public bool GetAreValesMasked()
     {
         return userPreferences.AreValuesMasked;
+    }
+    public string GetLastVersion()
+    {
+        return userPreferences.LastVersion;
     }
 
     public void LoadUserPreferencesFromXml()

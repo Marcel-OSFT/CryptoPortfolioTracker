@@ -46,5 +46,7 @@ namespace CryptoPortfolioTracker.Services
         Portfolio GetLastPortfolio();
         void SetLastPortfolio(Portfolio? value);
         void SaveUserPreferences(string propertyName, object value);
+        void SetLastVersion(string value);
+        string GetLastVersion();
     }
 }

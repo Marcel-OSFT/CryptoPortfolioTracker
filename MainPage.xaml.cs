@@ -1,10 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
@@ -16,6 +9,14 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Serilog.Core;
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Core;
 using WinUI3Localizer;
 
@@ -73,8 +74,25 @@ public partial class MainPage : Page //INotifyPropertyChanged
                 await CheckUpdateNow();
             }
         }
+        await ShowWhatsNewDialogIfNeeded();
 
     }
+
+    private async Task ShowWhatsNewDialogIfNeeded()
+    {
+        string currentVersion = App.ProductVersion ?? "";
+        string lastVersion = _preferencesService.GetLastVersion();
+
+        if (!string.Equals(currentVersion, lastVersion, StringComparison.OrdinalIgnoreCase))
+        {
+            var dialog = new WhatsNewDialog();
+            dialog.XamlRoot = MainPage.Current.XamlRoot;
+            await dialog.ShowAsync();
+
+            _preferencesService.SetLastVersion(currentVersion);
+        }
+    }
+
     private void SetupTeachingTips()
     {
         var teachingTipInitial = _preferencesService.GetTeachingTip("TeachingTipBlank");

@@ -88,6 +88,19 @@ public class UserPreferences
         }
     }
 
+    private string lastVersion = string.Empty;
+    public string LastVersion
+    {
+        get => lastVersion;
+        set
+        {
+            if (value != lastVersion)
+            {
+                lastVersion = value;
+            }
+        }
+    }
+
     private bool isScrollBarsExpanded;
     public bool IsScrollBarsExpanded
     {
