@@ -89,37 +89,7 @@
             <controls:ValueGainsControl x:Name="ValueGains" x:FieldModifier="public" Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Margin="10,10,0,0" HorizontalAlignment="Stretch" />
             <controls:PieChartControl x:Name="Narratives" x:FieldModifier="public" Grid.Row="3" Grid.Column="2" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
 
-
-            <muxc:TeachingTip x:Name="MyTeachingTipPort" l:Uids.Uid="Dashboard_TeachPortfolio" Target="{x:Bind Portfolio}"
-                PreferredPlacement="RightBottom" PlacementMargin="0" Background="DarkGoldenrod">
-                <muxc:TeachingTip.ActionButtonContent>
-                    <Button Content="Get it" Click="OnGetItClickedPort"/>
-                </muxc:TeachingTip.ActionButtonContent>
-                <muxc:TeachingTip.CloseButtonContent>
-                    <Button Content="Dismiss" Click="OnDismissClickedPort"/>
-                </muxc:TeachingTip.CloseButtonContent>
-
-            </muxc:TeachingTip>
-
-
-            <muxc:TeachingTip x:Name="MyTeachingTipNarr" l:Uids.Uid="Dashboard_TeachNarrative" Target="{x:Bind Narratives}"
-                PreferredPlacement="RightTop" PlacementMargin="0" Background="DarkGoldenrod">
-                <muxc:TeachingTip.ActionButtonContent>
-                    <Button Content="Get it" Click="OnGetItClickedNarr"/>
-                </muxc:TeachingTip.ActionButtonContent>
-            </muxc:TeachingTip>
-
-            
-
-
-
-
-
         </Grid>
     </Grid>
-
-
-
-
 
 </Page>

@@ -1484,4 +1484,13 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Messages_Authentication_Required" xml:space="preserve">
     <value>Authentication Required</value>
   </data>
+  <data name="Messages_WhatsNewFile_FailedMsg" xml:space="preserve">
+    <value>Unable to open the Online 'What's New' in your default browser.</value>
+  </data>
+  <data name="Messages_WhatsNewFile_FailedTitle" xml:space="preserve">
+    <value>Failed to open Online What's New.</value>
+  </data>
+  <data name="Navigation_WhatsNew.Content" xml:space="preserve">
+    <value>What's New</value>
+  </data>
 </root>

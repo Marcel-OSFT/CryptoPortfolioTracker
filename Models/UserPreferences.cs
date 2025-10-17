@@ -42,7 +42,6 @@ public class UserPreferences
         AreValuesMasked = false;
         HeatMapIndex = 0;
 
-        TeachingTips = new List<TeachingTipCPT>();
         LastPortfolio = null;
 
     }
@@ -247,11 +246,6 @@ public class UserPreferences
         }
     }
 
-    /// <summary>
-    /// Teaching Tips
-    /// 
-
-    public List<TeachingTipCPT> TeachingTips { get; set; } = new List<TeachingTipCPT>();
     public Portfolio? LastPortfolio { get; set; }
 
     private int heatMapIndex;

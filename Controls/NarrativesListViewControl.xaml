@@ -56,13 +56,6 @@
                 Group="{Binding SortGroup}"
                 Command="{Binding SortOnNameNarrCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"/>
-            <!--<CheckBox 
-                x:Name="chkOnlyAssets"
-                l:Uids.Uid="NarrativesLV_ShowOnlyAssets" x:FieldModifier="public" FontSize="12" FontStyle="Normal" 
-                Margin="15,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center"
-                IsChecked="{Binding _narrativeService.ShowOnlyAssets, Mode=TwoWay}" 
-                Command="{Binding ShowOnlyAssetsCommand}" 
-                CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"/>-->
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,5" VerticalAlignment="Bottom">
@@ -239,15 +232,5 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <muxc:TeachingTip x:Name="MyTeachingTipNarr" l:Uids.Uid="Narrative_TeachGeneral"
-               PreferredPlacement="Center" PlacementMargin="0" Background="DarkGoldenrod">
-            <muxc:TeachingTip.ActionButtonContent>
-                <Button Content="Show me" Click="OnGetItClickedNarr"/>
-            </muxc:TeachingTip.ActionButtonContent>
-            <muxc:TeachingTip.CloseButtonContent>
-                <Button Content="Dismiss" Click="OnDismissClickedNarr"/>
-            </muxc:TeachingTip.CloseButtonContent>
-
-        </muxc:TeachingTip>
     </Grid>
 </UserControl>

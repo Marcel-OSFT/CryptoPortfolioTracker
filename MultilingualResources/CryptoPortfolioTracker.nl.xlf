@@ -1828,7 +1828,19 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="Messages_ScheduledTaskMod_Explainer" translate="yes" xml:space="preserve">
           <source>The CryptoPortfolioTracker needs to modify the scheduled task that perform the daily update of the Market Charts. The application needs to run once as an administrator to modify the scheduled task. It will restart and prompt you to accept changes. </source>
-          <target state="new">The CryptoPortfolioTracker needs to modify the scheduled task that perform the daily update of the Market Charts. The application needs to run once as an administrator to modify the scheduled task. It will restart and prompt you to accept changes. </target>
+          <target state="translated">De CryptoPortfolioTracker moet de geplande taak voor de dagelijkse update van de marktgrafieken aanpassen. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te wijzigen. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</target>
+        </trans-unit>
+        <trans-unit id="Messages_WhatsNewFile_FailedMsg" translate="yes" xml:space="preserve">
+          <source>Unable to open the Online 'What's New' in your default browser.</source>
+          <target state="translated">De online 'Wat is er nieuw'-pagina kan niet worden geopend in uw standaardbrowser.</target>
+        </trans-unit>
+        <trans-unit id="Messages_WhatsNewFile_FailedTitle" translate="yes" xml:space="preserve">
+          <source>Failed to open Online What's New.</source>
+          <target state="translated">Het openen van de online 'Wat is Nieuw' is mislukt.</target>
+        </trans-unit>
+        <trans-unit id="Navigation_WhatsNew.Content" translate="yes" xml:space="preserve">
+          <source>What's New</source>
+          <target state="translated">Wat is er nieuw</target>
         </trans-unit>
       </group>
     </body>

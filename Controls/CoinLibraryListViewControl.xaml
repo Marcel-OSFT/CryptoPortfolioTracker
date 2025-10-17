@@ -184,14 +184,6 @@
                 />
         </StackPanel>
 
-        <muxc:TeachingTip x:Name="MyTeachingTipNarr" l:Uids.Uid="Library_TeachNarrative" Target="{x:Bind btnNarrative}"
-            PreferredPlacement="RightBottom"  Background="DarkGoldenrod">
-            <muxc:TeachingTip.ActionButtonContent>
-                <Button Content="Get it" Click="OnGetItClickedNarr"/>
-            </muxc:TeachingTip.ActionButtonContent>
-
-        </muxc:TeachingTip>
-
         <Rectangle Grid.Row="1" Grid.ColumnSpan="7" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
         <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="7" x:FieldModifier="public" ItemsSource="{Binding _libraryService.ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
                             IsItemClickEnabled="True" SelectionMode="None" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"

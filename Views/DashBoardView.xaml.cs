@@ -24,7 +24,6 @@ public partial class DashboardView : Page, IDisposable
         Portfolio.pieHeader.Tag = "Portfolio";
         Accounts.pieHeader.Tag = "Accounts";
         Narratives.pieHeader.Tag = "Narratives";
-        SetupTeachingTips();
     }
 
     private async void View_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -36,49 +35,7 @@ public partial class DashboardView : Page, IDisposable
     {
         //_viewModel.ViewLoading();
     }
-
-
-    private void SetupTeachingTips()
-    {
-        var teachingTipInitial = _viewModel._preferencesService.GetTeachingTip("TeachingTipBlank");
-        var teachingTipNarr = _viewModel._preferencesService.GetTeachingTip("TeachingTipNarrDash");
-
-        if (teachingTipInitial == null || !teachingTipInitial.IsShown)
-        {
-            _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipPortDash");
-            _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipNarrDash");
-
-        }
-        else if (teachingTipNarr != null && !teachingTipNarr.IsShown)
-        {
-
-            MyTeachingTipPort.IsOpen = true;
-        }
-    }
-
-    private void OnGetItClickedPort(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipPort.IsOpen = false;
-        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipPortDash");
-        MyTeachingTipNarr.IsOpen = true;
-        // Navigate to the new feature or provide additional information
-    }
-    private void OnGetItClickedNarr(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipNarr.IsOpen = false;
-        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipNarrDash");
-
-        // Navigate to the new feature or provide additional information
-    }
-
-    private void OnDismissClickedPort(object sender, RoutedEventArgs e)
-    {
-        MyTeachingTipPort.IsOpen = false;
-        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipPortDash");
-        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipNarrDash");
-    }
+    
     public void Dispose()
     {
         Dispose(true);

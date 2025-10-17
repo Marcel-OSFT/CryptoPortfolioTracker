@@ -21,7 +21,6 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
         InitializeComponent();
         _viewModel = DashboardViewModel.Current ?? throw new InvalidOperationException("DashboardViewModel.Current is null");
         DataContext = _viewModel;
-        SetupTeachingTips();
     }
 
     private void Control_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
@@ -37,49 +36,10 @@ public partial class HeatMapControl : UserControl, INotifyPropertyChanged
     {
         _viewModel.ChangeBubbleSize(e);
     }
-
-
-    private void SetupTeachingTips()
-    {
-        var teachingTipInitial = _viewModel._preferencesService.GetTeachingTip("TeachingTipBlank");
-        var teachingTipRsi = _viewModel._preferencesService.GetTeachingTip("TeachingTipRsiHeat");
-        var teachingTipEma = _viewModel._preferencesService.GetTeachingTip("TeachingTipEmaHeat");
-
-        if (teachingTipInitial == null || !teachingTipInitial.IsShown)
-        {
-            _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipRsiHeat");
-
-        }
-        else if (teachingTipRsi != null && !teachingTipRsi.IsShown)
-        {
-            MyTeachingTipRsi.IsOpen = true;
-        }
-        else if (teachingTipEma != null && !teachingTipEma.IsShown)
-        {
-            MyTeachingTipEma.IsOpen = true;
-        }
-    }
-
+   
     private void HeatMapType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         //_viewModel.ChangeHeatMapType(rbtHeatMap.SelectedIndex);
-    }
-
-    private void OnGetItClickedRsi(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipRsi.IsOpen = false;
-        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipRsiHeat");
-
-        // Navigate to the new feature or provide additional information
-    }
-    private void OnGetItClickedEma(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipEma.IsOpen = false;
-        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipEmaHeat");
-
-        // Navigate to the new feature or provide additional information
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
