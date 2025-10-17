@@ -62,11 +62,11 @@ public class AuthenticationService
             SaveAuthState(state);
         }
 
-        var prefs = _preferencesService.GetPreferences();
-        if (string.IsNullOrEmpty(prefs.UserID))
+        var userId = _preferencesService.GetUserID();
+        if (string.IsNullOrEmpty(userId))
         {
-            prefs.UserID = Guid.NewGuid().ToString();
-            _preferencesService.SaveUserPreferences("UserID", prefs.UserID);
+            userId = Guid.NewGuid().ToString();
+            _preferencesService.SetUserID(userId);
         }
 
         var _theme = _preferencesService.GetAppTheme();
@@ -88,7 +88,7 @@ public class AuthenticationService
                     $"?subject=App%20Access%20Help" +
                     $"&body=Hallo,%0A" +
                     $"Ik heb wat hulp nodig met mijn app.%0A%0A" +
-                    $"User ID: {prefs.UserID}%0A" +
+                    $"User ID: {userId}%0A" +
                     $"CPT Versie: {App.ProductVersion}%0A%0A" +
                     $"Geef mij een tijdelijke code zodat ik weer toegang krijg.%0A%0A" +
                     $"Met vriendelijke groet,%0AUw dankbare CPT gebruiker";
@@ -99,7 +99,7 @@ public class AuthenticationService
                     $"?subject=App%20Access%20Help" +
                     $"&body=Hello,%0A" +
                     $"I need some help with the app.%0A%0A" +
-                    $"User ID: {prefs.UserID}%0A" +
+                    $"User ID: {userId}%0A" +
                     $"CPT Version: {App.ProductVersion}%0A%0A" +
                     $"Please provide me with a temporary code to get access again.%0A%0A" +
                     $"Best regards,%0AYour grateful CPT user";
@@ -150,7 +150,7 @@ public class AuthenticationService
             // Check for reset code (8 hex chars)
             if (entered.Length >= 6 && entered.Substring(0,6) == "RESET-")
             {
-                if (await ValidateResetCodeAsync(prefs.UserID, entered.Substring(6)))
+                if (await ValidateResetCodeAsync(userId, entered.Substring(6)))
                 {
                     state.FailedAttempts = 0;
                     state.LockoutUntil = null;

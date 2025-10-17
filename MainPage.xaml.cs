@@ -85,7 +85,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
 
         if (!string.Equals(currentVersion, lastVersion, StringComparison.OrdinalIgnoreCase))
         {
-            var dialog = new WhatsNewDialog();
+            var dialog = new WhatsNewDialog(_preferencesService);
             dialog.XamlRoot = MainPage.Current.XamlRoot;
             await dialog.ShowAsync();
 

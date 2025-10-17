@@ -81,7 +81,6 @@ public partial class App : Application
         GetAppEnvironmentals();
         Container = RegisterServices();
         PreferencesService = Container.GetService<IPreferencesService>() ?? throw new InvalidOperationException("Failed to retrieve IPreferencesService from the service container.");
-
     }
 
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
@@ -94,6 +93,8 @@ public partial class App : Application
         PreferencesService.LoadUserPreferencesFromXml();
         InitializeLogger();
         await InitializeLocalizer();
+
+        await RegisterUser();
 
         var authService = new AuthenticationService(PreferencesService, keyBytes);
         // ******* var code = await authService.GenerateResetCodeAsync("4fc3cd2e-4114-4683-88ab-bd7c57427649");
@@ -122,7 +123,17 @@ public partial class App : Application
         Window?.Activate();
     }
 
+    private async Task RegisterUser()
+    {
+        var userId = PreferencesService.GetUserID();
+        if (string.IsNullOrEmpty(userId))
+        {
+            userId = Guid.NewGuid().ToString();
+            PreferencesService.SetUserID(userId);
+        }
 
+
+    }
 
     private async Task<bool> EnsureSingleInstanceAsync()
     {

@@ -48,5 +48,7 @@ namespace CryptoPortfolioTracker.Services
         void SaveUserPreferences(string propertyName, object value);
         void SetLastVersion(string value);
         string GetLastVersion();
+        void SetUserID(string value);
+        string GetUserID();
     }
 }

@@ -119,6 +119,11 @@ public class PreferencesService : IPreferencesService
         userPreferences.LastVersion = value;
         SaveUserPreferences("LastVersion", value);
     }
+    public void SetUserID(string value)
+    {
+        userPreferences.UserID = value;
+        SaveUserPreferences("UserID", value);
+    }
     public void SetLastPortfolio(Portfolio? value)
     {
         if (value == null)
@@ -191,6 +196,11 @@ public class PreferencesService : IPreferencesService
     {
         return userPreferences.LastVersion;
     }
+    public string GetUserID()
+    {
+        return userPreferences.UserID;
+    }
+
 
     public void LoadUserPreferencesFromXml()
     {
