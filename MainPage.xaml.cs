@@ -12,6 +12,7 @@ using Serilog.Core;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -260,11 +261,11 @@ public partial class MainPage : Page //INotifyPropertyChanged
     private async void DisplayWhatsNewFile()
     {
         var loc = Localizer.Get();
-        var fileName = "WhatsNew_NL.pdf";
+        var fileName = Path.Combine("docs","WhatsNew_NL.pdf");
 
         if (_preferencesService.GetAppCultureLanguage() == "en-US")
         {
-            fileName = "WhatsNew_EN.pdf";
+            fileName = Path.Combine("docs","WhatsNew_EN.pdf");
         }
         try
         {
