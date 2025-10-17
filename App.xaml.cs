@@ -14,6 +14,7 @@ using Serilog.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,8 +95,6 @@ public partial class App : Application
         InitializeLogger();
         await InitializeLocalizer();
 
-        await RegisterUser();
-
         var authService = new AuthenticationService(PreferencesService, keyBytes);
         // ******* var code = await authService.GenerateResetCodeAsync("4fc3cd2e-4114-4683-88ab-bd7c57427649");
         bool authenticated = await authService.AuthenticateUserAsync(Splash);
@@ -121,18 +120,6 @@ public partial class App : Application
 
         Window = Container.GetService<MainWindow>();
         Window?.Activate();
-    }
-
-    private async Task RegisterUser()
-    {
-        var userId = PreferencesService.GetUserID();
-        if (string.IsNullOrEmpty(userId))
-        {
-            userId = Guid.NewGuid().ToString();
-            PreferencesService.SetUserID(userId);
-        }
-
-
     }
 
     private async Task<bool> EnsureSingleInstanceAsync()
