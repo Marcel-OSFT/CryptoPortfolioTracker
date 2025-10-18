@@ -971,22 +971,22 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="settingsExpander_General.Header" xml:space="preserve">
     <value>General settings</value>
   </data>
-  <data name="settingsExpander_PriceLevels.Description" xml:space="preserve">
-    <value>Expand this to get acces to settings related to the 'Price Level' feature like WithinRangePerc and CloseToPerc.</value>
+  <data name="settingsExpander_Bubbles.Description" xml:space="preserve">
+    <value>Expand this to get acces to settings related to the 'Bubbles' graph like target ranges, RSI and MA.</value>
   </data>
-  <data name="settingsExpander_PriceLevels.Header" xml:space="preserve">
-    <value>Price Level settings</value>
+  <data name="settingsExpander_Bubbles.Header" xml:space="preserve">
+    <value>Bubble Chart settings</value>
   </data>
-  <data name="Settings_PriceLevels1.Description" xml:space="preserve">
+  <data name="Settings_Bubbles1.Description" xml:space="preserve">
     <value>This threshold is used to provide a visual confirmation of the Actual Price being within the range of it's target level.</value>
   </data>
-  <data name="Settings_PriceLevels1.Header" xml:space="preserve">
+  <data name="Settings_Bubbles1.Header" xml:space="preserve">
     <value>'Within Range' Threshold percentage</value>
   </data>
-  <data name="Settings_PriceLevels2.Description" xml:space="preserve">
+  <data name="Settings_Bubbles2.Description" xml:space="preserve">
     <value>This threshold is used to provide a visual confirmation of the Actual Price being within close range of it's target level.</value>
   </data>
-  <data name="Settings_PriceLevels2.Header" xml:space="preserve">
+  <data name="Settings_Bubbles2.Header" xml:space="preserve">
     <value>'Close To' Threshold percentage</value>
   </data>
   <data name="HeatMapView_Target_YAxisTitle" xml:space="preserve">
@@ -998,16 +998,16 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="GraphicView.Text" xml:space="preserve">
     <value>Portfolio Value</value>
   </data>
-  <data name="settingsExpander_DashBoard.Description" xml:space="preserve">
-    <value>Expand this to get access to settings related to the Dasboard View</value>
+  <data name="settingsExpander_Pie.Description" xml:space="preserve">
+    <value>Expand this to get access to settings related to the Pie Chart(s)</value>
   </data>
-  <data name="settingsExpander_DashBoard.Header" xml:space="preserve">
-    <value>Dashboard Settings</value>
+  <data name="settingsExpander_Pie.Header" xml:space="preserve">
+    <value>Pie Chart Settings</value>
   </data>
-  <data name="Settings_DashBoard1.Description" xml:space="preserve">
+  <data name="Settings_MaxPieCoins.Description" xml:space="preserve">
     <value>The number of coins visible in the Portfolio Pie. The remaining coins will be grouped into 'Others'</value>
   </data>
-  <data name="Settings_DashBoard1.Header" xml:space="preserve">
+  <data name="Settings_MaxPieCoins.Header" xml:space="preserve">
     <value>Maximum number of coins in the Portfolio Pie Chart</value>
   </data>
   <data name="Dashboard_Title.Text" xml:space="preserve">
@@ -1359,7 +1359,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>Distance</value>
   </data>
   <data name="HeatMapView_Ema_YAxisTitle" xml:space="preserve">
-    <value>Distance to 50 EMA [%]</value>
+    <value>Distance to MA [%]</value>
   </data>
   <data name="HeatMap_TeachEma.Title" xml:space="preserve">
     <value>New Feature: daily EMA bubbles</value>
@@ -1483,5 +1483,32 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   </data>
   <data name="Messages_Authentication_Required" xml:space="preserve">
     <value>Authentication Required</value>
+  </data>
+  <data name="Messages_WhatsNewFile_FailedMsg" xml:space="preserve">
+    <value>Unable to open the Online 'What's New' in your default browser.</value>
+  </data>
+  <data name="Messages_WhatsNewFile_FailedTitle" xml:space="preserve">
+    <value>Failed to open Online What's New.</value>
+  </data>
+  <data name="Navigation_WhatsNew.Content" xml:space="preserve">
+    <value>What's New?</value>
+  </data>
+  <data name="Settings_DashBoard_MaPeriod.Description" xml:space="preserve">
+    <value>Set the number of periods used to calculate the Moving Average (MA).</value>
+  </data>
+  <data name="Settings_DashBoard_MaPeriod.Header" xml:space="preserve">
+    <value>MA Period</value>
+  </data>
+  <data name="Settings_DashBoard_MaType.Description" xml:space="preserve">
+    <value>Choose the type of Moving Average (MA) to use for analysis.</value>
+  </data>
+  <data name="Settings_DashBoard_MaType.Header" xml:space="preserve">
+    <value>MA Type</value>
+  </data>
+  <data name="Settings_DashBoard_RsiPeriod.Description" xml:space="preserve">
+    <value>Set the number of periods used to calculate the Relative Strength Index (RSI).</value>
+  </data>
+  <data name="Settings_DashBoard_RsiPeriod.Header" xml:space="preserve">
+    <value>RSI Period</value>
   </data>
 </root>

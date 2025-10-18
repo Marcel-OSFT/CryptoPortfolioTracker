@@ -83,43 +83,13 @@
 
             <controls:HeatMapControl  x:Name="heatMap" x:FieldModifier="public" Grid.Row="1" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
             <controls:GraphControl  x:Name="GraphControl" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
-            <controls:PieChartControl x:Name="Portfolio" x:FieldModifier="public" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
-            <controls:PieChartControl x:Name="Accounts" x:FieldModifier="public" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
+            <controls:PieChartControl x:Name="PortfolioPie" x:FieldModifier="public" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
+            <controls:PieChartControl x:Name="AccountsPie" x:FieldModifier="public" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
             <controls:Top5Control x:Name="Top5" x:FieldModifier="public" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,10,0,0" HorizontalAlignment="Stretch" />
             <controls:ValueGainsControl x:Name="ValueGains" x:FieldModifier="public" Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Margin="10,10,0,0" HorizontalAlignment="Stretch" />
-            <controls:PieChartControl x:Name="Narratives" x:FieldModifier="public" Grid.Row="3" Grid.Column="2" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
-
-
-            <muxc:TeachingTip x:Name="MyTeachingTipPort" l:Uids.Uid="Dashboard_TeachPortfolio" Target="{x:Bind Portfolio}"
-                PreferredPlacement="RightBottom" PlacementMargin="0" Background="DarkGoldenrod">
-                <muxc:TeachingTip.ActionButtonContent>
-                    <Button Content="Get it" Click="OnGetItClickedPort"/>
-                </muxc:TeachingTip.ActionButtonContent>
-                <muxc:TeachingTip.CloseButtonContent>
-                    <Button Content="Dismiss" Click="OnDismissClickedPort"/>
-                </muxc:TeachingTip.CloseButtonContent>
-
-            </muxc:TeachingTip>
-
-
-            <muxc:TeachingTip x:Name="MyTeachingTipNarr" l:Uids.Uid="Dashboard_TeachNarrative" Target="{x:Bind Narratives}"
-                PreferredPlacement="RightTop" PlacementMargin="0" Background="DarkGoldenrod">
-                <muxc:TeachingTip.ActionButtonContent>
-                    <Button Content="Get it" Click="OnGetItClickedNarr"/>
-                </muxc:TeachingTip.ActionButtonContent>
-            </muxc:TeachingTip>
-
-            
-
-
-
-
+            <controls:PieChartControl x:Name="NarrativesPie" x:FieldModifier="public" Grid.Row="3" Grid.Column="2" Margin="10,0,0,0" HorizontalAlignment="Stretch" />
 
         </Grid>
     </Grid>
-
-
-
-
 
 </Page>

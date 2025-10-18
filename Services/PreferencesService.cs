@@ -45,6 +45,21 @@ public class PreferencesService : IPreferencesService
         userPreferences.HeatMapIndex = index;
         SaveUserPreferences("HeatMapIndex", index);
     }
+    public void SetRsiPeriod(int value)
+    {
+        userPreferences.RsiPeriod = value;
+        SaveUserPreferences("RsiPeriod", value);
+    }
+    public void SetMaPeriod(int value)
+    {
+        userPreferences.MaPeriod = value;
+        SaveUserPreferences("MaPeriod", value);
+    }
+    public void SetMaType(string value)
+    {
+        userPreferences.MaType = value;
+        SaveUserPreferences("MaType", value);
+    }
 
 
     public void SetAppCultureLanguage(string language)
@@ -114,6 +129,16 @@ public class PreferencesService : IPreferencesService
         userPreferences.AreValuesMasked = value;
         SaveUserPreferences("AreValuesMasked", value);
     }
+    public void SetLastVersion(string value)
+    {
+        userPreferences.LastVersion = value;
+        SaveUserPreferences("LastVersion", value);
+    }
+    public void SetUserID(string value)
+    {
+        userPreferences.UserID = value;
+        SaveUserPreferences("UserID", value);
+    }
     public void SetLastPortfolio(Portfolio? value)
     {
         if (value == null)
@@ -123,7 +148,6 @@ public class PreferencesService : IPreferencesService
         userPreferences.LastPortfolio = value;
         SaveUserPreferences("LastPortfolio", value);
     }
-
     public NumberFormatInfo GetNumberFormat()
     {
         return userPreferences.NumberFormat;
@@ -183,6 +207,27 @@ public class PreferencesService : IPreferencesService
     {
         return userPreferences.AreValuesMasked;
     }
+    public string GetLastVersion()
+    {
+        return userPreferences.LastVersion;
+    }
+    public string GetUserID()
+    {
+        return userPreferences.UserID;
+    }
+    public int GetRsiPeriod()
+    {
+        return userPreferences.RsiPeriod;
+    }
+    public int GetMaPeriod()
+    {
+        return userPreferences.MaPeriod;
+    }
+    public string GetMaType()
+    {
+        return userPreferences.MaType;
+    }
+
 
     public void LoadUserPreferencesFromXml()
     {
@@ -194,24 +239,9 @@ public class PreferencesService : IPreferencesService
                 using var myFileStream = new FileStream(App.AppDataPath + "\\prefs.xml", FileMode.Open);
 
                 userPreferences = (mySerializer.Deserialize(myFileStream) as UserPreferences) ?? new UserPreferences();
-
-                //*** Add the Initial TeachingTip and set IsShow = true.
-                //This situation can occur at existing users (so File exitst)  
-                var tip = userPreferences.TeachingTips.Find(x => x.Name == "TeachingTipBlank");
-                if (tip == null)
-                {
-                    var newTip = new TeachingTipCPT()
-                    {
-                        Name = "TeachingTipBlank",
-                        IsShown = true
-                    };
-                    userPreferences.TeachingTips.Add(newTip);
-                }
-
             }
         }
         catch { }
-        
     }
 
     public void SaveUserPreferences(string propertyName, object value)
@@ -234,33 +264,6 @@ public class PreferencesService : IPreferencesService
         Logger.Information("IsScrollBarsExpanded set to {0}", userPreferences.IsScrollBarsExpanded.ToString());
         Logger.Information("IsCheckForUpdate set to {0}", userPreferences.IsCheckForUpdate);
         Logger.Information("IsHidingCapitalFlow set to {0}", userPreferences.IsHidingCapitalFlow);
-    }
-
-    public void AddTeachingTipsIfNotExist(List<TeachingTipCPT> list)
-    {
-        foreach (var item in list)
-        {
-            var tip = userPreferences.TeachingTips.Find(x => x.Name == item.Name);
-            if (tip == null)
-            {
-                userPreferences.TeachingTips.Add(item);
-            }
-        }
-    }
-
-    public TeachingTipCPT? GetTeachingTip(string name)
-    {
-        return userPreferences.TeachingTips.Find(x => x.Name == name);
-    }
-
-    public void SetTeachingTipAsShown(string name)
-    {
-        var tip = userPreferences.TeachingTips.Find(x => x.Name == name);
-        if (tip != null)
-        {
-            tip.IsShown = true;
-            SaveUserPreferences("TeachingTips", userPreferences.TeachingTips);
-        }   
     }
 
     public Portfolio GetLastPortfolio()

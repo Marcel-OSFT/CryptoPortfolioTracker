@@ -13,7 +13,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-    <Version>1.3.8.1</Version>
+    <Version>1.4.0.0</Version>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
 	  <LangVersion>preview</LangVersion>
@@ -71,7 +71,6 @@
     <None Remove="Dialogs\AddNoteDialog.xaml" />
     <None Remove="Dialogs\AddPrereleaseCoinDialog.xaml" />
     <None Remove="Dialogs\AddPriceLevelsDialog.xaml" />
-    <None Remove="Dialogs\BlankWindow1.xaml" />
     <None Remove="Dialogs\PortfolioSettingsDialog.xaml" />
     <None Remove="Dialogs\TransactionDialog.xaml" />
     <None Remove="MK_Styles.xaml" />
@@ -200,7 +199,7 @@
     <Page Update="Dialogs\AddNoteDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Dialogs\BlankWindow1.xaml">
+    <Page Update="Dialogs\WhatsNewDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="MK_Styles.xaml">
@@ -220,7 +219,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Fonts\" />
-    <Folder Include="docs\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -376,6 +374,9 @@
     <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Dialogs\WhatsNewDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Dialogs\PortfolioSettingsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -9,15 +9,21 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:l="using:WinUI3Localizer"
     x:Name="Root"
-    
     Loaded="MainPage_Loaded"
-   
     mc:Ignorable="d">
 
     <Page.Resources>
             <x:Double x:Key="ContentDialogMaxWidth">1200</x:Double>
             <x:Double x:Key="ContentDialogMaxHeight">1200</x:Double>
-            
+        <!-- Compact style for footer navigation items only -->
+        <Style x:Key="FooterNavItemStyle" TargetType="NavigationViewItem">
+            <!-- smaller text -->
+            <Setter Property="FontSize" Value="12"/>
+            <!-- reduced padding to make items more compact -->
+            <Setter Property="Padding" Value="8,4,8,4"/>
+            <!-- smaller vertical gap between footer items -->
+            <Setter Property="Margin" Value="0,-8,0,-8"/>
+        </Style>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -99,21 +105,27 @@
 
             <NavigationView.FooterMenuItems >
 
-                <NavigationViewItem l:Uids.Uid="Navigation_About" Tag="About" >
+                <NavigationViewItem l:Uids.Uid="Navigation_About" Tag="About" Style="{StaticResource FooterNavItemStyle}" >
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA1F;"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA1F;" FontSize="14"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem l:Uids.Uid="Navigation_Help" Tag="Help" >
+                <NavigationViewItem l:Uids.Uid="Navigation_Help" Tag="Help" Style="{StaticResource FooterNavItemStyle}">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE897;"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE897;" FontSize="14"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                
+                <NavigationViewItem l:Uids.Uid="Navigation_WhatsNew" Tag="WhatsNew" Style="{StaticResource FooterNavItemStyle}">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE789;" FontSize="14"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem l:Uids.Uid="Navigation_Exit" Tag="Exit" >
+                <NavigationViewItem l:Uids.Uid="Navigation_Exit" Tag="Exit" Style="{StaticResource FooterNavItemStyle}">
                         <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF78A;"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF78A;" FontSize="14"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
 
@@ -122,43 +134,6 @@
             <Frame x:Name="contentFrame" Margin="0"/>
         </NavigationView>
 
-        <muxc:TeachingTip x:Name="MyTeachingTipBlank1" l:Uids.Uid="Navigation_TeachLibrary" Target="{x:Bind CoinLibraryView}"
-            PreferredPlacement="Left" PlacementMargin="-30" Background="DarkGoldenrod">
-            <muxc:TeachingTip.ActionButtonContent>
-                <Button Content="Get it" Click="OnGetItClickedBlank1"/>
-            </muxc:TeachingTip.ActionButtonContent>
-            <muxc:TeachingTip.CloseButtonContent>
-                <Button Content="Dismiss" Click="OnDismisslickedBlank1"/>
-            </muxc:TeachingTip.CloseButtonContent>
-        </muxc:TeachingTip>
-
-        <muxc:TeachingTip x:Name="MyTeachingTipBlank2" l:Uids.Uid="Navigation_TeachAccounts" Target="{x:Bind AccountsView}"
-            PreferredPlacement="Left" PlacementMargin="-30" Background="DarkGoldenrod">
-            <muxc:TeachingTip.ActionButtonContent>
-                <Button Content="Get it" Click="OnGetItClickedBlank2"/>
-            </muxc:TeachingTip.ActionButtonContent>
-            <muxc:TeachingTip.CloseButtonContent>
-                <Button Content="Dismiss" Click="OnDismisslickedBlank2"/>
-            </muxc:TeachingTip.CloseButtonContent>
-        </muxc:TeachingTip>
-
-        <muxc:TeachingTip x:Name="MyTeachingTipBlank3" l:Uids.Uid="Navigation_TeachAssets" Target="{x:Bind AssetsView}"
-            PreferredPlacement="Left" PlacementMargin="-30" Background="DarkGoldenrod">
-            <muxc:TeachingTip.ActionButtonContent>
-                <Button Content="Get it" Click="OnGetItClickedBlank3"/>
-            </muxc:TeachingTip.ActionButtonContent>
-        </muxc:TeachingTip>
-
-        <muxc:TeachingTip x:Name="MyTeachingTipNarr" l:Uids.Uid="Navigation_TeachNarrative" Target="{x:Bind NarrativeView}"
-                PreferredPlacement="Left" PlacementMargin="-30" Background="DarkGoldenrod">
-            <muxc:TeachingTip.ActionButtonContent>
-                <Button Content="Get it" Click="OnGetItClickedNarr"/>
-            </muxc:TeachingTip.ActionButtonContent>
-        </muxc:TeachingTip>
-
-
     </Grid>
-        
-   
 
 </Page>

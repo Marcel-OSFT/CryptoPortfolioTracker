@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Initializers;
 using CryptoPortfolioTracker.Services;
@@ -13,9 +14,11 @@ using Serilog.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Storage;
 using WinUI3Localizer;
 using Task = System.Threading.Tasks.Task;
 
@@ -79,7 +82,6 @@ public partial class App : Application
         GetAppEnvironmentals();
         Container = RegisterServices();
         PreferencesService = Container.GetService<IPreferencesService>() ?? throw new InvalidOperationException("Failed to retrieve IPreferencesService from the service container.");
-
     }
 
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
@@ -119,8 +121,6 @@ public partial class App : Application
         Window = Container.GetService<MainWindow>();
         Window?.Activate();
     }
-
-
 
     private async Task<bool> EnsureSingleInstanceAsync()
     {
@@ -393,5 +393,7 @@ public partial class App : Application
 
         return result;
     }
+
+    
 
 }

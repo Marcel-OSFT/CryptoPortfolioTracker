@@ -38,13 +38,20 @@ namespace CryptoPortfolioTracker.Services
         public int GetMaxPieCoins();
         void SetAreValuesMasked(bool value);
         bool GetAreValesMasked();
-        void AddTeachingTipsIfNotExist(List<TeachingTipCPT> list);
-        TeachingTipCPT? GetTeachingTip(string name);
-        void SetTeachingTipAsShown(string name);
         int GetHeatMapIndex();
         void SetHeatMapIndex(int index);
         Portfolio GetLastPortfolio();
         void SetLastPortfolio(Portfolio? value);
         void SaveUserPreferences(string propertyName, object value);
+        void SetLastVersion(string value);
+        string GetLastVersion();
+        void SetUserID(string value);
+        string GetUserID();
+        int GetRsiPeriod();
+        int GetMaPeriod();
+        string GetMaType();
+        void SetRsiPeriod(int value);
+        void SetMaPeriod(int value);
+        void SetMaType(string value);
     }
 }

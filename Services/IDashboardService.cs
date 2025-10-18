@@ -26,5 +26,7 @@ namespace CryptoPortfolioTracker.Services
         Portfolio GetPortfolio();
         Task CalculateIndicatorsAllCoins();
         Task EvaluatePriceLevels();
+        Task CalculateRsiAllCoins();
+        Task CalculateMaAllCoins();
     }
 }

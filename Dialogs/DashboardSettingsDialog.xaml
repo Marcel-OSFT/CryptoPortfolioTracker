@@ -46,15 +46,16 @@
                 <ScrollViewer HorizontalAlignment="Stretch" Margin="0" Padding="0" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}">
                     <StackPanel Spacing="4">
 
-                        <ct:SettingsExpander l:Uids.Uid="settingsExpander_PriceLevels" x:Name="settingsExpander_PriceLevels"
-                        VerticalAlignment="Top"
-                        HorizontalAlignment="Stretch"
-                        HeaderIcon="{ui:FontIcon Glyph=}"
-                        IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
-                        IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
+                        <ct:SettingsExpander l:Uids.Uid="settingsExpander_Bubbles" x:Name="settingsExpander_Bubbles"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Stretch"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xEC26;}"
+                            IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
+                            IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
                             <ct:SettingsExpander.Items>
-                                <ct:SettingsCard l:Uids.Uid="Settings_PriceLevels1" x:Name="SettingsPL1"
-                                HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                                
+                                <ct:SettingsCard l:Uids.Uid="Settings_Bubbles1" x:Name="SettingsPL1"
+                                HeaderIcon="{ui:FontIcon Glyph=&#xE7C1;}"
                                 IsEnabled="True">
                                     <StackPanel Orientation="Horizontal">
                                         <NumberBox x:Name="NbPerc" Value="{Binding WithinRangePerc, Mode=TwoWay}" Maximum="99" Minimum="{Binding CloseToPerc}" Margin="30,0,5,0" />
@@ -62,34 +63,60 @@
                                     </StackPanel>
                                 </ct:SettingsCard>
 
-                                <ct:SettingsCard l:Uids.Uid="Settings_PriceLevels2" x:Name="SettingsPL2"
-                                HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                                <!--<ct:SettingsCard l:Uids.Uid="Settings_Bubbles2" x:Name="SettingsPL2"
+                                HeaderIcon="{ui:FontIcon Glyph=&#xE7C1;}"
                                 IsEnabled="True">
                                     <StackPanel Orientation="Horizontal">
                                         <NumberBox Value="{Binding CloseToPerc, Mode=TwoWay}" Maximum="{Binding WithinRangePerc}" Minimum="1" Margin="30,0,5,0" />
                                         <TextBlock Text="%" VerticalAlignment="Center" />
                                     </StackPanel>
-                                </ct:SettingsCard>
-                            </ct:SettingsExpander.Items>
-                        </ct:SettingsExpander>
+                                </ct:SettingsCard>-->
 
-                        <ct:SettingsExpander l:Uids.Uid="settingsExpander_DashBoard" x:Name="settingsExpander_DashBoard"
-                        VerticalAlignment="Top"
-                        HorizontalAlignment="Stretch"
-                        HeaderIcon="{ui:FontIcon Glyph=}"
-                        IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
-                        IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
-                            <ct:SettingsExpander.Items>
-                                <ct:SettingsCard l:Uids.Uid="Settings_DashBoard1" x:Name="SettingsDB1"
-                                HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
-                                IsEnabled="True">
+                                <ct:SettingsCard l:Uids.Uid="Settings_DashBoard_RsiPeriod" x:Name="SettingsRsi"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xE81C;}"
+                                    IsEnabled="True">
                                     <StackPanel Orientation="Horizontal">
-                                        <NumberBox x:Name="NbMaxCoins" Value="{Binding MaxPieCoins, Mode=TwoWay}" Maximum="50" Minimum="2" Margin="30,0,5,0" />
-
+                                        <NumberBox x:Name="NbRsiPeriod" Value="{Binding RsiPeriod, Mode=TwoWay}" Maximum="200" Minimum="9" Margin="30,0,5,0" />
                                     </StackPanel>
                                 </ct:SettingsCard>
 
+                                <ct:SettingsCard l:Uids.Uid="Settings_DashBoard_MaType" Margin="0,0,0,0"
+                                   HeaderIcon="{ui:FontIcon Glyph=&#xE8AB;}"
+                                   IsEnabled="true">
+                                    <ComboBox x:Name="comboBoxMA"  SelectedIndex="{Binding MaTypeIndex, Mode=TwoWay}">
+                                        <ComboBoxItem Tag="SMA">SMA</ComboBoxItem>
+                                        <ComboBoxItem Tag="EMA">EMA</ComboBoxItem>
+                                    </ComboBox>
+                                </ct:SettingsCard>
 
+                                <ct:SettingsCard l:Uids.Uid="Settings_DashBoard_MaPeriod" x:Name="SettingsMa"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xE81C;}"
+                                    IsEnabled="True">
+                                    <StackPanel Orientation="Horizontal">
+                                        <NumberBox x:Name="NbMaPeriod" Value="{Binding MaPeriod, Mode=TwoWay}" Maximum="200" Minimum="9" Margin="30,0,5,0" />
+                                    </StackPanel>
+                                </ct:SettingsCard>
+
+                            </ct:SettingsExpander.Items>
+                        </ct:SettingsExpander>
+
+                        <ct:SettingsExpander l:Uids.Uid="settingsExpander_Pie" x:Name="settingsExpander_Pie"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Stretch"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xEB05;}"
+                            IsEnabled="{x:Bind IsCardEnabled, Mode=OneWay}"
+                            IsExpanded="{x:Bind IsCardExpanded, Mode=OneWay}">
+                            <ct:SettingsExpander.Items>
+
+                                <ct:SettingsCard l:Uids.Uid="Settings_MaxPieCoins" x:Name="SettingsDB1"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xE890;}"
+                                    IsEnabled="True">
+                                    <StackPanel Orientation="Horizontal">
+                                        <NumberBox x:Name="NbMaxCoins" Value="{Binding MaxPieCoins, Mode=TwoWay}" Maximum="50" Minimum="2" Margin="30,0,5,0" />
+                                    </StackPanel>
+                                </ct:SettingsCard>
+
+                                
                             </ct:SettingsExpander.Items>
                         </ct:SettingsExpander>
 

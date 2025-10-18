@@ -42,8 +42,10 @@ public class UserPreferences
         AreValuesMasked = false;
         HeatMapIndex = 0;
 
-        TeachingTips = new List<TeachingTipCPT>();
         LastPortfolio = null;
+        RsiPeriod = 14;
+        MaPeriod = 50;
+        MaType = "SMA";
 
     }
     public string? PasswordHash { get; set; }
@@ -84,6 +86,19 @@ public class UserPreferences
             if (value != userID)
             {
                 userID = value;
+            }
+        }
+    }
+
+    private string lastVersion = string.Empty;
+    public string LastVersion
+    {
+        get => lastVersion;
+        set
+        {
+            if (value != lastVersion)
+            {
+                lastVersion = value;
             }
         }
     }
@@ -192,6 +207,44 @@ public class UserPreferences
             }
         }
     }
+    private int rsiPeriod;
+    public int RsiPeriod
+    {
+        get => rsiPeriod;
+        set
+        {
+            if (value != rsiPeriod)
+            {
+                rsiPeriod = value;
+
+            }
+        }
+    }
+    private int maPeriod;
+    public int MaPeriod
+    {
+        get => maPeriod;
+        set
+        {
+            if (value != maPeriod)
+            {
+                maPeriod = value;
+
+            }
+        }
+    }private string maType;
+    public string MaType
+    {
+        get => maType;
+        set
+        {
+            if (value != maType)
+            {
+                maType = value;
+
+            }
+        }
+    }
 
     private int closeToPerc;
     public int CloseToPerc
@@ -234,11 +287,6 @@ public class UserPreferences
         }
     }
 
-    /// <summary>
-    /// Teaching Tips
-    /// 
-
-    public List<TeachingTipCPT> TeachingTips { get; set; } = new List<TeachingTipCPT>();
     public Portfolio? LastPortfolio { get; set; }
 
     private int heatMapIndex;

@@ -76,30 +76,13 @@ public partial class Coin : BaseModel
             Narrative = new(),
         };
 
-    //async partial void OnPriceChanged(double oldValue, double newValue)
-    //{
-    //    Rsi = await CalculateRsi();
-    //    Ema = await CalculateEma();
-    //    UpdatePriceLevelEma();
-    //    EvaluatePriceLevels(newValue);
-    //}
     async partial void OnPriceChanged(double oldValue, double newValue)
     {
         await CalculateRsi();
-        await CalculateEma();
+        await CalculateMa();
         
         EvaluatePriceLevels(newValue);
     }
-
-    //public async Task CalculateRsiAsync()
-    //{
-    //    Rsi = await CalculateRsi();
-    //}
-
-    //public async void CalculateEmaAsync()
-    //{
-    //    Ema = await CalculateEma();
-    //}
 
     private void UpdatePriceLevelEma()
     {
@@ -174,8 +157,9 @@ public partial class Coin : BaseModel
             prices.Add(Price);
 
             //*** RSI calculation
-            int period = 14;
-            if (prices == null || prices.Count < period + 1)
+            int period = App.PreferencesService.GetRsiPeriod(); //14;
+
+            if (period == 0 || prices == null || prices.Count < period + 1)
             {
                 Rsi = 0;
                 return;
@@ -263,22 +247,33 @@ public partial class Coin : BaseModel
     }
 
 
-    public async Task<double> CalculateEma()
+    public async Task<double> CalculateMa()
     {
         await GetClosingPrices();
 
         var prices = ClosingPrices.ToList();
         prices.Add(Price);
 
-        //*** EMA calculation
-        int period = 50;
+        //*** MA calculation
+        int period = App.PreferencesService.GetMaPeriod();  // 50;
+        string maType = App.PreferencesService.GetMaType(); // "EMA" or "SMA"
 
-        if (prices == null || prices.Count < period + 1)
+        if (period == 0 || prices == null || prices.Count < period)
         {
             Ema = 0;
             return 0;
         }
 
+        // If SMA requested, return the simple average of the most recent 'period' prices
+        if (string.Equals(maType, "SMA", StringComparison.OrdinalIgnoreCase))
+        {
+            double smaRecent = prices.TakeLast(period).Average();
+            Ema = smaRecent;
+            UpdatePriceLevelEma();
+            return smaRecent;
+        }
+
+        // Default: EMA calculation
         // Calculate the initial SMA (Simple Moving Average) for the first 'period' values
         double sma = prices.Take(period).Average();
 
@@ -288,7 +283,7 @@ public partial class Coin : BaseModel
         // Start EMA with the SMA
         double ema = sma;
 
-        // Calculate EMA for the rest of the prices
+        // Calculate EMA for the rest of the prices (if any)
         for (int i = period; i < prices.Count; i++)
         {
             ema = ((prices[i] - ema) * multiplier) + ema;

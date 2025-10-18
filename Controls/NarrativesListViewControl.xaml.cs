@@ -30,22 +30,6 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
         InitializeComponent();
         _viewModel = NarrativesViewModel.Current;
         DataContext = _viewModel;
-        SetupTeachingTips();
-    }
-
-    private void SetupTeachingTips()
-    {
-        var teachingTipInitial = _viewModel._preferencesService.GetTeachingTip("TeachingTipBlank");
-        var teachingTipNarr = _viewModel._preferencesService.GetTeachingTip("TeachingTipNarrNarr");
-
-        if (teachingTipInitial == null || !teachingTipInitial.IsShown)
-        {
-            _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipNarrNarr");
-        }
-        else if (teachingTipNarr != null && !teachingTipNarr.IsShown)
-        {
-            MyTeachingTipNarr.IsOpen = true;
-        }
     }
 
     private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -80,7 +64,6 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
             }
         }
     }
-
     private void IconGrid_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         //if (sender is GridView gridView && gridView.Items.Count == 0) return;
@@ -161,31 +144,6 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
             }
         }
         return null;
-    }
-
-    private async void OnGetItClickedNarr(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipNarr.IsOpen = false;
-        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipNarrNarr");
-
-        var narrative = NarrativesListView.Items
-            .OfType<Narrative>()
-            .FirstOrDefault(n => n.Coins != null && n.Coins.Any());
-
-        if (narrative != null)
-        {
-            await _viewModel.NarrativeItemClicked(narrative);
-        }
-
-        // Navigate to the new feature or provide additional information
-    }
-
-    private void OnDismissClickedNarr(object sender, RoutedEventArgs e)
-    {
-        MyTeachingTipNarr.IsOpen = false;
-        _viewModel._preferencesService.SetTeachingTipAsShown("TeachingTipNarrNarr");
-
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

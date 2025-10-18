@@ -571,11 +571,13 @@ namespace CryptoPortfolioTracker.Services
             {
                 var pidFilePath = Path.Combine(dir, "pid.json");
                 string portfolioId = GetPidFromJson(pidFilePath); ;
+                string signature = Path.GetRelativePath(App.PortfoliosPath, dir);
 
+                if (signature == App.DefaultDuressPortfolioGuid) continue; //don't add the duress portfolio
                 portfolios.Add(new Portfolio
                 {
                     Name = portfolioId,
-                    Signature = Path.GetRelativePath(App.PortfoliosPath, dir)
+                    Signature = signature
                 });
             }
             return portfolios;

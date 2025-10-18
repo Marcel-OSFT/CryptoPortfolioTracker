@@ -1,10 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
@@ -16,6 +9,15 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Serilog.Core;
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Core;
 using WinUI3Localizer;
 
@@ -46,7 +48,6 @@ public partial class MainPage : Page //INotifyPropertyChanged
         _preferencesService = preferencesService;
         _graphUpdateService = graphUpdateService;
         _priceUpdateService = priceUpdateService;
-        SetupTeachingTips();
     }
 
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -73,21 +74,22 @@ public partial class MainPage : Page //INotifyPropertyChanged
                 await CheckUpdateNow();
             }
         }
+        await ShowWhatsNewDialogIfNeeded();
 
     }
-    private void SetupTeachingTips()
-    {
-        var teachingTipInitial = _preferencesService.GetTeachingTip("TeachingTipBlank");
-        var teachingTipNarr = _preferencesService.GetTeachingTip("TeachingTipNarrNavi");
 
-        if (teachingTipInitial == null || !teachingTipInitial.IsShown)
+    private async Task ShowWhatsNewDialogIfNeeded()
+    {
+        string currentVersion = App.ProductVersion ?? "";
+        string lastVersion = _preferencesService.GetLastVersion();
+
+        if (!string.Equals(currentVersion, lastVersion, StringComparison.OrdinalIgnoreCase))
         {
-            _preferencesService.SetTeachingTipAsShown("TeachingTipNarrNavi");
-            MyTeachingTipBlank1.IsOpen = true;
-        }
-        else if (teachingTipNarr != null && !teachingTipNarr.IsShown)
-        {
-            MyTeachingTipNarr.IsOpen = true;
+            var dialog = new WhatsNewDialog(_preferencesService);
+            dialog.XamlRoot = MainPage.Current.XamlRoot;
+            await dialog.ShowAsync();
+
+            _preferencesService.SetLastVersion(currentVersion);
         }
     }
 
@@ -181,6 +183,12 @@ public partial class MainPage : Page //INotifyPropertyChanged
                             Logger.Information("Help File Requested");
                             break;
                         }
+                    case "WhatsNew":
+                        {
+                            DisplayWhatsNewFile();
+                            Logger.Information("What's New File Requested");
+                            break;
+                        }
                     case "About":
                         {
                             var dialog = new AboutDialog(_preferencesService.GetAppTheme());
@@ -194,7 +202,6 @@ public partial class MainPage : Page //INotifyPropertyChanged
             }
         }
     }
-
     private void LoadView(Type pageType)
     {
         if (pageType.Name == "CoinLibraryView")
@@ -251,6 +258,29 @@ public partial class MainPage : Page //INotifyPropertyChanged
                 loc.GetLocalizedString("Common_CloseButton"));
         }
     }
+    private async void DisplayWhatsNewFile()
+    {
+        var loc = Localizer.Get();
+        var fileName = Path.Combine("docs","WhatsNew_NL.pdf");
+
+        if (_preferencesService.GetAppCultureLanguage() == "en-US")
+        {
+            fileName = Path.Combine("docs","WhatsNew_EN.pdf");
+        }
+        try
+        {
+            Process.Start(new ProcessStartInfo(App.Url + fileName) { UseShellExecute = true });
+            Logger.Information("What's New File Displayed");
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, "Failed to display What's New File");
+            await ShowMessageDialog(
+                loc.GetLocalizedString("Messages_WhatsNewFile_FailedTitle"),
+                loc.GetLocalizedString("Messages_WhatsNewFile_FailedMsg"),
+                loc.GetLocalizedString("Common_CloseButton"));
+        }
+    }
 
     public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
     {
@@ -266,53 +296,6 @@ public partial class MainPage : Page //INotifyPropertyChanged
         var dlgResult = await dialog.ShowAsync();
         return dlgResult;
     }
-
-    private void OnGetItClickedNarr(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipNarr.IsOpen = false;
-        _preferencesService.SetTeachingTipAsShown("TeachingTipNarrNavi");
-        // Navigate to the new feature or provide additional information
-    }
-    private void OnGetItClickedBlank1(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipBlank1.IsOpen = false;
-        MyTeachingTipBlank2.IsOpen = true;
-        // Navigate to the new feature or provide additional information
-    }
-    private void OnGetItClickedBlank2(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipBlank2.IsOpen = false;
-        MyTeachingTipBlank3.IsOpen = true;
-        // Navigate to the new feature or provide additional information
-    }
-    private void OnGetItClickedBlank3(object sender, RoutedEventArgs e)
-    {
-        // Handle the 'Get it' button click
-        MyTeachingTipBlank3.IsOpen = false;
-        _preferencesService.SetTeachingTipAsShown("TeachingTipBlank");
-        // Navigate to the new feature or provide additional information
-    }
-    private void OnDismisslickedBlank1(object sender, RoutedEventArgs e)
-    {
-        MyTeachingTipBlank1.IsOpen = false;
-        _preferencesService.SetTeachingTipAsShown("TeachingTipBlank");
-    }
-    private void OnDismisslickedBlank2(object sender, RoutedEventArgs e)
-    {
-        MyTeachingTipBlank2.IsOpen = false;
-        _preferencesService.SetTeachingTipAsShown("TeachingTipBlank");
-    }
-    
-    
-    //public event PropertyChangedEventHandler? PropertyChanged;
-    //protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    //{
-    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    //}
-
 
 }
 
