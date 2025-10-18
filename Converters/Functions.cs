@@ -62,11 +62,11 @@ public static class Functions
 
                 if (fileName != "QuestionMarkBlue.png")
                 {
-                    iconPath = App.AppDataPath + "\\" + App.IconsFolder + "\\" + fileName;
+                    iconPath = Path.Combine(App.IconsPath, fileName);
                 }
                 else
                 {
-                    iconPath = App.AppPath + "\\Assets\\" + fileName;
+                    iconPath = Path.Combine(App.AppPath, "Assets", fileName);
                 }
 
                 //*** get cached icon

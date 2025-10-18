@@ -61,9 +61,9 @@ public partial class App : Application
     public const string BackupFolder = "Backup";
     public const string PrefixBackupName = "RestorePoint";
     public const string ExtentionBackup = "cpt";
-    public const string IconsFolder = "LibraryIcons";
     public const string PortfoliosFileName = "portfolios.json";
     public static string PortfoliosPath { get; private set; }
+    public static string IconsPath { get; private set; }
     public static string ChartsFolder { get; private set; }
     public static string ScheduledTaskExe { get; private set; }
     public static string PowerShellScriptPs1 { get; private set; }
@@ -115,7 +115,7 @@ public partial class App : Application
 
         await App.Container.GetService<PortfolioService>().InitializeAsync();
 
-        var iconCacheService = new IconCacheService(App.IconsFolder, App.Container.GetService<PortfolioService>(), Logger);
+        var iconCacheService = new IconCacheService(IconsPath, Container.GetService<PortfolioService>(), Logger);
         await iconCacheService.CacheLibraryIconsAsync();
 
         Window = Container.GetService<MainWindow>();
@@ -192,8 +192,7 @@ public partial class App : Application
         PortfoliosPath = Path.Combine(AppDataPath, "Portfolios");
         ChartsFolder = Path.Combine(AppDataPath, "MarketCharts");
         PowerShellScriptPs1 = Path.Combine(AppPath, "RegisterScheduledTask.ps1");
-
-        //ScheduledTaskExe = Path.Combine(AppPath, "MarketChartsUpdateService.exe");
+        IconsPath = Path.Combine(AppDataPath, "LibraryIcons");
 
         if (Debugger.IsAttached)
         {
