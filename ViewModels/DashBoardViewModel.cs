@@ -14,6 +14,7 @@ using Serilog;
 using Serilog.Core;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Security.Authentication.Web.Provider;
 using WinUI3Localizer;
@@ -154,17 +155,17 @@ public partial class DashboardViewModel : BaseViewModel
 
         switch (pie.Name)
         {
-            case "Portfolio":
+            case "PortfolioPie":
                 {
                     requestedMode = FullScreenMode.PiePortfolio;
                     break;
                 }
-            case "Accounts":
+            case "AccountsPie":
                 {
                     requestedMode = FullScreenMode.PieAccounts;
                     break;
                 }
-            case "Narratives":
+            case "NarrativesPie":
                 {
                     requestedMode = FullScreenMode.PieNarratives;
                     break;
@@ -189,7 +190,7 @@ public partial class DashboardViewModel : BaseViewModel
 
             if (result == ContentDialogResult.Primary)
             {
-                // Handle the result if needed  
+                // maybe do something
             }
         }
         catch (Exception ex)
@@ -207,6 +208,40 @@ public partial class DashboardViewModel : BaseViewModel
     {
         ReloadValueGains();
         ReloadGraph();
+    }
+
+    public async Task RefreshRsiBubbles()
+    {
+        RsiRbContent = $"1D RSI({_preferencesService.GetRsiPeriod()})";
+        await _dashboardService.CalculateRsiAllCoins();
+        if (SelectedHeatMapIndex == 1) { await RefreshHeatMapPoints(); }
+    }
+
+    public async Task RefreshMaBubbles()
+    {
+        MaRbContent = $"1D {_preferencesService.GetMaType()}({_preferencesService.GetMaPeriod()})";
+        await _dashboardService.CalculateMaAllCoins();
+        if (SelectedHeatMapIndex == 2) { await RefreshHeatMapPoints(); }
+    }
+
+    public void RefreshPortfolioPie()
+    {
+        var portfolioPie = PieChartControls?.FirstOrDefault(p => string.Equals(p?.Name, "PortfolioPie", StringComparison.OrdinalIgnoreCase));
+        if (portfolioPie is not null)
+        {
+            SetSeriesPie(portfolioPie);
+        }
+    }
+
+    public async Task RefreshTargetBubbles()
+    {
+        RsiRbContent = $"1D RSI({_preferencesService.GetRsiPeriod()})";
+        if (SelectedHeatMapIndex == 0) 
+        {
+            SetCustomSeparatorsTarget();
+            await _dashboardService.EvaluatePriceLevels();
+            await SetSeriesHeatMap(SelectedHeatMapIndex);
+        }
     }
 }
 

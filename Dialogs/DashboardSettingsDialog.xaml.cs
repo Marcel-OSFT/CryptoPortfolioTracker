@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
@@ -10,6 +11,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WinUI3Localizer;
@@ -31,7 +33,11 @@ public partial class DashboardSettingsDialog : ContentDialog
 
     [ObservableProperty]
     private int withinRangePerc;
-    partial void OnWithinRangePercChanged(int value) => _preferencesService.SetWithinRangePerc(value);
+    partial void OnWithinRangePercChanged(int value)
+    {
+        _preferencesService.SetWithinRangePerc(value);
+        DashboardViewModel.Current?.RefreshTargetBubbles();
+    }
 
     [ObservableProperty]
     private int closeToPerc;
@@ -39,7 +45,36 @@ public partial class DashboardSettingsDialog : ContentDialog
 
     [ObservableProperty]
     private int maxPieCoins;
-    partial void OnMaxPieCoinsChanged(int value) => _preferencesService.SetMaxPieCoins(value);
+    partial void OnMaxPieCoinsChanged(int value)
+    {
+        _preferencesService.SetMaxPieCoins(value);
+        DashboardViewModel.Current?.RefreshPortfolioPie();
+
+    }
+        [ObservableProperty]
+    private int rsiPeriod;
+    async partial void OnRsiPeriodChanged(int value)
+    {
+        _preferencesService.SetRsiPeriod(value);
+        // update dashboard viewmodel display if available
+        await DashboardViewModel.Current?.RefreshRsiBubbles();
+    }
+
+    [ObservableProperty]
+    private int maPeriod;
+   async partial void OnMaPeriodChanged(int value)
+    {
+        _preferencesService.SetMaPeriod(value);
+        await DashboardViewModel.Current?.RefreshMaBubbles();
+    }
+
+    [ObservableProperty]
+    private int maTypeIndex;
+    partial void OnMaTypeIndexChanged(int value)
+    {
+        SetMaTypeByIndex(value);
+        DashboardViewModel.Current?.RefreshMaBubbles();
+    }
 
     public DashboardSettingsDialog(IPreferencesService preferencesService)
     {
@@ -70,6 +105,17 @@ public partial class DashboardSettingsDialog : ContentDialog
         WithinRangePerc = preferences.GetWithinRangePerc();
         CloseToPerc = preferences.GetCloseToPerc();
         MaxPieCoins = preferences.GetMaxPieCoins();
+        RsiPeriod = preferences.GetRsiPeriod();
+        MaPeriod = preferences.GetMaPeriod();
+        string maTypeValue = preferences.GetMaType();
+        MaTypeIndex = maTypeValue switch
+        {
+            "SMA" => 0,
+            "EMA" => 1,
+            "WMA" => 2,
+            "VWMA" => 3,
+            _ => 0,
+        };
     }
 
     private void SetDialogTitleAndButtons()
@@ -79,7 +125,18 @@ public partial class DashboardSettingsDialog : ContentDialog
         IsPrimaryButtonEnabled = true;
     }
 
+    private void SetMaTypeByIndex(int index)
+    {
+        string value = index switch
+        {
+            0 => "SMA",
+            1 => "EMA",
+            2 => "WMA",
+            3 => "VWMA",
+            _ => "SMA",
+        };
+        _preferencesService.SetMaType(value);
+    }
 
-    
 
 }

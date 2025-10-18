@@ -9,9 +9,7 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:l="using:WinUI3Localizer"
     x:Name="Root"
-    
     Loaded="MainPage_Loaded"
-   
     mc:Ignorable="d">
 
     <Page.Resources>

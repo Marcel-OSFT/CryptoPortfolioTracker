@@ -173,7 +173,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         {
             //var context = _portfolioService.Context;
 
-            updatedCoin.Ema = await updatedCoin.CalculateEma();
+            updatedCoin.Ema = await updatedCoin.CalculateMa();
             updatedCoin.EvaluatePriceLevels(updatedCoin.Price);
 
             var coinToUpdateIndex = ListCoins.IndexOf(coin);
@@ -230,7 +230,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
             foreach (var coin in coinList)
             {
-                coin.Ema = await coin.CalculateEma();
+                coin.Ema = await coin.CalculateMa();
                 coin.EvaluatePriceLevels(coin.Price);
             }
         }
@@ -257,7 +257,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 .OrderBy(x => x.Rank)
                 .FirstAsync();
 
-            _coin.Ema = await _coin.CalculateEma();
+            _coin.Ema = await _coin.CalculateMa();
             _coin.EvaluatePriceLevels(_coin.Price);
             
         }

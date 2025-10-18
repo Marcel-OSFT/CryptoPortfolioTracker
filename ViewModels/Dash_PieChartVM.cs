@@ -39,7 +39,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
     }
 
-    private async void SetSeriesPie(PieChartControl pieChart)
+    public async void SetSeriesPie(PieChartControl pieChart)
     {
         var points = new ObservableCollection<PiePoint>(await _dashboardService.GetPiePoints(pieChart.Name));
         double totalValue = points.Sum(p => p.Value) ?? 0.0; // Assuming PiePoint has a property 'Value'

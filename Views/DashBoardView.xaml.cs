@@ -21,9 +21,9 @@ public partial class DashboardView : Page, IDisposable
         InitializeComponent();
         _viewModel = dashboardVm;
         DataContext = _viewModel;
-        Portfolio.pieHeader.Tag = "Portfolio";
-        Accounts.pieHeader.Tag = "Accounts";
-        Narratives.pieHeader.Tag = "Narratives";
+        PortfolioPie.pieHeader.Tag = "Portfolio";
+        AccountsPie.pieHeader.Tag = "Accounts";
+        NarrativesPie.pieHeader.Tag = "Narratives";
     }
 
     private async void View_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

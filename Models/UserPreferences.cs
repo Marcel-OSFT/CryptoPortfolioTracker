@@ -43,6 +43,9 @@ public class UserPreferences
         HeatMapIndex = 0;
 
         LastPortfolio = null;
+        RsiPeriod = 14;
+        MaPeriod = 50;
+        MaType = "SMA";
 
     }
     public string? PasswordHash { get; set; }
@@ -200,6 +203,44 @@ public class UserPreferences
             if (value != withinRangePerc)
             {
                 withinRangePerc = value;
+
+            }
+        }
+    }
+    private int rsiPeriod;
+    public int RsiPeriod
+    {
+        get => rsiPeriod;
+        set
+        {
+            if (value != rsiPeriod)
+            {
+                rsiPeriod = value;
+
+            }
+        }
+    }
+    private int maPeriod;
+    public int MaPeriod
+    {
+        get => maPeriod;
+        set
+        {
+            if (value != maPeriod)
+            {
+                maPeriod = value;
+
+            }
+        }
+    }private string maType;
+    public string MaType
+    {
+        get => maType;
+        set
+        {
+            if (value != maType)
+            {
+                maType = value;
 
             }
         }

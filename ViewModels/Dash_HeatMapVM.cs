@@ -27,7 +27,9 @@ public partial class DashboardViewModel : BaseViewModel
     private double bubbleSizeMin = 1;
 
     [ObservableProperty] public int selectedHeatMapIndex = -1;
-
+    [ObservableProperty] public string maRbContent = string.Empty;
+    [ObservableProperty] public string rsiRbContent = string.Empty;
+    
     async partial void OnSelectedHeatMapIndexChanged(int oldValue, int newValue)
     {
         if (newValue == -1) return;
@@ -187,7 +189,13 @@ public partial class DashboardViewModel : BaseViewModel
 
     };
 
-    private void SetCustomSeparators()
+    private void SetCustomSeparatorsAll()
+    {
+        SetCustomSeparatorsMa();
+        SetCustomSeparatorsRsi();
+        SetCustomSeparatorsTarget();
+    }
+    private void SetCustomSeparatorsTarget()
     {
         var withinRangePerc = _preferencesService.GetWithinRangePerc();
         //*** Target
@@ -199,7 +207,9 @@ public partial class DashboardViewModel : BaseViewModel
 
         var targetAxis = yAxesTarget.First();
         targetAxis.CustomSeparators = SeparatorsTarget;
-
+    }
+    private void SetCustomSeparatorsRsi()
+    {
         //*** RSI
         SeparatorsRsi = new double[] { 0, 30, 50, 70, 100 };
 
@@ -209,8 +219,11 @@ public partial class DashboardViewModel : BaseViewModel
 
         var rsiAxis = yAxesRsi.First();
         rsiAxis.CustomSeparators = SeparatorsRsi;
-
+    }
+    private void SetCustomSeparatorsMa()
+    {
         //*** Ema
+        var withinRangePerc = _preferencesService.GetWithinRangePerc();
         SeparatorsEma = new double[] { -100, -0.5 * withinRangePerc, 0, 0.5 * withinRangePerc, 100 };
 
         var emaSection = sectionsEma.First();
@@ -219,8 +232,8 @@ public partial class DashboardViewModel : BaseViewModel
 
         var emaAxis = yAxesEma.First();
         emaAxis.CustomSeparators = SeparatorsEma;
-
     }
+
 
     /// <summary>   
     /// This method is called by the HeatMapControl_Loaded event.  
@@ -231,7 +244,9 @@ public partial class DashboardViewModel : BaseViewModel
         {
             bubbleSizeMax = 50;
             bubbleSizeMin = 1;
-            SetCustomSeparators();
+            SetCustomSeparatorsAll();
+            RsiRbContent = $"1D RSI({_preferencesService.GetRsiPeriod()})";
+            MaRbContent = $"1D {_preferencesService.GetMaType()}({_preferencesService.GetMaPeriod()})";
             SelectedHeatMapIndex = _preferencesService.GetHeatMapIndex();
             await _dashboardService.EvaluatePriceLevels();
             await SetSeriesHeatMap(SelectedHeatMapIndex);
@@ -240,8 +255,6 @@ public partial class DashboardViewModel : BaseViewModel
         {
         }
     }
-
-
 
     private async Task RefreshHeatMapPoints()
     {
@@ -431,7 +444,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
         else
         {
-            HeatMapTitle = "EMA Bubbles";
+            HeatMapTitle = $"MA Bubbles";
             SectionsHeatMap = sectionsEma;
             YAxesHeatMap = yAxesEma;
             await SetSeriesHeatMap(SelectedHeatMapIndex);

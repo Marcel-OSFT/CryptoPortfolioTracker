@@ -48,15 +48,35 @@ public partial class DashboardService : ObservableObject, IDashboardService
     {
         var coins = _portfolioService.Context.Coins.ToList();
 
-        foreach(var coin in coins)
+        foreach (var coin in coins)
         {
             await coin.CalculateRsi();
-            await coin.CalculateEma();
+            await coin.CalculateMa();
             await Task.Delay(10);
         }
     }
-   
-    
+    public async Task CalculateRsiAllCoins()
+    {
+        var coins = _portfolioService.Context.Coins.ToList();
+
+        foreach (var coin in coins)
+        {
+            await coin.CalculateRsi();
+            await Task.Delay(10);
+        }
+    }
+    public async Task CalculateMaAllCoins()
+    {
+        var coins = _portfolioService.Context.Coins.ToList();
+
+        foreach (var coin in coins)
+        {
+            await coin.CalculateMa();
+            await Task.Delay(10);
+        }
+    }
+
+
     public async Task<List<Coin>> GetTopWinners()
     {
         try
@@ -159,7 +179,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
             var threshold = Math.Ceiling(0.0001 * portfolioValue);
 
-            if (pieChartName == "Portfolio")
+            if (pieChartName == "PortfolioPie")
             {
                 // first get TOP 10 coins based on Rank
                 var assets = (await _assetService.PopulateAssetTotalsList())
@@ -200,7 +220,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
                     piePoints.Add(piePoint2);
                 }
             }
-            if (pieChartName == "Accounts")
+            if (pieChartName == "AccountsPie")
             {
                 var accounts = (await _accountService.PopulateAccountsList())
                     .Where(x => x.TotalValue > threshold)
@@ -226,7 +246,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
                 }
             }
-            if (pieChartName == "Narratives")
+            if (pieChartName == "NarrativesPie")
             {
                 var narratives = (await _narrativeService.PopulateNarrativesList())
                     .Where(x => x.TotalValue > threshold)

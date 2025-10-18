@@ -8,7 +8,7 @@
       <group id="CRYPTOPORTFOLIOTRACKER/STRINGS/EN-US/RESOURCES.RESW" datatype="resx">
         <trans-unit id="AppDisplayName" translate="yes" xml:space="preserve">
           <source>Crypto Portfolio Tracker</source>
-          <target state="translated">Crypto Portfolio Tracker</target>
+          <target state="final">Crypto Portfolio Tracker</target>
         </trans-unit>
         <trans-unit id="AppDescription" translate="yes" xml:space="preserve">
           <source>Crypto Portfolio Tracker</source>
@@ -24,7 +24,7 @@
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate.Description" translate="yes" xml:space="preserve">
           <source>Enables automatic checking for available updates.</source>
-          <target state="translated">Hoe wilt u dat cijfers worden weergegeven?</target>
+          <target state="final">Hiermee wordt automatisch gecontroleerd op beschikbare updates.</target>
         </trans-unit>
         <trans-unit id="Settings_CheckUpdate.Header" translate="yes" xml:space="preserve">
           <source>Check for Update</source>
@@ -160,7 +160,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="AssetsLV_ProfitLoss.Text" translate="yes" xml:space="preserve">
           <source>Profit/Loss</source>
-          <target state="translated">Winst/Verlies</target>
+          <target state="final">Winst/Verlies</target>
         </trans-unit>
         <trans-unit id="AssetsLV_Quantity.Text" translate="yes" xml:space="preserve">
           <source>Quantity</source>
@@ -840,7 +840,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="GrahicView_UpdateText.Text" translate="yes" xml:space="preserve">
           <source>Updating...</source>
-          <target state="translated">Bijwerken...</target>
+          <target state="final">Bijwerken...</target>
         </trans-unit>
         <trans-unit id="GraphicView_InFlowSeriesTitle" translate="yes" xml:space="preserve">
           <source>Inflow</source>
@@ -892,7 +892,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="AboutDialog_CoinGecko_Sub2.Text" translate="yes" xml:space="preserve">
           <source>CoinGecko’s Public API has a rate limit of 5 to 15 calls per minute, depending on usage conditions worldwide. Most of the time it turns out to be around 5 requests per minute. When a 'Too Many Requests' occurs then a 30 seconds timeout is build in before re-trying the request.</source>
-          <target state="translated">De openbare API van CoinGecko heeft een snelheidslimiet van 5 tot 15 oproepen per minuut, afhankelijk van de gebruiksomstandigheden wereldwijd. Meestal blijkt het rond de 5 verzoeken per minuut te zijn. Wanneer er een 'Too Many Requests' optreedt, wordt er een time-out van 30 seconden aangehouden voordat het verzoek opnieuw wordt geprobeerd.</target>
+          <target state="final">De openbare API van CoinGecko heeft een snelheidslimiet van 5 tot 15 oproepen per minuut, afhankelijk van de gebruiksomstandigheden wereldwijd. Meestal blijkt het rond de 5 verzoeken per minuut te zijn. Wanneer er een 'Too Many Requests' optreedt, wordt er een time-out van 30 seconden aangehouden voordat het verzoek opnieuw wordt geprobeerd.</target>
         </trans-unit>
         <trans-unit id="AboutDialog_CoinGecko_Title.Text" translate="yes" xml:space="preserve">
           <source>CoinGecko public API</source>
@@ -932,143 +932,119 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="PriceLevelsLV_BuyLevel.Text" translate="yes" xml:space="preserve">
           <source>Buy Level</source>
-          <target state="translated">Koopniveau</target>
+          <target state="final">Koopniveau</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_DistanceToBuyLevel.Text" translate="yes" xml:space="preserve">
           <source>Distance</source>
-          <target state="translated">Afstand</target>
+          <target state="final">Afstand</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_DistanceToTpLevel.Text" translate="yes" xml:space="preserve">
           <source>Distance</source>
-          <target state="translated">Afstand</target>
+          <target state="final">Afstand</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_Name.Text" translate="yes" xml:space="preserve">
           <source>Name</source>
-          <target state="translated">Naam</target>
+          <target state="final">Naam</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_Price.Text" translate="yes" xml:space="preserve">
           <source>Actual Price</source>
-          <target state="translated">Huidige Prijs</target>
+          <target state="final">Huidige Prijs</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_StopLevel.Text" translate="yes" xml:space="preserve">
           <source>Stop Level</source>
-          <target state="translated">Stopniveau</target>
+          <target state="final">Stopniveau</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_TpLevel.Text" translate="yes" xml:space="preserve">
           <source>Take Profit Level</source>
-          <target state="translated">Winstname niveau</target>
+          <target state="final">Winstname niveau</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_DistanceToStopLevel.Text" translate="yes" xml:space="preserve">
           <source>Distance</source>
-          <target state="translated">Afstand</target>
+          <target state="final">Afstand</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_Symbol.Text" translate="yes" xml:space="preserve">
           <source>Symbol</source>
-          <target state="translated">Symbool</target>
+          <target state="final">Symbool</target>
         </trans-unit>
         <trans-unit id="PriceLevels_Explainer.Text" translate="yes" xml:space="preserve">
           <source>This overview gives an indication if the actual price of a coin is within range of a specified level. The levels that can be set are, a Take Profit, a buy and a Stop level. If the price is within range of a level it will be indicated by a colour. </source>
-          <target state="translated">Dit overzicht geeft een indicatie of de actuele prijs van een munt binnen het bereik van een bepaald niveau ligt. De niveaus die kunnen worden ingesteld zijn een Take Profit, een buy en een Stop-niveau. Als de prijs binnen het bereik van een niveau ligt, wordt dit aangegeven door een kleur.</target>
+          <target state="final">Dit overzicht geeft een indicatie of de actuele prijs van een munt binnen het bereik van een bepaald niveau ligt. De niveaus die kunnen worden ingesteld zijn een Take Profit, een buy en een Stop-niveau. Als de prijs binnen het bereik van een niveau ligt, wordt dit aangegeven door een kleur.</target>
         </trans-unit>
         <trans-unit id="PriceLevels_Title.Text" translate="yes" xml:space="preserve">
           <source>Price Levels</source>
-          <target state="translated">Prijsniveaus</target>
+          <target state="final">Prijsniveaus</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_AddEditLevels.Label" translate="yes" xml:space="preserve">
           <source>Add/Edit Price Levels</source>
-          <target state="translated">Toevoegen/wijzigen Prijsniveaus</target>
+          <target state="final">Toevoegen/wijzigen Prijsniveaus</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_Delete.Label" translate="yes" xml:space="preserve">
           <source>Delete Price Levels</source>
-          <target state="translated">Verwijder Prijsniveaus</target>
+          <target state="final">Verwijder Prijsniveaus</target>
         </trans-unit>
         <trans-unit id="Navigation_PriceLevels.Content" translate="yes" xml:space="preserve">
           <source>Price Levels</source>
-          <target state="translated">Prijsniveaus</target>
+          <target state="final">Prijsniveaus</target>
         </trans-unit>
         <trans-unit id="Messages_ResetLevelsFailed_Title" translate="yes" xml:space="preserve">
           <source>Failed to reset Price Levels</source>
-          <target state="translated">Fout bij het verwijderen van prijsniveaus</target>
+          <target state="final">Fout bij het verwijderen van prijsniveaus</target>
         </trans-unit>
         <trans-unit id="Messages_PriceLevelsAddFailed_Title" translate="yes" xml:space="preserve">
           <source>Adding/Updating Price Levels failed</source>
-          <target state="translated">Fout bij het toevoegen/wijzigen van Prijsniveaus</target>
+          <target state="final">Fout bij het toevoegen/wijzigen van Prijsniveaus</target>
         </trans-unit>
         <trans-unit id="Messages_PriceLevelsDialogFailed_Title" translate="yes" xml:space="preserve">
           <source>Price Levels Dialog Failure</source>
-          <target state="translated">Fout bij het openen van het Prijsniveaus venster</target>
+          <target state="final">Fout bij het openen van het Prijsniveaus venster</target>
         </trans-unit>
         <trans-unit id="PriceLevelsDialog_CloseButton" translate="yes" xml:space="preserve">
           <source>Cancel</source>
-          <target state="translated">Annuleren</target>
+          <target state="final">Annuleren</target>
         </trans-unit>
         <trans-unit id="PriceLevelsDialog_PrimaryButton" translate="yes" xml:space="preserve">
           <source>Accept</source>
-          <target state="translated">Accepteren</target>
+          <target state="final">Accepteren</target>
         </trans-unit>
         <trans-unit id="PriceLevelsDialog_Title" translate="yes" xml:space="preserve">
           <source>Price Levels for </source>
-          <target state="translated">Prijsniveaus voor </target>
+          <target state="final">Prijsniveaus voor </target>
         </trans-unit>
         <trans-unit id="PriceLevelsDialog_Note.PlaceholderText" translate="yes" xml:space="preserve">
           <source>Write a note....</source>
-          <target state="translated">Schrijf hier een notitie...</target>
+          <target state="final">Schrijf hier een notitie...</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_AvgCost.Text" translate="yes" xml:space="preserve">
           <source>Avg. cost price</source>
-          <target state="translated">gem. kostprijs</target>
+          <target state="final">gem. kostprijs</target>
         </trans-unit>
         <trans-unit id="PriceLevelsDialog_BuyHeader.Text" translate="yes" xml:space="preserve">
           <source>Buy level</source>
-          <target state="translated">Koopniveau</target>
+          <target state="final">Koopniveau</target>
         </trans-unit>
         <trans-unit id="PriceLevelsDialog_StopHeader.Text" translate="yes" xml:space="preserve">
           <source>Stop level</source>
-          <target state="translated">Stopniveau</target>
+          <target state="final">Stopniveau</target>
         </trans-unit>
         <trans-unit id="PriceLevelsDialog_TpHeader.Text" translate="yes" xml:space="preserve">
           <source>Take profit level</source>
-          <target state="translated">Winstname-niveau</target>
+          <target state="final">Winstname-niveau</target>
         </trans-unit>
         <trans-unit id="settingsExpander_AssetView.Description" translate="yes" xml:space="preserve">
           <source>Expand this to get access to settings related to the 'Assets View' like HideCapitalFlow, HideZeroBalances</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Portfolio overzicht' zoals KapitaalStroom verbergen, Nulsaldi verbergen</target>
+          <target state="final">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Portfolio overzicht' zoals KapitaalStroom verbergen, Nulsaldi verbergen</target>
         </trans-unit>
         <trans-unit id="settingsExpander_AssetView.Header" translate="yes" xml:space="preserve">
           <source>Asset View settings</source>
-          <target state="translated">Instellingen Portfolio-overzicht</target>
+          <target state="final">Instellingen Portfolio-overzicht</target>
         </trans-unit>
         <trans-unit id="settingsExpander_General.Description" translate="yes" xml:space="preserve">
           <source>Expand this to get access to general settings like NumberFormat, FontSize, Language, Dark/Light theme, ExpandedScrollBars</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot algemene instellingen zoals getalsnotatie, lettergrootte, taal, donker/licht thema, zichtbaarheid schuifbalken</target>
+          <target state="final">Vouw dit uit om toegang te krijgen tot algemene instellingen zoals getalsnotatie, lettergrootte, taal, donker/licht thema, zichtbaarheid schuifbalken</target>
         </trans-unit>
         <trans-unit id="settingsExpander_General.Header" translate="yes" xml:space="preserve">
           <source>General settings</source>
-          <target state="translated">Algemene instellingen</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_PriceLevels.Description" translate="yes" xml:space="preserve">
-          <source>Expand this to get acces to settings related to the 'Price Level' feature like WithinRangePerc and CloseToPerc.</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de functie 'Prijsniveau', 'binnen bereik'- en 'dichtbij'drempelpercentages.</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_PriceLevels.Header" translate="yes" xml:space="preserve">
-          <source>Price Level settings</source>
-          <target state="translated">Instellingen Prijsniveaus</target>
-        </trans-unit>
-        <trans-unit id="Settings_PriceLevels1.Description" translate="yes" xml:space="preserve">
-          <source>This threshold is used to provide a visual confirmation of the Actual Price being within the range of it's target level.</source>
-          <target state="translated">Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs binnen het bereik van het streefniveau ligt.</target>
-        </trans-unit>
-        <trans-unit id="Settings_PriceLevels1.Header" translate="yes" xml:space="preserve">
-          <source>'Within Range' Threshold percentage</source>
-          <target state="translated">'Binnen bereik' drempelpercentage</target>
-        </trans-unit>
-        <trans-unit id="Settings_PriceLevels2.Description" translate="yes" xml:space="preserve">
-          <source>This threshold is used to provide a visual confirmation of the Actual Price being within close range of it's target level.</source>
-          <target state="translated">Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs zich dicht bij het streefniveau bevindt.</target>
-        </trans-unit>
-        <trans-unit id="Settings_PriceLevels2.Header" translate="yes" xml:space="preserve">
-          <source>'Close To' Threshold percentage</source>
-          <target state="translated">'Dichtbij' drempelpercentage</target>
+          <target state="final">Algemene instellingen</target>
         </trans-unit>
         <trans-unit id="HeatMapView.Text" translate="yes" xml:space="preserve">
           <source>Target Bubbels</source>
@@ -1076,23 +1052,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="GraphicView.Text" translate="yes" xml:space="preserve">
           <source>Portfolio Value</source>
-          <target state="translated">Portefeuille waarde</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_DashBoard.Description" translate="yes" xml:space="preserve">
-          <source>Expand this to get access to settings related to the Dasboard View</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de Dashboardweergave</target>
-        </trans-unit>
-        <trans-unit id="settingsExpander_DashBoard.Header" translate="yes" xml:space="preserve">
-          <source>Dashboard Settings</source>
-          <target state="translated">Instellingen Dashboard</target>
-        </trans-unit>
-        <trans-unit id="Settings_DashBoard1.Description" translate="yes" xml:space="preserve">
-          <source>The number of coins visible in the Portfolio Pie. The remaining coins will be grouped into 'Others'</source>
-          <target state="translated">Het aantal munten dat zichtbaar is in de Portfolio Pie. De resterende munten worden gegroepeerd in 'Overige'</target>
-        </trans-unit>
-        <trans-unit id="Settings_DashBoard1.Header" translate="yes" xml:space="preserve">
-          <source>Maximum number of coins in the Portfolio Pie Chart</source>
-          <target state="translated">Maximaal aantal munten in de portefeuille-cirkeldiagram</target>
+          <target state="final">Portefeuille waarde</target>
         </trans-unit>
         <trans-unit id="Dashboard_Title.Text" translate="yes" xml:space="preserve">
           <source>Dashboard</source>
@@ -1100,11 +1060,11 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="Top5View.Text" translate="yes" xml:space="preserve">
           <source>Top 5 Winners &amp; Losers 24h</source>
-          <target state="translated">Top 5 Stijgers &amp; Dalers 24u</target>
+          <target state="final">Top 5 Stijgers &amp; Dalers 24u</target>
         </trans-unit>
         <trans-unit id="ValueGainsView.Text" translate="yes" xml:space="preserve">
           <source>Values &amp; Gains</source>
-          <target state="translated">Waardes &amp; Groei</target>
+          <target state="final">Waardes &amp; Groei</target>
         </trans-unit>
         <trans-unit id="CapitalFlowView_DateFormat" translate="no" xml:space="preserve">
           <source>yyyy</source>
@@ -1112,23 +1072,23 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="CapitalFlowView.Text" translate="yes" xml:space="preserve">
           <source>Capital Flow</source>
-          <target state="translated">Kapitaalstroom</target>
+          <target state="final">Kapitaalstroom</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_PortfolioValue.Text" translate="yes" xml:space="preserve">
           <source>Portfolio value</source>
-          <target state="translated">Portefeuillewaarde</target>
+          <target state="final">Portefeuillewaarde</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_Day.Text" translate="yes" xml:space="preserve">
           <source>day</source>
-          <target state="translated">dag</target>
+          <target state="final">dag</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_Month.Text" translate="yes" xml:space="preserve">
           <source>month</source>
-          <target state="translated">maand</target>
+          <target state="final">maand</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_Year.Text" translate="yes" xml:space="preserve">
           <source>year</source>
-          <target state="translated">jaar</target>
+          <target state="final">jaar</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_ytd.Text" translate="yes" xml:space="preserve">
           <source>YTD</source>
@@ -1136,15 +1096,15 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="ValueGainsView_CostBaseVersus.Text" translate="yes" xml:space="preserve">
           <source>vs. cost base</source>
-          <target state="translated">vs. kostenbasis</target>
+          <target state="final">vs. kostenbasis</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_CostBase.Text" translate="yes" xml:space="preserve">
           <source>Cost base</source>
-          <target state="translated">Kostenbasis</target>
+          <target state="final">Kostenbasis</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_NetCapFlow.Text" translate="yes" xml:space="preserve">
           <source>net flow</source>
-          <target state="translated">netto kapitaalstroom</target>
+          <target state="final">netto kapitaalstroom</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_Week.Text" translate="yes" xml:space="preserve">
           <source>week</source>
@@ -1152,695 +1112,759 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         </trans-unit>
         <trans-unit id="HeatMapView_NoTargets.Text" translate="yes" xml:space="preserve">
           <source>Go to the 'Price Levels' view to set target levels.</source>
-          <target state="translated">Ga naar het overzicht 'Prijsniveaus' om streefniveaus in te stellen.</target>
+          <target state="final">Ga naar het overzicht 'Prijsniveaus' om streefniveaus in te stellen.</target>
         </trans-unit>
         <trans-unit id="PieChartView_Portfolio.Text" translate="yes" xml:space="preserve">
           <source>Portfolio distribution</source>
-          <target state="translated">Portefeuille verdeling</target>
+          <target state="final">Portefeuille verdeling</target>
         </trans-unit>
         <trans-unit id="PieChartView_Accounts.Text" translate="yes" xml:space="preserve">
           <source>Accounts distribution</source>
-          <target state="translated">Accounts verdeling</target>
+          <target state="final">Accounts verdeling</target>
         </trans-unit>
         <trans-unit id="AssetsLV_NetInvestment.Text" translate="yes" xml:space="preserve">
           <source>Net Investment</source>
-          <target state="translated">Netto Investering</target>
+          <target state="final">Netto Investering</target>
         </trans-unit>
         <trans-unit id="ValueGainsView_NetInvestment.Text" translate="yes" xml:space="preserve">
           <source>Net Investment</source>
-          <target state="translated">Netto investering</target>
+          <target state="final">Netto investering</target>
         </trans-unit>
         <trans-unit id="Navigation_Narratives.Content" translate="yes" xml:space="preserve">
           <source>Narratives</source>
-          <target state="translated">Narratief</target>
+          <target state="final">Narratief</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_Edit.Label" translate="yes" xml:space="preserve">
           <source>Edit</source>
-          <target state="translated">Wijzigen</target>
+          <target state="final">Wijzigen</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_MarketValue.Text" translate="yes" xml:space="preserve">
           <source>Market Value</source>
-          <target state="translated">Marktwaarde</target>
+          <target state="final">Marktwaarde</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_Name.Text" translate="yes" xml:space="preserve">
           <source>Name</source>
-          <target state="translated">Naam</target>
+          <target state="final">Naam</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_Note.Text" translate="yes" xml:space="preserve">
           <source>Note</source>
-          <target state="translated">Notitie</target>
+          <target state="final">Notitie</target>
         </trans-unit>
         <trans-unit id="Narratives_AddNarrative.Content" translate="yes" xml:space="preserve">
           <source>Add Narrative</source>
-          <target state="translated">Narratief toevoegen</target>
+          <target state="final">Narratief toevoegen</target>
         </trans-unit>
         <trans-unit id="Narratives_Explainer.Text" translate="yes" xml:space="preserve">
           <source>The Narratives view gives you an overview of your crypto assets in relation to their narrative. Go to the Library View to assign a Narrative to a coin that is already in the Library. When you add e new coin then a narrative can be assigned right away. The app comes with an initial Narrative List that can be modified. The Name and Description can be changed and also new Narratives can be added.</source>
-          <target state="translated">Het Narratieven overzicht geeft u een lijst van uw crypto-activa in relatie tot hun narratief. Ga naar het Bibliotheek overzicht om een ​​Narrative toe te wijzen aan een munt die al in uw Bibliotheek zit. Indien u een nieuwe munt gaat toevoegen kunt u daar gelijk een Narratief toekennen. De app wordt geleverd met een initiële  narratievenList die kan worden aangepast. De naam en beschrijving kunnen worden gewijzigd en er kunnen ook nieuwe narratieven worden toegevoegd.</target>
+          <target state="final">Het Narratieven overzicht geeft u een lijst van uw crypto-activa in relatie tot hun narratief. Ga naar het Bibliotheek overzicht om een ​​Narrative toe te wijzen aan een munt die al in uw Bibliotheek zit. Indien u een nieuwe munt gaat toevoegen kunt u daar gelijk een Narratief toekennen. De app wordt geleverd met een initiële  narratievenList die kan worden aangepast. De naam en beschrijving kunnen worden gewijzigd en er kunnen ook nieuwe narratieven worden toegevoegd.</target>
         </trans-unit>
         <trans-unit id="Narratives_Title.Text" translate="yes" xml:space="preserve">
           <source>Narratives</source>
-          <target state="translated">Narratieven</target>
+          <target state="final">Narratieven</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_Delete.Label" translate="yes" xml:space="preserve">
           <source>Delete</source>
-          <target state="translated">Verwijderen</target>
+          <target state="final">Verwijderen</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Description.Header" translate="yes" xml:space="preserve">
           <source>Narrative Description</source>
-          <target state="translated">Narratief omschrijving</target>
+          <target state="final">Narratief omschrijving</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Description.PlaceholderText" translate="yes" xml:space="preserve">
           <source>Description goes here....</source>
-          <target state="translated">Omschrijving komt hier...</target>
+          <target state="final">Omschrijving komt hier...</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Name.Header" translate="yes" xml:space="preserve">
           <source>Narrative Name</source>
-          <target state="translated">Narratief naam</target>
+          <target state="final">Narratief naam</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Name.PlaceholderText" translate="yes" xml:space="preserve">
           <source>e.g. Layer 1...</source>
-          <target state="translated">bijv. Layer 1...</target>
+          <target state="final">bijv. Layer 1...</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_CloseButton" translate="yes" xml:space="preserve">
           <source>Cancel</source>
-          <target state="translated">Annuleren</target>
+          <target state="final">Annuleren</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_PrimaryButton_Add" translate="yes" xml:space="preserve">
           <source>Accept Narrative</source>
-          <target state="translated">Accepteer narratief</target>
+          <target state="final">Accepteer narratief</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
           <source>Accept</source>
-          <target state="translated">Accepteren</target>
+          <target state="final">Accepteren</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Title_Add" translate="yes" xml:space="preserve">
           <source>Add Narrative</source>
-          <target state="translated">Narratief toevoegen</target>
+          <target state="final">Narratief toevoegen</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_Title_Edit" translate="yes" xml:space="preserve">
           <source>Edit Narrative</source>
-          <target state="translated">Narratief wijzigen</target>
+          <target state="final">Narratief wijzigen</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeAddFailed_Title" translate="yes" xml:space="preserve">
           <source>Adding Narrative failed</source>
-          <target state="translated">Fout bij het toevoegen van een narratief</target>
+          <target state="final">Fout bij het toevoegen van een narratief</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDeleteFailed_Msg" translate="yes" xml:space="preserve">
           <source>Narrative may have assets assigned.</source>
-          <target state="translated">Aan het narratief zijn al munten gekoppeld</target>
+          <target state="final">Aan het narratief zijn al munten gekoppeld</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDeleteFailed_Title" translate="yes" xml:space="preserve">
           <source>Failed to delete Narrative</source>
-          <target state="translated">Fout bij het verwijderen van een narratief</target>
+          <target state="final">Fout bij het verwijderen van een narratief</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDialogFailed_Title" translate="yes" xml:space="preserve">
           <source>Narrative Dialog Failure</source>
-          <target state="translated">Fout bij het openen van het Narratief dialoogvenster</target>
+          <target state="final">Fout bij het openen van het Narratief dialoogvenster</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativetUpdateFailed_Title" translate="yes" xml:space="preserve">
           <source>Updating narrative failed</source>
-          <target state="translated">Fout bij het updaten van het narratief</target>
+          <target state="final">Fout bij het updaten van het narratief</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDeleteNotAllowd_Title" translate="yes" xml:space="preserve">
           <source>Deleting not allowed!</source>
-          <target state="translated">Verwijderen niet toegestaan!</target>
+          <target state="final">Verwijderen niet toegestaan!</target>
         </trans-unit>
         <trans-unit id="Messages_NarrativeDeleteNotAllowed_Msg" translate="yes" xml:space="preserve">
           <source>The Narrative is assigned to one or more assets.</source>
-          <target state="translated">Het narratief is aan één of meer munten gekoppeld</target>
+          <target state="final">Het narratief is aan één of meer munten gekoppeld</target>
         </trans-unit>
         <trans-unit id="PieChartView_Narratives.Text" translate="yes" xml:space="preserve">
           <source>Narratives distribution</source>
-          <target state="translated">Narratief verdeling</target>
+          <target state="final">Narratief verdeling</target>
         </trans-unit>
         <trans-unit id="dummy" translate="yes" xml:space="preserve">
           <source>dummy</source>
-          <target state="translated">dummy</target>
+          <target state="final">dummy</target>
         </trans-unit>
         <trans-unit id="CoinDialog_Narrative.Header" translate="yes" xml:space="preserve">
           <source>Narrative</source>
-          <target state="translated">Narratief</target>
+          <target state="final">Narratief</target>
         </trans-unit>
         <trans-unit id="LibraryLV_AssignNarrative.Label" translate="yes" xml:space="preserve">
           <source>Assign/Change Narrative</source>
-          <target state="translated">Narratief toekennen/wijzigen</target>
+          <target state="final">Narratief toekennen/wijzigen</target>
         </trans-unit>
         <trans-unit id="Messages_AssignNarrativeFailed_Title" translate="yes" xml:space="preserve">
           <source>Assigning Narrative failed</source>
-          <target state="translated">Fout bij het toekennen van een narratief</target>
+          <target state="final">Fout bij het toekennen van een narratief</target>
         </trans-unit>
         <trans-unit id="Messages_AssignNarrativeDialogFailed_Title" translate="yes" xml:space="preserve">
           <source>Assign Narrative dialog failure</source>
-          <target state="translated">Fout bij het openen van het dialoogvenster</target>
+          <target state="final">Fout bij het openen van het dialoogvenster</target>
         </trans-unit>
         <trans-unit id="AssignNarrativeDialog_Title_Edit" translate="yes" xml:space="preserve">
           <source>Assign/Edit Narrative for</source>
-          <target state="translated">Toekennen/wijzigen narratief voor</target>
+          <target state="final">Toekennen/wijzigen narratief voor</target>
         </trans-unit>
         <trans-unit id="AssignNarrativeDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
           <source>Assign Narrative</source>
-          <target state="translated">Narratief toekennen</target>
+          <target state="final">Narratief toekennen</target>
         </trans-unit>
         <trans-unit id="AssignNarrativeDialog_AboutHeader.Text" translate="yes" xml:space="preserve">
           <source>Description/Note</source>
-          <target state="translated">Omschrijving/notitie</target>
+          <target state="final">Omschrijving/notitie</target>
         </trans-unit>
         <trans-unit id="AssignNarrativeDialog_ComboHeader.Header" translate="yes" xml:space="preserve">
           <source>Narrative</source>
-          <target state="translated">Narratief</target>
+          <target state="final">Narratief</target>
         </trans-unit>
         <trans-unit id="LibraryLV_Narrative.Text" translate="yes" xml:space="preserve">
           <source>Narrative</source>
-          <target state="translated">Narratief</target>
+          <target state="final">Narratief</target>
         </trans-unit>
         <trans-unit id="NarrativeDialog_NarrativeNameExists" translate="yes" xml:space="preserve">
           <source>a Narrative with this name already exists</source>
-          <target state="translated">er bestaat al een narratief met deze naam</target>
+          <target state="final">er bestaat al een narratief met deze naam</target>
         </trans-unit>
         <trans-unit id="AccountDialog_AccountNameExists" translate="yes" xml:space="preserve">
           <source>an Account with this name already exists</source>
-          <target state="translated">er bestaat al een account met deze naam</target>
+          <target state="final">er bestaat al een account met deze naam</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachNarrative.Title" translate="yes" xml:space="preserve">
           <source>New Feature! The Narrative View</source>
-          <target state="translated">Nieuwe functie! Het narratieven overzicht</target>
+          <target state="final">Nieuwe functie! Het narratieven overzicht</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachAssets.Title" translate="yes" xml:space="preserve">
           <source>How to Start! (3 of 3)</source>
-          <target state="translated">Hoe starten! (3 van 3)</target>
+          <target state="final">Hoe starten! (3 van 3)</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachAccounts.Title" translate="yes" xml:space="preserve">
           <source>How to Start! (2 of 3)</source>
-          <target state="translated">Hoe starten! (2 van 3)</target>
+          <target state="final">Hoe starten! (2 van 3)</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachLibrary.Title" translate="yes" xml:space="preserve">
           <source>How to Start! (1 of 3)</source>
-          <target state="translated">Hoe starten! (1 van 3)</target>
+          <target state="final">Hoe starten! (1 van 3)</target>
         </trans-unit>
         <trans-unit id="Dashboard_TeachNarrative.Title" translate="yes" xml:space="preserve">
           <source>New Feature! (2 of 2)</source>
-          <target state="translated">Nieuwe functie! (2 van 2)</target>
+          <target state="final">Nieuwe functie! (2 van 2)</target>
         </trans-unit>
         <trans-unit id="Dashboard_TeachPortfolio.Title" translate="yes" xml:space="preserve">
           <source>New Feature! (1 of 2)</source>
-          <target state="translated">Nieuwe functie! (1 van 2)</target>
+          <target state="final">Nieuwe functie! (1 van 2)</target>
         </trans-unit>
         <trans-unit id="Narrative_TeachGeneral.Title" translate="yes" xml:space="preserve">
           <source>Click on a Narrative in the list to expand and show the related coins</source>
-          <target state="translated">Klik op een narratief in de lijst om deze uit te vouwen en de bijbehorende munten te tonen</target>
+          <target state="final">Klik op een narratief in de lijst om deze uit te vouwen en de bijbehorende munten te tonen</target>
         </trans-unit>
         <trans-unit id="Library_TeachNarrative.Title" translate="yes" xml:space="preserve">
           <source>Narrative Column Added!</source>
-          <target state="translated">Narratief kolom toegevoegd!</target>
+          <target state="final">Narratief kolom toegevoegd!</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
           <source>Assign a main Narrative to each of your coins to get a Narrative View. Assigning can be done at the Library for already existing coins or when adding a new coin.</source>
-          <target state="translated">Wijs een narratief toe aan elk van uw munten om een ​​narratief overzicht te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt.</target>
+          <target state="final">Wijs een narratief toe aan elk van uw munten om een ​​narratief overzicht te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt.</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachAssets.Subtitle" translate="yes" xml:space="preserve">
           <source>Step 3: Build up your Portfolio by adding Transactions in the Assets View</source>
-          <target state="translated">Stap 3: Bouw uw portefeuille op door transacties toe te voegen in de portefeuilleweergave</target>
+          <target state="final">Stap 3: Bouw uw portefeuille op door transacties toe te voegen in de portefeuilleweergave</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachAccounts.Subtitle" translate="yes" xml:space="preserve">
           <source>Step 2: Add Accounts. An Account is a location where you hold your coins, like Bybit, MEXC, Ledger, Trezor or any other exchange or wallet</source>
-          <target state="translated">Stap 2: Accounts toevoegen. Een account is een locatie waar u uw munten bewaart, zoals Bybit, MEXC, Ledger, Trezor of een andere exchange of wallet</target>
+          <target state="final">Stap 2: Accounts toevoegen. Een account is een locatie waar u uw munten bewaart, zoals Bybit, MEXC, Ledger, Trezor of een andere exchange of wallet</target>
         </trans-unit>
         <trans-unit id="Navigation_TeachLibrary.Subtitle" translate="yes" xml:space="preserve">
           <source>Step 1: Add coins to your Library.</source>
-          <target state="translated">Stap 1: Voeg munten toe aan uw bibliotheek.</target>
+          <target state="final">Stap 1: Voeg munten toe aan uw bibliotheek.</target>
         </trans-unit>
         <trans-unit id="Dashboard_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
           <source>Assign a main Narrative to each of your coins to get a Narrative Distribution. Assigning can be done at the Library for already existing coins or when adding a new coin</source>
-          <target state="translated">Wijs een narratief toe aan elk van uw munten om een ​​narrtief verdeling te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt</target>
+          <target state="final">Wijs een narratief toe aan elk van uw munten om een ​​narrtief verdeling te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt</target>
         </trans-unit>
         <trans-unit id="Dashboard_TeachPortfolio.Subtitle" translate="yes" xml:space="preserve">
           <source>Set Maximum Number of visible coins in 'Settings -&gt; Dashboard Settings'. The remaining coins will be grouped into 'Others'</source>
-          <target state="translated">Stel het maximale aantal zichtbare munten in 'Instellingen -&gt; Dashboardinstellingen' in. De resterende munten worden gegroepeerd in 'Others'</target>
+          <target state="final">Stel het maximale aantal zichtbare munten in 'Instellingen -&gt; Dashboardinstellingen' in. De resterende munten worden gegroepeerd in 'Others'</target>
         </trans-unit>
         <trans-unit id="Narrative_TeachGeneral.Subtitle" translate="yes" xml:space="preserve">
           <source>First you have to assign a Narrative to each of the coins. You can do that in the Library</source>
-          <target state="translated">Eerst moet je een Narratief toewijzen aan elk van de munten. Dat kun je doen in de bibliotheek</target>
+          <target state="final">Eerst moet je een Narratief toewijzen aan elk van de munten. Dat kun je doen in de bibliotheek</target>
         </trans-unit>
         <trans-unit id="Library_TeachNarrative.Subtitle" translate="yes" xml:space="preserve">
           <source>Assigning Narratives can be done for existing coins by selecting the action dots ... on the right of each coin</source>
-          <target state="translated">Het toewijzen van een narratief kan worden gedaan voor bestaande munten door de 'actie'-punten te selecteren, helemaal rechts naast elke munt.</target>
+          <target state="final">Het toewijzen van een narratief kan worden gedaan voor bestaande munten door de 'actie'-punten te selecteren, helemaal rechts naast elke munt.</target>
         </trans-unit>
         <trans-unit id="NarrativesLV_ShowOnlyAssets.Content" translate="yes" xml:space="preserve">
           <source>Show only Assets</source>
-          <target state="translated">Toon alleen portefeuille</target>
+          <target state="final">Toon alleen portefeuille</target>
         </trans-unit>
         <trans-unit id="HeatMapType_Target.Content" translate="yes" xml:space="preserve">
           <source>Target</source>
-          <target state="translated">Target</target>
+          <target state="final">Target</target>
         </trans-unit>
         <trans-unit id="HeatMapType_Rsi.Content" translate="yes" xml:space="preserve">
           <source>daily RSI</source>
-          <target state="translated">dagelijkse RSI</target>
+          <target state="final">dagelijkse RSI</target>
         </trans-unit>
         <trans-unit id="HeatMapView_Target_YAxisTitle" translate="yes" xml:space="preserve">
           <source>Distance to Profit Take Level [%]</source>
-          <target state="translated">Afstand tot target [%]</target>
+          <target state="final">Afstand tot target [%]</target>
         </trans-unit>
         <trans-unit id="HeatMapView_Rsi_YAxisTitle" translate="yes" xml:space="preserve">
           <source>daily RSI</source>
-          <target state="translated">dagelijkse RSI</target>
+          <target state="final">dagelijkse RSI</target>
         </trans-unit>
         <trans-unit id="HeatMap_TeachRsi.Title" translate="yes" xml:space="preserve">
           <source>New Feature: daily RSI bubbles</source>
-          <target state="translated">Nieuwe functie: dagelijkse RSI</target>
+          <target state="final">Nieuwe functie: dagelijkse RSI</target>
         </trans-unit>
         <trans-unit id="SwitchPortfolio_Title.Text" translate="yes" xml:space="preserve">
           <source>Switch Portfolio</source>
-          <target state="translated">Wissel Portefeuille</target>
+          <target state="final">Wissel Portefeuille</target>
         </trans-unit>
         <trans-unit id="SwitchPortfolioLV_Title.Text" translate="yes" xml:space="preserve">
           <source>Portfolios</source>
-          <target state="translated">Portefeuille</target>
+          <target state="final">Portefeuille</target>
         </trans-unit>
         <trans-unit id="SwitchPortfolioLV_LastAccess" translate="yes" xml:space="preserve">
           <source>last access</source>
-          <target state="translated">laatst geopend</target>
+          <target state="final">laatst geopend</target>
         </trans-unit>
         <trans-unit id="Navigation_SwitchPortfolio.Content" translate="yes" xml:space="preserve">
           <source>Switch Portfolio</source>
-          <target state="translated">Wissel portefeuille</target>
+          <target state="final">Wissel portefeuille</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_Title.Text" translate="yes" xml:space="preserve">
           <source>Portfolio Admin</source>
-          <target state="translated">Portefeuille Admin</target>
+          <target state="final">Portefeuille Admin</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_Explainer.Text" translate="yes" xml:space="preserve">
           <source>This view provides you with the means to maintain your portfolio's with regard to renaming, adding, removing and copying of a portfolio. The App also creates Restore Points at specific moments. In case of a faulty portfolio, you wil have the possibility to restore the portfolio by using a Restore Point. Besides that, you can also create/restore your own backup. This could be usefull for example for (temporary) moving your portfolio to a laptop during holiday.</source>
-          <target state="translated">Deze weergave biedt u de mogelijkheid om uw portefeuilles te onderhouden met betrekking tot het hernoemen, toevoegen, verwijderen en kopiëren van een portefeuille. De app maakt ook herstelpunten op specifieke momenten. In het geval van een defecte portefeuille, heeft u de mogelijkheid om deze te herstellen met behulp van een herstelpunt. Daarnaast kunt u ook uw eigen back-up maken/herstellen. Dit kan bijvoorbeeld handig zijn om uw portefeuille (tijdelijk) te verplaatsen naar een laptop voor tijdens de vakantie.</target>
+          <target state="final">Deze weergave biedt u de mogelijkheid om uw portefeuilles te onderhouden met betrekking tot het hernoemen, toevoegen, verwijderen en kopiëren van een portefeuille. De app maakt ook herstelpunten op specifieke momenten. In het geval van een defecte portefeuille, heeft u de mogelijkheid om deze te herstellen met behulp van een herstelpunt. Daarnaast kunt u ook uw eigen back-up maken/herstellen. Dit kan bijvoorbeeld handig zijn om uw portefeuille (tijdelijk) te verplaatsen naar een laptop voor tijdens de vakantie.</target>
         </trans-unit>
         <trans-unit id="Navigation_Admin.Content" translate="yes" xml:space="preserve">
           <source>Portfolio Admin</source>
-          <target state="translated">Portefeuille Admin</target>
+          <target state="final">Portefeuille Admin</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_Title_Edit" translate="yes" xml:space="preserve">
           <source>Rename Portfolio</source>
-          <target state="translated">Portefeuille hernoemen</target>
+          <target state="final">Portefeuille hernoemen</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_PrimaryButton_Edit" translate="yes" xml:space="preserve">
           <source>Accept</source>
-          <target state="translated">Accepteren</target>
+          <target state="final">Accepteren</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_CloseButton" translate="yes" xml:space="preserve">
           <source>Cancel</source>
-          <target state="translated">annuleren</target>
+          <target state="final">annuleren</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_Title_Add" translate="yes" xml:space="preserve">
           <source>Add a new Portfolio</source>
-          <target state="translated">Een nieuwe portefeuille toevoegen</target>
+          <target state="final">Een nieuwe portefeuille toevoegen</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_PrimaryButton_Add" translate="yes" xml:space="preserve">
           <source>Accept</source>
-          <target state="translated">Accepteren</target>
+          <target state="final">Accepteren</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_NameExists" translate="yes" xml:space="preserve">
           <source>A portfolio with this name already exists.</source>
-          <target state="translated">Een portefeuille met deze naam bestaat al</target>
+          <target state="final">Een portefeuille met deze naam bestaat al</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioRenameFailed_Title" translate="yes" xml:space="preserve">
           <source>Renaming Portfolio failed</source>
-          <target state="translated">Fout bij het hernoemen van de portefeuille</target>
+          <target state="final">Fout bij het hernoemen van de portefeuille</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_Name.Header" translate="yes" xml:space="preserve">
           <source>Portfolio Name</source>
-          <target state="translated">Portefeuille naam</target>
+          <target state="final">Portefeuille naam</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioAddFailed_Title" translate="yes" xml:space="preserve">
           <source>Failed to add Portfolio</source>
-          <target state="translated">Fout bij het toevoegen van de portfolio</target>
+          <target state="final">Fout bij het toevoegen van de portfolio</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_PreName.Text" translate="yes" xml:space="preserve">
           <source>All data specifically related to portfolio</source>
-          <target state="translated">Alle gegevens die specifiek betrekking hebben op de portefeuille</target>
+          <target state="final">Alle gegevens die specifiek betrekking hebben op de portefeuille</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_PostName.Text" translate="yes" xml:space="preserve">
           <source>will be removed. Do you want to continue?</source>
-          <target state="translated">worden verwijderd. Wilt u doorgaan?</target>
+          <target state="final">worden verwijderd. Wilt u doorgaan?</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_DeleteConfirm.Content" translate="yes" xml:space="preserve">
           <source>Yes, remove portfolio</source>
-          <target state="translated">Ja, verwijder portefeuille</target>
+          <target state="final">Ja, verwijder portefeuille</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_ShowRestoreButton.Label" translate="yes" xml:space="preserve">
           <source>Show Restore Points</source>
-          <target state="translated">Toon herstelpunten</target>
+          <target state="final">Toon herstelpunten</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_AddButton.Label" translate="yes" xml:space="preserve">
           <source>Add</source>
-          <target state="translated">Toevoegen</target>
+          <target state="final">Toevoegen</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_RenameButton.Label" translate="yes" xml:space="preserve">
           <source>Rename</source>
-          <target state="translated">Hernoemen</target>
+          <target state="final">Hernoemen</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_CopyButton.Label" translate="yes" xml:space="preserve">
           <source>Copy</source>
-          <target state="translated">Kopieren</target>
+          <target state="final">Kopieren</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_DeleteButton.Label" translate="yes" xml:space="preserve">
           <source>Delete</source>
-          <target state="translated">Verwijderen</target>
+          <target state="final">Verwijderen</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioDeleteFailed_Title" translate="yes" xml:space="preserve">
           <source>Failed to delete portfolio</source>
-          <target state="translated">Fout bij verwijderen van portefeuille</target>
+          <target state="final">Fout bij verwijderen van portefeuille</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_RestoreButton.Label" translate="yes" xml:space="preserve">
           <source>Restore</source>
-          <target state="translated">Herstellen</target>
+          <target state="final">Herstellen</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_RestoreConfirm.Content" translate="yes" xml:space="preserve">
           <source>Yes, restore portfolio</source>
-          <target state="translated">Ja, herstel portefeuille</target>
+          <target state="final">Ja, herstel portefeuille</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_RestorePreName.Text" translate="yes" xml:space="preserve">
           <source>Do you want to restore portfolio</source>
-          <target state="translated">Wilt u de portefeuille herstellen?</target>
+          <target state="final">Wilt u de portefeuille herstellen?</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_RestoreMidName.Text" translate="yes" xml:space="preserve">
           <source>will be restored using restore point</source>
-          <target state="translated">wordt hersteld met behulp van herstelpunt</target>
+          <target state="final">wordt hersteld met behulp van herstelpunt</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_RestorePostName.Text" translate="yes" xml:space="preserve">
           <source>Do you want to continue?</source>
-          <target state="translated">Wilt U verder gaan?</target>
+          <target state="final">Wilt U verder gaan?</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_RestoreTitle.Text" translate="yes" xml:space="preserve">
           <source>Restore Points for </source>
-          <target state="translated">Herstelpunten voor</target>
+          <target state="final">Herstelpunten voor</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioRestoreConnectFailed_Title" translate="yes" xml:space="preserve">
           <source>Reconnecting portfolio after applying a Restore Point failed. Please apply another Restore Point or Backup.</source>
-          <target state="translated">Portfolio opnieuw verbinden na toepassen van een herstelpunt is mislukt. Pas een ander herstelpunt of een back-up toe.</target>
+          <target state="final">Portfolio opnieuw verbinden na toepassen van een herstelpunt is mislukt. Pas een ander herstelpunt of een back-up toe.</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioRestoreWarning_Title" translate="yes" xml:space="preserve">
           <source>Restoring Mandatory portfolio files succeeded.</source>
-          <target state="translated">Het herstellen van de verplichte portfoliobestanden is gelukt.</target>
+          <target state="final">Het herstellen van de verplichte portfoliobestanden is gelukt.</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioRestoreCriticalError_Title" translate="yes" xml:space="preserve">
           <source>Restoring Portfolio failed. </source>
-          <target state="translated">Herstellen van Portfolio mislukt.</target>
+          <target state="final">Herstellen van Portfolio mislukt.</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioRestoreCriticalError_Message" translate="yes" xml:space="preserve">
           <source>Failure during restore. Possible changes have been reverted. Restore not app;ied. See log-files for details.</source>
-          <target state="translated">Fout tijdens herstel. Mogelijke wijzigingen zijn teruggedraaid. Herstel niet toegepast. Zie logbestand voor details.</target>
+          <target state="final">Fout tijdens herstel. Mogelijke wijzigingen zijn teruggedraaid. Herstel niet toegepast. Zie logbestand voor details.</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioRestoreDisconnectFailed_Title" translate="yes" xml:space="preserve">
           <source>Disconnecting portfolio failed. </source>
-          <target state="translated">Het loskoppelen van de portefeuille is mislukt.</target>
+          <target state="final">Het loskoppelen van de portefeuille is mislukt.</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioRestoreWarning_Message" translate="yes" xml:space="preserve">
           <source>Fault occured during restoring MarketCharts. See log-file for details.</source>
-          <target state="translated">Er is een fout opgetreden tijdens het herstellen van MarketCharts. Zie logbestand voor details.</target>
+          <target state="final">Er is een fout opgetreden tijdens het herstellen van MarketCharts. Zie logbestand voor details.</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_DeleteRestoreButton.Label" translate="yes" xml:space="preserve">
           <source>Delete</source>
-          <target state="translated">Verwijderen</target>
+          <target state="final">Verwijderen</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_Title_Copy" translate="yes" xml:space="preserve">
           <source>Copy</source>
-          <target state="translated">Kopieer</target>
+          <target state="final">Kopieer</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioCopyFailed_Title" translate="yes" xml:space="preserve">
           <source>Copying Portfolio failed.</source>
-          <target state="translated">Fout bij het kopieren van de portefeuille.</target>
+          <target state="final">Fout bij het kopieren van de portefeuille.</target>
         </trans-unit>
         <trans-unit id="CopyPortfolioDialog_RbFullCopy.Content" translate="yes" xml:space="preserve">
           <source>Full Copy</source>
-          <target state="translated">Volledige kopie</target>
+          <target state="final">Volledige kopie</target>
         </trans-unit>
         <trans-unit id="CopyPortfolioDialog_RbPartialCopy.Content" translate="yes" xml:space="preserve">
           <source>Partial Copy</source>
-          <target state="translated">Gedeeltelijke kopie</target>
+          <target state="final">Gedeeltelijke kopie</target>
         </trans-unit>
         <trans-unit id="CopyPortfolioDialog_RadioButtons.Header" translate="yes" xml:space="preserve">
           <source>Option</source>
-          <target state="translated">Optie</target>
+          <target state="final">Optie</target>
         </trans-unit>
         <trans-unit id="CopyPortfolioDialog_CopyOptions.Text" translate="yes" xml:space="preserve">
           <source>Choose which Copy option you prefer. A Full copy results in an exact copy including Assets and Transactions. A Partial copy contains the Coin Library (including PriceLevels and Narratives) and the Accounts.</source>
-          <target state="translated">Kies welke kopieeroptie u verkiest. Een volledige kopie resulteert in een exacte kopie inclusief activa en transacties. Een gedeeltelijke kopie bevat de Muntenbibliotheek (inclusief prijsniveaus en narratieven) en de Accounts.</target>
+          <target state="final">Kies welke kopieeroptie u verkiest. Een volledige kopie resulteert in een exacte kopie inclusief activa en transacties. Een gedeeltelijke kopie bevat de Muntenbibliotheek (inclusief prijsniveaus en narratieven) en de Accounts.</target>
         </trans-unit>
         <trans-unit id="CopyPortfolioDialog_Name.Header" translate="yes" xml:space="preserve">
           <source>New Portfolio Name</source>
-          <target state="translated">Nieuwe portefeuille naam</target>
+          <target state="final">Nieuwe portefeuille naam</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_PrimaryButton_Copy" translate="yes" xml:space="preserve">
           <source>Create Copy</source>
-          <target state="translated">Kopie maken</target>
+          <target state="final">Kopie maken</target>
         </trans-unit>
         <trans-unit id="SwitchPortfolio_Explainer.Text" translate="yes" xml:space="preserve">
           <source>The Crypto Portfolio Tracker supports multiple portfolios. Go to the Portfolio Admin view to manage and setup your portfolio(s). Switch from portfolio by double-clicking one of the portfolios in the list below.</source>
-          <target state="translated">De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuilles te beheren en in te stellen. Wissel van portefeuille door te dubbelklikken op een van de portefeuilles in de onderstaande lijst.</target>
+          <target state="final">De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuilles te beheren en in te stellen. Wissel van portefeuille door te dubbelklikken op een van de portefeuilles in de onderstaande lijst.</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_SaveBackupButton.Label" translate="yes" xml:space="preserve">
           <source>Save Backup</source>
-          <target state="translated">Backup opslaan</target>
+          <target state="final">Backup opslaan</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_Title_Restore" translate="yes" xml:space="preserve">
           <source>Restore a Portfolio</source>
-          <target state="translated">Een portefeuille herstellen</target>
+          <target state="final">Een portefeuille herstellen</target>
         </trans-unit>
         <trans-unit id="PortfolioDialog_PrimaryButton_Restore" translate="yes" xml:space="preserve">
           <source>Restore</source>
-          <target state="translated">Herstellen</target>
+          <target state="final">Herstellen</target>
         </trans-unit>
         <trans-unit id="RestorePortfolioDialog_ExplNoSignature" translate="yes" xml:space="preserve">
           <source>Invalid Backup. Cannot continue with Restore</source>
-          <target state="translated">Ongeldige backup. Kan niet doorgaan met herstellen</target>
+          <target state="final">Ongeldige backup. Kan niet doorgaan met herstellen</target>
         </trans-unit>
         <trans-unit id="RestorePortfolioDialog_ExplPortfolioExist" translate="yes" xml:space="preserve">
           <source>Restoring this backup will overwrite the existing portfolio below. If needed make a backup first.</source>
-          <target state="translated">Het herstellen van deze backup overschrijft de bestaande portfolio hieronder. Maak indien nodig eerst een backup.</target>
+          <target state="final">Het herstellen van deze backup overschrijft de bestaande portfolio hieronder. Maak indien nodig eerst een backup.</target>
         </trans-unit>
         <trans-unit id="RestorePortfolioDialog_ExplPortfolioNotExist" translate="yes" xml:space="preserve">
           <source>No such actual portfolio found. Restoring this backup will result in a new portfolio with the following name:</source>
-          <target state="translated">Geen dergelijke portfolio gevonden. Het herstellen van deze backup resulteert in een nieuwe portfolio met de volgende naam:</target>
+          <target state="final">Geen dergelijke portfolio gevonden. Het herstellen van deze backup resulteert in een nieuwe portfolio met de volgende naam:</target>
         </trans-unit>
         <trans-unit id="PortfolioAdmin_RestoreBackupButton.Label" translate="yes" xml:space="preserve">
           <source>Restore Backup</source>
-          <target state="translated">Backup terugzetten</target>
+          <target state="final">Backup terugzetten</target>
         </trans-unit>
         <trans-unit id="RestorePortfolioDialog_Name.Header" translate="yes" xml:space="preserve">
           <source>Portfolio Name</source>
-          <target state="translated">Portefeuillenaam</target>
+          <target state="final">Portefeuillenaam</target>
         </trans-unit>
         <trans-unit id="RestorePortfolioDialog_ExplError" translate="yes" xml:space="preserve">
           <source>Error while extracting backup. Cannot continue with restore</source>
-          <target state="translated">Fout bij het uitpakken van de back-up. Kan niet doorgaan met herstellen.</target>
+          <target state="final">Fout bij het uitpakken van de back-up. Kan niet doorgaan met herstellen.</target>
         </trans-unit>
         <trans-unit id="Messages_ScheduledTask_Explainer" translate="yes" xml:space="preserve">
           <source>The CryptoPortfolioTracker needs to register a scheduled task to perform a daily update of the Market Charts. The application needs to run once as an administrator to register the scheduled task. It will restart and prompt you to accept changes. </source>
-          <target state="translated">De CryptoPortfolioTracker moet een geplande taak registreren om de marktgrafieken dagelijks bij te werken. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te registreren. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</target>
+          <target state="final">De CryptoPortfolioTracker moet een geplande taak registreren om de marktgrafieken dagelijks bij te werken. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te registreren. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</target>
         </trans-unit>
         <trans-unit id="Messages_GraphUpdateService_InvalidChartsTitle" translate="yes" xml:space="preserve">
           <source>Invalid MarketChart Found for</source>
-          <target state="translated">Ongeldige MarketChart gevonden voor</target>
+          <target state="final">Ongeldige MarketChart gevonden voor</target>
         </trans-unit>
         <trans-unit id="Messages_ScheduledTask_Title" translate="yes" xml:space="preserve">
           <source>Administrator Privileges Required  </source>
-          <target state="translated">Beheerdersrechten vereist </target>
+          <target state="final">Beheerdersrechten vereist </target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_EmaLevel.Text" translate="yes" xml:space="preserve">
           <source>50 EMA</source>
-          <target state="translated">50 EMA</target>
+          <target state="final">50 EMA</target>
         </trans-unit>
         <trans-unit id="PriceLevelsLV_DistanceToEmaLevel.Text" translate="yes" xml:space="preserve">
           <source>Distance</source>
-          <target state="translated">Afstand</target>
+          <target state="final">Afstand</target>
         </trans-unit>
         <trans-unit id="HeatMapView_Ema_YAxisTitle" translate="yes" xml:space="preserve">
-          <source>Distance to 50 EMA [%]</source>
-          <target state="translated">Afstand tot 50 EMA [%]</target>
+          <source>Distance to MA [%]</source>
+          <target state="final">Afstand tot MA [%]</target>
         </trans-unit>
         <trans-unit id="HeatMap_TeachEma.Title" translate="yes" xml:space="preserve">
           <source>New Feature: daily EMA bubbles</source>
-          <target state="translated">Nieuw: dagelijkse 50 EMA bubbles</target>
+          <target state="final">Nieuw: dagelijkse 50 EMA bubbles</target>
         </trans-unit>
         <trans-unit id="HeatMapType_Ema.Content" translate="yes" xml:space="preserve">
           <source>daily 50 EMA</source>
-          <target state="translated">dagelijkse 50 EMA</target>
+          <target state="final">dagelijkse 50 EMA</target>
         </trans-unit>
         <trans-unit id="Messages_DashboardSettingsDialogFailed_Title" translate="yes" xml:space="preserve">
           <source>Failed to show DashboardSettings Dialog</source>
-          <target state="translated">Fout bij het openen van het Dashboard Settings Dialoogvenster</target>
+          <target state="final">Fout bij het openen van het Dashboard Settings Dialoogvenster</target>
         </trans-unit>
         <trans-unit id="Messages_PortfolioSettingsDialogFailed_Title" translate="yes" xml:space="preserve">
           <source>Failed to show PortfolioSettings Dialog</source>
-          <target state="translated">Fout bij het openen van het Portefeuille Settings Dialoogvenster</target>
+          <target state="final">Fout bij het openen van het Portefeuille Settings Dialoogvenster</target>
         </trans-unit>
         <trans-unit id="settingsExpander_Password.Description" translate="yes" xml:space="preserve">
           <source>Expand this to get access to password settings. Protect your app and configure also a duress password</source>
-          <target state="translated">Vouw dit uit om toegang te krijgen tot de wachtwoordinstellingen. Bescherm je app en configureer ook een dwangwachtwoord.</target>
+          <target state="final">Vouw dit uit om toegang te krijgen tot de wachtwoordinstellingen. Bescherm je app en configureer ook een dwangwachtwoord.</target>
         </trans-unit>
         <trans-unit id="settingsExpander_Password.Header" translate="yes" xml:space="preserve">
           <source>Security</source>
-          <target state="translated">Veiligheid</target>
+          <target state="final">Veiligheid</target>
         </trans-unit>
         <trans-unit id="Settings_Password.Description" translate="yes" xml:space="preserve">
           <source>Protect access to the app with a password</source>
-          <target state="translated">Beveilig de toegang tot de app met een wachtwoord</target>
+          <target state="final">Beveilig de toegang tot de app met een wachtwoord</target>
         </trans-unit>
         <trans-unit id="Settings_Password.Header" translate="yes" xml:space="preserve">
           <source>Access Password</source>
-          <target state="translated">Toegangswachtwoord</target>
+          <target state="final">Toegangswachtwoord</target>
         </trans-unit>
         <trans-unit id="Settings_duressPassword.Description" translate="yes" xml:space="preserve">
           <source>Access to your app under duress? Using the duress password will open the app with a decoy portfolio. This one is initialy empty but if you prefer, you can add some small positions. </source>
-          <target state="translated">Toegang tot je app onder dwang? Met het dwangwachtwoord open je de app met een nepportfolio. Deze is in eerste instantie leeg, maar je kunt er desgewenst kleine posities aan toevoegen.</target>
+          <target state="final">Toegang tot je app onder dwang? Met het dwangwachtwoord open je de app met een nepportfolio. Deze is in eerste instantie leeg, maar je kunt er desgewenst kleine posities aan toevoegen.</target>
         </trans-unit>
         <trans-unit id="Settings_duressPassword.Header" translate="yes" xml:space="preserve">
           <source>Duress Password</source>
-          <target state="translated">Dwangwachtwoord</target>
+          <target state="final">Dwangwachtwoord</target>
         </trans-unit>
         <trans-unit id="Messages_duressPassword_Changed_Msg" translate="yes" xml:space="preserve">
           <source>Your duress password has been updated.</source>
-          <target state="translated">Uw dwangwachtwoord is bijgewerkt.</target>
+          <target state="final">Uw dwangwachtwoord is bijgewerkt.</target>
         </trans-unit>
         <trans-unit id="Messages_duressPassword_Changed_Title" translate="yes" xml:space="preserve">
           <source>Duress Password Changed</source>
-          <target state="translated">Dwangwachtwoord gewijzigd</target>
+          <target state="final">Dwangwachtwoord gewijzigd</target>
         </trans-unit>
         <trans-unit id="Messages_duressPassword_Incorrect_Msg" translate="yes" xml:space="preserve">
           <source>The current duress password is incorrect.</source>
-          <target state="translated">Het huidige dwangwachtwoord is onjuist.</target>
+          <target state="final">Het huidige dwangwachtwoord is onjuist.</target>
         </trans-unit>
         <trans-unit id="Messages_duressPassword_Incorrect_Title" translate="yes" xml:space="preserve">
           <source>Incorrect Duress Password</source>
-          <target state="translated">Onjuist dwangwachtwoord</target>
+          <target state="final">Onjuist dwangwachtwoord</target>
         </trans-unit>
         <trans-unit id="Messages_Password_Changed_Msg" translate="yes" xml:space="preserve">
           <source>Your password has been updated.</source>
-          <target state="translated">Uw wachtwoord is bijgewerkt.</target>
+          <target state="final">Uw wachtwoord is bijgewerkt.</target>
         </trans-unit>
         <trans-unit id="Messages_Password_Changed_Title" translate="yes" xml:space="preserve">
           <source>Password Changed</source>
-          <target state="translated">Wachtwoord gewijzigd</target>
+          <target state="final">Wachtwoord gewijzigd</target>
         </trans-unit>
         <trans-unit id="Messages_Password_Incorrect_Msg" translate="yes" xml:space="preserve">
           <source>The current password is incorrect.</source>
-          <target state="translated">Het huidige wachtwoord is onjuist.</target>
+          <target state="final">Het huidige wachtwoord is onjuist.</target>
         </trans-unit>
         <trans-unit id="Messages_Password_Incorrect_Title" translate="yes" xml:space="preserve">
           <source>Incorrect Password</source>
-          <target state="translated">Onjuist wachtwoord</target>
+          <target state="final">Onjuist wachtwoord</target>
         </trans-unit>
         <trans-unit id="Settings_duressPasswordBox_Current.PlaceholderText" translate="yes" xml:space="preserve">
           <source>Current duress password</source>
-          <target state="translated">Huidig dwangwachtwoord</target>
+          <target state="final">Huidig dwangwachtwoord</target>
         </trans-unit>
         <trans-unit id="Settings_PasswordBox_Current.PlaceholderText" translate="yes" xml:space="preserve">
           <source>Current password</source>
-          <target state="translated">Huidig wachtwoord</target>
+          <target state="final">Huidig wachtwoord</target>
         </trans-unit>
         <trans-unit id="Settings_duressPasswordBox_New.PlaceholderText" translate="yes" xml:space="preserve">
           <source>New duress password</source>
-          <target state="translated">Nieuw dwangwachtwoord</target>
+          <target state="final">Nieuw dwangwachtwoord</target>
         </trans-unit>
         <trans-unit id="Settings_PasswordBox_New.PlaceholderText" translate="yes" xml:space="preserve">
           <source>New password</source>
-          <target state="translated">Nieuw wachtwoord</target>
+          <target state="final">Nieuw wachtwoord</target>
         </trans-unit>
         <trans-unit id="Messages_duressPassword_New_Required_Msg" translate="yes" xml:space="preserve">
           <source>Duress Password cannot be blank or whitespace</source>
-          <target state="translated">Dwangwachtwoord mag niet leeg of met spaties zijn</target>
+          <target state="final">Dwangwachtwoord mag niet leeg of met spaties zijn</target>
         </trans-unit>
         <trans-unit id="Messages_duressPassword_New_Required_Title" translate="yes" xml:space="preserve">
           <source>Incorrect duress password</source>
-          <target state="translated">Onjuist dwangwachtwoord</target>
+          <target state="final">Onjuist dwangwachtwoord</target>
         </trans-unit>
         <trans-unit id="Messages_duressPassword_Set_Msg" translate="yes" xml:space="preserve">
           <source>The new duress password has been set</source>
-          <target state="translated">Het nieuwe dwangwachtwoord is ingesteld</target>
+          <target state="final">Het nieuwe dwangwachtwoord is ingesteld</target>
         </trans-unit>
         <trans-unit id="Messages_duressPassword_Set_Title" translate="yes" xml:space="preserve">
           <source>Duress Password Set</source>
-          <target state="translated">Dwangwachtwoord ingesteld</target>
+          <target state="final">Dwangwachtwoord ingesteld</target>
         </trans-unit>
         <trans-unit id="Messages_Password_New_Required_Msg" translate="yes" xml:space="preserve">
           <source>Password cannot be blank or whitespace</source>
-          <target state="translated">Wachtwoord mag niet leeg of met spaties zijn</target>
+          <target state="final">Wachtwoord mag niet leeg of met spaties zijn</target>
         </trans-unit>
         <trans-unit id="Messages_Password_New_Required_Title" translate="yes" xml:space="preserve">
           <source>Incorrect password</source>
-          <target state="translated">Onjuist wachtwoord</target>
+          <target state="final">Onjuist wachtwoord</target>
         </trans-unit>
         <trans-unit id="Messages_Password_Set_Msg" translate="yes" xml:space="preserve">
           <source>The new password has been set</source>
-          <target state="translated">Het nieuwe wachtwoord is ingesteld</target>
+          <target state="final">Het nieuwe wachtwoord is ingesteld</target>
         </trans-unit>
         <trans-unit id="Messages_Password_Set_Title" translate="yes" xml:space="preserve">
           <source>Password Set</source>
-          <target state="translated">Wachtwoord Ingesteld</target>
+          <target state="final">Wachtwoord Ingesteld</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_Attempts_MsgPrefix" translate="yes" xml:space="preserve">
           <source>Please try again in</source>
-          <target state="translated">Probeer het opnieuw na</target>
+          <target state="final">Probeer het opnieuw na</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_Attempts_MsgPrefix1" translate="yes" xml:space="preserve">
           <source>Locked out for</source>
-          <target state="translated">Buitengesloten voor</target>
+          <target state="final">Buitengesloten voor</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_Attempts_MsgSuffix" translate="yes" xml:space="preserve">
           <source>minutes.</source>
-          <target state="translated">minuten.</target>
+          <target state="final">minuten.</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_Attempts_Title" translate="yes" xml:space="preserve">
           <source>Too many failed attempts</source>
-          <target state="translated">Te veel mislukte pogingen</target>
+          <target state="final">Te veel mislukte pogingen</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_Failed" translate="yes" xml:space="preserve">
           <source>Authentication Failed</source>
-          <target state="translated">Authenticatie mislukt</target>
+          <target state="final">Authenticatie mislukt</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_ForgotPassword" translate="yes" xml:space="preserve">
           <source>Forgot password?</source>
-          <target state="translated">Wachtwoord vergeten?</target>
+          <target state="final">Wachtwoord vergeten?</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_InvalidCode_Msg" translate="yes" xml:space="preserve">
           <source>Check provided reset code. (Case sensitive and limited time valid)</source>
-          <target state="translated">Controleer de verstrekte resetcode. (Hoofdlettergevoelig en geldig voor een beperkte tijd)</target>
+          <target state="final">Controleer de verstrekte resetcode. (Hoofdlettergevoelig en geldig voor een beperkte tijd)</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_InvalidCode_Title" translate="yes" xml:space="preserve">
           <source>Invalid reset code</source>
-          <target state="translated">Ongeldige resetcode</target>
+          <target state="final">Ongeldige resetcode</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_PasswordReset_Msg" translate="yes" xml:space="preserve">
           <source>Please set a new password in Settings.</source>
-          <target state="translated">Stel een nieuw wachtwoord in via Instellingen.</target>
+          <target state="final">Stel een nieuw wachtwoord in via Instellingen.</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_PasswordReset_Title" translate="yes" xml:space="preserve">
           <source>Password has been reset</source>
-          <target state="translated">Wachtwoord is gereset</target>
+          <target state="final">Wachtwoord is gereset</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_PlaceholderText" translate="yes" xml:space="preserve">
           <source>Enter your password</source>
-          <target state="translated">Voer uw wachtwoord in</target>
+          <target state="final">Voer uw wachtwoord in</target>
         </trans-unit>
         <trans-unit id="Messages_Authentication_Required" translate="yes" xml:space="preserve">
           <source>Authentication Required</source>
-          <target state="translated">Authenticatie vereist</target>
+          <target state="final">Authenticatie vereist</target>
         </trans-unit>
         <trans-unit id="Messages_ScheduledTaskMod_Explainer" translate="yes" xml:space="preserve">
           <source>The CryptoPortfolioTracker needs to modify the scheduled task that perform the daily update of the Market Charts. The application needs to run once as an administrator to modify the scheduled task. It will restart and prompt you to accept changes. </source>
-          <target state="translated">De CryptoPortfolioTracker moet de geplande taak voor de dagelijkse update van de marktgrafieken aanpassen. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te wijzigen. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</target>
+          <target state="final">De CryptoPortfolioTracker moet de geplande taak voor de dagelijkse update van de marktgrafieken aanpassen. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te wijzigen. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</target>
         </trans-unit>
         <trans-unit id="Messages_WhatsNewFile_FailedMsg" translate="yes" xml:space="preserve">
           <source>Unable to open the Online 'What's New' in your default browser.</source>
-          <target state="translated">De online 'Wat is er nieuw'-pagina kan niet worden geopend in uw standaardbrowser.</target>
+          <target state="final">De online 'Wat is er nieuw'-pagina kan niet worden geopend in uw standaardbrowser.</target>
         </trans-unit>
         <trans-unit id="Messages_WhatsNewFile_FailedTitle" translate="yes" xml:space="preserve">
           <source>Failed to open Online What's New.</source>
-          <target state="translated">Het openen van de online 'Wat is Nieuw' is mislukt.</target>
+          <target state="final">Het openen van de online 'Wat is Nieuw' is mislukt.</target>
         </trans-unit>
         <trans-unit id="Navigation_WhatsNew.Content" translate="yes" xml:space="preserve">
-          <source>What's New</source>
-          <target state="translated">Wat is er nieuw</target>
+          <source>What's New?</source>
+          <target state="final">Wat is er nieuw?</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard_MaPeriod.Description" translate="yes" xml:space="preserve">
+          <source>Set the number of periods used to calculate the Moving Average (MA).</source>
+          <target state="final">Stel de periode in dat wordt gebruikt om het voortschrijdend gemiddelde (MA) te berekenen.</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard_MaPeriod.Header" translate="yes" xml:space="preserve">
+          <source>MA Period</source>
+          <target state="final">MA Periode</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard_MaType.Description" translate="yes" xml:space="preserve">
+          <source>Choose the type of Moving Average (MA) to use for analysis.</source>
+          <target state="final">Kies het type voortschrijdend gemiddelde (MA) dat u voor de analyse wilt gebruiken.</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard_MaType.Header" translate="yes" xml:space="preserve">
+          <source>MA Type</source>
+          <target state="final">MA Type</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard_RsiPeriod.Description" translate="yes" xml:space="preserve">
+          <source>Set the number of periods used to calculate the Relative Strength Index (RSI).</source>
+          <target state="final">Stel de periode in dat gebruikt wordt om de Relative Strength Index (RSI) te berekenen.</target>
+        </trans-unit>
+        <trans-unit id="Settings_DashBoard_RsiPeriod.Header" translate="yes" xml:space="preserve">
+          <source>RSI Period</source>
+          <target state="final">RSI Periode</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_Bubbles.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get acces to settings related to the 'Bubbles' graph like target ranges, RSI and MA.</source>
+          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Bubbles'-grafiek, zoals doelbereiken, RSI en MA.</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_Bubbles.Header" translate="yes" xml:space="preserve">
+          <source>Bubble Chart settings</source>
+          <target state="translated">Instellingen Bubble grafiek</target>
+        </trans-unit>
+        <trans-unit id="Settings_Bubbles1.Description" translate="yes" xml:space="preserve">
+          <source>This threshold is used to provide a visual confirmation of the Actual Price being within the range of it's target level.</source>
+          <target state="translated">Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de werkelijke prijs binnen het bereik van het doelniveau ligt.</target>
+        </trans-unit>
+        <trans-unit id="Settings_Bubbles1.Header" translate="yes" xml:space="preserve">
+          <source>'Within Range' Threshold percentage</source>
+          <target state="translated">'Binnen bereik' drempelpercentage</target>
+        </trans-unit>
+        <trans-unit id="Settings_Bubbles2.Description" translate="yes" xml:space="preserve">
+          <source>This threshold is used to provide a visual confirmation of the Actual Price being within close range of it's target level.</source>
+          <target state="translated">Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de werkelijke prijs zich binnen het bereik van het doelniveau bevindt.</target>
+        </trans-unit>
+        <trans-unit id="Settings_Bubbles2.Header" translate="yes" xml:space="preserve">
+          <source>'Close To' Threshold percentage</source>
+          <target state="translated">'Dichtbij' drempelpercentage</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_Pie.Description" translate="yes" xml:space="preserve">
+          <source>Expand this to get access to settings related to the Pie Chart(s)</source>
+          <target state="translated">Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de cirkeldiagram(men)</target>
+        </trans-unit>
+        <trans-unit id="settingsExpander_Pie.Header" translate="yes" xml:space="preserve">
+          <source>Pie Chart Settings</source>
+          <target state="translated">Instellingen voor cirkeldiagrammen</target>
+        </trans-unit>
+        <trans-unit id="Settings_MaxPieCoins.Description" translate="yes" xml:space="preserve">
+          <source>The number of coins visible in the Portfolio Pie. The remaining coins will be grouped into 'Others'</source>
+          <target state="translated">Het aantal munten dat zichtbaar is in de Portfolio Pie. De overige munten worden gegroepeerd in 'Overige'.</target>
+        </trans-unit>
+        <trans-unit id="Settings_MaxPieCoins.Header" translate="yes" xml:space="preserve">
+          <source>Maximum number of coins in the Portfolio Pie Chart</source>
+          <target state="translated">Maximaal aantal munten in de portefeuille-cirkeldiagram</target>
         </trans-unit>
       </group>
     </body>

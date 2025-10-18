@@ -282,8 +282,8 @@
                 <RadioButtons l:Uids.Uid="HeatMap_Type" x:Name="rbtHeatMap" TabIndex="0" Style="{StaticResource MK_RButtonsStyle}"  
                               FontWeight="SemiBold" SelectionChanged="HeatMapType_SelectionChanged" Margin="0,10,0,0" SelectedIndex="{Binding SelectedHeatMapIndex, Mode=TwoWay}">
                     <RadioButton l:Uids.Uid="HeatMapType_Target" Style="{StaticResource CustomRadioButtonStyle}"/>
-                    <RadioButton l:Uids.Uid="HeatMapType_Rsi" Style="{StaticResource CustomRadioButtonStyle}"/>
-                    <RadioButton l:Uids.Uid="HeatMapType_Ema" Style="{StaticResource CustomRadioButtonStyle}"/>
+                    <RadioButton Content="{Binding RsiRbContent}" Style="{StaticResource CustomRadioButtonStyle}"/>
+                    <RadioButton Content="{Binding MaRbContent}" Style="{StaticResource CustomRadioButtonStyle}"/>
                 </RadioButtons>
             </StackPanel>
 

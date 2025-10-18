@@ -25,7 +25,7 @@
     <value>Getalsnotatie</value>
   </data>
   <data name="Settings_CheckUpdate.Description" xml:space="preserve">
-    <value>Hoe wilt u dat cijfers worden weergegeven?</value>
+    <value>Hiermee wordt automatisch gecontroleerd op beschikbare updates.</value>
   </data>
   <data name="Settings_CheckUpdate.Header" xml:space="preserve">
     <value>Controleer op Updates.</value>
@@ -791,41 +791,11 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="settingsExpander_General.Header" xml:space="preserve">
     <value>Algemene instellingen</value>
   </data>
-  <data name="settingsExpander_PriceLevels.Description" xml:space="preserve">
-    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de functie 'Prijsniveau', 'binnen bereik'- en 'dichtbij'drempelpercentages.</value>
-  </data>
-  <data name="settingsExpander_PriceLevels.Header" xml:space="preserve">
-    <value>Instellingen Prijsniveaus</value>
-  </data>
-  <data name="Settings_PriceLevels1.Description" xml:space="preserve">
-    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs binnen het bereik van het streefniveau ligt.</value>
-  </data>
-  <data name="Settings_PriceLevels1.Header" xml:space="preserve">
-    <value>'Binnen bereik' drempelpercentage</value>
-  </data>
-  <data name="Settings_PriceLevels2.Description" xml:space="preserve">
-    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de actuele prijs zich dicht bij het streefniveau bevindt.</value>
-  </data>
-  <data name="Settings_PriceLevels2.Header" xml:space="preserve">
-    <value>'Dichtbij' drempelpercentage</value>
-  </data>
   <data name="HeatMapView.Text" xml:space="preserve">
     <value>Target Bubbels</value>
   </data>
   <data name="GraphicView.Text" xml:space="preserve">
     <value>Portefeuille waarde</value>
-  </data>
-  <data name="settingsExpander_DashBoard.Description" xml:space="preserve">
-    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de Dashboardweergave</value>
-  </data>
-  <data name="settingsExpander_DashBoard.Header" xml:space="preserve">
-    <value>Instellingen Dashboard</value>
-  </data>
-  <data name="Settings_DashBoard1.Description" xml:space="preserve">
-    <value>Het aantal munten dat zichtbaar is in de Portfolio Pie. De resterende munten worden gegroepeerd in 'Overige'</value>
-  </data>
-  <data name="Settings_DashBoard1.Header" xml:space="preserve">
-    <value>Maximaal aantal munten in de portefeuille-cirkeldiagram</value>
   </data>
   <data name="Dashboard_Title.Text" xml:space="preserve">
     <value>Dashboard</value>
@@ -1245,7 +1215,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Afstand</value>
   </data>
   <data name="HeatMapView_Ema_YAxisTitle" xml:space="preserve">
-    <value>Afstand tot 50 EMA [%]</value>
+    <value>Afstand tot MA [%]</value>
   </data>
   <data name="HeatMap_TeachEma.Title" xml:space="preserve">
     <value>Nieuw: dagelijkse 50 EMA bubbles</value>
@@ -1383,6 +1353,54 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Het openen van de online 'Wat is Nieuw' is mislukt.</value>
   </data>
   <data name="Navigation_WhatsNew.Content" xml:space="preserve">
-    <value>Wat is er nieuw</value>
+    <value>Wat is er nieuw?</value>
+  </data>
+  <data name="Settings_DashBoard_MaPeriod.Description" xml:space="preserve">
+    <value>Stel de periode in dat wordt gebruikt om het voortschrijdend gemiddelde (MA) te berekenen.</value>
+  </data>
+  <data name="Settings_DashBoard_MaPeriod.Header" xml:space="preserve">
+    <value>MA Periode</value>
+  </data>
+  <data name="Settings_DashBoard_MaType.Description" xml:space="preserve">
+    <value>Kies het type voortschrijdend gemiddelde (MA) dat u voor de analyse wilt gebruiken.</value>
+  </data>
+  <data name="Settings_DashBoard_MaType.Header" xml:space="preserve">
+    <value>MA Type</value>
+  </data>
+  <data name="Settings_DashBoard_RsiPeriod.Description" xml:space="preserve">
+    <value>Stel de periode in dat gebruikt wordt om de Relative Strength Index (RSI) te berekenen.</value>
+  </data>
+  <data name="Settings_DashBoard_RsiPeriod.Header" xml:space="preserve">
+    <value>RSI Periode</value>
+  </data>
+  <data name="settingsExpander_Bubbles.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Bubbles'-grafiek, zoals doelbereiken, RSI en MA.</value>
+  </data>
+  <data name="settingsExpander_Bubbles.Header" xml:space="preserve">
+    <value>Instellingen Bubble grafiek</value>
+  </data>
+  <data name="Settings_Bubbles1.Description" xml:space="preserve">
+    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de werkelijke prijs binnen het bereik van het doelniveau ligt.</value>
+  </data>
+  <data name="Settings_Bubbles1.Header" xml:space="preserve">
+    <value>'Binnen bereik' drempelpercentage</value>
+  </data>
+  <data name="Settings_Bubbles2.Description" xml:space="preserve">
+    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de werkelijke prijs zich binnen het bereik van het doelniveau bevindt.</value>
+  </data>
+  <data name="Settings_Bubbles2.Header" xml:space="preserve">
+    <value>'Dichtbij' drempelpercentage</value>
+  </data>
+  <data name="settingsExpander_Pie.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de cirkeldiagram(men)</value>
+  </data>
+  <data name="settingsExpander_Pie.Header" xml:space="preserve">
+    <value>Instellingen voor cirkeldiagrammen</value>
+  </data>
+  <data name="Settings_MaxPieCoins.Description" xml:space="preserve">
+    <value>Het aantal munten dat zichtbaar is in de Portfolio Pie. De overige munten worden gegroepeerd in 'Overige'.</value>
+  </data>
+  <data name="Settings_MaxPieCoins.Header" xml:space="preserve">
+    <value>Maximaal aantal munten in de portefeuille-cirkeldiagram</value>
   </data>
 </root>

@@ -45,6 +45,21 @@ public class PreferencesService : IPreferencesService
         userPreferences.HeatMapIndex = index;
         SaveUserPreferences("HeatMapIndex", index);
     }
+    public void SetRsiPeriod(int value)
+    {
+        userPreferences.RsiPeriod = value;
+        SaveUserPreferences("RsiPeriod", value);
+    }
+    public void SetMaPeriod(int value)
+    {
+        userPreferences.MaPeriod = value;
+        SaveUserPreferences("MaPeriod", value);
+    }
+    public void SetMaType(string value)
+    {
+        userPreferences.MaType = value;
+        SaveUserPreferences("MaType", value);
+    }
 
 
     public void SetAppCultureLanguage(string language)
@@ -199,6 +214,18 @@ public class PreferencesService : IPreferencesService
     public string GetUserID()
     {
         return userPreferences.UserID;
+    }
+    public int GetRsiPeriod()
+    {
+        return userPreferences.RsiPeriod;
+    }
+    public int GetMaPeriod()
+    {
+        return userPreferences.MaPeriod;
+    }
+    public string GetMaType()
+    {
+        return userPreferences.MaType;
     }
 
 

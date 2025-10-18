@@ -47,5 +47,11 @@ namespace CryptoPortfolioTracker.Services
         string GetLastVersion();
         void SetUserID(string value);
         string GetUserID();
+        int GetRsiPeriod();
+        int GetMaPeriod();
+        string GetMaType();
+        void SetRsiPeriod(int value);
+        void SetMaPeriod(int value);
+        void SetMaType(string value);
     }
 }
