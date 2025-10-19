@@ -17,11 +17,12 @@
     </ContentDialog.Resources>
     
     <Grid>
-        <WebView2 x:Name="WebView"
-            Width="800"
-            Height="600"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"/>
+        <RichEditBox x:Name="RichText"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     IsReadOnly="True"
+                     AcceptsReturn="True"
+                     />
     </Grid>
 
 </ContentDialog>
