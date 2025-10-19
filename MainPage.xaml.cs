@@ -240,7 +240,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
         var loc = Localizer.Get();
         var fileName = "HelpFile_NL.pdf";
 
-        if (_preferencesService.GetAppCultureLanguage() == "en-US")
+        if (string.Equals(_preferencesService?.GetAppCultureLanguage(), "en-US", StringComparison.OrdinalIgnoreCase))
         {
             fileName = "HelpFile_EN.pdf";
         }
@@ -263,7 +263,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
         var loc = Localizer.Get();
         var fileName = Path.Combine("docs","WhatsNew_NL.pdf");
 
-        if (_preferencesService.GetAppCultureLanguage() == "en-US")
+        if (string.Equals(_preferencesService?.GetAppCultureLanguage(), "en-US", StringComparison.OrdinalIgnoreCase))
         {
             fileName = Path.Combine("docs","WhatsNew_EN.pdf");
         }
