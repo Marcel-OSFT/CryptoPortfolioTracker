@@ -3,7 +3,6 @@
     x:Class="CryptoPortfolioTracker.Dialogs.WhatsNewDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="What's New"
     PrimaryButtonText="Close"
     DefaultButton="Primary"
     Width="800"
@@ -17,7 +16,7 @@
     </ContentDialog.Resources>
     
     <Grid>
-        <RichEditBox x:Name="RichText"
+        <RichEditBox x:Name="RichText" Width="800" Height="600"
                      HorizontalAlignment="Stretch"
                      VerticalAlignment="Stretch"
                      IsReadOnly="True"
