@@ -36,24 +36,6 @@ public sealed partial class WhatsNewDialog : ContentDialog
         _preferenceService = preferencesService;
     }
 
-    //private async void WhatsNewDialog_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    //{
-    //    try
-    //    {
-    //        RichText.IsReadOnly = false;
-    //        StorageFile helpFile = await StorageFile.GetFileFromPathAsync(App.AppPath + "\\WhatsNew_EN.rtf");
-    //        Windows.Storage.Streams.IRandomAccessStream randAccStream = await helpFile.OpenAsync(Windows.Storage.FileAccessMode.Read);
-
-    //        // Load the file into the Document property of the RichEditBox.
-    //        RichText.Document.LoadFromStream(Microsoft.UI.Text.TextSetOptions.FormatRtf, randAccStream);
-    //        RichText.IsReadOnly = true;
-    //    }
-    //    catch (Exception)
-    //    {
-
-    //    }
-
-    //}
     private async void WhatsNewDialog_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         try
