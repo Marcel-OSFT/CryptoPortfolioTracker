@@ -466,13 +466,12 @@
   <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.PriResources.targets')" Label="MultilingualAppToolkit">
     <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
   </Target>
-  <Target Name="RemoveFoldersWithMuiFiles" AfterTargets="Build">
-    <ItemGroup>
-      <RemovingFiles Include="$(OutDir)*\*.mui" Exclude="$(OutDir)en-US\*.mui;$(OutDir)nl-NL\*.mui" />
-      <RemovingFolders Include="@(RemovingFiles->'%(RootDir)%(Directory)')" />
-    </ItemGroup>
-    <RemoveDir Directories="@(RemovingFolders)" />
-  </Target>
+
+	<PropertyGroup>
+		<!-- Keep only these satellite resource languages in build/publish output -->
+		<SatelliteResourceLanguages>en-US;nl-NL</SatelliteResourceLanguages>
+	</PropertyGroup>
+	
   <ItemGroup>
     <PRIResource Update="Strings\en-us\Resources.resw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -500,4 +499,19 @@
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Compile>
 	</ItemGroup>
+
+	<!--<Target Name="RemoveFoldersWithMuiFiles" AfterTargets="Build">
+		<ItemGroup>
+			<RemovingFiles Include="$(OutDir)*\*.mui" Exclude="$(OutDir)en-US\*.mui;$(OutDir)nl-NL\*.mui" />
+			<RemovingFolders Include="@(RemovingFiles->'%(RootDir)%(Directory)')" />
+		</ItemGroup>
+		<RemoveDir Directories="@(RemovingFolders)" />
+		<Message Text="Removed unnecessary language folders from Build" Importance="high" />
+	</Target>
+
+	<Target Name="RemoveNonWindowsRuntimes" AfterTargets="Build">
+		<Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;if (Test-Path '$(OutDir)runtimes') { Get-ChildItem -Path '$(OutDir)runtimes' -Directory | Where-Object { $_.Name -notlike 'win*' } | ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force -ErrorAction SilentlyContinue } }&quot;" />
+		<Message Text="Removed Non-Windows runtimes from Build" Importance="high" />
+	</Target>-->
+
 </Project>
