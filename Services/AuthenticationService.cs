@@ -237,13 +237,12 @@ public class AuthenticationService
             const string ntpServer = "pool.ntp.org";
             var ntpData = new byte[48];
             ntpData[0] = 0x1B;
-            using (var udpClient = new UdpClient())
-            {
-                udpClient.Connect(ntpServer, 123);
-                await udpClient.SendAsync(ntpData, ntpData.Length);
-                var result = await udpClient.ReceiveAsync();
-                ntpData = result.Buffer;
-            }
+            using var udpClient = new UdpClient();
+            udpClient.Connect(ntpServer, 123);
+            await udpClient.SendAsync(ntpData, ntpData.Length);
+            var result = await udpClient.ReceiveAsync();
+            ntpData = result.Buffer;
+
             const byte serverReplyTime = 40;
             ulong intPart = (ulong)ntpData[serverReplyTime] << 24 |
                             (ulong)ntpData[serverReplyTime + 1] << 16 |
@@ -253,9 +252,11 @@ public class AuthenticationService
                               (ulong)ntpData[serverReplyTime + 5] << 16 |
                               (ulong)ntpData[serverReplyTime + 6] << 8 |
                               (ulong)ntpData[serverReplyTime + 7];
+
             var milliseconds = (intPart * 1000) + ((fractPart * 1000) / 0x100000000L);
-            var networkDateTime = new DateTime(1900, 1, 1).AddMilliseconds((long)milliseconds);
-            return networkDateTime.ToUniversalTime();
+            // Create epoch as UTC so AddMilliseconds yields a UTC DateTime (avoid Unspecified -> ToUniversalTime conversion issues)
+            var networkDateTime = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)milliseconds);
+            return networkDateTime;
         }
         catch
         {

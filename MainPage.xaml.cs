@@ -3,6 +3,7 @@ using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
+using CryptoPortfolioTracker.Reporting.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,6 +22,11 @@ using Windows.Storage;
 using Windows.UI.Core;
 using WinUI3Localizer;
 
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using QuestPDF.Companion;
+using CryptoPortfolioTracker.Reporting.Documents;
 
 namespace CryptoPortfolioTracker;
 [ObservableObject]
@@ -32,6 +38,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
     public IGraphUpdateService _graphUpdateService;
     public IPriceUpdateService _priceUpdateService;
     private readonly IPreferencesService _preferencesService;
+    private readonly IQuestPdfService _pdfService;
 
     private Type lastPageType;
     private NavigationViewItem lastSelectedNavigationItem;
@@ -39,7 +46,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
     [ObservableProperty] public partial Visibility NavigationVisibility { get; set; }
     [ObservableProperty] public partial bool IsSettingsVisible { get; set; }
 
-    public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IPreferencesService preferencesService)
+    public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IPreferencesService preferencesService, IQuestPdfService pdfService)
     {
         InitializeComponent();
         Current = this;
@@ -48,6 +55,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
         _preferencesService = preferencesService;
         _graphUpdateService = graphUpdateService;
         _priceUpdateService = priceUpdateService;
+        _pdfService = pdfService;
     }
 
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -281,6 +289,46 @@ public partial class MainPage : Page //INotifyPropertyChanged
                 loc.GetLocalizedString("Common_CloseButton"));
         }
     }
+
+
+    private async void DisplayTestPDF()
+    {
+        try
+        {
+            //var document = Document.Create(container =>
+            //{
+            //    container.Page(page =>
+            //    {
+            //        page.Size(PageSizes.A4);
+            //        page.Margin(2, Unit.Centimetre);
+            //        page.DefaultTextStyle(x => x.FontSize(20));
+            //        page.Header().Text("Test123").SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
+            //        page.Content().PaddingVertical(1, Unit.Centimetre).Column(x =>
+            //        {
+            //            x.Spacing(20);
+            //            x.Item().Text(Placeholders.LoremIpsum());
+            //            x.Item().Image(Placeholders.Image(200, 110));
+            //        });
+            //        page.Footer().AlignCenter().Text(x => { x.Span("Page "); x.CurrentPageNumber(); });
+            //    });
+            //});
+
+
+            //// Create document instance
+            var doc = new TestDocument("What's New");
+            doc.ShowInCompanionAsync();
+
+            ////Render & save off UI thread inside service
+            //var outputPath = Path.Combine(App.AppDataPath, "Reports", "TestDocument.pdf");
+            //await _pdfService.SaveAsync(doc, outputPath);
+            //Process.Start(new ProcessStartInfo(outputPath) { UseShellExecute = true });
+        }
+        catch (Exception ex) 
+        {
+            Debug.WriteLine(ex);
+        }
+    }
+
 
     public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
     {

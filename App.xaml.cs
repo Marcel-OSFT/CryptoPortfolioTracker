@@ -3,6 +3,7 @@ using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Initializers;
 using CryptoPortfolioTracker.Services;
+using CryptoPortfolioTracker.Reporting.Services;
 using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
 using Microsoft.EntityFrameworkCore;
@@ -96,7 +97,7 @@ public partial class App : Application
         await InitializeLocalizer();
 
         var authService = new AuthenticationService(PreferencesService, keyBytes);
-        // ******* var code = await authService.GenerateResetCodeAsync("4fc3cd2e-4114-4683-88ab-bd7c57427649");
+        //******* var code = await authService.GenerateResetCodeAsync(PreferencesService.GetUserID()); //***** TESTING PURPOSES ONLY *****
         bool authenticated = await authService.AuthenticateUserAsync(Splash);
         if (!authenticated)
         {
@@ -273,6 +274,8 @@ public partial class App : Application
 
         services.AddScoped<PortfolioService>();
         services.AddSingleton<IMessenger, WeakReferenceMessenger>();
+        // App.xaml.cs (where services are configured)
+        services.AddSingleton<IQuestPdfService, QuestPdfService>();
 
         return services.BuildServiceProvider();
     }
