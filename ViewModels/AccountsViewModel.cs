@@ -25,6 +25,8 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
     public IAccountService _accountService {  get; private set; }
     public IAssetService _assetService { get; private set; }
+    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
     [ObservableProperty] public string portfolioName = string.Empty;
     [ObservableProperty] public Portfolio currentPortfolio;
 
@@ -34,7 +36,6 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     }
 
 
-    private readonly IPreferencesService _preferencesService;
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;
 
@@ -55,7 +56,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
 
-        _preferencesService.SetAreValuesMasked(value);
+        AppSettings.AreValuesMasked = value;
 
         _accountService.ReloadValues();
         _assetService.ReloadValues();
@@ -68,12 +69,12 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
     [ObservableProperty] public partial bool IsAssetsExtendedView { get; set; } = false;
 
-    public AccountsViewModel(IAccountService accountService, IAssetService assetService, IPreferencesService preferencesService) : base(preferencesService)
+
+    public AccountsViewModel(IAccountService accountService, IAssetService assetService, Settings appSettings) : base(appSettings)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AccountsViewModel).Name.PadRight(22));
         Current = this;
         _accountService = accountService;
-        _preferencesService =  preferencesService;
         _assetService = assetService;
         CurrentPortfolio = _assetService.GetPortfolio();
 
@@ -81,11 +82,10 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
 
-        _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
-        IsPrivacyMode = _preferencesService.GetAreValesMasked();
+        _assetService.IsHidingZeroBalances = AppSettings.IsHidingZeroBalances; 
+        IsPrivacyMode =AppSettings.AreValuesMasked;
     }
 
-    
 
     /// <summary>
     /// Initialize async task is called from the View_Loaded event of the associated View
@@ -97,8 +97,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         CurrentPortfolio = _assetService.GetPortfolio();
         PortfolioName = CurrentPortfolio.Name;
 
-        IsPrivacyMode = _preferencesService.GetAreValesMasked();
-       // IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
+        IsPrivacyMode =AppSettings.AreValuesMasked;
         await _accountService.PopulateAccountsList();
     }
 
@@ -175,7 +174,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         try
         {
             Logger.Information("Showing AccountDialog for Adding");
-            var dialog = new AccountDialog(_preferencesService , Current, DialogAction.Add)
+            var dialog = new AccountDialog(Current, DialogAction.Add)
             {
                 XamlRoot = AccountsView.Current.XamlRoot
             };
@@ -221,7 +220,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         try
         {
             Logger.Information("Showing Account Dialog for Editing");
-            var dialog = new AccountDialog(_preferencesService , Current, DialogAction.Edit, account)
+            var dialog = new AccountDialog(Current, DialogAction.Edit, account)
             {
                 XamlRoot = AccountsView.Current.XamlRoot
             };

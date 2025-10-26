@@ -1,41 +1,24 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Views;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using WinUI3Localizer;
-
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
 public partial class PortfolioSettingsDialog : ContentDialog
 {
     private readonly ILocalizer loc = Localizer.Get();
-    private readonly IPreferencesService _preferencesService;
-
+    private readonly AssetsViewModel _viewModel;
     [ObservableProperty] bool isCardExpanded;
     [ObservableProperty] bool isCardEnabled;
 
     [ObservableProperty]
     private bool isHidingZeroBalances;
-    partial void OnIsHidingZeroBalancesChanged(bool value) => _preferencesService.SetHidingZeroBalances(value);
+    partial void OnIsHidingZeroBalancesChanged(bool value) => _viewModel.AppSettings.IsHidingZeroBalances = value;
 
     [ObservableProperty]
     private bool isHidingCapitalFlow;
-    partial void OnIsHidingCapitalFlowChanged(bool value) => _preferencesService.SetHidingCapitalFlow(value);
+    partial void OnIsHidingCapitalFlowChanged(bool value) => _viewModel.AppSettings.IsHidingCapitalFlow = value;
 
-    public PortfolioSettingsDialog(IPreferencesService preferencesService)
+    public PortfolioSettingsDialog(AssetsViewModel viewModel)
     {
-        _preferencesService = preferencesService;
+        _viewModel = viewModel;
         InitializeComponent();
         DataContext = this;
         isCardExpanded = true;
@@ -46,7 +29,7 @@ public partial class PortfolioSettingsDialog : ContentDialog
 
     private async void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        var theme = _preferencesService.GetAppTheme();
+        var theme = _viewModel.AppSettings.AppTheme;
         if (sender.ActualTheme != theme)
         {
             sender.RequestedTheme = theme;
@@ -55,12 +38,11 @@ public partial class PortfolioSettingsDialog : ContentDialog
 
     private void InitializeFields()
     {
-        var preferences = _preferencesService;
-        var numberFormat = preferences.GetNumberFormat();
-        var appCulture = preferences.GetAppCultureLanguage();
+        var numberFormat = _viewModel.AppSettings.NumberFormat;
+        var appCulture = _viewModel.AppSettings.AppCultureLanguage;
 
-        IsHidingZeroBalances = preferences.GetHidingZeroBalances();
-        IsHidingCapitalFlow = preferences.GetHidingCapitalFlow();
+        IsHidingZeroBalances = _viewModel.AppSettings.IsHidingZeroBalances;
+        IsHidingCapitalFlow = _viewModel.AppSettings.IsHidingCapitalFlow;
     }
 
     private void SetDialogTitleAndButtons()

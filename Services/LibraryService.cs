@@ -293,7 +293,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
         var serializerSettings = new JsonSerializerSettings();
 
-        var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
+        var coinsClient = new CoinGeckoClient(httpClient, AppConstants.CoinGeckoApiKey, AppConstants.ApiPath, serializerSettings);
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -353,7 +353,7 @@ public partial class LibraryService : ObservableObject, ILibraryService
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
         var serializerSettings = new JsonSerializerSettings();
 
-        var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
+        var coinsClient = new CoinGeckoClient(httpClient, AppConstants.CoinGeckoApiKey, AppConstants.ApiPath, serializerSettings);
 
         while (!cancellationToken.IsCancellationRequested)
         {

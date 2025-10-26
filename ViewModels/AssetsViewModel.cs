@@ -36,7 +36,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public IAccountService _accountService { get; private set; }
 
     public readonly IGraphService _graphService;
-    private readonly IPreferencesService _preferencesService;
+    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
 
     [ObservableProperty] public partial string PortfolioName { get; set; } = string.Empty;
     [ObservableProperty] public partial Portfolio CurrentPortfolio { get; set; }
@@ -56,7 +57,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public partial bool IsAssetsExtendedView { get; set; } = false;
 
   
-    [ObservableProperty] public partial bool IsHidingCapitalFlow { get; set; }
+    //[ObservableProperty] public partial bool IsHidingCapitalFlow { get; set; }
 
     public static List<CoinList>? coinListGecko;
     private bool disposedValue;
@@ -68,12 +69,12 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
     [ObservableProperty] public partial bool IsPrivacyMode { get; set; }
 
-    private NumberFormatInfo numberFormatInfo;
+    //private NumberFormatInfo numberFormatInfo;
 
     partial void OnIsPrivacyModeChanged(bool value)
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
-        _preferencesService.SetAreValuesMasked(value);
+        AppSettings.AreValuesMasked = value;
         _assetService.ReloadValues();
         _transactionService.ReloadValues();
         ReloadTotals();
@@ -89,20 +90,13 @@ public sealed partial class AssetsViewModel : BaseViewModel
 
 
     public AssetsViewModel(IGraphService graphService, 
-            IAssetService assetService, 
-            IAccountService accountService,
-            ITransactionService transactionService,
-            IMessenger messenger,
-            IPreferencesService preferencesService) : base(preferencesService)
+                            IAssetService assetService, 
+                            IAccountService accountService, 
+                            ITransactionService transactionService, 
+                            IMessenger messenger, Settings appSettings) : base (appSettings)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
-
-        //messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
-        //{
-        //    await _assetService.UpdatePricesAssetTotals();
-        //    await GetPortfolioTotals();
-        //});
 
         messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
         {
@@ -114,15 +108,14 @@ public sealed partial class AssetsViewModel : BaseViewModel
         {
             await LoadViewData();
         });
-        messenger.Register<PreferencesChangedMessage>(this, async (r, m) =>
-        {
-            await RefreshViewAfterChangeOfPreferences();
-        });
+        //messenger.Register<PreferencesChangedMessage>(this, async (r, m) =>
+        //{
+        //    await RefreshViewAfterChangeOfPreferences();
+        //});
 
         _assetService = assetService;
         _transactionService = transactionService;
         _graphService = graphService;
-        _preferencesService = preferencesService;
         _accountService = accountService;
 
         InitializeView();
@@ -141,9 +134,9 @@ public sealed partial class AssetsViewModel : BaseViewModel
         SortGroup = "Assets";
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
-        _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
-        IsPrivacyMode = _preferencesService.GetAreValesMasked();
-        numberFormatInfo = _preferencesService.GetNumberFormat();
+        _assetService.IsHidingZeroBalances = AppSettings.IsHidingZeroBalances;
+        IsPrivacyMode = AppSettings.AreValuesMasked;
+        //numberFormatInfo = AppSettings.NumberFormat;
         await LoadViewData();
     }
 
@@ -151,47 +144,26 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public async Task ViewLoading()
     {
         await LoadViewData();
-        //CurrentPortfolio = _assetService.GetPortfolio();
-        //PortfolioName = CurrentPortfolio.Name;
-     //   IsPrivacyMode = _preferencesService.GetAreValesMasked();
-
-     //   IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
-
-       // await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
-
-        //below setting(s) might have been changed while was moved away from the associated view
-
-        //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
-        //TotalPortfolioValue = _assetService.GetTotalsAssetsValue();
-        //TotalCostBase = _assetService.GetTotalsAssetsCostBase();
-        //TotalPnlPerc = _assetService.GetTotalsAssetsPnLPerc();
-
-        //TotalInflow = await _assetService.GetInFlow();
-        //TotalOutflow = await _assetService.GetOutFlow();
-        //VisibleAssetsCount = _assetService.VisibleAssetsCount;
-
     }
 
-    private async Task RefreshViewAfterChangeOfPreferences()
-    {
-        if (IsRelevantPreferenceChanged())
-        {
-            IsPrivacyMode = _preferencesService.GetAreValesMasked();
-            IsHidingCapitalFlow = _preferencesService.GetHidingCapitalFlow();
-            numberFormatInfo = _preferencesService.GetNumberFormat();
+    //private async Task RefreshViewAfterChangeOfPreferences()
+    //{
+    //    if (IsRelevantPreferenceChanged())
+    //    {
+    //        IsPrivacyMode = AppSettings.AreValuesMasked;
+    //        //IsHidingCapitalFlow = AppSettings.IsHidingCapitalFlow;
+    //        numberFormatInfo = AppSettings.NumberFormat;
 
-            //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
-            await GetPortfolioTotals();
+    //        //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
+    //        await GetPortfolioTotals();
 
-        }
-    }
+    //    }
+    //}
 
-    private bool IsRelevantPreferenceChanged()
-    {
-        return IsPrivacyMode != _preferencesService.GetAreValesMasked()
-             || IsHidingCapitalFlow != _preferencesService.GetHidingCapitalFlow()
-             || numberFormatInfo != _preferencesService.GetNumberFormat();
-    }
+    //private bool IsRelevantPreferenceChanged()
+    //{
+    //    return false; //IsPrivacyMode != AppSettings.AreValuesMasked || numberFormatInfo != AppSettings.NumberFormat;
+    //}
 
     private async Task LoadViewData()
     {
@@ -350,7 +322,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing Transaction Dialog for Adding");
-            var dialog = new TransactionDialog(_transactionService, _preferencesService, DialogAction.Add)
+            var dialog = new TransactionDialog(this, _transactionService, DialogAction.Add)
             {
                 XamlRoot = AssetsView.Current.XamlRoot
             };
@@ -411,7 +383,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
             //*** editing a transaction also involves a change for an element in the ListAssetAccounts
             accountAffected = _accountService.GetAffectedAccount(transaction);  //  ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
 
-            var dialog = new TransactionDialog(_transactionService, _preferencesService, DialogAction.Edit, transaction)
+            var dialog = new TransactionDialog(this, _transactionService, DialogAction.Edit, transaction)
             {
                 XamlRoot = AssetsView.Current.XamlRoot
             };
@@ -556,7 +528,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing PortfolioSettings Dialog");
-            var dialog = new PortfolioSettingsDialog(_preferencesService)
+            var dialog = new PortfolioSettingsDialog(this)
             {
                 XamlRoot = AssetsView.Current.XamlRoot
             };

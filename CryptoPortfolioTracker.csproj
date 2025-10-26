@@ -3,7 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows10.0.26100.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>CryptoPortfolioTracker</RootNamespace>
     <Platforms>x64</Platforms>
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
@@ -16,7 +17,7 @@
     <Version>1.4.0.0</Version>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
-	  <LangVersion>preview</LangVersion>
+	<LangVersion>preview</LangVersion>
 	<WindowsSdkPackageVersion>10.0.26100.52</WindowsSdkPackageVersion>
   </PropertyGroup>
   <PropertyGroup Label="MultilingualAppToolkit">
@@ -220,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Fonts\" />
+    <Folder Include="Preferences\" />
     <Folder Include="Reporting\Models\" />
     <Folder Include="Reporting\Queries\" />
     <Folder Include="Resources\" />

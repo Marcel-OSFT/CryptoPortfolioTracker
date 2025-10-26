@@ -78,221 +78,228 @@ public partial class Coin : BaseModel
 
     async partial void OnPriceChanged(double oldValue, double newValue)
     {
-        await CalculateRsi();
-        await CalculateMa();
+        //await CalculateRsi();
+        //await CalculateMa();
         
-        EvaluatePriceLevels(newValue);
+        //EvaluatePriceLevels(newValue);
     }
 
-    private void UpdatePriceLevelEma()
+    public void NotifyDerivedValuesChanged()
     {
-        var priceLevelEma = PriceLevels.FirstOrDefault(p => p.Type == PriceLevelType.Ema);
-        if (priceLevelEma != null)
-        {
-            priceLevelEma.Value = Ema;
-            priceLevelEma.DistanceToValuePerc = (100 * (Price - Ema) / Ema);
-        }
-        else
-        {
-            var newPriceLevel = new PriceLevel
-            {
-                Type = PriceLevelType.Ema,
-                Value = Ema,
-                Coin = this,
-                DistanceToValuePerc = (100 * (Price - Ema) / Ema)
-            };
-            PriceLevels.Add(newPriceLevel);
-        }
-    }
-
-    public void EvaluatePriceLevels(double newValue)
-    {
-        if (newValue == 0)
-        {
-            return;
-        }
-
-        var withinRangePerc = App.PreferencesService.GetWithinRangePerc();
-        var closeToPerc = App.PreferencesService.GetCloseToPerc();
-
-        foreach (var level in PriceLevels)
-        {
-            var dist = (100 * (newValue - level.Value) / level.Value);
-            level.DistanceToValuePerc = dist;
-
-            if (level.Value != 0)
-            {
-                if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
-                    (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
-                    (level.Type == PriceLevelType.Stop && newValue <= level.Value) ||
-                    (level.Type == PriceLevelType.Ema && newValue <= level.Value))
-                {
-                    level.Status = PriceLevelStatus.TaggedPrice;
-                    continue;
-                }
-
-                if (dist >= -1 * closeToPerc)
-                {
-                    level.Status = PriceLevelStatus.CloseToPrice;
-                    continue;
-                }
-                if (dist >= -1 * withinRangePerc)
-                {
-                    level.Status = PriceLevelStatus.WithinRange;
-                    continue;
-                }
-                level.Status = PriceLevelStatus.NotWithinRange;
-            }
-        }
+        OnPropertyChanged(nameof(Rsi));
+        OnPropertyChanged(nameof(Ema));
         OnPropertyChanged(nameof(PriceLevels));
     }
 
-    public async Task CalculateRsi()
-    {
-        try
-        {
-            await GetClosingPrices();
+    //private void UpdatePriceLevelEma()
+    //{
+    //    var priceLevelEma = PriceLevels.FirstOrDefault(p => p.Type == PriceLevelType.Ema);
+    //    if (priceLevelEma != null)
+    //    {
+    //        priceLevelEma.Value = Ema;
+    //        priceLevelEma.DistanceToValuePerc = (100 * (Price - Ema) / Ema);
+    //    }
+    //    else
+    //    {
+    //        var newPriceLevel = new PriceLevel
+    //        {
+    //            Type = PriceLevelType.Ema,
+    //            Value = Ema,
+    //            Coin = this,
+    //            DistanceToValuePerc = (100 * (Price - Ema) / Ema)
+    //        };
+    //        PriceLevels.Add(newPriceLevel);
+    //    }
+    //}
 
-            var prices = ClosingPrices.ToList();
-            prices.Add(Price);
+    //public void EvaluatePriceLevels(double newValue)
+    //{
+    //    if (newValue == 0)
+    //    {
+    //        return;
+    //    }
 
-            //*** RSI calculation
-            int period = App.PreferencesService.GetRsiPeriod(); //14;
+    //    var withinRangePerc = Settings.WithinRangePerc;
+    //    var closeToPerc = Settings.CloseToPerc;
 
-            if (period == 0 || prices == null || prices.Count < period + 1)
-            {
-                Rsi = 0;
-                return;
-            }
+    //    foreach (var level in PriceLevels)
+    //    {
+    //        var dist = (100 * (newValue - level.Value) / level.Value);
+    //        level.DistanceToValuePerc = dist;
 
-            List<double> rsiValues = new List<double>();
-            List<double> gains = new List<double>();
-            List<double> losses = new List<double>();
+    //        if (level.Value != 0)
+    //        {
+    //            if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
+    //                (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
+    //                (level.Type == PriceLevelType.Stop && newValue <= level.Value) ||
+    //                (level.Type == PriceLevelType.Ema && newValue <= level.Value))
+    //            {
+    //                level.Status = PriceLevelStatus.TaggedPrice;
+    //                continue;
+    //            }
 
-            for (int i = 1; i <= period; i++)
-            {
-                double change = prices[i] - prices[i - 1];
-                if (change > 0)
-                {
-                    gains.Add(change);
-                    losses.Add(0);
-                }
-                else
-                {
-                    gains.Add(0);
-                    losses.Add(-change);
-                }
-            }
+    //            if (dist >= -1 * closeToPerc)
+    //            {
+    //                level.Status = PriceLevelStatus.CloseToPrice;
+    //                continue;
+    //            }
+    //            if (dist >= -1 * withinRangePerc)
+    //            {
+    //                level.Status = PriceLevelStatus.WithinRange;
+    //                continue;
+    //            }
+    //            level.Status = PriceLevelStatus.NotWithinRange;
+    //        }
+    //    }
+    //    OnPropertyChanged(nameof(PriceLevels));
+    //}
 
-            double avgGain = gains.Average();
-            double avgLoss = losses.Average();
+    //public async Task CalculateRsi()
+    //{
+    //    try
+    //    {
+    //        await GetClosingPrices();
 
-            double alpha = 1.0 / period;
+    //        var prices = ClosingPrices.ToList();
+    //        prices.Add(Price);
 
-            double rs = avgGain / avgLoss;
-            double rsi = 100 - (100 / (1 + rs));
-            rsiValues.Add(rsi);
+    //        //*** RSI calculation
+    //        int period = Settings.RsiPeriod;
 
-            for (int i = period + 1; i < prices.Count; i++)
-            {
-                double change = prices[i] - prices[i - 1];
-                double gain = change > 0 ? change : 0;
-                double loss = change < 0 ? -change : 0;
+    //        if (period == 0 || prices == null || prices.Count < period + 1)
+    //        {
+    //            Rsi = 0;
+    //            return;
+    //        }
 
-                avgGain = (gain * alpha) + (avgGain * (1 - alpha));
-                avgLoss = (loss * alpha) + (avgLoss * (1 - alpha));
+    //        List<double> rsiValues = new List<double>();
+    //        List<double> gains = new List<double>();
+    //        List<double> losses = new List<double>();
 
-                rs = avgGain / avgLoss;
-                rsi = 100 - (100 / (1 + rs));
-                rsiValues.Add(rsi);
-            }
+    //        for (int i = 1; i <= period; i++)
+    //        {
+    //            double change = prices[i] - prices[i - 1];
+    //            if (change > 0)
+    //            {
+    //                gains.Add(change);
+    //                losses.Add(0);
+    //            }
+    //            else
+    //            {
+    //                gains.Add(0);
+    //                losses.Add(-change);
+    //            }
+    //        }
 
-            Rsi = rsiValues.Last();
-            return;
-        }
-        catch (Exception ex)
-        {
-            Rsi = 0;
-            return;
-        }
-    }
+    //        double avgGain = gains.Average();
+    //        double avgLoss = losses.Average();
 
-    private async Task GetClosingPrices()
-    {
-        var fileName = Path.Combine(App.ChartsFolder, $"MarketChart_" + ApiId + ".json");
+    //        double alpha = 1.0 / period;
 
-        if (!File.Exists(fileName))
-        {
-            ClosingPrices = new List<double>();
-            return;
-        }
+    //        double rs = avgGain / avgLoss;
+    //        double rsi = 100 - (100 / (1 + rs));
+    //        rsiValues.Add(rsi);
 
-        FileInfo fi = new(fileName);
-        DateTime fileDate = fi.LastWriteTime;
+    //        for (int i = period + 1; i < prices.Count; i++)
+    //        {
+    //            double change = prices[i] - prices[i - 1];
+    //            double gain = change > 0 ? change : 0;
+    //            double loss = change < 0 ? -change : 0;
 
-        if (FileDateMarketChart != fileDate || !ClosingPrices.Any())
-        {
-            MarketChartById marketChart = new();
+    //            avgGain = (gain * alpha) + (avgGain * (1 - alpha));
+    //            avgLoss = (loss * alpha) + (avgLoss * (1 - alpha));
 
-            var suffix = Name.Contains("_pre-listing") ? "-prelisting" : "";
+    //            rs = avgGain / avgLoss;
+    //            rsi = 100 - (100 / (1 + rs));
+    //            rsiValues.Add(rsi);
+    //        }
 
-            await marketChart.LoadMarketChartJson(ApiId + suffix);
+    //        Rsi = rsiValues.Last();
+    //        return;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Rsi = 0;
+    //        return;
+    //    }
+    //}
 
-            if (marketChart.Prices.Length > 0)
-            {
-                ClosingPrices = marketChart.Prices.TakeLast(150).Select(p => (double)p[1].Value).ToList();
-                FileDateMarketChart = fileDate;
-            }
-        }
-    }
+    //private async Task GetClosingPrices()
+    //{
+    //    var fileName = Path.Combine(AppConstants.ChartsFolder, $"MarketChart_" + ApiId + ".json");
+
+    //    if (!File.Exists(fileName))
+    //    {
+    //        ClosingPrices = new List<double>();
+    //        return;
+    //    }
+
+    //    FileInfo fi = new(fileName);
+    //    DateTime fileDate = fi.LastWriteTime;
+
+    //    if (FileDateMarketChart != fileDate || !ClosingPrices.Any())
+    //    {
+    //        MarketChartById marketChart = new();
+
+    //        var suffix = Name.Contains("_pre-listing") ? "-prelisting" : "";
+
+    //        await marketChart.LoadMarketChartJson(ApiId + suffix);
+
+    //        if (marketChart.Prices.Length > 0)
+    //        {
+    //            ClosingPrices = marketChart.Prices.TakeLast(150).Select(p => (double)p[1].Value).ToList();
+    //            FileDateMarketChart = fileDate;
+    //        }
+    //    }
+    //}
 
 
-    public async Task<double> CalculateMa()
-    {
-        await GetClosingPrices();
+    //public async Task<double> CalculateMa()
+    //{
+    //    await GetClosingPrices();
 
-        var prices = ClosingPrices.ToList();
-        prices.Add(Price);
+    //    var prices = ClosingPrices.ToList();
+    //    prices.Add(Price);
 
-        //*** MA calculation
-        int period = App.PreferencesService.GetMaPeriod();  // 50;
-        string maType = App.PreferencesService.GetMaType(); // "EMA" or "SMA"
+    //    //*** MA calculation
+    //    int period = Settings.MaPeriod;
+    //    string maType = Settings.MaType; // "EMA" or "SMA"
 
-        if (period == 0 || prices == null || prices.Count < period)
-        {
-            Ema = 0;
-            return 0;
-        }
+    //    if (period == 0 || prices == null || prices.Count < period)
+    //    {
+    //        Ema = 0;
+    //        return 0;
+    //    }
 
-        // If SMA requested, return the simple average of the most recent 'period' prices
-        if (string.Equals(maType, "SMA", StringComparison.OrdinalIgnoreCase))
-        {
-            double smaRecent = prices.TakeLast(period).Average();
-            Ema = smaRecent;
-            UpdatePriceLevelEma();
-            return smaRecent;
-        }
+    //    // If SMA requested, return the simple average of the most recent 'period' prices
+    //    if (string.Equals(maType, "SMA", StringComparison.OrdinalIgnoreCase))
+    //    {
+    //        double smaRecent = prices.TakeLast(period).Average();
+    //        Ema = smaRecent;
+    //        UpdatePriceLevelEma();
+    //        return smaRecent;
+    //    }
 
-        // Default: EMA calculation
-        // Calculate the initial SMA (Simple Moving Average) for the first 'period' values
-        double sma = prices.Take(period).Average();
+    //    // Default: EMA calculation
+    //    // Calculate the initial SMA (Simple Moving Average) for the first 'period' values
+    //    double sma = prices.Take(period).Average();
 
-        // Multiplier for weighting the EMA
-        double multiplier = 2.0 / (period + 1);
+    //    // Multiplier for weighting the EMA
+    //    double multiplier = 2.0 / (period + 1);
 
-        // Start EMA with the SMA
-        double ema = sma;
+    //    // Start EMA with the SMA
+    //    double ema = sma;
 
-        // Calculate EMA for the rest of the prices (if any)
-        for (int i = period; i < prices.Count; i++)
-        {
-            ema = ((prices[i] - ema) * multiplier) + ema;
-        }
+    //    // Calculate EMA for the rest of the prices (if any)
+    //    for (int i = period; i < prices.Count; i++)
+    //    {
+    //        ema = ((prices[i] - ema) * multiplier) + ema;
+    //    }
 
-        Ema = ema;
-        UpdatePriceLevelEma();
-        return ema;
-    }
+    //    Ema = ema;
+    //    UpdatePriceLevelEma();
+    //    return ema;
+    //}
 
 
 }

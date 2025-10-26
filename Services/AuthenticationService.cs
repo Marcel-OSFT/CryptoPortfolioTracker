@@ -1,33 +1,26 @@
-﻿using CryptoPortfolioTracker.Helpers;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using Newtonsoft.Json;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography;
 using Windows.Security.Credentials;
+using Windows.Security.Cryptography.Certificates;
 using Windows.UI;
-using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Services;
 
 public class AuthenticationService
 {
-    private readonly IPreferencesService _preferencesService;
+    private readonly Settings _appSettings;
     private readonly byte[] _keyBytes;
     private const int MaxFailedAttempts = 5;
     private const int LockoutMinutes = 15;
-    private static string AuthStateFile => Path.Combine(App.AppDataPath, "authstate.json");
 
-    public AuthenticationService(IPreferencesService preferencesService, byte[] keyBytes)
+    private const int SaltSize = 16; // 128 bit
+    private const int KeySize = 32;  // 256 bit
+    private const int Iterations = 100_000;
+
+    public AuthenticationService(byte[] keyBytes, Settings appSettings)
     {
-        _preferencesService = preferencesService;
+        _appSettings = appSettings;
         _keyBytes = keyBytes;
     }
 
@@ -62,34 +55,25 @@ public class AuthenticationService
             SaveAuthState(state);
         }
 
-        var userId = _preferencesService.GetUserID();
-        if (string.IsNullOrEmpty(userId))
-        {
-            userId = Guid.NewGuid().ToString();
-            _preferencesService.SetUserID(userId);
-        }
-
-        var _theme = _preferencesService.GetAppTheme();
         var passwordBox = new PasswordBox { PlaceholderText = loc.GetLocalizedString("Messages_Authentication_PlaceholderText") };//"Enter your password" };
         var forgotPasswordLink = new HyperlinkButton
         {
             Content = loc.GetLocalizedString("Messages_Authentication_ForgotPassword"), //"Forgot password?",
-            Foreground = _theme == ElementTheme.Light ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Blue) : new Microsoft.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(255, 88, 166, 255)),
+            Foreground = _appSettings.AppTheme == ElementTheme.Light ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Blue) : new Microsoft.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(255, 88, 166, 255)),
             HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new Thickness(0, 8, 0, 0)
         };
         forgotPasswordLink.Click += (s, e) =>
         {
             string mailto = string.Empty;
-            var test = _preferencesService.GetAppCultureLanguage();
-            if (_preferencesService.GetAppCultureLanguage() == "nl")
+            if (_appSettings.AppCultureLanguage == "nl")
             {
                 mailto = $"mailto:mk_osft@hotmail.com" +
                     $"?subject=App%20Access%20Help" +
                     $"&body=Hallo,%0A" +
                     $"Ik heb wat hulp nodig met mijn app.%0A%0A" +
-                    $"User ID: {userId}%0A" +
-                    $"CPT Versie: {App.ProductVersion}%0A%0A" +
+                    $"User ID: {_appSettings.UserID}%0A" +
+                    $"CPT Versie: {AppConstants.ProductVersion}%0A%0A" +
                     $"Geef mij een tijdelijke code zodat ik weer toegang krijg.%0A%0A" +
                     $"Met vriendelijke groet,%0AUw dankbare CPT gebruiker";
             }
@@ -99,8 +83,8 @@ public class AuthenticationService
                     $"?subject=App%20Access%20Help" +
                     $"&body=Hello,%0A" +
                     $"I need some help with the app.%0A%0A" +
-                    $"User ID: {userId}%0A" +
-                    $"CPT Version: {App.ProductVersion}%0A%0A" +
+                    $"User ID: {_appSettings.UserID}%0A" +
+                    $"CPT Version: {AppConstants.ProductVersion}%0A%0A" +
                     $"Please provide me with a temporary code to get access again.%0A%0A" +
                     $"Best regards,%0AYour grateful CPT user";
             }
@@ -119,7 +103,7 @@ public class AuthenticationService
             CloseButtonText = loc.GetLocalizedString("Common_CancelButton"), //"Cancel",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = splash?.Content.XamlRoot,
-            RequestedTheme = _preferencesService.GetAppTheme()
+            RequestedTheme = _appSettings.AppTheme
         };
 
         while (true)
@@ -130,7 +114,7 @@ public class AuthenticationService
 
             string entered = passwordBox.Password ?? string.Empty;
 
-            if (!string.IsNullOrEmpty(passwordHash) && SettingsViewModel.VerifyPassword(entered, passwordHash))
+            if (!string.IsNullOrEmpty(passwordHash) && VerifyPassword(entered, passwordHash))
             {
                 App.IsDuressMode = false;
                 state.FailedAttempts = 0;
@@ -138,7 +122,7 @@ public class AuthenticationService
                 SaveAuthState(state);
                 return true;
             }
-            if (!string.IsNullOrEmpty(duressPasswordHash) && SettingsViewModel.VerifyPassword(entered, duressPasswordHash))
+            if (!string.IsNullOrEmpty(duressPasswordHash) && VerifyPassword(entered, duressPasswordHash))
             {
                 App.IsDuressMode = true;
                 state.FailedAttempts = 0;
@@ -150,7 +134,7 @@ public class AuthenticationService
             // Check for reset code (8 hex chars)
             if (entered.Length >= 6 && entered.Substring(0,6) == "RESET-")
             {
-                if (await ValidateResetCodeAsync(userId, entered.Substring(6)))
+                if (await ValidateResetCodeAsync(_appSettings.UserID, entered.Substring(6)))
                 {
                     state.FailedAttempts = 0;
                     state.LockoutUntil = null;
@@ -167,7 +151,6 @@ public class AuthenticationService
                     {
                         vault.Remove(duressCredential);
                     }
-                    //await App.ShowErrorMessage("Password has been reset. Please set a new password in Settings.");
                     await App.ShowMessageDialog(
                         loc.GetLocalizedString("Messages_Authentication_PasswordReset_Title"),
                         loc.GetLocalizedString("Messages_Authentication_PasswordReset_Msg"),
@@ -176,7 +159,6 @@ public class AuthenticationService
                 }
                 else
                 {
-                    //await App.ShowErrorMessage("Invalid reset code.");
                     await App.ShowMessageDialog(
                         loc.GetLocalizedString("Messages_Authentication_InvalidCode_Title"),
                         loc.GetLocalizedString("Messages_Authentication_InvalidCode_Msg"),
@@ -189,7 +171,6 @@ public class AuthenticationService
             {
                 state.LockoutUntil = DateTime.UtcNow.AddMinutes(LockoutMinutes);
                 SaveAuthState(state);
-                //await App.ShowErrorMessage($"Too many failed attempts. Locked out for {LockoutMinutes} minutes.");
                 await App.ShowMessageDialog(
                     loc.GetLocalizedString("Messages_Authentication_Attempts_Title"),
                     loc.GetLocalizedString("Messages_Authentication_Attempts_MsgPrefix1") + $" {LockoutMinutes} " + loc.GetLocalizedString("Messages_Authentication_Attempts_MsgSuffix"),
@@ -200,7 +181,7 @@ public class AuthenticationService
             else
             {
                 SaveAuthState(state);
-                dialog.Title = loc.GetLocalizedString("Messages_Authentication_Failed") + $" ({state.FailedAttempts}/{MaxFailedAttempts})"; // $"Authentication Failed ({state.FailedAttempts}/{MaxFailedAttempts})";
+                dialog.Title = loc.GetLocalizedString("Messages_Authentication_Failed") + $" ({state.FailedAttempts}/{MaxFailedAttempts})"; 
                 passwordBox.Password = string.Empty;
             }
         }
@@ -210,9 +191,9 @@ public class AuthenticationService
     {
         try
         {
-            if (File.Exists(AuthStateFile))
+            if (File.Exists(AppConstants.AuthStateFile))
             {
-                var json = File.ReadAllText(AuthStateFile);
+                var json = File.ReadAllText(AppConstants.AuthStateFile);
                 return JsonConvert.DeserializeObject<AuthState>(json) ?? new AuthState();
             }
         }
@@ -225,7 +206,7 @@ public class AuthenticationService
         try
         {
             var json = JsonConvert.SerializeObject(state);
-            File.WriteAllText(AuthStateFile, json);
+            File.WriteAllText(AppConstants.AuthStateFile, json);
         }
         catch { }
     }
@@ -297,5 +278,45 @@ public class AuthenticationService
         }
     }
 
-    
+    /// <summary>
+    /// Hashes a password using PBKDF2.
+    /// </summary>
+    public static string HashPassword(string password)
+    {
+        using var rng = RandomNumberGenerator.Create();
+        byte[] salt = new byte[SaltSize];
+        rng.GetBytes(salt);
+
+        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
+        byte[] key = pbkdf2.GetBytes(KeySize);
+
+        var hashBytes = new byte[SaltSize + KeySize];
+        Buffer.BlockCopy(salt, 0, hashBytes, 0, SaltSize);
+        Buffer.BlockCopy(key, 0, hashBytes, SaltSize, KeySize);
+
+        return Convert.ToBase64String(hashBytes);
+    }
+
+    public static bool VerifyPassword(string password, string? storedHash)
+    {
+        if (string.IsNullOrEmpty(storedHash))
+            return string.IsNullOrEmpty(password);
+
+        var hashBytes = Convert.FromBase64String(storedHash);
+        var salt = new byte[SaltSize];
+        Buffer.BlockCopy(hashBytes, 0, salt, 0, SaltSize);
+
+        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
+        byte[] key = pbkdf2.GetBytes(KeySize);
+
+        for (int i = 0; i < KeySize; i++)
+        {
+            if (hashBytes[i + SaltSize] != key[i])
+                return false;
+        }
+        return true;
+    }
+
+
+
 }

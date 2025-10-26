@@ -1,41 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.WinUI.Animations.Expressions;
-using CryptoPortfolioTracker.Controls;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Extensions;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
 using LanguageExt.Common;
-using LanguageExt.Pretty;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.UI.Popups;
-using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
-
-
 
 [ObservableObject]
 [ObservableRecipient]
 public partial class AddCoinDialog : ContentDialog
 {
     public readonly CoinLibraryViewModel _viewModel;
-    private readonly IPreferencesService _preferencesService;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AddCoinDialog Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -53,7 +30,7 @@ public partial class AddCoinDialog : ContentDialog
     [ObservableProperty] private Narrative initialNarrative = new();
 
 
-    public AddCoinDialog(CoinLibraryViewModel viewModel, DialogAction dialogAction, IMessenger messenger,IPreferencesService preferencesService)
+    public AddCoinDialog(CoinLibraryViewModel viewModel, DialogAction dialogAction, IMessenger messenger)
     {
         _viewModel = viewModel;
         CoinName = "";
@@ -63,7 +40,6 @@ public partial class AddCoinDialog : ContentDialog
         Narratives = _viewModel.narratives ?? new List<Narrative>();
         InitialNarrative = Narratives.Where(x => x.Name == "- Not Assigned -").FirstOrDefault();
         InitializeComponent();
-        _preferencesService = preferencesService;
         BePatientVisibility = Visibility.Collapsed;
         SetDialogTitleAndButtons();
         messenger.Register<ShowBePatienceMessage>(this, (r, m) =>
@@ -142,24 +118,6 @@ public partial class AddCoinDialog : ContentDialog
             if (coinFullDataById is not null) 
             {
                 selectedCoin = null;
-                //var coin = new Coin
-                //{
-                //    ApiId = coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : string.Empty,
-                //    Name = coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : string.Empty,
-                //    Symbol = coinFullDataById.Symbol.Length > 0 ? coinFullDataById.Symbol.ToUpper() : string.Empty,
-                //    ImageUri = coinFullDataById.Image.Small.AbsoluteUri.Length > 0 ? coinFullDataById.Image.Small.AbsoluteUri : string.Empty,
-                //    Price = coinFullDataById.MarketData.CurrentPrice.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
-                //    Ath = coinFullDataById.MarketData.Ath.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
-                //    Change52Week = coinFullDataById.MarketData.PriceChangePercentage1YInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                //    Change1Month = coinFullDataById.MarketData.PriceChangePercentage30DInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                //    MarketCap = coinFullDataById.MarketData.MarketCap.Where(x => x.Key == "usd").SingleOrDefault().Value ?? 0,
-                //    Change24Hr = coinFullDataById.MarketData.PriceChangePercentage24HInCurrency.Where(x => x.Key == "usd").SingleOrDefault().Value,
-                //    About = coinFullDataById.Description.Where(x => x.Key == "en").SingleOrDefault().Value,
-                //    IsAsset = false,
-                //    Rank = coinFullDataById.MarketCapRank ?? 99999,
-                    
-                //};
-
                 var coin = CoinBuilder.Create()
                     .WithApiId(coinFullDataById.Id.Length > 0 ? coinFullDataById.Id : string.Empty)
                     .WithName(coinFullDataById.Name.Length > 0 ? coinFullDataById.Name : string.Empty)
@@ -299,9 +257,9 @@ public partial class AddCoinDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
         }
     }
 

@@ -1,29 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using CryptoPortfolioTracker.Enums;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-
-namespace CryptoPortfolioTracker.Models;
+﻿namespace CryptoPortfolioTracker.Models;
 
 [Serializable]
 public class UserPreferences
 {
     public UserPreferences()
     {
-        SetDefaultPreferences();
-    }
-
-    private void SetDefaultPreferences()
-    {
-        isHidingZeroBalances = false;
-        isScrollBarsExpanded = false;
         isCheckForUpdate = true;
         fontSize = AppFontSize.Normal;
         appTheme = ElementTheme.Default;
         refreshIntervalMinutes = 5;
-        isHidingCapitalFlow = false;
 
         if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.ToLower() == "nl")
         {
@@ -46,10 +31,7 @@ public class UserPreferences
         RsiPeriod = 14;
         MaPeriod = 50;
         MaType = "SMA";
-
     }
-    public string? PasswordHash { get; set; }
-    public string? DuressPasswordHash { get; set; }
 
     private int refreshIntervalMinutes;
     public int RefreshIntervalMinutes
@@ -232,7 +214,8 @@ public class UserPreferences
 
             }
         }
-    }private string maType;
+    }
+    private string maType;
     public string MaType
     {
         get => maType;
@@ -301,6 +284,11 @@ public class UserPreferences
             }
         }
     }
+
+
+
+
+
 
 
 

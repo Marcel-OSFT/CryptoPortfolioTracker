@@ -36,7 +36,7 @@ public sealed partial class AssetAccountsGridViewControl : UserControl
             }
             var scale = AssetsView.Current.XamlRoot.RasterizationScale;
             //** the Tag is used for binding with the width of the Name Textbox
-            switch ((int)   App.PreferencesService.GetFontSize())
+            switch ((int)  AssetsViewModel.Current.AppSettings.FontSize)
             {
                 case 0: //small
                     {

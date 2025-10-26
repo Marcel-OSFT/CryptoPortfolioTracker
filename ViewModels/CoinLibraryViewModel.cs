@@ -22,9 +22,10 @@ namespace CryptoPortfolioTracker.ViewModels;
 public partial class CoinLibraryViewModel : BaseViewModel
 {
     private readonly CoinLibraryViewModel _viewModel;
-    
+    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
+
     public ILibraryService _libraryService { get; private set; }
-    private readonly IPreferencesService _preferencesService;
     public readonly INarrativeService _narrativeService;
     [ObservableProperty] public string portfolioName = string.Empty;
     [ObservableProperty] public Portfolio currentPortfolio;
@@ -53,13 +54,12 @@ public partial class CoinLibraryViewModel : BaseViewModel
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public CoinLibraryViewModel(ILibraryService libraryService, INarrativeService narrativeService ,IPreferencesService preferencesService) : base(preferencesService)
+    public CoinLibraryViewModel(ILibraryService libraryService, INarrativeService narrativeService, Settings appSettings) : base(appSettings)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(CoinLibraryViewModel).Name.PadRight(22));
         Current = this;
         IsAllCoinDataRetrieved = false;
         _libraryService = libraryService;
-        _preferencesService = preferencesService;
         _narrativeService = narrativeService;
         _viewModel = this;
 
@@ -180,7 +180,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         var loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(Current, Enums.DialogAction.Add, App.Container.GetService<IMessenger>() ,_preferencesService)
+            dialog = new AddCoinDialog(Current, Enums.DialogAction.Add, App.Container.GetService<IMessenger>())
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -228,7 +228,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         var loc = Localizer.Get();
         try
         {
-            dialog = new AddCoinDialog(Current, Enums.DialogAction.Merge, App.Container.GetService<IMessenger>() ,_preferencesService)
+            dialog = new AddCoinDialog(Current, Enums.DialogAction.Merge, App.Container.GetService<IMessenger>())
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -274,7 +274,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         var loc = Localizer.Get();
         try
         {
-            var dialog = new AddPrereleaseCoinDialog(Current, _preferencesService)
+            var dialog = new AddPrereleaseCoinDialog(Current)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -314,7 +314,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         Logger.Information("Showing Note Dialog");
         try
         {
-            var dialog = new AddNoteDialog(coin, _preferencesService)
+            var dialog = new AddNoteDialog(coin, this)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -355,7 +355,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
             (await _narrativeService.GetNarratives())
                 .IfSucc(list => narratives = list);
 
-            var dialog = new AssignNarrativeDialog(coin, _viewModel ,_preferencesService)
+            var dialog = new AssignNarrativeDialog(coin, _viewModel)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };
@@ -424,7 +424,7 @@ public partial class CoinLibraryViewModel : BaseViewModel
         Logger.Information("Showing Description Dialog for {0}}", coin.Name);
         if (coin != null)
         {
-            var dialog = new DescriptionDialog(coin, _preferencesService)
+            var dialog = new DescriptionDialog(coin, this)
             {
                 XamlRoot = CoinLibraryView.Current.XamlRoot
             };

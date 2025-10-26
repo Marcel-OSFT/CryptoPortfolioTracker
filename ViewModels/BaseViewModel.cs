@@ -11,7 +11,6 @@ namespace CryptoPortfolioTracker.ViewModels;
 public partial class BaseViewModel : ObservableObject
 {
     private protected ILogger Logger { get; set; }
-    public readonly IPreferencesService _preferencesService;
     
 
     [ObservableProperty] private double? fontLevel1;
@@ -20,20 +19,21 @@ public partial class BaseViewModel : ObservableObject
 
     [ObservableProperty]
     protected bool isScrollBarsExpanded;
+    protected Settings AppSettings { get; }
 
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public BaseViewModel(IPreferencesService preferencesService)
+    public BaseViewModel(Settings appSettings)
     {
-        _preferencesService = preferencesService;
-        IsScrollBarsExpanded = _preferencesService.GetExpandingScrollBars();
+        AppSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+        IsScrollBarsExpanded = AppSettings.IsScrollBarsExpanded;
         SetFontLevels();
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     private void SetFontLevels()
     {
-        switch (_preferencesService.GetFontSize().ToString())
+        switch (AppSettings.FontSize.ToString())
         {
             case "Small":
                 {
@@ -69,7 +69,7 @@ public partial class BaseViewModel : ObservableObject
             Content = message,
             PrimaryButtonText = primaryButtonText,
             CloseButtonText = closeButtonText,
-            RequestedTheme = _preferencesService.GetAppTheme(),
+            RequestedTheme = AppSettings.AppTheme,
         };
        
         var result = await App.ShowContentDialogAsync(dialog);

@@ -26,9 +26,9 @@ public class PriceUpdateService : IPriceUpdateService
 {
     private readonly PeriodicTimer timer;
     private readonly CancellationTokenSource cts = new();
-    
+    private readonly IIndicatorService _indicatorService;
+    private readonly Settings _appSettings;
     private readonly PortfolioService _portfolioService;
-    private readonly IPreferencesService _preferencesService;
     private readonly IPriceLevelService _priceLevelService;
     private readonly IAssetService _assetService;
     private readonly IMessenger _messenger;
@@ -44,19 +44,24 @@ public class PriceUpdateService : IPriceUpdateService
 
 
 
-    public PriceUpdateService(PortfolioService portfolioService, IAssetService assetService, IPriceLevelService priceLevelService, IMessenger messenger, IPreferencesService preferencesService)
+    public PriceUpdateService(PortfolioService portfolioService, 
+                                IAssetService assetService, 
+                                IPriceLevelService priceLevelService, 
+                                IMessenger messenger, 
+                                Settings appSettings,
+                                IIndicatorService indicatorService)
     {
+        _indicatorService = indicatorService;
+        _appSettings = appSettings;
         _portfolioService = portfolioService;
         currentContext = _portfolioService.UpdateContext;
 
-        _preferencesService = preferencesService;
         _priceLevelService = priceLevelService;
         _assetService = assetService;
         _messenger = messenger;
 
         IsPausRequested = false;
-        //timer = new(System.TimeSpan.FromMinutes(_preferencesService.GetRefreshIntervalMinutes()));
-        timer = new(System.TimeSpan.FromMinutes(2));
+        timer = new(System.TimeSpan.FromMinutes(_appSettings.PriceUpdateIntervalMinutes));
 
     }
 
@@ -278,7 +283,7 @@ public class PriceUpdateService : IPriceUpdateService
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
         var serializerSettings = new JsonSerializerSettings();
-        var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
+        var coinsClient = new CoinGeckoClient(httpClient, AppConstants.CoinGeckoApiKey, AppConstants.ApiPath, serializerSettings);
 
         List<CoinMarkets>? coinMarketsPage = null;
 
@@ -379,10 +384,13 @@ public class PriceUpdateService : IPriceUpdateService
                     await _portfolioService.Context.Entry(entity).ReloadAsync();
                 }
 
-                //MainPage.Current.DispatcherQueue.TryEnqueue(() =>
-                //{
-                //    _messenger.Send(new UpdatePricesMessage(coin));
-                //});
+                // run indicator calculations (async where needed)
+                await _indicatorService.CalculateRsiAsync(coin);
+                await _indicatorService.CalculateMaAsync(coin);
+                _indicatorService.EvaluatePriceLevels(coin, newPrice);
+
+                // notify UI of derived changes
+                coin.NotifyDerivedValuesChanged();
             }
             return coin;
         }

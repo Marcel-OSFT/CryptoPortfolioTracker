@@ -1,19 +1,9 @@
-using System;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml.Controls;
-using WinUI3Localizer;
-
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
 public sealed partial class AddPrereleaseCoinDialog : ContentDialog
 {
     public readonly CoinLibraryViewModel _viewModel;
-    private readonly IPreferencesService _preferencesService;
 
     public Coin? newCoin;
     private readonly ILocalizer loc = Localizer.Get();
@@ -22,12 +12,11 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
     
 
 
-    public AddPrereleaseCoinDialog(CoinLibraryViewModel viewModel, IPreferencesService preferencesService)
+    public AddPrereleaseCoinDialog(CoinLibraryViewModel viewModel)
     {
         InitializeComponent();
-        _preferencesService = preferencesService;
         _viewModel = viewModel;
-        DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
+        DecimalSeparator = _viewModel.AppSettings.NumberFormat.NumberDecimalSeparator;
         SetDialogTitleAndButtons();
     }
 
@@ -47,7 +36,7 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
             .WithApiId(CoinName.Text + CoinSymbol.Text)
             .WithAbout(CoinAbout.Text)
             .CurrentPriceAt(Convert.ToDouble(CoinPrice.Text))
-            .WithImage(App.AppPath + "\\Assets\\QuestionMarkBlue.png")
+            .WithImage(AppConstants.AppPath + "\\Assets\\QuestionMarkBlue.png")
             .MarketCapRankAt(999999)
             .OfNarrative(_viewModel._narrativeService.GetDefaultNarrative())
             .Build();
@@ -68,9 +57,9 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
         }
     }
 

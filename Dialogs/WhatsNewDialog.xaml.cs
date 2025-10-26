@@ -20,30 +20,35 @@ public sealed partial class WhatsNewDialog : ContentDialog
 
     [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto, PreserveSig = true, SetLastError = false)]
     public static extern IntPtr GetActiveWindow();
-
-
-
+    
     private const string RtfUrl_NL = "https://marcel-osft.github.io/CryptoPortfolioTracker/docs/WhatsNew_NL.rtf";
     private const string RtfUrl_EN = "https://marcel-osft.github.io/CryptoPortfolioTracker/docs/WhatsNew_EN.rtf";
-    private readonly IPreferencesService _preferenceService;
     private static readonly System.Net.Http.HttpClient _httpClient = new HttpClient();
+    private readonly Settings _appSettings;
 
     [ObservableProperty] private StorageFile? rtfDoc;
 
-    public WhatsNewDialog(IPreferencesService preferencesService)
+    public WhatsNewDialog(Settings appSettings)
     {
+        _appSettings = appSettings;
         InitializeComponent();
-        _preferenceService = preferencesService;
     }
 
     private async void WhatsNewDialog_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         try
         {
+            // Show progress UI
+            LoadingOverlay.Visibility = Visibility.Visible;
+            LoadingRing.IsActive = true;
+
+            // Allow UI to update so the ring becomes visible before the network work starts
+            await Task.Yield();
+
             RichText.IsReadOnly = false;
 
             // Choose URL based on app culture language preference
-            string appLang = _preferenceService?.GetAppCultureLanguage() ?? "en";
+            string appLang = _appSettings.AppCultureLanguage ?? "en";
             string rtfUrl = appLang.StartsWith("nl", StringComparison.OrdinalIgnoreCase) ? RtfUrl_NL : RtfUrl_EN;
 
             // Download RTF bytes
@@ -67,6 +72,12 @@ public sealed partial class WhatsNewDialog : ContentDialog
         {
             // Keep silent on failure to avoid breaking the dialog flow.
             // Optionally add logging here.
+        }
+        finally
+        {
+            // Hide progress UI
+            LoadingRing.IsActive = false;
+            LoadingOverlay.Visibility = Visibility.Collapsed;
         }
 
     }

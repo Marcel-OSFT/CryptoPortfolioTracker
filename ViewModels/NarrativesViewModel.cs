@@ -24,6 +24,8 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public INarrativeService _narrativeService {  get; private set; }
+    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
     public IAssetService _assetService { get; private set; }
     [ObservableProperty] public string portfolioName = string.Empty;
     [ObservableProperty] public Portfolio currentPortfolio;
@@ -34,7 +36,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     }
 
 
-    private readonly IPreferencesService _preferencesService;
     private SortingOrder currentSortingOrder;
     private Func<AssetTotals, object> currentSortFunc;
     private SortingOrder currentSortingOrderNarr;
@@ -54,18 +55,17 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
     partial void OnIsPrivacyModeChanged(bool value)
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
-        _preferencesService.SetAreValuesMasked(value);
+        AppSettings.AreValuesMasked = value;
         _narrativeService.ReloadValues();
         _assetService.ReloadValues();
     }
 
 
-    public NarrativesViewModel(INarrativeService NarrativeService, IAssetService assetService, IPreferencesService preferencesService) : base(preferencesService)
+    public NarrativesViewModel(INarrativeService NarrativeService, IAssetService assetService, Settings appSettings) : base(appSettings)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(NarrativesViewModel).Name.PadRight(22));
         Current = this;
         _narrativeService = NarrativeService;
-        _preferencesService =  preferencesService;
         _assetService = assetService;
         CurrentPortfolio = _assetService.GetPortfolio();
 
@@ -75,8 +75,8 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         currentSortFuncNarr = x => x.TotalValue;
         currentSortingOrderNarr = SortingOrder.Descending;
 
-        _assetService.IsHidingZeroBalances = _preferencesService.GetHidingZeroBalances();
-        IsPrivacyMode = _preferencesService.GetAreValesMasked();
+        _assetService.IsHidingZeroBalances = AppSettings.IsHidingZeroBalances;
+        IsPrivacyMode =AppSettings.AreValuesMasked;
     }
 
     [ObservableProperty]
@@ -95,7 +95,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         CurrentPortfolio = _assetService.GetPortfolio();
         PortfolioName = CurrentPortfolio.Name;
 
-        IsPrivacyMode = _preferencesService.GetAreValesMasked();
+        IsPrivacyMode =AppSettings.AreValuesMasked;
         await _narrativeService.PopulateNarrativesList(currentSortingOrderNarr, currentSortFuncNarr);
     }
 
@@ -199,13 +199,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         //*** disabled in NarrativesView
     }
 
-    //[RelayCommand]
-    //public void ShowOnlyAssets(bool param)
-    //{
-    //    _narrativeService.ShowOnlyAssets = param;
-    //}
-
-   
 
     [RelayCommand(CanExecute = nameof(CanShowNarrativeDialogToAdd))]
     public async Task ShowNarrativeDialogToAdd()
@@ -214,7 +207,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         try
         {
             Logger.Information("Showing NarrativeDialog for Adding");
-            var dialog = new NarrativeDialog(_preferencesService , Current, DialogAction.Add)
+            var dialog = new NarrativeDialog(Current, DialogAction.Add)
             {
                 XamlRoot = NarrativesView.Current.XamlRoot
             };
@@ -257,7 +250,7 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
         try
         {
             Logger.Information("Showing Narrative Dialog for Editing");
-            var dialog = new NarrativeDialog(_preferencesService , Current, DialogAction.Edit, narrative)
+            var dialog = new NarrativeDialog(Current, DialogAction.Edit, narrative)
             {
                 XamlRoot = NarrativesView.Current.XamlRoot
             };
@@ -266,15 +259,6 @@ public sealed partial class NarrativesViewModel : BaseViewModel, INotifyProperty
             if (result == ContentDialogResult.Primary && dialog.newNarrative is not null)
             {
                 Logger.Information("Editing Narrative ({0})", narrative.Name);
-                //(await _narrativeService.EditNarrative(dialog.newNarrative, narrative))
-                //    .IfFail(async err =>
-                //    {
-                //        await ShowMessageDialog(
-                //        loc.GetLocalizedString("Messages_NarrativeUpdateFailed_Title"),
-                //        err.Message,
-                //        loc.GetLocalizedString("Common_CloseButton"));
-                //        Logger.Error(err, "Updating Narrative failed");
-                //    });
 
                 await (await _narrativeService.EditNarrative(dialog.newNarrative, narrative ))
                     .Match(Succ: succ => _narrativeService.UpdateListNarratives(narrative),

@@ -1,53 +1,34 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Controls;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Views;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using WinUI3Localizer;
-
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
 public partial class DashboardSettingsDialog : ContentDialog
 {
     private readonly ILocalizer loc = Localizer.Get();
-    private readonly IPreferencesService _preferencesService;
-
+    private readonly DashboardViewModel _viewModel;
     [ObservableProperty] bool isCardExpanded;
     [ObservableProperty] bool isCardEnabled;
 
     [ObservableProperty]
     private bool isScrollBarsExpanded;
-    partial void OnIsScrollBarsExpandedChanged(bool value) => _preferencesService.SetExpandingScrollBars(value);
+    partial void OnIsScrollBarsExpandedChanged(bool value) => _viewModel.AppSettings.IsScrollBarsExpanded = value;
 
     [ObservableProperty]
     private int withinRangePerc;
     partial void OnWithinRangePercChanged(int value)
     {
-        _preferencesService.SetWithinRangePerc(value);
+        _viewModel.AppSettings.WithinRangePerc = value;
         DashboardViewModel.Current?.RefreshTargetBubbles();
     }
 
     [ObservableProperty]
     private int closeToPerc;
-    partial void OnCloseToPercChanged(int value) => _preferencesService.SetCloseToPerc(value);
+    partial void OnCloseToPercChanged(int value) => _viewModel.AppSettings.CloseToPerc = value;
 
     [ObservableProperty]
     private int maxPieCoins;
     partial void OnMaxPieCoinsChanged(int value)
     {
-        _preferencesService.SetMaxPieCoins(value);
+        _viewModel.AppSettings.MaxPieCoins = value;
         DashboardViewModel.Current?.RefreshPortfolioPie();
 
     }
@@ -55,7 +36,7 @@ public partial class DashboardSettingsDialog : ContentDialog
     private int rsiPeriod;
     async partial void OnRsiPeriodChanged(int value)
     {
-        _preferencesService.SetRsiPeriod(value);
+        _viewModel.AppSettings.RsiPeriod = value;
         // update dashboard viewmodel display if available
         await DashboardViewModel.Current?.RefreshRsiBubbles();
     }
@@ -64,7 +45,7 @@ public partial class DashboardSettingsDialog : ContentDialog
     private int maPeriod;
    async partial void OnMaPeriodChanged(int value)
     {
-        _preferencesService.SetMaPeriod(value);
+        _viewModel.AppSettings.MaPeriod = value;
         await DashboardViewModel.Current?.RefreshMaBubbles();
     }
 
@@ -76,9 +57,9 @@ public partial class DashboardSettingsDialog : ContentDialog
         DashboardViewModel.Current?.RefreshMaBubbles();
     }
 
-    public DashboardSettingsDialog(IPreferencesService preferencesService)
+    public DashboardSettingsDialog(DashboardViewModel viewModel)
     {
-        _preferencesService = preferencesService;
+        _viewModel = viewModel;
         InitializeComponent();
         DataContext = this;
         isCardExpanded = true;
@@ -89,7 +70,7 @@ public partial class DashboardSettingsDialog : ContentDialog
 
     private async void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        var theme = _preferencesService.GetAppTheme();
+        var theme = _viewModel.AppSettings.AppTheme;
         if (sender.ActualTheme != theme)
         {
             sender.RequestedTheme = theme ;
@@ -98,17 +79,15 @@ public partial class DashboardSettingsDialog : ContentDialog
 
     private void InitializeFields()
     {
-        var preferences = _preferencesService;
-        var numberFormat = preferences.GetNumberFormat();
-        var appCulture = preferences.GetAppCultureLanguage();
+        var numberFormat = _viewModel.AppSettings.NumberFormat;
+        var appCulture = _viewModel.AppSettings.AppCultureLanguage;
 
-        WithinRangePerc = preferences.GetWithinRangePerc();
-        CloseToPerc = preferences.GetCloseToPerc();
-        MaxPieCoins = preferences.GetMaxPieCoins();
-        RsiPeriod = preferences.GetRsiPeriod();
-        MaPeriod = preferences.GetMaPeriod();
-        string maTypeValue = preferences.GetMaType();
-        MaTypeIndex = maTypeValue switch
+        WithinRangePerc = _viewModel.AppSettings.WithinRangePerc;
+        CloseToPerc = _viewModel.AppSettings.CloseToPerc;
+        MaxPieCoins = _viewModel.AppSettings.MaxPieCoins;
+        RsiPeriod = _viewModel.AppSettings.RsiPeriod;
+        MaPeriod = _viewModel.AppSettings.MaPeriod;
+        MaTypeIndex = _viewModel.AppSettings.MaType switch
         {
             "SMA" => 0,
             "EMA" => 1,
@@ -135,7 +114,7 @@ public partial class DashboardSettingsDialog : ContentDialog
             3 => "VWMA",
             _ => "SMA",
         };
-        _preferencesService.SetMaType(value);
+        _viewModel.AppSettings.MaType = value;
     }
 
 

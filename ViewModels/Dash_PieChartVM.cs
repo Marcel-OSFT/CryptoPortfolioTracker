@@ -27,7 +27,7 @@ public partial class DashboardViewModel : BaseViewModel
     {
         try
         {
-            var language = _preferencesService.GetAppCultureLanguage();
+            var language = AppSettings.AppCultureLanguage;
             var headerTag = pieChart.pieHeader.Tag;
 
             pieChart.pieHeader.Text = loc.GetLocalizedString("PieChartView_" + headerTag);

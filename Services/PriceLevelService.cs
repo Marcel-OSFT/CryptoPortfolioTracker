@@ -30,14 +30,16 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     private readonly IMessenger _messenger;
 
     private HeatMap heatMap;
+    private readonly IIndicatorService _indicatorService;
     private readonly PortfolioService _portfolioService;
     private readonly IAssetService _assetService;
     [ObservableProperty] public partial ObservableCollection<Coin> ListCoins { get; set; } = new();
     private SortingOrder currentSortingOrder;
     private Func<Coin, object> currentSortFunc;
 
-    public PriceLevelService(PortfolioService portfolioService, IAssetService assetService, IMessenger messenger)
+    public PriceLevelService(PortfolioService portfolioService, IAssetService assetService, IMessenger messenger, IIndicatorService indicatorService)
     {
+        _indicatorService = indicatorService;
         _portfolioService = portfolioService;
         _assetService= assetService;
         _messenger = messenger;
@@ -133,39 +135,6 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             err => new());
     }
 
-    //public async Task UpdateCoinsList(Coin coin)
-    //{
-    //    if (ListCoins == null || coin is null) return;
-    //    try
-    //    {
-    //        var getResult = await GetCoinFromContext(coin);
-    //        var _coinWithAssetData = getResult.Match(
-    //            coin => coin,
-    //            err => null);
-
-    //        var coinToUpdate = ListCoins.Where(a => a.ApiId == coin.ApiId).SingleOrDefault();
-    //        if (coinToUpdate != null)
-    //        {
-    //            var index = -1;
-    //            for (var i = 0; i < ListCoins.Count; i++)
-    //            {
-    //                if (ListCoins[i].ApiId == coinToUpdate.ApiId)
-    //                {
-    //                    index = i;
-    //                    break;
-    //                }
-    //            }
-    //            ListCoins[index] = _coinWithAssetData;
-    //        }
-    //    }
-    //    catch (Exception)
-    //    {
-    //        Task.FromResult(false);
-    //    }
-        
-    //    return;
-    //}
-
     public async Task UpdateCoinsList(Coin coin, Coin updatedCoin)
     {
         if (ListCoins is null || !ListCoins.Any() || coin is null || updatedCoin is null) { return; }
@@ -173,8 +142,8 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         {
             //var context = _portfolioService.Context;
 
-            updatedCoin.Ema = await updatedCoin.CalculateMa();
-            updatedCoin.EvaluatePriceLevels(updatedCoin.Price);
+            updatedCoin.Ema = await _indicatorService.CalculateMaAsync(updatedCoin);
+            _indicatorService.EvaluatePriceLevels(updatedCoin, updatedCoin.Price);
 
             var coinToUpdateIndex = ListCoins.IndexOf(coin);
             //var updatedCoin = context.Coins.AsNoTracking()
@@ -230,8 +199,8 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
             foreach (var coin in coinList)
             {
-                coin.Ema = await coin.CalculateMa();
-                coin.EvaluatePriceLevels(coin.Price);
+                coin.Ema = await _indicatorService.CalculateMaAsync(coin);
+                _indicatorService.EvaluatePriceLevels(coin, coin.Price);
             }
         }
         catch (Exception ex)
@@ -257,8 +226,8 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 .OrderBy(x => x.Rank)
                 .FirstAsync();
 
-            _coin.Ema = await _coin.CalculateMa();
-            _coin.EvaluatePriceLevels(_coin.Price);
+            _coin.Ema = await _indicatorService.CalculateMaAsync(_coin);
+            _indicatorService.EvaluatePriceLevels(_coin, _coin.Price);
             
         }
         catch (Exception ex)
@@ -344,7 +313,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             //}
             coinToUpdate.PriceLevels = priceLevels;
 
-            coinToUpdate.EvaluatePriceLevels(coinToUpdate.Price);
+            _indicatorService.EvaluatePriceLevels(coinToUpdate, coinToUpdate.Price);
 
             context.Coins.Update(coinToUpdate);
             await context.SaveChangesAsync();

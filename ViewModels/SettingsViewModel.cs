@@ -1,22 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Serilog;
-using Serilog.Core;
-using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Security.Cryptography;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Cryptography;
 using Windows.Security.Credentials;
-using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
@@ -24,12 +7,10 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static SettingsViewModel Current;
-   
+    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
+
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-    private readonly IPreferencesService _preferencesService;
-    //private UserPreferences userPref;
-
     [ObservableProperty]
     private string password;
 
@@ -48,37 +29,35 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     [ObservableProperty]
     private string newDuressPassword;
 
-    private const int SaltSize = 16; // 128 bit
-    private const int KeySize = 32;  // 256 bit
-    private const int Iterations = 100_000;
+    
 
     [ObservableProperty]
     private ElementTheme appTheme;
-    partial void OnAppThemeChanged(ElementTheme value) => _preferencesService.SetAppTheme(value);
+    partial void OnAppThemeChanged(ElementTheme value) => AppSettings.AppTheme = value;
 
     [ObservableProperty]
     private int numberFormatIndex;
-    partial void OnNumberFormatIndexChanged(int value) => SetNumberSeparators(value);
+    partial void OnNumberFormatIndexChanged(int value) => SetNumberSeparatorsFromIndex(value);
     
     [ObservableProperty]
     private int appCultureIndex;
-    partial void OnAppCultureIndexChanged(int value) => SetCulturePreference(value);
+    partial void OnAppCultureIndexChanged(int value) => SetCulturePreferenceFromIndex(value);
 
     [ObservableProperty]
     private double fontSize;
-    partial void OnFontSizeChanged(double value) => _preferencesService.SetFontSize((AppFontSize)value);
+    partial void OnFontSizeChanged(double value) => AppSettings.FontSize = (AppFontSize)value;
 
     [ObservableProperty]
     private bool isCheckForUpdate;
-    partial void OnIsCheckForUpdateChanged(bool value) => _preferencesService.SetCheckingForUpdate(value);
+    partial void OnIsCheckForUpdateChanged(bool value) => AppSettings.IsCheckForUpdate = value;
 
     [ObservableProperty]
     private bool isScrollBarsExpanded;
-    partial void OnIsScrollBarsExpandedChanged(bool value) => _preferencesService.SetExpandingScrollBars(value);
+    partial void OnIsScrollBarsExpandedChanged(bool value) => AppSettings.IsScrollBarsExpanded = value;
 
     [ObservableProperty]
     private bool areValuesMasked;
-    partial void OnAreValuesMaskedChanged(bool value) => _preferencesService.SetAreValuesMasked(value);
+    partial void OnAreValuesMaskedChanged(bool value) => AppSettings.AreValuesMasked = value;
 
     [ObservableProperty]
     private bool isPasswordSet;
@@ -117,106 +96,41 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-    public SettingsViewModel(IPreferencesService preferencesService) : base(preferencesService)
+    public SettingsViewModel(Settings appSettings) : base(appSettings)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
         Current = this;
-        _preferencesService = preferencesService;
-       
+
         InitializeFields();
     }
 
     private void InitializeFields()
     {
-        var preferences = _preferencesService;
-        var numberFormat = preferences.GetNumberFormat();
-        var appCulture = preferences.GetAppCultureLanguage();
-
-        NumberFormatIndex = numberFormat.NumberDecimalSeparator == "," ? 0 : 1;
-        AppCultureIndex = appCulture[..2].ToLower() == "nl" ? 0 : 1;
-        IsCheckForUpdate = preferences.GetCheckingForUpdate();
-        FontSize = (double)preferences.GetFontSize();
-        IsScrollBarsExpanded = preferences.GetExpandingScrollBars();
-        AppTheme = preferences.GetAppTheme();
-
+        IsCheckForUpdate = AppSettings.IsCheckForUpdate;
+        FontSize = (double)AppSettings.FontSize;
+        IsScrollBarsExpanded = AppSettings.IsScrollBarsExpanded;
+        AppTheme = AppSettings.AppTheme;
+        NumberFormatIndex = AppSettings.NumberFormat.NumberDecimalSeparator == "," ? 0 : 1;
+        AppCultureIndex = AppSettings.AppCultureLanguage[..2].ToLower() == "nl" ? 0 : 1;
+        
         CheckPasswordCredentials();
     }
 
-    private void SetNumberSeparators(int index)
+    
+    private void SetCulturePreferenceFromIndex(int index)
+    {
+        string language = index == 0 ? "nl" : "en-US";
+        AppSettings.AppCultureLanguage = language;
+    }
+
+    private void SetNumberSeparatorsFromIndex(int index)
     {
         var nf = new NumberFormatInfo
         {
             NumberDecimalSeparator = index == 0 ? "," : ".",
             NumberGroupSeparator = index == 0 ? "." : ","
         };
-        _preferencesService.SetNumberFormat(nf);
-    }
-    private void SetCulturePreference(int index)
-    {
-        string culture = index == 0 ? "nl" : "en-US";
-        _preferencesService.SetAppCultureLanguage(culture);
-    }
-
-    [RelayCommand]
-    private void SavePassword()
-    {
-        if (!string.IsNullOrWhiteSpace(Password))
-        {
-            var hash = HashPassword(Password);
-            var vault = new PasswordVault();
-            vault.Add(new PasswordCredential("CryptoPortfolioTracker", "Password", hash));
-            Password = string.Empty; // Clear after save
-        }
-    }
-
-    [RelayCommand]
-    private void SaveDuressPassword()
-    {
-        if (!string.IsNullOrWhiteSpace(DuressPassword))
-        {
-            var hash = HashPassword(DuressPassword);
-            var vault = new PasswordVault();
-            vault.Add(new PasswordCredential("CryptoPortfolioTracker", "DuressPassword", hash));
-            DuressPassword = string.Empty; // Clear after save
-        }
-    }
-    /// <summary>
-    /// Hashes a password using PBKDF2.
-    /// </summary>
-    private static string HashPassword(string password)
-    {
-        using var rng = RandomNumberGenerator.Create();
-        byte[] salt = new byte[SaltSize];
-        rng.GetBytes(salt);
-
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
-        byte[] key = pbkdf2.GetBytes(KeySize);
-
-        var hashBytes = new byte[SaltSize + KeySize];
-        Buffer.BlockCopy(salt, 0, hashBytes, 0, SaltSize);
-        Buffer.BlockCopy(key, 0, hashBytes, SaltSize, KeySize);
-
-        return Convert.ToBase64String(hashBytes);
-    }
-
-    public static bool VerifyPassword(string password, string? storedHash)
-    {
-        if (string.IsNullOrEmpty(storedHash))
-            return string.IsNullOrEmpty(password);
-
-        var hashBytes = Convert.FromBase64String(storedHash);
-        var salt = new byte[SaltSize];
-        Buffer.BlockCopy(hashBytes, 0, salt, 0, SaltSize);
-
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
-        byte[] key = pbkdf2.GetBytes(KeySize);
-
-        for (int i = 0; i < KeySize; i++)
-        {
-            if (hashBytes[i + SaltSize] != key[i])
-                return false;
-        }
-        return true;
+        AppSettings.NumberFormat = nf;
     }
 
     [RelayCommand]
@@ -225,7 +139,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         Logger.Information("Checking for updates");
         var appUpdater = new AppUpdater();
         var loc = Localizer.Get();
-        var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
+        var result = await appUpdater.Check(AppConstants.VersionUrl, AppConstants.ProductVersion);
 
         if (result == AppUpdaterResult.NeedUpdate)
         {
@@ -296,7 +210,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 return;
             }
 
-            var newHash = HashPassword(NewPassword);
+            var newHash = AuthenticationService.HashPassword(NewPassword);
             vault.Add(new PasswordCredential("CryptoPortfolioTracker", "Password", newHash));
             IsPasswordSet = true;
             await ShowMessageDialog(
@@ -311,9 +225,9 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 return;
             var credential = vault.Retrieve("CryptoPortfolioTracker", "Password");
             string storedHash = credential.Password;
-            if (VerifyPassword(CurrentPassword, storedHash))
+            if (AuthenticationService.VerifyPassword(CurrentPassword, storedHash))
             {
-                var newHash = HashPassword(NewPassword);
+                var newHash = AuthenticationService.HashPassword(NewPassword);
                 vault.Remove(credential);
                 vault.Add(new PasswordCredential("CryptoPortfolioTracker", "Password", newHash));
                 await ShowMessageDialog(
@@ -351,7 +265,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 return;
             }
 
-            var newHash = HashPassword(NewDuressPassword);
+            var newHash = AuthenticationService.HashPassword(NewDuressPassword);
             vault.Add(new PasswordCredential("CryptoPortfolioTracker", "DuressPassword", newHash));
             IsDuressPasswordSet = true;
             await ShowMessageDialog(
@@ -366,9 +280,9 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 return;
             var credential = vault.Retrieve("CryptoPortfolioTracker", "DuressPassword");
             string storedHash = credential.Password;
-            if (VerifyPassword(CurrentDuressPassword, storedHash))
+            if (AuthenticationService.VerifyPassword(CurrentDuressPassword, storedHash))
             {
-                var newHash = HashPassword(NewDuressPassword);
+                var newHash = AuthenticationService.HashPassword(NewDuressPassword);
                 vault.Remove(credential);
                 vault.Add(new PasswordCredential("CryptoPortfolioTracker", "DuressPassword", newHash));
                 await ShowMessageDialog(

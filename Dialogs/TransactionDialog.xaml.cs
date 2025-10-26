@@ -1,26 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Controls;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Extensions;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
 using LanguageExt;
 using LanguageExt.Common;
-using Microsoft.UI;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
@@ -31,11 +11,10 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     public Transaction? transactionToEdit;
     public Transaction transactionNew;
     private readonly ITransactionService _transactionService;
-    private readonly IPreferencesService _preferencesService;
     public Exception Exception;
     //private readonly DispatcherQueue dispatcherQueue;
     private readonly ILocalizer loc = Localizer.Get();
-
+    private readonly AssetsViewModel _viewModel;
     [ObservableProperty] private TransactionKind transactionType;
     [ObservableProperty] private List<string> listCoinA;
     [ObservableProperty] private List<string> listCoinB;
@@ -133,13 +112,13 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public TransactionDialog(ITransactionService transactionService, IPreferencesService preferencesService, DialogAction _dialogAction, Transaction? transaction = null)
+    public TransactionDialog(AssetsViewModel viewModel, ITransactionService transactionService, DialogAction _dialogAction, Transaction? transaction = null)
     {
+        _viewModel = viewModel;
         InitializeComponent();
         //dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         dialogAction = _dialogAction;
         _transactionService = transactionService;
-        _preferencesService = preferencesService;
         transactionToEdit = transaction;
         InitializeAllFields();
         TimeStamp = DateTimeOffset.Parse(DateTime.Now.ToString());
@@ -368,7 +347,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
 
     private void InitializeAllFields()
     {
-        DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
+        DecimalSeparator = _viewModel.AppSettings.NumberFormat.NumberDecimalSeparator;
 
         CoinA = CoinB = AccountFrom = AccountTo = Note = FeeCoin = "";
         HeaderCoinA = HeaderCoinB = HeaderAccountFrom = HeaderAccountTo = "";
@@ -677,7 +656,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        var appTheme = _preferencesService.GetAppTheme();
+        var appTheme = _viewModel.AppSettings.AppTheme;
         if (sender.ActualTheme != appTheme)
         {
             sender.RequestedTheme = appTheme;
@@ -694,7 +673,7 @@ public partial class TransactionDialog : ContentDialog //, INotifyPropertyChange
     {
         if (sender is TextBox tbox)
         {
-            if (double.TryParse(tbox.Text, NumberStyles.Any, new CultureInfo(loc.GetCurrentLanguage()) { NumberFormat = _preferencesService.GetNumberFormat() }, out double value))
+            if (double.TryParse(tbox.Text, NumberStyles.Any, new CultureInfo(loc.GetCurrentLanguage()) { NumberFormat = _viewModel.AppSettings.NumberFormat }, out double value))
             {
                 if (MaxQtyA != -1 && value > MaxQtyA)
                 {

@@ -1,30 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Dialogs;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Reporting.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-using Serilog;
-using Serilog.Core;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Windows.Storage;
-using Windows.UI.Core;
-using WinUI3Localizer;
-
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 using QuestPDF.Companion;
 using CryptoPortfolioTracker.Reporting.Documents;
 
@@ -37,22 +11,21 @@ public partial class MainPage : Page //INotifyPropertyChanged
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public IGraphUpdateService _graphUpdateService;
     public IPriceUpdateService _priceUpdateService;
-    private readonly IPreferencesService _preferencesService;
     private readonly IQuestPdfService _pdfService;
-
+    private readonly Settings _appSettings;
     private Type lastPageType;
     private NavigationViewItem lastSelectedNavigationItem;
     private ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
     [ObservableProperty] public partial Visibility NavigationVisibility { get; set; }
     [ObservableProperty] public partial bool IsSettingsVisible { get; set; }
 
-    public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IPreferencesService preferencesService, IQuestPdfService pdfService)
+    public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IQuestPdfService pdfService, Settings appSettings)
     {
+        _appSettings = appSettings;
         InitializeComponent();
         Current = this;
         DataContext = this;
 
-        _preferencesService = preferencesService;
         _graphUpdateService = graphUpdateService;
         _priceUpdateService = priceUpdateService;
         _pdfService = pdfService;
@@ -60,12 +33,14 @@ public partial class MainPage : Page //INotifyPropertyChanged
 
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
     {
-        _graphUpdateService.Start();
-        _priceUpdateService.Start();
-
         navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().Where(x => x.Name == "AssetsView").First();
         App.Splash?.Close();
         App.Splash = null;
+
+        await ShowWhatsNewDialogIfNeeded();
+
+        _graphUpdateService.Start();
+        _priceUpdateService.Start();
 
         // Hide items if duress mode is enabled
         if (App.IsDuressMode)
@@ -77,27 +52,26 @@ public partial class MainPage : Page //INotifyPropertyChanged
         {
             NavigationVisibility = Visibility.Visible;
             IsSettingsVisible = true;
-            if (_preferencesService.GetCheckingForUpdate())
+            if (_appSettings.IsCheckForUpdate)
             {
                 await CheckUpdateNow();
             }
         }
-        await ShowWhatsNewDialogIfNeeded();
 
     }
 
     private async Task ShowWhatsNewDialogIfNeeded()
     {
-        string currentVersion = App.ProductVersion ?? "";
-        string lastVersion = _preferencesService.GetLastVersion();
+        string currentVersion = AppConstants.ProductVersion ?? "";
+        string lastVersion = _appSettings.LastVersion;
 
         if (!string.Equals(currentVersion, lastVersion, StringComparison.OrdinalIgnoreCase))
         {
-            var dialog = new WhatsNewDialog(_preferencesService);
+            var dialog = new WhatsNewDialog(_appSettings);
             dialog.XamlRoot = MainPage.Current.XamlRoot;
             await dialog.ShowAsync();
 
-            _preferencesService.SetLastVersion(currentVersion);
+            _appSettings.LastVersion = currentVersion;
         }
     }
 
@@ -106,7 +80,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
         Logger.Information("Checking for updates");
         var loc = Localizer.Get();
         AppUpdater appUpdater = new();
-        var result = await appUpdater.Check(App.VersionUrl, App.ProductVersion);
+        var result = await appUpdater.Check(AppConstants.VersionUrl, AppConstants.ProductVersion);
 
         if (result == AppUpdaterResult.NeedUpdate)
         {
@@ -199,7 +173,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
                         }
                     case "About":
                         {
-                            var dialog = new AboutDialog(_preferencesService.GetAppTheme());
+                            var dialog = new AboutDialog(_appSettings.AppTheme);
                             dialog.XamlRoot = MainPage.Current.XamlRoot;
                             var result = await dialog.ShowAsync();
                             break;
@@ -248,13 +222,13 @@ public partial class MainPage : Page //INotifyPropertyChanged
         var loc = Localizer.Get();
         var fileName = "HelpFile_NL.pdf";
 
-        if (string.Equals(_preferencesService?.GetAppCultureLanguage(), "en-US", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(_appSettings.AppCultureLanguage, "en-US", StringComparison.OrdinalIgnoreCase))
         {
             fileName = "HelpFile_EN.pdf";
         }
         try
         {
-            Process.Start(new ProcessStartInfo(App.Url + fileName) { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo(AppConstants.Url + fileName) { UseShellExecute = true });
             Logger.Information("HelpFile Displayed");
         }
         catch (Exception ex)
@@ -271,13 +245,13 @@ public partial class MainPage : Page //INotifyPropertyChanged
         var loc = Localizer.Get();
         var fileName = Path.Combine("docs","WhatsNew_NL.pdf");
 
-        if (string.Equals(_preferencesService?.GetAppCultureLanguage(), "en-US", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(_appSettings.AppCultureLanguage, "en-US", StringComparison.OrdinalIgnoreCase))
         {
             fileName = Path.Combine("docs","WhatsNew_EN.pdf");
         }
         try
         {
-            Process.Start(new ProcessStartInfo(App.Url + fileName) { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo(AppConstants.Url + fileName) { UseShellExecute = true });
             Logger.Information("What's New File Displayed");
         }
         catch (Exception ex)
@@ -319,7 +293,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
             doc.ShowInCompanionAsync();
 
             ////Render & save off UI thread inside service
-            //var outputPath = Path.Combine(App.AppDataPath, "Reports", "TestDocument.pdf");
+            //var outputPath = Path.Combine(AppConstants.AppDataPath, "Reports", "TestDocument.pdf");
             //await _pdfService.SaveAsync(doc, outputPath);
             //Process.Start(new ProcessStartInfo(outputPath) { UseShellExecute = true });
         }
@@ -339,7 +313,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
             Content = message,
             PrimaryButtonText = primaryButtonText,
             CloseButtonText = closeButtonText,
-            RequestedTheme = _preferencesService.GetAppTheme()
+            RequestedTheme = _appSettings.AppTheme
         };
         var dlgResult = await dialog.ShowAsync();
         return dlgResult;
