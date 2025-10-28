@@ -442,7 +442,7 @@ public partial class TransactionService :  ObservableObject, ITransactionService
 
                         //add MarketCharts for this new Asset
                         var suffix = mutation.Asset.Coin.Name.Contains("_pre-listing") ? "-prelisting" : "";
-                        var fileName = App.ChartsFolder + "\\MarketChart_" + mutation.Asset.Coin.ApiId + suffix + ".json";
+                        var fileName = AppConstants.ChartsFolder + "\\MarketChart_" + mutation.Asset.Coin.ApiId + suffix + ".json";
                         await using FileStream createStream = File.Create(fileName);
                     }
                     addedAsset = mutation.Asset;

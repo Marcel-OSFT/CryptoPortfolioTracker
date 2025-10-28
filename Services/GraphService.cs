@@ -36,7 +36,7 @@ public partial class GraphService : ObservableObject, IGraphService
         {
             PortfolioGraph = new();
             IsLoadingFromJson = true;
-            var graphPath = Path.Combine(App.PortfoliosPath, portfolioSignature);
+            var graphPath = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature);
 
             Directory.CreateDirectory(graphPath); // if not exists
             await LoadGraphDataAsync(Path.Combine(graphPath, "graph.json"), async stream =>
@@ -95,7 +95,7 @@ public partial class GraphService : ObservableObject, IGraphService
 
     private async Task<Result<bool>> RestoreAndLoadBackupGraph(string portfolioSignature)
     {
-        var graphPath = Path.Combine(App.PortfoliosPath, portfolioSignature);
+        var graphPath = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature);
         var backupFileName = Path.Combine(graphPath, "graph.json.bak");
         if (File.Exists(backupFileName))
         {
@@ -135,7 +135,7 @@ public partial class GraphService : ObservableObject, IGraphService
     {
         try
         {
-            var fileName = Path.Combine(App.PortfoliosPath, portfolioSignature, "graph.json");
+            var fileName = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "graph.json");
             var backupFileName = fileName + ".bak";
 
             if (File.Exists(fileName))
@@ -156,7 +156,7 @@ public partial class GraphService : ObservableObject, IGraphService
     //{
     //    if (HistoricalDataByIdsBufferList.Count > 0)
     //    {
-    //        var fileName = Path.Combine(App.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
+    //        var fileName = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
     //        try
     //        {
     //            await using FileStream createStream = File.Create(fileName);
@@ -211,7 +211,7 @@ public partial class GraphService : ObservableObject, IGraphService
     //{
     //    HistoricalDataByIdsBufferList.Clear();
 
-    //    var historyBufferFile = Path.Combine(App.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
+    //    var historyBufferFile = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
     //    if (File.Exists(historyBufferFile))
     //    {
     //        File.Delete(historyBufferFile);

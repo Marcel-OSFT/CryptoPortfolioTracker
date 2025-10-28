@@ -1,26 +1,29 @@
-﻿
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using Microsoft.UI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using SkiaSharp;
+using Windows.UI;
+
+
+using CryptoPortfolioTracker.Enums;
+using CryptoPortfolioTracker.Models;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Windows.UI;
 using Windows.UI.Shell;
 using WinUI3Localizer;
 
+
 namespace CryptoPortfolioTracker.Converters;
 
-public static class Functions
+public class Functions
 {
+    private static readonly Settings? _settings = App.Container.GetService<Settings>();
+
     public static Visibility TrueToVisible(bool value)
     {
         return value ? Visibility.Visible : Visibility.Collapsed;
@@ -62,11 +65,11 @@ public static class Functions
 
                 if (fileName != "QuestionMarkBlue.png")
                 {
-                    iconPath = Path.Combine(App.IconsPath, fileName);
+                    iconPath = Path.Combine(AppConstants.IconsPath, fileName);
                 }
                 else
                 {
-                    iconPath = Path.Combine(App.AppPath, "Assets", fileName);
+                    iconPath = Path.Combine(AppConstants.AppPath, "Assets", fileName);
                 }
 
                 //*** get cached icon
@@ -81,7 +84,7 @@ public static class Functions
             }
             else
             {
-                result = App.AppPath + "\\Assets\\QuestionMarkRed.png";
+                result = AppConstants.AppPath + "\\Assets\\QuestionMarkRed.png";
             }
         }
         catch
@@ -98,10 +101,10 @@ public static class Functions
             return value.ToString();
         }
 
-        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
 
-        var isValueAsterix = App.PreferencesService.GetAreValesMasked();
+        var isValueAsterix = _settings.AreValuesMasked;
 
         if (isValueAsterix && !format.Contains("%"))
         {
@@ -130,7 +133,8 @@ public static class Functions
     public static SolidColorBrush DoubleToColour(double value, string parameter = "")
     {
         var netInvestColor = new SolidColorBrush(Colors.Goldenrod);
-        var baseColor = App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark ?
+       // var baseColor = Settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark ?
+        var baseColor = _settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark ?
             new SolidColorBrush(Colors.White)
             : new SolidColorBrush(Colors.Black);
 
@@ -141,13 +145,14 @@ public static class Functions
             return (double)value <= 0 ? netInvestColor : baseColor;
         }
 
-        if (App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
+        //if (Settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark)
+        if (_settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark)
         {
             greenColor = new SolidColorBrush(Colors.LimeGreen);
         }
         return (double)value < 0 ? new SolidColorBrush(Colors.Red) : greenColor;
     }
-    public static Int32 FontSizeToImageSize(double value)
+    public Int32 FontSizeToImageSize(double value)
     {
         switch (value)
         {
@@ -168,13 +173,13 @@ public static class Functions
     }
     public static ImageSource StringToImageSource(string value)
     {
-        return new BitmapImage(new Uri(string.IsNullOrWhiteSpace(value) ? App.AppPath + "\\Assets\\QuestionMarkRed.png" : value));
+        return new BitmapImage(new Uri(string.IsNullOrWhiteSpace(value) ? AppConstants.AppPath + "\\Assets\\QuestionMarkRed.png" : value));
     }
     public static ImageSource TransactionDirectionToBitmapImage(MutationDirection value)
     {
         var imagePath = (MutationDirection)value == MutationDirection.In ?
-            App.AppPath + "\\Assets\\Wallet_Plus.png" :
-            App.AppPath + "\\Assets\\Wallet_Minus.png";
+            AppConstants.AppPath + "\\Assets\\Wallet_Plus.png" :
+            AppConstants.AppPath + "\\Assets\\Wallet_Minus.png";
         return new BitmapImage(new Uri(imagePath));
     }
     public static string TransactionKindToString(TransactionKind value)
@@ -232,10 +237,10 @@ public static class Functions
             return value.ToString();
         }
 
-        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
 
-        var isValueAsterix = App.PreferencesService.GetAreValesMasked();
+        var isValueAsterix = _settings.AreValuesMasked;
 
         if (isValueAsterix)
         {
@@ -250,7 +255,7 @@ public static class Functions
     }
     public static SolidColorBrush PriceLevelTypeToColor(ICollection<PriceLevel> value)
     {
-        bool isDarkTheme = App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark;
+        bool isDarkTheme = _settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
 
         SolidColorBrush atTpColor = isDarkTheme ? new SolidColorBrush(Colors.LimeGreen) : new SolidColorBrush(Colors.DarkGreen);
         SolidColorBrush atBuyColor = isDarkTheme ? new SolidColorBrush(Colors.LightBlue) : new SolidColorBrush(Colors.Blue);
@@ -300,8 +305,8 @@ public static class Functions
             return string.Empty;
         }
 
-        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
 
         if (!string.IsNullOrWhiteSpace(parameter))
         {
@@ -341,7 +346,7 @@ public static class Functions
         if (index > value1.Count - 1) return grayedOutColor;
         var value = (value1 as List<PriceLevel>)[index].DistanceToValuePerc;
 
-        bool isDarkTheme = App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark;
+        bool isDarkTheme = _settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
 
         (withinRangeColor, closeToColor) = parameter switch
         {
@@ -354,8 +359,8 @@ public static class Functions
             _ => (baseColor, baseColor)
         };
 
-        var WithinRangePerc = App.PreferencesService.GetWithinRangePerc();
-        var CloseToLevelPerc = App.PreferencesService.GetCloseToPerc();
+        var WithinRangePerc = _settings.WithinRangePerc;
+        var CloseToLevelPerc = _settings.CloseToPerc;
 
         if (index < 3 && value is double val)
         {
@@ -400,10 +405,10 @@ public static class Functions
             return value.ToString();
         }
 
-        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
 
-        var isValueAsterix = App.PreferencesService.GetAreValesMasked();
+        var isValueAsterix = _settings.AreValuesMasked;
 
         if (isValueAsterix)
         {
@@ -428,10 +433,10 @@ public static class Functions
             return value.ToString();
         }
 
-        var ci = new CultureInfo(App.PreferencesService.GetAppCultureLanguage());
-        ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
 
-        var isValueAsterix = App.PreferencesService.GetAreValesMasked();
+        var isValueAsterix = _settings.AreValuesMasked;
 
         if (isValueAsterix)
         {
@@ -457,7 +462,7 @@ public static class Functions
     {
         var greenColor = new SolidColorBrush(Color.FromArgb(100, SKColors.LimeGreen.Red, SKColors.LimeGreen.Green, SKColors.LimeGreen.Blue));
         var redColor = new SolidColorBrush(Color.FromArgb(100, SKColors.OrangeRed.Red, SKColors.OrangeRed.Green, SKColors.OrangeRed.Blue));
-        if (App.PreferencesService.GetAppTheme() == Microsoft.UI.Xaml.ElementTheme.Dark)
+        if (_settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark)
         {
             greenColor = new SolidColorBrush(Color.FromArgb(100, SKColors.DarkGreen.Red, SKColors.DarkGreen.Green, SKColors.DarkGreen.Blue));
             redColor = new SolidColorBrush(Color.FromArgb(100, SKColors.DarkRed.Red, SKColors.DarkRed.Green, SKColors.DarkRed.Blue));
@@ -465,14 +470,7 @@ public static class Functions
 
         return (double)value < 0 ? redColor : greenColor;
     }
-    public static bool DarkThemeToTrue(ElementTheme value)
-    {
-        if (value is ElementTheme theme)
-        {
-            return theme == ElementTheme.Dark ? true : false;
-        }
-        return false;
-    }
+    
     public static double TrueToOpacityOne(bool value)
     {
         return (bool)value ? 1.0 : 0.2;
@@ -483,15 +481,15 @@ public static class Functions
         var _double = (double)value;
 
         CultureInfo ci;
-        if (App.PreferencesService.GetNumberFormat().NumberDecimalSeparator == ",")
+        if (_settings.NumberFormat.NumberDecimalSeparator == ",")
         {
             ci = new CultureInfo("nl-NL");
-            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+            ci.NumberFormat = _settings.NumberFormat;
         }
         else
         {
             ci = new CultureInfo("en-US");
-            ci.NumberFormat = App.PreferencesService.GetNumberFormat();
+            ci.NumberFormat = _settings.NumberFormat;
         }
 
         var maxQty = _double.ToString("0.########", ci);
@@ -525,7 +523,7 @@ public static class Functions
         else if (value)
         {
             //** adjust return value for selected app font
-            switch (App.PreferencesService.GetFontSize().ToString())
+            switch (_settings.FontSize.ToString())
             {
                 case "Small":
                     {
@@ -565,14 +563,6 @@ public static class Functions
         GridLength gridDef = parameter.EndsWith('*')
        ? new GridLength(Convert.ToDouble(parameter.Substring(0, parameter.Length - 1)), GridUnitType.Star)
        : new GridLength(Convert.ToDouble(parameter));
-        //if (parameter.Contains('*'))
-        //{
-        //    gridDef = new GridLength(Convert.ToDouble(parameter.Replace("*", "")), GridUnitType.Star);
-        //}
-        //else
-        //{
-        //    gridDef = new GridLength(Convert.ToDouble(parameter));
-        //}
 
         switch (value)
         {

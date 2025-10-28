@@ -22,7 +22,7 @@ public partial class SettingsView : Page, IDisposable
         _viewModel = viewModel;
         InitializeComponent();
         DataContext = _viewModel;
-        VersionNumber.Text = App.ProductVersion;
+        VersionNumber.Text = AppConstants.ProductVersion;
         isCardExpanded = false;
         isCardEnabled = true;
     }

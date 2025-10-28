@@ -40,7 +40,8 @@ namespace CryptoPortfolioTracker.ViewModels
     {
         public static AdminViewModel Current;
         private readonly IMessenger _messenger;
-        private readonly IPreferencesService _preferencesService;
+        public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
         public PortfolioService _portfolioService { get; private set; }
         [ObservableProperty] private ObservableCollection<Backup> backups = new();
         [ObservableProperty] private Backup? selectedBackup;
@@ -54,11 +55,10 @@ namespace CryptoPortfolioTracker.ViewModels
             
         }
 
-        public AdminViewModel(PortfolioService portfolioService, IMessenger messenger, IPreferencesService preferencesService) : base(preferencesService)
+        public AdminViewModel(PortfolioService portfolioService, IMessenger messenger, Settings appSettings) : base(appSettings)
         {
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AdminViewModel).Name.PadRight(22));
             Current = this;
-            _preferencesService = preferencesService;
             _portfolioService = portfolioService;
             _messenger = messenger;
         }
@@ -108,9 +108,9 @@ namespace CryptoPortfolioTracker.ViewModels
             var loc = Localizer.Get();
             
             // Show the rename dialog
-            PortfolioDialog dialog = new PortfolioDialog(_preferencesService, this);
+            PortfolioDialog dialog = new PortfolioDialog(this);
 
-            dialog.RequestedTheme = _preferencesService.GetAppTheme();
+            dialog.RequestedTheme = AppSettings.AppTheme;
             dialog.XamlRoot = MainPage.Current.XamlRoot;
 
             var result = await App.ShowContentDialogAsync(dialog);
@@ -145,9 +145,9 @@ namespace CryptoPortfolioTracker.ViewModels
             if (SelectedPortfolio != null)
             {
                 // Show the rename dialog
-                PortfolioDialog dialog = new PortfolioDialog(_preferencesService, this, Enums.DialogAction.Edit, portfolio);
+                PortfolioDialog dialog = new PortfolioDialog(this, Enums.DialogAction.Edit, portfolio);
 
-                dialog.RequestedTheme = _preferencesService.GetAppTheme();
+                dialog.RequestedTheme = AppSettings.AppTheme;
                 dialog.XamlRoot = MainPage.Current.XamlRoot;
 
                 var result =  await App.ShowContentDialogAsync(dialog);
@@ -180,9 +180,9 @@ namespace CryptoPortfolioTracker.ViewModels
             if (portfolio != null)
             {
                 // Show the copy dialog
-                CopyPortfolioDialog dialog = new CopyPortfolioDialog(_preferencesService, this, portfolio);
+                CopyPortfolioDialog dialog = new CopyPortfolioDialog(this, portfolio);
 
-                dialog.RequestedTheme = _preferencesService.GetAppTheme();
+                dialog.RequestedTheme = AppSettings.AppTheme;
                 dialog.XamlRoot = MainPage.Current.XamlRoot;
 
                 var result = await App.ShowContentDialogAsync(dialog);
@@ -310,7 +310,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 var isSuccesfull = await PauseServicesAndDisconnect(portfolio);
                 if (isSuccesfull)
                 {
-                    var sourcePathZip = Path.Combine(App.PortfoliosPath, portfolio.Signature, App.BackupFolder);
+                    var sourcePathZip = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature, AppConstants.BackupFolder);
                     var backupFilePath = Path.Combine(sourcePathZip, SelectedBackup.FileName);
                     await DoRestore(portfolio, backupFilePath);
                 }
@@ -318,7 +318,7 @@ namespace CryptoPortfolioTracker.ViewModels
             }
             else
             {
-                var sourcePathZip = Path.Combine(App.PortfoliosPath, portfolio.Signature, App.BackupFolder);
+                var sourcePathZip = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature, AppConstants.BackupFolder);
                 var backupFilePath = Path.Combine(sourcePathZip, SelectedBackup.FileName);
 
                 var restoreResult = await DoRestore(portfolio, backupFilePath);
@@ -387,7 +387,7 @@ namespace CryptoPortfolioTracker.ViewModels
 
         private async Task<Either<Error,bool>> DoRestore(Portfolio portfolio, string backupFilePath)
         {
-            var tempFolder = Path.Combine(App.AppDataPath, "temp");
+            var tempFolder = Path.Combine(AppConstants.AppDataPath, "temp");
             Either<Error, bool> result = new();
             try
             {
@@ -396,7 +396,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     case RestoreResult.Succesfull:
                         {
-                            var restoreChartsResult = RestoreNeededMarketCharts(Path.Combine(tempFolder, "MarketCharts"), App.ChartsFolder);
+                            var restoreChartsResult = RestoreNeededMarketCharts(Path.Combine(tempFolder, "MarketCharts"), AppConstants.ChartsFolder);
                             restoreChartsResult.Match(
                                 Right: _ =>
                                 {
@@ -479,7 +479,7 @@ namespace CryptoPortfolioTracker.ViewModels
 
         private async Task<RestoreResult> RestoreSignatureFolder(string tempFolder, Portfolio portfolio, string backupFilePath)
         {
-            var signatureDestPath = Path.Combine(App.PortfoliosPath, portfolio.Signature);
+            var signatureDestPath = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature);
             var signatureTempPath = Path.Combine(tempFolder, portfolio.Signature);
 
             RestoreResult result = RestoreResult.None;
@@ -577,7 +577,7 @@ namespace CryptoPortfolioTracker.ViewModels
 
         private static void RevertRestore(Portfolio portfolio)
         {
-            var signatureDestPath = Path.Combine(App.PortfoliosPath, portfolio.Signature);
+            var signatureDestPath = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature);
             try
             {
                 var files = Directory.GetFiles(signatureDestPath, "*.sec");
@@ -641,8 +641,8 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             try
             {
-                if (!Directory.Exists(App.ChartsFolder)) return;
-                var filesToRemove = Directory.GetFiles(App.ChartsFolder)
+                if (!Directory.Exists(AppConstants.ChartsFolder)) return;
+                var filesToRemove = Directory.GetFiles(AppConstants.ChartsFolder)
                                               .Where(file => !Path.GetFileName(file).StartsWith("MarketChart"))
                                               .ToList();
                 foreach (var file in filesToRemove)
@@ -697,9 +697,9 @@ namespace CryptoPortfolioTracker.ViewModels
         {
 
             // Show the copy dialog
-            RestorePortfolioDialog dialog = new RestorePortfolioDialog(_portfolioService, _preferencesService);
+            RestorePortfolioDialog dialog = new RestorePortfolioDialog(this, _portfolioService);
 
-            dialog.RequestedTheme = _preferencesService.GetAppTheme();
+            dialog.RequestedTheme = AppSettings.AppTheme;
             dialog.XamlRoot = MainPage.Current.XamlRoot;
 
             var result = await App.ShowContentDialogAsync(dialog);

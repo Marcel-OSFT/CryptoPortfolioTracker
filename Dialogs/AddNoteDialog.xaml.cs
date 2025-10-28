@@ -1,20 +1,15 @@
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using Microsoft.UI.Xaml.Controls;
-using WinUI3Localizer;
-
 namespace CryptoPortfolioTracker.Dialogs;
 
 public sealed partial class AddNoteDialog : ContentDialog
 {
     public string newNote = string.Empty;
     private readonly ILocalizer loc = Localizer.Get();
-    private readonly IPreferencesService _preferencesService;
+    private readonly CoinLibraryViewModel _viewModel;
 
-    public AddNoteDialog(Coin coin, IPreferencesService preferencesService)
+    public AddNoteDialog(Coin coin, CoinLibraryViewModel viewModel)
     {
+        _viewModel = viewModel;
         InitializeComponent();
-        _preferencesService = preferencesService;
         NoteText.Text = coin.Note;
         SetDialogTitleAndButtons(coin);
     }
@@ -33,9 +28,9 @@ public sealed partial class AddNoteDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
         }
     }
 }

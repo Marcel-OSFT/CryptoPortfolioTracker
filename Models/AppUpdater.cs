@@ -30,7 +30,7 @@ public class AppUpdater
     public async Task<AppUpdaterResult> Check(string updateUrl, string appVersion)
     {
         /* Temporary output file to work with (located in AppData)*/
-        var temp_version_file = App.AppDataPath + "\\current_version.txt";
+        var temp_version_file = AppConstants.AppDataPath + "\\current_version.txt";
 
         /* Use the WebClient class to download the file from your server */
         using (var httpClient = new HttpClient())
@@ -160,7 +160,7 @@ public class AppUpdater
             Process process = new();
             process.StartInfo.FileName = downloadsFolderPath + fileName;
             process.StartInfo.Arguments = "/SP- /silent /noicons /forcecloseapplications /restartapplications";
-            process.StartInfo.WorkingDirectory = App.AppPath;
+            process.StartInfo.WorkingDirectory = AppConstants.AppPath;
             process.Start();
         }
         catch (Exception)

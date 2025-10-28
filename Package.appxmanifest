@@ -16,7 +16,7 @@
   <Properties>
     <DisplayName>Crypto Portfolio Tracker</DisplayName>
     <PublisherDisplayName>MK-OSFT</PublisherDisplayName>
-    <Logo>Assets\CPT256x256Icon.png</Logo>
+    <Logo>Assets\CPT_v2.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -44,7 +44,7 @@
             <uap:ShowOn Tile="square310x310Logo"/>
           </uap:ShowNameOnTiles>
         </uap:DefaultTile >
-        <uap:SplashScreen BackgroundColor="transparent" Image="Assets\bitcoin1_HeaderImage.jpg"/>
+        <uap:SplashScreen BackgroundColor="transparent" Image="Assets\bitcoin1_HeaderImage.png"/>
       </uap:VisualElements>
     </Application>
   </Applications>

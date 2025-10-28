@@ -1,27 +1,17 @@
-using System.Linq;
-using CryptoPortfolioTracker.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
-using Windows.UI.Core;
-using Microsoft.UI.Xaml.Controls;
-using WinUIEx;
-using CryptoPortfolioTracker.Infrastructure;
-using System.ComponentModel;
-
 namespace CryptoPortfolioTracker;
 
 public sealed partial class MainWindow : Window
 {
     private WindowManager _manager;
     public static MainWindow? Current;
-    private readonly IPreferencesService _preferencesService;
+    private readonly Settings _appSettings;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public MainWindow(IPreferencesService preferencesService)
+    public MainWindow(Settings appSettings)
     {
+        _appSettings = appSettings;
         InitializeComponent();
         Current = this;
-        _preferencesService = preferencesService;
         ConfigureWindow();
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -48,7 +38,7 @@ public sealed partial class MainWindow : Window
         //Window.CenterOnScreen();
 #endif
         _manager.AppWindow.Title = "Crypto Portfolio Tracker";
-        _manager.AppWindow.SetIcon(App.AppPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
+        _manager.AppWindow.SetIcon(AppConstants.AppPath + "\\Assets\\AppIcons\\CryptoPortfolioTracker.ico");
        
         
         SetTitleBar(null);
@@ -56,7 +46,7 @@ public sealed partial class MainWindow : Window
 
         if (Content is FrameworkElement frameworkElement)
         {
-            frameworkElement.RequestedTheme = _preferencesService.GetAppTheme();
+            frameworkElement.RequestedTheme = _appSettings.AppTheme;
         }
     }
 

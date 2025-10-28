@@ -23,7 +23,8 @@ namespace CryptoPortfolioTracker.ViewModels;
 public partial class PriceLevelsViewModel : BaseViewModel
 {
     public IPriceLevelService _priceLevelService { get; private set; }
-    private readonly IPreferencesService _preferencesService;
+    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
 
     [ObservableProperty] public string portfolioName = string.Empty;
     [ObservableProperty] public Portfolio currentPortfolio;
@@ -39,12 +40,11 @@ public partial class PriceLevelsViewModel : BaseViewModel
     private Func<Coin, object> initialSortFunc;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    public PriceLevelsViewModel(IPriceLevelService priceLevelService, IMessenger messenger, IPreferencesService preferencesService) : base(preferencesService)
+    public PriceLevelsViewModel(IPriceLevelService priceLevelService, IMessenger messenger, Settings appSettings) : base(appSettings)    
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PriceLevelsViewModel).Name.PadRight(22));
         Current = this;
         _priceLevelService = priceLevelService;
-        _preferencesService = preferencesService;
         CurrentPortfolio = _priceLevelService.GetPortfolio();
 
         sortGroup = "Library";
@@ -122,7 +122,7 @@ public partial class PriceLevelsViewModel : BaseViewModel
         Logger.Information("Showing Price Levels Dialog");
         try
         {
-            var dialog = new AddPriceLevelsDialog(coin, _preferencesService)
+            var dialog = new AddPriceLevelsDialog(coin, this)
             {
                 XamlRoot = PriceLevelsView.Current.XamlRoot
             };
@@ -144,15 +144,6 @@ public partial class PriceLevelsViewModel : BaseViewModel
                                 loc.GetLocalizedString("Common_CloseButton"));
                             Logger.Error(err, "Adding/Updating Price Levels failed");
                         });
-                    //.IfFail(async err =>
-                    //{
-                    //    await ShowMessageDialog(
-                    //    loc.GetLocalizedString("Messages_PriceLevelsAddFailed_Title"),
-                    //    err.Message,
-                    //    loc.GetLocalizedString("Common_CloseButton"));
-
-                    //    Logger.Error(err, "Adding/Updating Price Levels failed");
-                    //});
             }
         }
         catch (Exception ex)

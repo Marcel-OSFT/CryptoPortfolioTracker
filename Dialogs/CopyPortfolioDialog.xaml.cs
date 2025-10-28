@@ -1,11 +1,3 @@
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Helpers;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml.Controls;
-using WinUI3Localizer;
-
 namespace CryptoPortfolioTracker.Dialogs;
 
 public sealed partial class CopyPortfolioDialog : ContentDialog
@@ -15,16 +7,14 @@ public sealed partial class CopyPortfolioDialog : ContentDialog
     public bool NeedPartialCopy { get; private set; }
 
     public readonly AdminViewModel _viewModel;
-    private readonly IPreferencesService _preferencesService;
 
     private readonly ILocalizer loc = Localizer.Get();
 
-    public CopyPortfolioDialog(IPreferencesService preferencesService, AdminViewModel viewModel, Portfolio portfolio)
+    public CopyPortfolioDialog(AdminViewModel viewModel, Portfolio portfolio)
     {
         this.InitializeComponent();
         _viewModel = viewModel;
         _portfolioToCopy = portfolio;
-        _preferencesService = preferencesService;
         SetDialogTitleAndButtons();
     }
 
@@ -53,9 +43,9 @@ public sealed partial class CopyPortfolioDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
         }
     }
 

@@ -1,10 +1,3 @@
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml.Controls;
-using WinUI3Localizer;
-
 namespace CryptoPortfolioTracker.Dialogs;
 
 public sealed partial class NarrativeDialog : ContentDialog
@@ -12,17 +5,15 @@ public sealed partial class NarrativeDialog : ContentDialog
     public readonly NarrativesViewModel _viewModel;
     public Narrative? newNarrative;
     private readonly Narrative? _narrativeToEdit;
-    private readonly IPreferencesService _preferencesService;
 
     private readonly ILocalizer loc = Localizer.Get();
     private readonly DialogAction _dialogAction;
 
-    public NarrativeDialog(IPreferencesService preferencesService, NarrativesViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Narrative? NarrativeToEdit = null)
+    public NarrativeDialog(NarrativesViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Narrative? NarrativeToEdit = null)
     {
         InitializeComponent();
         _viewModel = viewModel;
         _narrativeToEdit = NarrativeToEdit;
-        _preferencesService = preferencesService;
         SetDialogTitleAndButtons(dialogAction);
         _dialogAction = dialogAction;
     }
@@ -65,9 +56,9 @@ public sealed partial class NarrativeDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
         }
     }
 

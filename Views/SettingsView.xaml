@@ -23,6 +23,9 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
+
+        <!-- Add converter instance -->
+        <converters:AppThemeToggleConverter x:Key="AppThemeToggleConverter" />
     </Page.Resources>
     
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -92,7 +95,7 @@
                                 <ct:SettingsCard l:Uids.Uid="Settings_AppTheme"
                                     HeaderIcon="{ui:FontIcon Glyph=&#xF08C;}"
                                     IsEnabled="True">
-                                    <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{x:Bind converters:Functions.DarkThemeToTrue(_viewModel.AppTheme), Mode=OneWay}" />
+                                    <ToggleSwitch l:Uids.Uid="Settings_AppTheme_Toggle" IsOn="{x:Bind _viewModel.AppTheme, Converter={StaticResource AppThemeToggleConverter}, Mode=TwoWay}" />
                                 </ct:SettingsCard>
                         
                                 <ct:SettingsCard l:Uids.Uid="Settings_KeepScrollBarsExpanded"

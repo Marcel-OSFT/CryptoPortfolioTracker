@@ -1,11 +1,3 @@
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Helpers;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml.Controls;
-using WinUI3Localizer;
-
 namespace CryptoPortfolioTracker.Dialogs;
 
 public sealed partial class PortfolioDialog : ContentDialog
@@ -14,18 +6,16 @@ public sealed partial class PortfolioDialog : ContentDialog
     public Portfolio? newPortfolio;
 
     public readonly AdminViewModel _viewModel;
-    private readonly IPreferencesService _preferencesService;
 
     private readonly ILocalizer loc = Localizer.Get();
 
     private readonly DialogAction _dialogAction;
 
-    public PortfolioDialog(IPreferencesService preferencesService, AdminViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Portfolio? portfolioToEdit = null)
+    public PortfolioDialog(AdminViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Portfolio? portfolioToEdit = null)
     {
         this.InitializeComponent();
         _viewModel = viewModel;
         _portfolioToEdit = portfolioToEdit;
-        _preferencesService = preferencesService;
         SetDialogTitleAndButtons(dialogAction);
         _dialogAction = dialogAction;
     }
@@ -70,9 +60,9 @@ public sealed partial class PortfolioDialog : ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
         }
     }
 

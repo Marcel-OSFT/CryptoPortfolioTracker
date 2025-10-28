@@ -197,7 +197,7 @@ public partial class DashboardViewModel : BaseViewModel
     }
     private void SetCustomSeparatorsTarget()
     {
-        var withinRangePerc = _preferencesService.GetWithinRangePerc();
+        var withinRangePerc = AppSettings.WithinRangePerc;
         //*** Target
         SeparatorsTarget = new double[] { -100, -50, -1 * withinRangePerc, 0, 100 };
 
@@ -223,7 +223,7 @@ public partial class DashboardViewModel : BaseViewModel
     private void SetCustomSeparatorsMa()
     {
         //*** Ema
-        var withinRangePerc = _preferencesService.GetWithinRangePerc();
+        var withinRangePerc = AppSettings.WithinRangePerc;
         SeparatorsEma = new double[] { -100, -0.5 * withinRangePerc, 0, 0.5 * withinRangePerc, 100 };
 
         var emaSection = sectionsEma.First();
@@ -245,9 +245,9 @@ public partial class DashboardViewModel : BaseViewModel
             bubbleSizeMax = 50;
             bubbleSizeMin = 1;
             SetCustomSeparatorsAll();
-            RsiRbContent = $"1D RSI({_preferencesService.GetRsiPeriod()})";
-            MaRbContent = $"1D {_preferencesService.GetMaType()}({_preferencesService.GetMaPeriod()})";
-            SelectedHeatMapIndex = _preferencesService.GetHeatMapIndex();
+            RsiRbContent = $"1D RSI({AppSettings.RsiPeriod})";
+            MaRbContent = $"1D {AppSettings.MaType}({AppSettings.MaPeriod})";
+            SelectedHeatMapIndex = AppSettings.HeatMapIndex;
             await _dashboardService.EvaluatePriceLevels();
             await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
@@ -278,7 +278,7 @@ public partial class DashboardViewModel : BaseViewModel
     {
         var loc = Localizer.Get();
 
-        SolidColorPaint labelColor = _preferencesService.GetAppTheme() == ElementTheme.Dark ? new SolidColorPaint(SKColors.White) : new SolidColorPaint(SKColors.Black);
+        SolidColorPaint labelColor = AppSettings.AppTheme == ElementTheme.Dark ? new SolidColorPaint(SKColors.White) : new SolidColorPaint(SKColors.Black);
 
         HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(selectedHeatMapIndex));
         ObservableCollection<HeatMapPoint> dummyPoints;
@@ -425,7 +425,7 @@ public partial class DashboardViewModel : BaseViewModel
 
     public async Task ChangeHeatMapType(int index)
     {
-        _preferencesService.SetHeatMapIndex(index);
+        AppSettings.HeatMapIndex = index;
         SelectedHeatMapIndex = index;
 
         if (SelectedHeatMapIndex == 0)

@@ -1,25 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using CryptoPortfolioTracker.Dialogs;
-using CryptoPortfolioTracker.Infrastructure;
-using CryptoPortfolioTracker.Initializers;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Views;
+using CryptoPortfolioTracker.Converters;
+using CryptoPortfolioTracker.Reporting.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Serilog;
-using Serilog.Core;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Net.Http;
+
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Windows.Storage;
-using WinUI3Localizer;
 using Task = System.Threading.Tasks.Task;
 
 namespace CryptoPortfolioTracker;
@@ -32,44 +16,19 @@ public partial class App : Application
     private const string MutexName = "MyUniqueWinUIMutex";
     private static ILogger? Logger;
     public static readonly SemaphoreSlim UpdateSemaphore = new SemaphoreSlim(1, 1);
-    public static IPreferencesService PreferencesService { get; private set; }
+    private static Settings _appSettings { get; set; }
 
     public static App Current { get; private set; }
     public static MainWindow? Window { get; private set; }
     public static Window? Splash { get; set; }
-    public static string AppPath { get; private set; } = string.Empty;
-    public static string AppDataPath { get; private set; } = string.Empty;
-    public static string ProductVersion { get; private set; } = string.Empty;
     public static ILocalizer? Localizer { get; private set; }
     public static IServiceProvider Container { get; private set; }
 
     private static TaskCompletionSource<bool>? dialogCompletionSource; // = new TaskCompletionSource<bool>();
     public static Task DialogCompletionTask => dialogCompletionSource?.Task ?? Task.CompletedTask;
-    private static string AuthStateFile => Path.Combine(AppDataPath, "authstate.json");
     private static readonly byte[] keyBytes = { 77, 121, 83, 117, 112, 101, 114, 83, 101, 99, 114, 101, 116, 75, 101, 121, 49, 50, 51 };
-
-    //public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version_onedrive.txt";
-    public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
-    public const string CoinGeckoApiKey = "";
-    public const string ApiPath = "https://api.coingecko.com/api/v3/";
-    public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
-    public const string DefaultPortfolioGuid = "f52ee1a8-ea8d-4f21-849c-6e6429f88256";
-    public const string DefaultDuressPortfolioGuid = "08c1ac97-27e0-4922-93da-320c8a5e08ba";
-
-    public const string DbName = "sqlCPT.db";
-    public const string PrefFileName = "prefs.xml";
-    public const string BackupFolder = "Backup";
-    public const string PrefixBackupName = "RestorePoint";
-    public const string ExtentionBackup = "cpt";
-    public const string PortfoliosFileName = "portfolios.json";
-    public static string PortfoliosPath { get; private set; }
-    public static string IconsPath { get; private set; }
-    public static string ChartsFolder { get; private set; }
-    public static string ScheduledTaskExe { get; private set; }
-    public static string PowerShellScriptPs1 { get; private set; }
-
     private const string TriggerTime = "02:00"; // 2 AM daily
-    public const string ScheduledTaskName = "CryptoPortfolioTracker MarketCharts Update Task";
+   
 
     public static bool IsDuressMode { get; set; } = false;
 
@@ -79,9 +38,13 @@ public partial class App : Application
         InitializeComponent();
         this.UnhandledException += OnUnhandledException;
 
-        GetAppEnvironmentals();
+        AppConstants.GetAppEnvironmentals();
         Container = RegisterServices();
-        PreferencesService = Container.GetService<IPreferencesService>() ?? throw new InvalidOperationException("Failed to retrieve IPreferencesService from the service container.");
+        //expose Functions and IValueConverter(s) to XAML too:
+       // Application.Current.Resources["FormatValueConverter"] = Container.GetRequiredService<FormatValueToString>();
+       // Application.Current.Resources["Functions"] = Container.GetRequiredService<IFunctions>();
+        
+        _appSettings = Container.GetRequiredService<Settings>();
     }
 
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
@@ -91,12 +54,18 @@ public partial class App : Application
         await Task.Delay(1000);
 
         if (!await EnsureSingleInstanceAsync()) return;
-        PreferencesService.LoadUserPreferencesFromXml();
         InitializeLogger();
         await InitializeLocalizer();
 
-        var authService = new AuthenticationService(PreferencesService, keyBytes);
-        // ******* var code = await authService.GenerateResetCodeAsync("4fc3cd2e-4114-4683-88ab-bd7c57427649");
+
+        MoveUserPreferencesToSettingsIfNeeded();
+
+
+
+
+
+        var authService = Container.GetRequiredService<AuthenticationService>();
+        //******* var code = await authService.GenerateResetCodeAsync(_settings.UserId); //***** TESTING PURPOSES ONLY *****
         bool authenticated = await authService.AuthenticateUserAsync(Splash);
         if (!authenticated)
         {
@@ -105,21 +74,34 @@ public partial class App : Application
         }
 
         var scheduledTaskService = new ScheduledTaskService(
-            ScheduledTaskName,
-            ScheduledTaskExe,
+            AppConstants.ScheduledTaskName,
+            AppConstants.ScheduledTaskExe,
             TriggerTime,
             "Daily price update for the Market Charts",
             key => Localizer?.GetLocalizedString(key) ?? key
         );
         await scheduledTaskService.SetupScheduledTaskAsync(Splash);
 
-        await App.Container.GetService<PortfolioService>().InitializeAsync();
+        await Container.GetService<PortfolioService>().InitializeAsync();
 
-        var iconCacheService = new IconCacheService(IconsPath, Container.GetService<PortfolioService>(), Logger);
+        var iconCacheService = new IconCacheService(AppConstants.IconsPath, Container.GetService<PortfolioService>(), Logger);
         await iconCacheService.CacheLibraryIconsAsync();
 
         Window = Container.GetService<MainWindow>();
         Window?.Activate();
+    }
+
+    private async Task MoveUserPreferencesToSettingsIfNeeded()
+    {
+        if (File.Exists(AppConstants.AppDataPath + "\\prefs.xml"))
+        {
+            var prefService = Container.GetService<PreferencesService>();
+            if (prefService != null)
+            {
+                prefService.LoadUserPreferencesFromXml();
+                await prefService.AssignUserPreferencesToSettingsAsync();
+            }
+        }
     }
 
     private async Task<bool> EnsureSingleInstanceAsync()
@@ -153,7 +135,7 @@ public partial class App : Application
         }
     }
 
-    private async static Task InitializeLocalizer()
+    private async Task InitializeLocalizer()
     {
         var stringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
 
@@ -161,7 +143,7 @@ public partial class App : Application
             .AddStringResourcesFolderForLanguageDictionaries(stringsFolderPath)
             .Build();
 
-        var culture = PreferencesService.GetAppCultureLanguage();
+        var culture = _appSettings.AppCultureLanguage;
         Logger?.Information("Setting Language to {0}", culture);
 
         try
@@ -174,38 +156,7 @@ public partial class App : Application
             Logger?.Error(ex, "Failed to set language.");
         }
     }
-
-
-    private static void GetAppEnvironmentals()
-    {
-        AppPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
-        AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
-        if (!Directory.Exists(AppDataPath))
-        {
-            Directory.CreateDirectory(AppDataPath);
-        }
-
-        AppDomain.CurrentDomain.SetData("DataDirectory", AppDataPath);
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-        ProductVersion = version is not null ? version.ToString() : string.Empty;
-
-        PortfoliosPath = Path.Combine(AppDataPath, "Portfolios");
-        ChartsFolder = Path.Combine(AppDataPath, "MarketCharts");
-        PowerShellScriptPs1 = Path.Combine(AppPath, "RegisterScheduledTask.ps1");
-        IconsPath = Path.Combine(AppDataPath, "LibraryIcons");
-
-        if (Debugger.IsAttached)
-        {
-            // Development mode (running from IDE)
-            ScheduledTaskExe = "C:\\Program Files\\Crypto Portfolio Tracker\\MarketChartsUpdateService.exe";
-        }
-        else
-        {
-            // Production mode
-            ScheduledTaskExe = Path.Combine(AppPath, "MarketChartsUpdateService.exe");
-        }
-    }
-
+    
     private static IServiceProvider RegisterServices()
     {
         var services = new ServiceCollection();
@@ -264,15 +215,21 @@ public partial class App : Application
         services.AddScoped<IPriceUpdateService, PriceUpdateService>();
         services.AddScoped<IGraphUpdateService, GraphUpdateService>();
         services.AddSingleton<IGraphService, GraphService>();
-        services.AddSingleton<IPreferencesService, PreferencesService>();
         services.AddScoped<IPriceLevelService, PriceLevelService>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<INarrativeService, NarrativeService>();
+        services.AddSingleton<IPreferenceStore, FilePreferenceStore>();
 
-        services.AddSingleton<IPreferencesService, PreferencesService>();
+        services.AddSingleton<PreferencesService>();
+        services.AddSingleton<Settings>();
+        services.AddSingleton<IIndicatorService, IndicatorService>();
+        services.AddSingleton<FormatValueToString>(); // converter instance
 
         services.AddScoped<PortfolioService>();
         services.AddSingleton<IMessenger, WeakReferenceMessenger>();
+        services.AddSingleton<IQuestPdfService, QuestPdfService>();
+
+        services.AddSingleton<AuthenticationService>(sp => new AuthenticationService(keyBytes, sp.GetRequiredService<Settings>()));
 
         return services.BuildServiceProvider();
     }
@@ -286,7 +243,7 @@ public partial class App : Application
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Debug)
                 .Enrich.FromLogContext()
             .WriteTo.Debug(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
-            .WriteTo.File(App.AppDataPath + "\\log.txt",
+            .WriteTo.File(AppConstants.AppDataPath + "\\log.txt",
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 3,
                     outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
@@ -295,17 +252,15 @@ public partial class App : Application
 #else
 
         Log.Logger = new LoggerConfiguration()
-                    .WriteTo.File(App.AppDataPath + "\\log.txt",
+                    .WriteTo.File(AppConstants.AppDataPath + "\\log.txt",
                         rollingInterval: RollingInterval.Day,
                         retainedFileCountLimit: 3,
                         outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}]  {SourceContext:lj}  {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 #endif
-        PreferencesService.AttachLogger();
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(App).Name.PadRight(22));
         Logger.Information("------------------------------------");
-        Logger.Information("Started Crypto Portfolio Tracker {0}", App.ProductVersion);
-
+        Logger.Information("Started Crypto Portfolio Tracker {0}", AppConstants.ProductVersion);
     }
 
     public void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -371,10 +326,10 @@ public partial class App : Application
             Content = message,
             PrimaryButtonText = primaryButtonText,
             CloseButtonText = closeButtonText,
-            RequestedTheme = PreferencesService.GetAppTheme(),
+            RequestedTheme = _appSettings.AppTheme
         };
 
-        var result = await App.ShowContentDialogAsync(dialog);
+        var result = await ShowContentDialogAsync(dialog);
         return result;
     }
 

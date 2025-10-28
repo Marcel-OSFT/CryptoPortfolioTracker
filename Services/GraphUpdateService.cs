@@ -36,6 +36,7 @@ public class GraphUpdateService : IGraphUpdateService
     private Task? timerTask;
     private Task? resumeTask;
     private readonly PortfolioService _portfolioService;
+    private readonly Settings _appSettings;
     private readonly IGraphService _graphService;
     //private double progressCounter;
     //private double progressInterval;
@@ -46,9 +47,10 @@ public class GraphUpdateService : IGraphUpdateService
     public bool IsPausRequested { get; private set; }
     public bool IsUpdating { get; private set; }
 
-    public GraphUpdateService(IGraphService graphService, PortfolioService portfolioService, IMessenger messenger)
+    public GraphUpdateService(IGraphService graphService, PortfolioService portfolioService, IMessenger messenger, Settings appSettings)
     {
         _portfolioService = portfolioService;
+        _appSettings = appSettings;
         timer = new(System.TimeSpan.FromMinutes(5));
         IsPausRequested = false;
         _graphService = graphService;
@@ -146,26 +148,26 @@ public class GraphUpdateService : IGraphUpdateService
         using (TaskService ts = new TaskService())
         {
             TaskFolder folder = ts.GetFolder("\\");
-            var task = folder.Tasks.Where(t => t.Name == App.ScheduledTaskName).FirstOrDefault();
+            var task = folder.Tasks.Where(t => t.Name == AppConstants.ScheduledTaskName).FirstOrDefault();
             
             if (task != null)
             {
                 if (task.LastRunTime.Date == DateTime.Today && task.LastTaskResult == 0)
                 {
-                    Logger.Information("{0} has completed its task today", App.ScheduledTaskName);
+                    Logger.Information("{0} has completed its task today", AppConstants.ScheduledTaskName);
                     return true;
                 }
                 else if (task.LastTaskResult != 0)
                 {
-                    Logger.Information("{0} has failed to run to completion", App.ScheduledTaskName);
+                    Logger.Information("{0} has failed to run to completion", AppConstants.ScheduledTaskName);
                 }
                 else if (task.State == TaskState.Running)
                 {
-                    Logger.Information("{0} is running", App.ScheduledTaskName);
+                    Logger.Information("{0} is running", AppConstants.ScheduledTaskName);
                 }
                 else
                 {
-                    Logger.Information("{0} not yet executed", App.ScheduledTaskName);
+                    Logger.Information("{0} not yet executed", AppConstants.ScheduledTaskName);
                 }
             }
             return false;
@@ -220,20 +222,6 @@ public class GraphUpdateService : IGraphUpdateService
             {
                 _messenger.Send(new GraphUpdatedMessage());
             });
-
-            //var validationResult = await ValidateMarketCharts(assets);
-            //await validationResult.Match(
-            //    async s => 
-            //    {
-            //        await AddPortfolioValueData(assets, days);
-
-            //    },
-            //    err =>
-            //    {
-            //        Logger.Warning($"MarketCharts validation failed. {err.Message}");
-            //        return Task.CompletedTask;
-            //    }
-            //);
 
             return true;
         }
@@ -624,7 +612,7 @@ public class GraphUpdateService : IGraphUpdateService
     //    httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
     //    var serializerSettings = new JsonSerializerSettings();
 
-    //    var coinsClient = new CoinGeckoClient(httpClient, App.CoinGeckoApiKey, App.ApiPath, serializerSettings);
+    //    var coinsClient = new CoinGeckoClient(httpClient, AppConstants.CoinGeckoApiKey, AppConstants.ApiPath, serializerSettings);
 
     //    System.Exception? error = null;
     //    MarketChartById? additionalMarketChart = null;
@@ -868,7 +856,7 @@ public class GraphUpdateService : IGraphUpdateService
             Content = message,
             PrimaryButtonText = primaryButtonText,
             CloseButtonText = closeButtonText,
-            RequestedTheme = App.PreferencesService.GetAppTheme()
+            RequestedTheme = _appSettings.AppTheme
         };
         var dlgResult = await dialog.ShowAsync();
         return dlgResult;

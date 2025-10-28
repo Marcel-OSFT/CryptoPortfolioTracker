@@ -3,7 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows10.0.26100.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>CryptoPortfolioTracker</RootNamespace>
     <Platforms>x64</Platforms>
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
@@ -16,7 +17,7 @@
     <Version>1.4.0.1</Version>
     <StartupObject></StartupObject>
     <Nullable>enable</Nullable>
-	  <LangVersion>preview</LangVersion>
+	<LangVersion>preview</LangVersion>
 	<WindowsSdkPackageVersion>10.0.26100.52</WindowsSdkPackageVersion>
   </PropertyGroup>
   <PropertyGroup Label="MultilingualAppToolkit">
@@ -26,59 +27,6 @@
     <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
     <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-16.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-24.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-256.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-32.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-lightunplated_targetsize-48.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-16.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-24.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-256.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-32.png" />
-    <Content Remove="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="AddCoinDialog.xaml" />
-    <None Remove="Assets\CPT256x256Icon.scale-100.png" />
-    <None Remove="Assets\CPT256x256Icon.scale-125.png" />
-    <None Remove="Assets\CPT256x256Icon.scale-150.png" />
-    <None Remove="Assets\CPT256x256Icon.scale-200.png" />
-    <None Remove="Assets\CPT256x256Icon.scale-400.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-16.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-24.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-24_altform-lightunplated.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-24_altform-unplated.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-256.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-256_altform-lightunplated.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-256_altform-unplated.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-32.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-32_altform-lightunplated.png" />
-    <None Remove="Assets\CPT256x256Icon.targetsize-48.png" />
-    <None Remove="CoinDescriptionDialog.xaml" />
-    <None Remove="Controls\AssetAccountsGridViewControl.xaml" />
-    <None Remove="Controls\AssetTransactionsListViewControl.xaml" />
-    <None Remove="Controls\AutoSuggestBoxWithValidation.xaml" />
-    <None Remove="Controls\ColumnHeaderButton.xaml" />
-    <None Remove="Controls\GraphControl.xaml" />
-    <None Remove="Controls\HeatMapControl.xaml" />
-    <None Remove="Controls\PriceLevelsListViewControl.xaml" />
-    <None Remove="Dialogs\AboutDialog.xaml" />
-    <None Remove="Dialogs\AccountDialog.xaml" />
-    <None Remove="Controls\AccountsListViewControl.xaml" />
-    <None Remove="Controls\AssetsListViewControl.xaml" />
-    <None Remove="Controls\CoinLibraryListViewControl.xaml" />
-    <None Remove="Dialogs\AddNoteDialog.xaml" />
-    <None Remove="Dialogs\AddPrereleaseCoinDialog.xaml" />
-    <None Remove="Dialogs\AddPriceLevelsDialog.xaml" />
-    <None Remove="Dialogs\PortfolioSettingsDialog.xaml" />
-    <None Remove="Dialogs\TransactionDialog.xaml" />
-    <None Remove="MK_Styles.xaml" />
-    <None Remove="SplashScreen.xaml" />
-    <None Remove="Views\DashboardView.xaml" />
-    <None Remove="Views\PriceLevelsView.xaml" />
-    <None Remove="Views\SettingsView.xaml" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AK.Toolkit.WinUI3.ScrollBarExtensions" Version="1.0.5" />
     <PackageReference Include="CoinGeckoFluentApi.Client" Version="1.0.0-preview.1" />
@@ -121,6 +69,7 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Polly.Core" Version="8.3.0" />
+    <PackageReference Include="QuestPDF" Version="2025.7.3" />
     <PackageReference Include="Serilog" Version="4.2.1-dev-02337" />
     <PackageReference Include="Serilog.Expressions" Version="5.1.0-dev-00186" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1-dev-02308" />
@@ -219,6 +168,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Fonts\" />
+    <Folder Include="Preferences\" />
+    <Folder Include="Reporting\Models\" />
+    <Folder Include="Reporting\Queries\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -228,82 +180,10 @@
     <Content Update="Assets\AppIcons\CryptoPortfolioTracker.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\bitcoin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Update="Assets\bitcoin1_HeaderImage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\CPT256x256Icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.scale-100.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.scale-125.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.scale-150.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.scale-200.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.scale-400.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-16.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-16_altform-lightunplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-16_altform-unplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-24.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-24_altform-lightunplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-24_altform-unplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-256.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-256_altform-lightunplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-256_altform-unplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-32.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-32_altform-lightunplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-32_altform-unplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-48.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-48_altform-lightunplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CPT256x256Icon.targetsize-48_altform-unplated.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Update="Assets\CryptoPortfolioTracker.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\CryptoPortfolioTracker48x48.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\ethereum.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\ninegrid.gif">
@@ -315,10 +195,13 @@
     <Content Update="Assets\QuestionMarkRed.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\Splash_Image.jpg">
+    <Content Update="Assets\Splash_Image_1000x565.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\Splash_Image_1000x565.jpg">
+    <Content Update="Assets\ethereum.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\bitcoin.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\usdc.png">
@@ -330,50 +213,8 @@
     <Content Update="Assets\Wallet_Plus.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\widelogo.scale-100.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\widelogo.scale-140.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\widelogo.scale-180.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\WideLogo.scale-80.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Update="Assets\CPT256x256Icon.altform-lightunplated_targetsize-16.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-lightunplated_targetsize-24.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-lightunplated_targetsize-256.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-lightunplated_targetsize-32.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-lightunplated_targetsize-48.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-16.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-24.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-256.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-32.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CPT256x256Icon.altform-unplated_targetsize-48.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Page Update="Dialogs\WhatsNewDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

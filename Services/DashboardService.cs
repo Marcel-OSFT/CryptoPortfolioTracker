@@ -24,17 +24,25 @@ namespace CryptoPortfolioTracker.Services;
 public partial class DashboardService : ObservableObject, IDashboardService
 {
     private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(DashboardService).Name.PadRight(22));
+
+    private readonly IIndicatorService _indicatorService;
+    private readonly Settings _appSettings;
     private readonly PortfolioService _portfolioService;
     private readonly IAssetService _assetService;
     private readonly INarrativeService _narrativeService;
-    private readonly IPreferencesService _preferencesService;
     private readonly IAccountService _accountService;
 
-    public DashboardService(PortfolioService portfolioService, IAssetService assetService, INarrativeService narrativeService, IAccountService accountService, IPreferencesService preferencesService)
+    public DashboardService(PortfolioService portfolioService, 
+                        IAssetService assetService, 
+                        INarrativeService narrativeService, 
+                        IAccountService accountService, 
+                        Settings appSettings,
+                        IIndicatorService indicatorService)
     {
+        _indicatorService = indicatorService;
+        _appSettings = appSettings;
         _portfolioService = portfolioService;
         _assetService = assetService;
-        _preferencesService = preferencesService;
         _accountService = accountService;
         _narrativeService = narrativeService;
     }
@@ -50,8 +58,8 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
         foreach (var coin in coins)
         {
-            await coin.CalculateRsi();
-            await coin.CalculateMa();
+            await _indicatorService.CalculateRsiAsync(coin);
+            await _indicatorService.CalculateMaAsync(coin);
             await Task.Delay(10);
         }
     }
@@ -61,7 +69,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
         foreach (var coin in coins)
         {
-            await coin.CalculateRsi();
+            await _indicatorService.CalculateRsiAsync(coin);
             await Task.Delay(10);
         }
     }
@@ -71,7 +79,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
         foreach (var coin in coins)
         {
-            await coin.CalculateMa();
+            await _indicatorService.CalculateMaAsync(coin);
             await Task.Delay(10);
         }
     }
@@ -147,7 +155,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
         foreach (var coin in coins)
         {
-            coin.EvaluatePriceLevels(coin.Price);
+            _indicatorService.EvaluatePriceLevels(coin, coin.Price);
         }
     }
 
@@ -185,7 +193,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
                 var assets = (await _assetService.PopulateAssetTotalsList())
                     .Where(x => x.MarketValue > threshold)
                     .OrderBy(x => x.Coin.Rank)
-                    .Take(_preferencesService.GetMaxPieCoins())
+                    .Take(_appSettings.MaxPieCoins)
                     .ToList();
                 var sumOthersMarketValue = portfolioValue - assets.Sum(x => x.MarketValue);
 

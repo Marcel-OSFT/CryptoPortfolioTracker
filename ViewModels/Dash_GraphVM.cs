@@ -26,9 +26,6 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class DashboardViewModel : BaseViewModel
 {
-    //private readonly ILocalizer loc = Localizer.Get();
-
-    
     private ObservableCollection<DateTimePoint> valuesPortfolio = new();
     private ObservableCollection<DateTimePoint> valuesInFlow = new();
     private ObservableCollection<DateTimePoint> valuesOutFlow = new();
@@ -176,7 +173,7 @@ public partial class DashboardViewModel : BaseViewModel
     private void SetXAxesGraph()
     {
         var loc = Localizer.Get();
-        var ci = new CultureInfo(_preferencesService.GetAppCultureLanguage());   // App.Localizer.GetCurrentLanguage());
+        var ci = new CultureInfo(AppSettings.AppCultureLanguage);   // App.Localizer.GetCurrentLanguage());
 
         if (XAxesGraph is not null)
         {

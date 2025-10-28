@@ -95,7 +95,7 @@
                 <StackPanel l:Uids.Uid="Assets_InFlowPanel" 
                     x:Name="txtInflow" 
                     Orientation="Vertical" 
-                    Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.IsHidingCapitalFlow), Mode=OneWay}"
+                    Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.AppSettings.IsHidingCapitalFlow), Mode=OneWay}"
                     RelativePanel.LeftOf="txtOutflow" RelativePanel.AlignBottomWith="txtOutflow"
                     Margin="0,0,0,0">
                     <TextBlock l:Uids.Uid="Assets_InFlow"
@@ -110,7 +110,7 @@
                 </StackPanel>
 
                 <StackPanel l:Uids.Uid="Assets_OutFlowPanel" x:Name="txtOutflow" Orientation="Vertical"
-                   Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.IsHidingCapitalFlow), Mode=OneWay}"
+                   Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.AppSettings.IsHidingCapitalFlow), Mode=OneWay}"
                     RelativePanel.AlignRightWithPanel="True" 
                     RelativePanel.Below="txtProfitLossPerc"
                     Margin="0,90,0,0">

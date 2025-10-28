@@ -26,11 +26,11 @@ public partial class DashboardViewModel : BaseViewModel
 {
     public static DashboardViewModel? Current;
     private static ILocalizer loc = Localizer.Get();
-
     public readonly IDashboardService _dashboardService;
-    public readonly IPreferencesService _preferencesService;
     private readonly IGraphService _graphService;
     private readonly IPriceLevelService _priceLevelService;
+    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
     [ObservableProperty] public string portfolioName = string.Empty;
     [ObservableProperty] public Portfolio currentPortfolio;
 
@@ -61,7 +61,7 @@ public partial class DashboardViewModel : BaseViewModel
 
         labelerYAxis = value ? value => "****" : value => string.Format("$ {0:N0}", value);
 
-        _preferencesService.SetAreValuesMasked(value);
+        AppSettings.AreValuesMasked = value;
 
         ReloadAffectedControls();
     }
@@ -85,11 +85,11 @@ public partial class DashboardViewModel : BaseViewModel
         GetValueGains();
     }
 
-    public DashboardViewModel(IDashboardService dashboardService,
-                                IGraphService graphService,
-                                IPriceLevelService priceLevelService,
+    public DashboardViewModel(IDashboardService dashboardService, 
+                                IGraphService graphService, 
+                                IPriceLevelService priceLevelService, 
                                 IMessenger messenger,
-                                IPreferencesService preferencesService) : base(preferencesService)
+                                Settings appSettings) : base(appSettings)
     {
         Current = this;
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
@@ -107,11 +107,10 @@ public partial class DashboardViewModel : BaseViewModel
             SetValuesGraph();
         });
 
-        _preferencesService = preferencesService;
         _dashboardService = dashboardService;
         _graphService = graphService;
         _priceLevelService = priceLevelService;
-        IsPrivacyMode = _preferencesService.GetAreValesMasked();
+        IsPrivacyMode = AppSettings.AreValuesMasked;
         CurrentPortfolio = _dashboardService.GetPortfolio();
 
     }
@@ -124,7 +123,7 @@ public partial class DashboardViewModel : BaseViewModel
         CurrentPortfolio = _dashboardService.GetPortfolio();
         PortfolioName = CurrentPortfolio.Name;
 
-        IsPrivacyMode = _preferencesService.GetAreValesMasked();
+        IsPrivacyMode = AppSettings.AreValuesMasked;
     }
 
     public void Terminate()
@@ -182,7 +181,7 @@ public partial class DashboardViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing DashboardSettings Dialog");
-            var dialog = new DashboardSettingsDialog(_preferencesService)
+            var dialog = new DashboardSettingsDialog(this)
             {
                 XamlRoot = DashboardView.Current.XamlRoot
             };
@@ -212,16 +211,23 @@ public partial class DashboardViewModel : BaseViewModel
 
     public async Task RefreshRsiBubbles()
     {
-        RsiRbContent = $"1D RSI({_preferencesService.GetRsiPeriod()})";
+        RsiRbContent = $"1D RSI({AppSettings.RsiPeriod})";
         await _dashboardService.CalculateRsiAllCoins();
-        if (SelectedHeatMapIndex == 1) { await RefreshHeatMapPoints(); }
+        if (SelectedHeatMapIndex == 1) 
+        { 
+            await RefreshHeatMapPoints(); 
+        }
     }
 
     public async Task RefreshMaBubbles()
     {
-        MaRbContent = $"1D {_preferencesService.GetMaType()}({_preferencesService.GetMaPeriod()})";
+        MaRbContent = $"1D {AppSettings.MaType}({AppSettings.MaPeriod})";
         await _dashboardService.CalculateMaAllCoins();
-        if (SelectedHeatMapIndex == 2) { await RefreshHeatMapPoints(); }
+        if (SelectedHeatMapIndex == 2) 
+        {
+            SetCustomSeparatorsMa();
+            await RefreshHeatMapPoints(); 
+        }
     }
 
     public void RefreshPortfolioPie()
@@ -235,7 +241,7 @@ public partial class DashboardViewModel : BaseViewModel
 
     public async Task RefreshTargetBubbles()
     {
-        RsiRbContent = $"1D RSI({_preferencesService.GetRsiPeriod()})";
+        RsiRbContent = $"1D RSI({AppSettings.RsiPeriod})";
         if (SelectedHeatMapIndex == 0) 
         {
             SetCustomSeparatorsTarget();

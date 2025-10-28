@@ -1,21 +1,10 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Enums;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System.Collections.Generic;
-using System.Xml.Linq;
-using WinUI3Localizer;
-
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
 public sealed partial class AddPriceLevelsDialog : ContentDialog
 {
     private readonly ILocalizer loc = Localizer.Get();
-    private readonly IPreferencesService _preferencesService;
-
+    private readonly PriceLevelsViewModel _viewModel;
     [ObservableProperty] private double tpValue;
     [ObservableProperty] private string tpNote = string.Empty;
 
@@ -33,13 +22,13 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
     public ICollection<PriceLevel> newPriceLevels { get; set; }
      
 
-    public AddPriceLevelsDialog(Coin coin, IPreferencesService preferencesService)
+    public AddPriceLevelsDialog(Coin coin, PriceLevelsViewModel viewModel)
     {
+        _viewModel = viewModel;
         InitializeComponent();
        // DataContext = this;
-        _preferencesService = preferencesService;
 
-        DecimalSeparator = _preferencesService.GetNumberFormat().NumberDecimalSeparator;
+        DecimalSeparator = _viewModel.AppSettings.NumberFormat.NumberDecimalSeparator;
         newPriceLevels = new List<PriceLevel>(); // Initialize newPriceLevels
         InitializeFields(coin.PriceLevels);
 
@@ -102,32 +91,14 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
             }
         };
 
-        ////assign the new values to the price levels
-        //foreach (var level in newPriceLevels)
-        //{
-        //    if (level.Type == PriceLevelType.TakeProfit)
-        //    {
-        //        level.Value = TpValue;
-        //        level.Note = TpNote;
-        //    }
-        //    else if (level.Type == PriceLevelType.Buy)
-        //    {
-        //        level.Value = BuyValue;
-        //        level.Note = BuyNote;
-        //    }
-        //    else if (level.Type == PriceLevelType.Stop)
-        //    {
-        //        level.Value = StopValue;
-        //        level.Note = StopNote;
-        //    }
-        //}
+       
     }
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
         }
     }
 }

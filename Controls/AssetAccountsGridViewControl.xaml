@@ -40,7 +40,7 @@
                 <Grid  Margin="10,0,0,0" HorizontalAlignment="Stretch">
                     <RelativePanel Grid.Column="0" HorizontalAlignment="Stretch">
                     <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="GridView" Visibility="Collapsed" />
-                    <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" Margin="0,5,5,0"
+                    <TextBlock Name="txtName" Text="{Binding Name}" FontWeight="Bold" Margin="0,5,5,0" 
                                Width="{Binding Tag, ElementName=AssetAccountsGridView}"
                                 FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="NoWrap" />
                     <TextBlock Name="txtQty" 

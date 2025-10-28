@@ -30,10 +30,9 @@ namespace CryptoPortfolioTracker.Services
     public partial class PortfolioService : ObservableObject
     {
         private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(PortfolioService).Name.PadRight(22));
-        private readonly IPreferencesService _preferenceService;
         private IPriceUpdateService _priceUpdateService;
         private IGraphUpdateService _graphUpdateService;
-
+        private readonly Settings _appSettings;
         public readonly IPortfolioContextFactory _contextFactory;
         public readonly IUpdateContextFactory _updateContextFactory;
         public PortfolioContext Context { get; set; }
@@ -50,11 +49,11 @@ namespace CryptoPortfolioTracker.Services
 
         public bool IsInitialPortfolioLoaded { get; private set; } = false;
 
-        public PortfolioService(IPortfolioContextFactory contextFactory, IUpdateContextFactory updateContextFactory, IMessenger messenger, IPreferencesService preferencesService)
+        public PortfolioService(IPortfolioContextFactory contextFactory, IUpdateContextFactory updateContextFactory, IMessenger messenger, Settings appSettings)
         {
+            _appSettings =  appSettings;
             _contextFactory = contextFactory;
             _updateContextFactory = updateContextFactory;
-            _preferenceService = preferencesService;
             _messenger = messenger;
         }
 
@@ -122,7 +121,7 @@ namespace CryptoPortfolioTracker.Services
                 var portfolio = new Portfolio();    
                 if (!App.IsDuressMode)
                 {
-                    portfolio = _preferenceService.GetLastPortfolio() ?? Portfolios.FirstOrDefault();
+                    portfolio = _appSettings.LastPortfolio ?? Portfolios.FirstOrDefault();
                 }
                 else
                 {
@@ -158,12 +157,12 @@ namespace CryptoPortfolioTracker.Services
             var duressPortfolio = new Portfolio
             {
                 Name = "Default Portfolio",
-                Signature = App.DefaultDuressPortfolioGuid
+                Signature = AppConstants.DefaultDuressPortfolioGuid
             };
             try
             {
                 // Build the expected duress portfolio path
-                var duressPath = Path.Combine(App.PortfoliosPath, App.DefaultDuressPortfolioGuid);
+                var duressPath = Path.Combine(AppConstants.PortfoliosPath, AppConstants.DefaultDuressPortfolioGuid);
 
                 // Check if the directory exists (i.e., the duress portfolio exists on disk)
                 if (!Directory.Exists(duressPath))
@@ -195,11 +194,11 @@ namespace CryptoPortfolioTracker.Services
                 CurrentPortfolio = Portfolios.Where(x => x.Signature == portfolio.Signature).FirstOrDefault();
                 if (!App.IsDuressMode)
                 {
-                    _preferenceService.SetLastPortfolio(CurrentPortfolio);
+                    _appSettings.LastPortfolio = CurrentPortfolio;
                     _messenger.Send(new PortfolioConnectionChangedMessage());
 
 
-                    string portfoliosFile = Path.Combine(App.PortfoliosPath, App.PortfoliosFileName);
+                    string portfoliosFile = Path.Combine(AppConstants.PortfoliosPath, AppConstants.PortfoliosFileName);
                     await SavePortfoliosAsync(portfoliosFile, async stream =>
                     {
                         await JsonSerializer.SerializeAsync(stream, Portfolios);
@@ -220,7 +219,7 @@ namespace CryptoPortfolioTracker.Services
         {
             try
             {
-                var relativePath = Path.GetRelativePath(App.AppDataPath, Path.Combine(App.PortfoliosPath, portfolio.Signature, App.DbName));
+                var relativePath = Path.GetRelativePath(AppConstants.AppDataPath, Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature, AppConstants.DbName));
                 Context = _contextFactory.Create($"Data Source=|DataDirectory|{relativePath}");
                 UpdateContext = _updateContextFactory.Create($"Data Source=|DataDirectory|{relativePath}");
                 
@@ -245,7 +244,7 @@ namespace CryptoPortfolioTracker.Services
 
             foreach(var apiId in prelistingApiIds)
             {
-                var file = Directory.GetFiles(App.ChartsFolder, "MarketChart_" + apiId + ".json").FirstOrDefault();
+                var file = Directory.GetFiles(AppConstants.ChartsFolder, "MarketChart_" + apiId + ".json").FirstOrDefault();
                 if (string.IsNullOrWhiteSpace(file)) continue;
 
                 var newFile = file.Replace(apiId, apiId + "-prelisting");
@@ -378,9 +377,9 @@ namespace CryptoPortfolioTracker.Services
         {
             string backupName;
 
-            var backupFolder = Path.Combine(App.PortfoliosPath, portfolioSignature, App.BackupFolder);
+            var backupFolder = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, AppConstants.BackupFolder);
 
-            var searchPatternVersion = $"*{App.ProductVersion.Replace(".", "-")}*";
+            var searchPatternVersion = $"*{AppConstants.ProductVersion.Replace(".", "-")}*";
 
             try
             {
@@ -412,11 +411,11 @@ namespace CryptoPortfolioTracker.Services
                             File.Delete(sortedFiles[0].FullName);
                         }
                     }
-                    backupName = $"{App.PrefixBackupName}_s_{DateTime.Now:yyyyMMdd-HHmmss}.{App.ExtentionBackup}";
+                    backupName = $"{AppConstants.PrefixBackupName}_s_{DateTime.Now:yyyyMMdd-HHmmss}.{AppConstants.ExtentionBackup}";
                 }
                 else
                 {
-                    backupName = $"{App.PrefixBackupName}_{App.ProductVersion.Replace(".", "-")}_{DateTime.Now:yyyyMMdd-HHmmss}.{App.ExtentionBackup}";
+                    backupName = $"{AppConstants.PrefixBackupName}_{AppConstants.ProductVersion.Replace(".", "-")}_{DateTime.Now:yyyyMMdd-HHmmss}.{AppConstants.ExtentionBackup}";
                 }
 
                 var saveResult = SaveRestorePoint(portfolioSignature, backupName);
@@ -449,13 +448,13 @@ namespace CryptoPortfolioTracker.Services
         {
             try
             {
-                var tempWithSignatureFolder = Path.Combine(App.PortfoliosPath, "Temp", portfolioSignature);
-                var tempFolder = Path.Combine(App.PortfoliosPath, "Temp");
-                var dbFile = Path.Combine(App.PortfoliosPath, portfolioSignature, App.DbName);
-               // var pidFile = Path.Combine(App.PortfoliosPath, portfolioSignature, "pid.json");
-               // var preferencesFile = Path.Combine(App.AppDataPath, App.PrefFileName);
-                var graphFile = Path.Combine(App.PortfoliosPath, portfolioSignature, "graph.json");
-                var backupFolder = Path.Combine(App.PortfoliosPath, portfolioSignature, App.BackupFolder);
+                var tempWithSignatureFolder = Path.Combine(AppConstants.PortfoliosPath, "Temp", portfolioSignature);
+                var tempFolder = Path.Combine(AppConstants.PortfoliosPath, "Temp");
+                var dbFile = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, AppConstants.DbName);
+               // var pidFile = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "pid.json");
+               // var preferencesFile = Path.Combine(AppConstants.AppDataPath, AppConstants.PrefFileName);
+                var graphFile = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "graph.json");
+                var backupFolder = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, AppConstants.BackupFolder);
 
                 MkOsft.DirectoryCreate(tempFolder, true);
                 MkOsft.DirectoryCreate(tempWithSignatureFolder, true);
@@ -465,8 +464,8 @@ namespace CryptoPortfolioTracker.Services
                 MkOsft.FileCopy(graphFile, tempWithSignatureFolder);
                 //MkOsft.FileCopy(pidFile, tempWithSignatureFolder);
 
-                Directory.CreateDirectory(App.ChartsFolder); //ensure folder is present
-                MkOsft.DirectoryCopy(App.ChartsFolder, Path.Combine(tempFolder, "MarketCharts"), true);
+                Directory.CreateDirectory(AppConstants.ChartsFolder); //ensure folder is present
+                MkOsft.DirectoryCopy(AppConstants.ChartsFolder, Path.Combine(tempFolder, "MarketCharts"), true);
 
                 //first create tempZipFile to avoid the exception of the file already exists
                 //then move it
@@ -497,13 +496,13 @@ namespace CryptoPortfolioTracker.Services
         {
             try
             {
-                var tempWithSignatureFolder = Path.Combine(App.PortfoliosPath, "Temp", portfolioSignature);
-                var tempFolder = Path.Combine(App.PortfoliosPath, "Temp");
-                var dbFile = Path.Combine(App.PortfoliosPath, portfolioSignature, App.DbName);
-                var pidFile = Path.Combine(App.PortfoliosPath, portfolioSignature, "pid.json");
-                // var preferencesFile = Path.Combine(App.AppDataPath, App.PrefFileName);
-                var graphFile = Path.Combine(App.PortfoliosPath, portfolioSignature, "graph.json");
-                var backupFolder = Path.Combine(App.PortfoliosPath, portfolioSignature, App.BackupFolder);
+                var tempWithSignatureFolder = Path.Combine(AppConstants.PortfoliosPath, "Temp", portfolioSignature);
+                var tempFolder = Path.Combine(AppConstants.PortfoliosPath, "Temp");
+                var dbFile = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, AppConstants.DbName);
+                var pidFile = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "pid.json");
+                // var preferencesFile = Path.Combine(AppConstants.AppDataPath, AppConstants.PrefFileName);
+                var graphFile = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "graph.json");
+                var backupFolder = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, AppConstants.BackupFolder);
 
                 MkOsft.DirectoryCreate(tempFolder, true);
                 MkOsft.DirectoryCreate(tempWithSignatureFolder, true);
@@ -513,8 +512,8 @@ namespace CryptoPortfolioTracker.Services
                 MkOsft.FileCopy(graphFile, tempWithSignatureFolder);
                 MkOsft.FileCopy(pidFile, tempWithSignatureFolder);
 
-                Directory.CreateDirectory(App.ChartsFolder); //ensure folder is present
-                MkOsft.DirectoryCopy(App.ChartsFolder, Path.Combine(tempFolder, "MarketCharts"), true);
+                Directory.CreateDirectory(AppConstants.ChartsFolder); //ensure folder is present
+                MkOsft.DirectoryCopy(AppConstants.ChartsFolder, Path.Combine(tempFolder, "MarketCharts"), true);
 
                 //first create tempZipFile to avoid the exception of the file already exists
                 //then move it
@@ -564,16 +563,16 @@ namespace CryptoPortfolioTracker.Services
 
         private static ObservableCollection<Portfolio> GetPortfoliosFromFolders()
         {
-            var dirs = Directory.GetDirectories(App.PortfoliosPath);
+            var dirs = Directory.GetDirectories(AppConstants.PortfoliosPath);
             var portfolios = new ObservableCollection<Portfolio>();
 
             foreach (var dir in dirs)
             {
                 var pidFilePath = Path.Combine(dir, "pid.json");
                 string portfolioId = GetPidFromJson(pidFilePath); ;
-                string signature = Path.GetRelativePath(App.PortfoliosPath, dir);
+                string signature = Path.GetRelativePath(AppConstants.PortfoliosPath, dir);
 
-                if (signature == App.DefaultDuressPortfolioGuid) continue; //don't add the duress portfolio
+                if (signature == AppConstants.DefaultDuressPortfolioGuid) continue; //don't add the duress portfolio
                 portfolios.Add(new Portfolio
                 {
                     Name = portfolioId,
@@ -587,26 +586,26 @@ namespace CryptoPortfolioTracker.Services
         {
             bool alreadyMigrated = true;
 
-            if (!Directory.Exists(App.PortfoliosPath))
+            if (!Directory.Exists(AppConstants.PortfoliosPath))
             {
-                string initialPortfolioFolder = App.DefaultPortfolioGuid;
-                string fullPortfolioPath = Path.Combine(App.PortfoliosPath, initialPortfolioFolder);
-                string oldBackupPath = Path.Combine(App.AppDataPath, App.BackupFolder);
+                string initialPortfolioFolder = AppConstants.DefaultPortfolioGuid;
+                string fullPortfolioPath = Path.Combine(AppConstants.PortfoliosPath, initialPortfolioFolder);
+                string oldBackupPath = Path.Combine(AppConstants.AppDataPath, AppConstants.BackupFolder);
                 string newBackupPath = Path.Combine(fullPortfolioPath, "Backup");
 
                 alreadyMigrated = false;
 
                 Directory.CreateDirectory(fullPortfolioPath);
-                Directory.CreateDirectory(App.ChartsFolder);
+                Directory.CreateDirectory(AppConstants.ChartsFolder);
                 Directory.CreateDirectory(newBackupPath);
 
                 if (!IsBlankInstall())
                 {
-                    MkOsft.FileMove(Path.Combine(App.AppDataPath ,"sqlCPT.db"), fullPortfolioPath);
-                    MkOsft.FileMove(Path.Combine(App.ChartsFolder, "graph.json"), fullPortfolioPath);
-                    MkOsft.FileMove(Path.Combine(App.ChartsFolder, "graph.json.bak"), fullPortfolioPath);
+                    MkOsft.FileMove(Path.Combine(AppConstants.AppDataPath ,"sqlCPT.db"), fullPortfolioPath);
+                    MkOsft.FileMove(Path.Combine(AppConstants.ChartsFolder, "graph.json"), fullPortfolioPath);
+                    MkOsft.FileMove(Path.Combine(AppConstants.ChartsFolder, "graph.json.bak"), fullPortfolioPath);
                     MkOsft.DirectoryMove(oldBackupPath, newBackupPath, true);
-                    MkOsft.FilesDelete("*_backup_*", App.AppDataPath);
+                    MkOsft.FilesDelete("*_backup_*", AppConstants.AppDataPath);
                     RenameBackupFilesToRestorePoints(newBackupPath);
                 }
 
@@ -619,7 +618,7 @@ namespace CryptoPortfolioTracker.Services
 
                 SavePidToJson(portfolio, true);
 
-                string portfoliosFile = Path.Combine(App.PortfoliosPath, App.PortfoliosFileName);
+                string portfoliosFile = Path.Combine(AppConstants.PortfoliosPath, AppConstants.PortfoliosFileName);
                 await SavePortfoliosAsync(portfoliosFile, async stream =>
                 {
                     await JsonSerializer.SerializeAsync(stream, Portfolios);
@@ -630,7 +629,7 @@ namespace CryptoPortfolioTracker.Services
 
         private static void RenameBackupFilesToRestorePoints(string newBackupPath)
         {
-            var files = Directory.GetFiles(newBackupPath, $"*.{App.ExtentionBackup}");
+            var files = Directory.GetFiles(newBackupPath, $"*.{AppConstants.ExtentionBackup}");
             foreach (var file in files)
             {
                 var newFileName = file.Replace("CPTbackup", "RestorePoint");
@@ -642,7 +641,7 @@ namespace CryptoPortfolioTracker.Services
         {
             var portfolioNameObject = new { PortfolioName = portfolio.Name };
 
-            var path = Path.Combine(App.PortfoliosPath, portfolio.Signature);
+            var path = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature);
 
             string jsonString = JsonSerializer.Serialize(portfolioNameObject, new JsonSerializerOptions { WriteIndented = true });
             string filePath = Path.Combine(path, "pid.json");
@@ -662,17 +661,17 @@ namespace CryptoPortfolioTracker.Services
 
         private static bool IsBlankInstall()
         {
-            var dbFilePath = Path.Combine(App.AppDataPath, App.DbName);
-            return !Directory.Exists(App.PortfoliosPath) && !File.Exists(dbFilePath);
+            var dbFilePath = Path.Combine(AppConstants.AppDataPath, AppConstants.DbName);
+            return !Directory.Exists(AppConstants.PortfoliosPath) && !File.Exists(dbFilePath);
         }
 
         public static ObservableCollection<Backup> GetBackups(string portfolioSignature)
         {
             List<Backup> backups = new();
-            var backupPath = Path.Combine(App.PortfoliosPath, portfolioSignature, App.BackupFolder);
+            var backupPath = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, AppConstants.BackupFolder);
             if (Directory.Exists(backupPath))
             {
-                var files = Directory.GetFiles(backupPath, $"*.{App.ExtentionBackup}");
+                var files = Directory.GetFiles(backupPath, $"*.{AppConstants.ExtentionBackup}");
                 foreach (var file in files)
                 {
                     var backup = new Backup { FileName = Path.GetFileName(file), BackupDate = File.GetCreationTime(file) };
@@ -716,7 +715,7 @@ namespace CryptoPortfolioTracker.Services
                     if (CurrentPortfolio.Name == newPortfolio.Name)
                     {
                         OnPropertyChanged("CurrentPortfolio");
-                        _preferenceService.SetLastPortfolio(CurrentPortfolio);
+                        _appSettings.LastPortfolio = CurrentPortfolio;
                     }
                 }
                 return true;
@@ -737,8 +736,8 @@ namespace CryptoPortfolioTracker.Services
                     {
                         portfolio.Signature = Guid.NewGuid().ToString();
                     }
-                    var path = Path.Combine(App.PortfoliosPath, portfolio.Signature);
-                    var backupPath = Path.Combine(path, App.BackupFolder);
+                    var path = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature);
+                    var backupPath = Path.Combine(path, AppConstants.BackupFolder);
 
                     MkOsft.DirectoryCreate(backupPath);
                     SavePidToJson(portfolio, true);
@@ -760,7 +759,7 @@ namespace CryptoPortfolioTracker.Services
             {
                 if (portfolio != null)
                 {
-                    var path = Path.Combine(App.PortfoliosPath, portfolio.Signature);
+                    var path = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature);
                     MkOsft.DirectoryDelete(path, true);
                     Portfolios.Remove(portfolio);
                     await SavePortfoliosToJson();
@@ -775,7 +774,7 @@ namespace CryptoPortfolioTracker.Services
         }
         private async Task SavePortfoliosToJson()
         {
-            string portfoliosFile = Path.Combine(App.PortfoliosPath, App.PortfoliosFileName);
+            string portfoliosFile = Path.Combine(AppConstants.PortfoliosPath, AppConstants.PortfoliosFileName);
             await SavePortfoliosAsync(portfoliosFile, async stream =>
             {
                 await JsonSerializer.SerializeAsync(stream, Portfolios);
@@ -787,7 +786,7 @@ namespace CryptoPortfolioTracker.Services
         {
             try
             {
-                string portfoliosFile = Path.Combine(App.PortfoliosPath, App.PortfoliosFileName);
+                string portfoliosFile = Path.Combine(AppConstants.PortfoliosPath, AppConstants.PortfoliosFileName);
 
                 if (!File.Exists(portfoliosFile)) return Error.New("File Not Exists");
 
@@ -826,7 +825,7 @@ namespace CryptoPortfolioTracker.Services
             if (portfolioSignature == string.Empty || fileName == string.Empty) return new Result<bool>(false);
             try
             {
-                var backupPath = Path.Combine(App.PortfoliosPath, portfolioSignature, App.BackupFolder);
+                var backupPath = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, AppConstants.BackupFolder);
                 var filePath = Path.Combine(backupPath, fileName);
                 if (File.Exists(filePath))
                 {
@@ -846,8 +845,8 @@ namespace CryptoPortfolioTracker.Services
         internal async Task<Either<Error, bool>> CopyPortfolio(Portfolio portfolio, Portfolio newPortfolio, bool needPartialCopy)
         {
             newPortfolio.Signature = Guid.NewGuid().ToString();
-            var destSignaturePath = Path.Combine(App.PortfoliosPath, newPortfolio.Signature);
-            var sourceSignaturePath = Path.Combine(App.PortfoliosPath, portfolio.Signature);
+            var destSignaturePath = Path.Combine(AppConstants.PortfoliosPath, newPortfolio.Signature);
+            var sourceSignaturePath = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature);
 
             try
             {
@@ -886,11 +885,11 @@ namespace CryptoPortfolioTracker.Services
                 var portfolio = new Portfolio
                 {
                     Name = "Default Portfolio",
-                    Signature = App.DefaultDuressPortfolioGuid
+                    Signature = AppConstants.DefaultDuressPortfolioGuid
                 };
 
-                var path = Path.Combine(App.PortfoliosPath, portfolio.Signature);
-                var backupPath = Path.Combine(path, App.BackupFolder);
+                var path = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature);
+                var backupPath = Path.Combine(path, AppConstants.BackupFolder);
 
                 MkOsft.DirectoryCreate(backupPath);
                 SavePidToJson(portfolio, true);
@@ -944,7 +943,7 @@ namespace CryptoPortfolioTracker.Services
         {
             try
             {
-                var relativePath = Path.GetRelativePath(App.AppDataPath, Path.Combine(App.PortfoliosPath, portfolio.Signature, App.DbName));
+                var relativePath = Path.GetRelativePath(AppConstants.AppDataPath, Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature, AppConstants.DbName));
                 UpdateContext = _updateContextFactory.Create($"Data Source=|DataDirectory|{relativePath}");
                 Logger.Information($"UpdateContext Connected to {portfolio.Signature}");
                 return Task.FromResult<Either<Error, bool>>(true);

@@ -20,7 +20,7 @@ namespace CryptoPortfolioTracker.Infrastructure
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
-        //    optionsBuilder.UseSqlite("Data Source=" + App.AppDataPath + "\\" + App.DbName);
+        //    optionsBuilder.UseSqlite("Data Source=" + AppConstants.AppDataPath + "\\" + AppConstants.DbName);
         //}
 
 

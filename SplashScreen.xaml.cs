@@ -12,7 +12,7 @@ public sealed partial class SplashScreen : Window
         InitializeComponent();
         Title = string.Empty;
         
-        var versionParts = App.ProductVersion.Split('.');
+        var versionParts = AppConstants.ProductVersion.Split('.');
 
 
         versionTxt.Text = versionParts[0] + "." + versionParts[1]+ "." + versionParts[2];

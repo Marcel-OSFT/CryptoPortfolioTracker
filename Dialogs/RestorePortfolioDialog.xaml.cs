@@ -1,19 +1,7 @@
-using CommunityToolkit.Mvvm.Input;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
-using CryptoPortfolioTracker.ViewModels;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using WinRT.Interop;
-using WinUI3Localizer;
-using System;
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO.Compression;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
@@ -27,14 +15,14 @@ public sealed partial class RestorePortfolioDialog :  ContentDialog
     [ObservableProperty] private string explanation;
 
 
-    private readonly IPreferencesService _preferencesService;
     private readonly PortfolioService _portfolioService;
     private readonly ILocalizer loc = Localizer.Get();
+    private readonly AdminViewModel _viewModel;
 
-    public RestorePortfolioDialog(PortfolioService portfolioService, IPreferencesService preferencesService)
+    public RestorePortfolioDialog(AdminViewModel viewModel, PortfolioService portfolioService)
     {
+        _viewModel = viewModel;
         this.InitializeComponent();
-        _preferencesService = preferencesService;
         _portfolioService = portfolioService;
         DataContext = this;
         SetDialogTitleAndButtons();
@@ -60,7 +48,7 @@ public sealed partial class RestorePortfolioDialog :  ContentDialog
            
 
             FileName = file.Path;
-            var tempFolder = Path.Combine(App.AppDataPath, "Temp");
+            var tempFolder = Path.Combine(AppConstants.AppDataPath, "Temp");
 
             // temporary extraction to get the signature
             if (Directory.Exists(tempFolder)) Directory.Delete(tempFolder, true);
@@ -133,9 +121,9 @@ public sealed partial class RestorePortfolioDialog :  ContentDialog
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _preferencesService.GetAppTheme())
+        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
         {
-            sender.RequestedTheme = _preferencesService.GetAppTheme();
+            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
         }
     }
 

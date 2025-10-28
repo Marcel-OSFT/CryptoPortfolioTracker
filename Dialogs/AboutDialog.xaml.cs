@@ -30,11 +30,11 @@ public partial class AboutDialog : ContentDialog
 
     public AboutDialog(ElementTheme theme)
     {
-        ImagePath = App.AppPath + "\\Assets\\CryptoPortfolioTracker.ico";
-        BtcImage = App.AppPath + "\\Assets\\bitcoin.png";
-        EthImage = App.AppPath + "\\Assets\\ethereum.png";
-        UsdcImage = App.AppPath + "\\Assets\\usdc.png";
-        Version = App.ProductVersion;
+        ImagePath = AppConstants.AppPath + "\\Assets\\CryptoPortfolioTracker.ico";
+        BtcImage = AppConstants.AppPath + "\\Assets\\bitcoin.png";
+        EthImage = AppConstants.AppPath + "\\Assets\\ethereum.png";
+        UsdcImage = AppConstants.AppPath + "\\Assets\\usdc.png";
+        Version = AppConstants.ProductVersion;
         BtcAddress = string.Empty;
         EthAddress = string.Empty;
         UsdcArbAddress = string.Empty;
@@ -65,8 +65,8 @@ public partial class AboutDialog : ContentDialog
     public async Task GetCryptoAddresses()
     {
         /* Temporary output file to work with (located in AppData)*/
-        var temp_file = App.AppDataPath + "\\addresses.txt";
-        var addressesUrl = App.Url + "//addresses.txt";
+        var temp_file = AppConstants.AppDataPath + "\\addresses.txt";
+        var addressesUrl = AppConstants.Url + "//addresses.txt";
 
         /* Use the WebClient class to download the file from your server */
         using (var httpClient = new HttpClient())
