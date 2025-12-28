@@ -1,14 +1,13 @@
 ﻿
 using System.Threading.Tasks;
 
-namespace CryptoPortfolioTracker.Services
+namespace TemperatureMonitor.Services
 {
     public interface IGraphUpdateService
     {
         public bool IsUpdating { get; }
-        public void Start();
-        public void Stop();
-        public void Pause(bool isDisconnecting = false);
-        public void Resume();
+        public Task StartAsync();
+        public Task StopAsync();
+       
     }
 }

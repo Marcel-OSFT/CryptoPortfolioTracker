@@ -2,7 +2,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
-namespace CryptoPortfolioTracker.Converters
+namespace TemperatureMonitor.Converters
 {
     public sealed class AppThemeToggleConverter : IValueConverter
     {

@@ -4,12 +4,12 @@ using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using CryptoPortfolioTracker.Enums;
+using TemperatureMonitor.Enums;
 using Microsoft.UI.Xaml.Controls;
 using static System.Net.WebRequestMethods;
 using File = System.IO.File;
 
-namespace CryptoPortfolioTracker.Models;
+namespace TemperatureMonitor.Models;
 
 public class AppUpdater
 {
@@ -129,7 +129,7 @@ public class AppUpdater
     {
         downloadsFolderPath = GetDownloadsPath();
         //fileName = ExtractFileName();
-        fileName = "CryptoPortfolioTracker_setup_" + latestVersion + ".exe";
+        fileName = "TemperatureMonitor_setup_" + latestVersion + ".exe";
 
         using var httpClient = new HttpClient();
         HttpResponseMessage response;

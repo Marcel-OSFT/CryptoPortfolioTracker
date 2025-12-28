@@ -10,34 +10,37 @@ using SkiaSharp;
 using LiveChartsCore.Defaults;
 using WinUI3Localizer;
 using System.Globalization;
-using CryptoPortfolioTracker.Services;
+using TemperatureMonitor.Services;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using CryptoPortfolioTracker.Models;
+using TemperatureMonitor.Models;
 using Microsoft.UI.Xaml;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView.Drawing;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView.SKCharts;
-using CryptoPortfolioTracker.Helpers;
+using TemperatureMonitor.Helpers;
 using System.Linq;
 
-namespace CryptoPortfolioTracker.ViewModels;
+namespace TemperatureMonitor.ViewModels;
 
 public partial class DashboardViewModel : BaseViewModel
 {
-    private ObservableCollection<DateTimePoint> valuesPortfolio = new();
-    private ObservableCollection<DateTimePoint> valuesInFlow = new();
-    private ObservableCollection<DateTimePoint> valuesOutFlow = new();
-    
+    private ObservableCollection<DateTimePoint> chartValues = new();
+    public ObservableCollection<DateTimePoint> ChartValues
+    {
+        get => chartValues;
+        private set
+        {
+            chartValues = value;
+            OnPropertyChanged(nameof(ChartValues));
+        }
+    }
+    private static Func<double, string> labelerYAxis = value => string.Format("{0:N2} °C", value);
+
     [ObservableProperty] public ObservableCollection<ISeries> seriesGraph = new();
     public Axis[] XAxesGraph { get; set; } = Array.Empty<Axis>();
     public Axis[] YAxesGraph { get; set; } = Array.Empty<Axis>();
-
-    [ObservableProperty] public int progressValueGraph;
-    [ObservableProperty] public bool isUpdatingGraph;
-    [ObservableProperty] public bool isLoadingFromJsonGraph;
-  
 
     public SolidColorPaint LegendTextPaintGraph { get; set; } = new()
     {
@@ -47,15 +50,6 @@ public partial class DashboardViewModel : BaseViewModel
 
     [ObservableProperty] public double legendTextSizeGraph = 12;
 
-    private static Func<double, string> labelerGraph = value => string.Format("$ {0:N0}", value);
-
-    partial void OnIsUpdatingGraphChanged(bool value)
-    {
-        if (!IsUpdatingGraph) // && !_isInitializing)
-        {
-            SetValuesGraph();
-        }
-    }
 
     public void ConstructGraph()
     {
@@ -68,19 +62,24 @@ public partial class DashboardViewModel : BaseViewModel
     /// </summary>
     public async Task GraphControlLoaded()
     {
-        var loc = Localizer.Get();
-        var ci = new CultureInfo(loc.GetCurrentLanguage());
+        //var loc = Localizer.Get();
+        //var ci = new CultureInfo(loc.GetCurrentLanguage());
         try
         {
-            await WaitForJsonToLoad();
-            
-            if (_graphService.HasDataPoints())
+            await GetValuesGraph(DateOnly.FromDateTime(SelectedDate.Date));
+
+            if (ChartValues.Any())
             {
                 SetSeriesGraph();
+                var ci = new CultureInfo(AppSettings.AppCultureLanguage);
+                var last = _graphService.CurrentDayTemperatures.LastOrDefault();
+                LastReadingTimestamp = last is null
+                    ? "No readings available"
+                    : last.Timestamp.ToLocalTime().ToString("G", ci);     // _graphService.GetLastReadingTimestamp();
+                LastTemperatureReading = last is null
+                    ? "No readings available"
+                    : last.Value.ToString("N2", ci) + " °C";  //_graphService.GetLastTemperatureReading();
             }
-            // re-set the labels because language settings might have changed
-            XAxesGraph[0].Labeler = value => value.AsDate().ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci);
-            YAxesGraph[0].Name = loc.GetLocalizedString("GraphicView_PortfolioSeriesTitle");
         }
         catch (Exception)
         {
@@ -88,86 +87,49 @@ public partial class DashboardViewModel : BaseViewModel
         }
     }
 
-    private async Task WaitForJsonToLoad()
+    private async Task UpdateSeriesValues()
     {
-        while (_graphService.IsLoadingFromJson)
-        {
-            IsLoadingFromJsonGraph = true;
-            await Task.Delay(100);
-        }
-        IsLoadingFromJsonGraph = false;
-    }
+        await GetValuesGraph(DateOnly.FromDateTime(SelectedDate.Date));
 
-
-    private void UpdateSeriesValues()
-    {
-        GetValuesGraph();
-
-        SeriesGraph[0].Values = valuesPortfolio;
-        SeriesGraph[1].Values = valuesInFlow;
-        SeriesGraph[2].Values = valuesOutFlow;
+        SeriesGraph[0].Values = CurrentMode == DaySelectorMode.Nu ? ChartValues.Where(t => t.DateTime >= nowStart).ToList() : ChartValues;
+        var ci = new CultureInfo(AppSettings.AppCultureLanguage);
+        var last = _graphService.CurrentDayTemperatures.LastOrDefault();
+        LastReadingTimestamp = last is null
+            ? "No readings available"
+            : last.Timestamp.ToLocalTime().ToString("G", ci);     // _graphService.GetLastReadingTimestamp();
+        LastTemperatureReading = last is null
+            ? "No readings available"
+            : last.Value.ToString("N2", ci) + " °C";  //_graph_service.GetLastTemperatureReading();
     }
 
     private void SetSeriesGraph()
     {
-        var loc = Localizer.Get();
+        //var loc = Localizer.Get();
 
-        GetValuesGraph();
-
-        //if (SeriesGraph is not null) 
-        //{ 
-        //    SeriesGraph.Clear();
-        //}
+        //await GetValuesGraph();
+        if (!ChartValues.Any())
+        {
+            SeriesGraph = new ObservableCollection<ISeries>();
+            return;
+        }
         SeriesGraph = new ObservableCollection<ISeries>
         {
             new LineSeries<DateTimePoint>
-            {   Tag = "Portfolio",
+            {   Tag = "Temperature",
                 LineSmoothness=0.2,
                 MiniatureShapeSize=2,
-                Values = valuesPortfolio,
+                Values = ChartValues,
                 GeometrySize = 0,
                 Stroke = new SolidColorPaint(SKColors.DarkGoldenrod) { StrokeThickness = 2 },
-                Name = loc.GetLocalizedString("GraphicView_PortfolioSeriesTitle"), //"Portfolio Value",
-            },
-            new ColumnSeries<DateTimePoint>
-            {
-                Tag = "Inflow",
-                MiniatureShapeSize=2,
-                Values = valuesInFlow,
-                Stroke = new SolidColorPaint(SKColors.Yellow) { StrokeThickness = 2 },
-                Fill = new SolidColorPaint(SKColors.Yellow),
-                Name = loc.GetLocalizedString("GraphicView_InFlowSeriesTitle"), //"Inflow",
-            },
-            new ColumnSeries<DateTimePoint>
-            {
-                Tag = "Outflow",
-                MiniatureShapeSize=2,
-                Values = valuesOutFlow,
-                Stroke = new SolidColorPaint(SKColors.Green) { StrokeThickness = 2 },
-                Fill = new SolidColorPaint(SKColors.Green),
-                Name = loc.GetLocalizedString("GraphicView_OutFlowSeriesTitle"), //"Outflow",
+                Name = "",
             }
         };
         
     }
 
-    private void GetValuesGraph()
+    private async Task GetValuesGraph(DateOnly date)
     {
-        valuesPortfolio = new ObservableCollection<DateTimePoint>(_graphService.GetPortfolioValues());
-        valuesInFlow = new ObservableCollection<DateTimePoint>(_graphService.GetInFlowValues());
-        valuesOutFlow = new ObservableCollection<DateTimePoint>(_graphService.GetOutFlowValues());
-    }
-
-    private void SetValuesGraph()
-    {
-        if (!SeriesGraph.Any())
-        {
-            SetSeriesGraph();
-        }
-        else
-        {
-            UpdateSeriesValues();
-        }
+        ChartValues = new ObservableCollection<DateTimePoint>(await _graphService.GetValues(date));
     }
 
     private void SetXAxesGraph()
@@ -181,7 +143,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
         XAxesGraph = new Axis[]
         {
-            new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci))
+            new DateTimeAxis(TimeSpan.FromHours(1), date => date.ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci))
             {
                 LabelsPaint = new SolidColorPaint
                 {
@@ -248,16 +210,5 @@ public partial class DashboardViewModel : BaseViewModel
 
     }
 
-    private void ReloadGraph()
-    {
-        if (YAxesGraph is null) return;
-
-        foreach (var axis in YAxesGraph)
-        {
-            axis.Labeler = labelerYAxis;
-        }
-        OnPropertyChanged("YAxisGraph");
-
-    }
 
 }

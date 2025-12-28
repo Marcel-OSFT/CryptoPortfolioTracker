@@ -1,0 +1,112 @@
+<UserControl
+    x:Class="TemperatureMonitor.Controls.DaySelectorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:local="using:TemperatureMonitor.Controls"
+    xmlns:converters="using:TemperatureMonitor.Converters"
+    MinHeight="72"
+    x:Name="root"
+    Padding="8"
+    mc:Ignorable="d">
+
+
+    <UserControl.Resources>
+        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:DateToStringConverter x:Key="DateToStringConverter"/>
+        <converters:EnumToToggleSwitchConverter x:Key="EnumToToggleSwitchConverter"/>
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Vertical" Spacing="6" Width="300">
+
+        <!-- Navigation row: always visible, content toggles between Day (date + nav buttons) and Now (centered "Now") -->
+        <Grid x:Name="NavRow" Visibility="Visible">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Prev button: visible only in Day mode -->
+            <Button x:Name="PrevButton"
+                    Grid.Column="0"
+                    Click="PrevButton_Click"
+                    Margin="0,0,8,0"
+                    ToolTipService.ToolTip="Previous day"
+                    Visibility="{Binding SelectedMode, ElementName=root, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Visibility:Dag}">
+                <TextBlock Text="&lt;" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+
+            <!-- Date text: show date in Day mode -->
+            <TextBlock x:Name="DateText"
+                       Grid.Column="1"
+                       FontSize="16"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Visibility="{Binding SelectedMode, ElementName=root, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Visibility:Dag}"
+                       Text="{Binding SelectedDate, ElementName=root, Converter={StaticResource DateToStringConverter}}" 
+                       TextAlignment="Center"
+                        MinWidth="120" />
+            <!-- Now text: show when in Now mode -->
+            <TextBlock x:Name="NowText"
+                       Grid.Column="1"
+                       FontSize="16"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Visibility="{Binding SelectedMode, ElementName=root, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Visibility:Nu}"
+                       Text="Now" 
+                        MinWidth="120"/>
+
+            <!-- Next button: visible only in Day mode -->
+            <Button x:Name="NextButton"
+                    Grid.Column="2"
+                    Click="NextButton_Click"
+                    Margin="8,0,8,0"
+                    ToolTipService.ToolTip="Next day"
+                    Visibility="{Binding SelectedMode, ElementName=root, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Visibility:Dag}">
+                <TextBlock Text="&gt;" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+
+            <!-- Jump to latest: visible only in Day mode -->
+            <Button x:Name="JumpToLatestButton"
+                    Grid.Column="3"
+                    Click="JumpToLatestButton_Click"
+                    ToolTipService.ToolTip="Jump to today"
+                    Visibility="{Binding SelectedMode, ElementName=root, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Visibility:Dag}">
+                <TextBlock Text="&gt;|" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+        </Grid>
+
+        <!-- Toggle row (Now / Day) using a ToggleSwitch -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="14">
+            <!-- OffContent (left) = Now, OnContent (right) = Day
+         ConverterParameter="Dag" means IsOn == true when SelectedMode == Dag -->
+            <TextBlock Text="Now or Day" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <ToggleSwitch x:Name="ModeToggle"
+                  OffContent="Now"
+                  OnContent="Day"
+                  IsOn="{Binding SelectedMode, ElementName=root, Converter={StaticResource EnumToToggleSwitchConverter}, ConverterParameter=Dag, Mode=TwoWay}" 
+                         Toggled="ModeToggle_Toggled"  
+                          />
+        </StackPanel>
+
+        <!-- Toggle row (Now / Day) --><!--
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="24">
+            <ToggleButton x:Name="NowToggle"
+                          Content="Now"
+                          MinWidth="80"
+                          IsChecked="{Binding SelectedMode, ElementName=root, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Nu}"
+                          Click="NowToggle_Click"/>
+            <ToggleButton x:Name="DayToggle"
+                          Content="Day"
+                          MinWidth="80"
+                          IsChecked="{Binding SelectedMode, ElementName=root, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dag}"
+                          Click="DayToggle_Click"/>
+        </StackPanel>-->
+
+    </StackPanel>
+</UserControl>

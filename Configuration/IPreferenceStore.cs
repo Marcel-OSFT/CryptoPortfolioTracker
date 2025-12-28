@@ -1,5 +1,5 @@
 ﻿
-namespace CryptoPortfolioTracker.Configuration;
+namespace TemperatureMonitor.Configuration;
 
 public interface IPreferenceStore
 {

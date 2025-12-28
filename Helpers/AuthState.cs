@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CryptoPortfolioTracker.Helpers;
+namespace TemperatureMonitor.Helpers;
 
 public class AuthState
 {

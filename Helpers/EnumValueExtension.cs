@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.UI.Xaml.Markup;
 
-namespace CryptoPortfolioTracker.Helpers;
+namespace TemperatureMonitor.Helpers;
 
 [MarkupExtensionReturnType(ReturnType = typeof(object))]
 public partial class EnumValueExtension : MarkupExtension

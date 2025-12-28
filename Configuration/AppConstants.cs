@@ -1,17 +1,17 @@
 ﻿using System.Reflection;
 
-namespace CryptoPortfolioTracker.Configuration;
+namespace TemperatureMonitor.Configuration;
 
 public static class AppConstants
 {
     // Static constants
-    public const string Url = "https://marcel-osft.github.io/CryptoPortfolioTracker/";
+    public const string Url = "https://marcel-osft.github.io/TemperatureMonitor/";
     public const string CoinGeckoApiKey = "";
     public const string ApiPath = "https://api.coingecko.com/api/v3/";
-    public const string VersionUrl = "https://marcel-osft.github.io/CryptoPortfolioTracker/current_version.txt";
+    public const string VersionUrl = "https://marcel-osft.github.io/TemperatureMonitor/current_version.txt";
     public const string DefaultPortfolioGuid = "f52ee1a8-ea8d-4f21-849c-6e6429f88256";
     public const string DefaultDuressPortfolioGuid = "08c1ac97-27e0-4922-93da-320c8a5e08ba";
-    public const string ScheduledTaskName = "CryptoPortfolioTracker MarketCharts Update Task";
+    public const string ScheduledTaskName = "TemperatureMonitor MarketCharts Update Task";
     public const string DbName = "sqlCPT.db";
     public const string PrefFileName = "prefs.xml";
     public const string BackupFolder = "Backup";
@@ -34,7 +34,7 @@ public static class AppConstants
     public static void GetAppEnvironmentals()
     {
         AppConstants.AppPath = System.IO.Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? string.Empty;
-        AppConstants.AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\CryptoPortfolioTracker";
+        AppConstants.AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TemperatureMonitor";
         if (!Directory.Exists(AppConstants.AppDataPath))
         {
             Directory.CreateDirectory(AppConstants.AppDataPath);

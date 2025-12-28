@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace CryptoPortfolioTracker.Models;
+namespace TemperatureMonitor.Models;
 
 public partial class BaseModel : ObservableObject
 {

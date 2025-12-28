@@ -1,49 +1,25 @@
-﻿
-namespace CryptoPortfolioTracker.Models;
-
-//public class UpdatePricesMessage
-//{
-//    public Coin Coin { get; }
-//    public UpdatePricesMessage(Coin coin)
-//    {
-//        Coin = coin;
-//    }
-//}
-public class UpdatePricesMessage
-{
-    
-}
-
-public class UpdateDashboardMessage
-{
-
-}
-
-public class UpdateProgressValueMessage
-{
-    public int ProgressValue { get; }
-
-    public UpdateProgressValueMessage(int value)
-    {
-        ProgressValue = value;
-    }
-}
+﻿namespace TemperatureMonitor.Models;
 
 public class GraphUpdatedMessage
 {
-    
-}
-
-public class PortfolioConnectionChangedMessage
-{
-
-}
-public class ShowBePatienceMessage
-{
 
 }
 
-public class PreferencesChangedMessage
+public class CurrentModeChangedMessage
 {
+    public int sampleRate { get; }
 
+    public CurrentModeChangedMessage(int value)
+    {
+        sampleRate = value;
+    }
+}
+public class SampleRateSettingChangedMessage
+{
+    public DaySelectorMode mode { get; }
+
+    public SampleRateSettingChangedMessage(DaySelectorMode _mode)
+    {
+        mode = _mode;
+    }
 }

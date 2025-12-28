@@ -1,14 +1,14 @@
-using CryptoPortfolioTracker.ViewModels;
+using TemperatureMonitor.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using CommunityToolkit.WinUI.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 
-namespace CryptoPortfolioTracker.Views;
+namespace TemperatureMonitor.Views;
 
 
 [ObservableObject]
-public partial class SettingsView : Page, IDisposable
+public partial class SettingsView : UserControl, IDisposable
 {
     public readonly SettingsViewModel _viewModel;
     public static SettingsView Current;
@@ -22,7 +22,6 @@ public partial class SettingsView : Page, IDisposable
         _viewModel = viewModel;
         InitializeComponent();
         DataContext = _viewModel;
-        VersionNumber.Text = AppConstants.ProductVersion;
         isCardExpanded = false;
         isCardEnabled = true;
     }

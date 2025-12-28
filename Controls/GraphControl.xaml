@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UserControl    
-    x:Class="CryptoPortfolioTracker.Controls.GraphControl"
+    x:Class="TemperatureMonitor.Controls.GraphControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CryptoPortfolioTracker.Views"
+    xmlns:local="using:TemperatureMonitor.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
-    xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"
-    xmlns:converters="using:CryptoPortfolioTracker.Converters"
-    xmlns:helpers="using:CryptoPortfolioTracker.Helpers"
-    xmlns:enums="using:CryptoPortfolioTracker.Enums"
+    xmlns:viewmodels="using:TemperatureMonitor.ViewModels"
+    xmlns:converters="using:TemperatureMonitor.Converters"
+    xmlns:helpers="using:TemperatureMonitor.Helpers"
+    xmlns:enums="using:TemperatureMonitor.Enums"
     xmlns:ui="using:CommunityToolkit.WinUI"
     x:Name="Root"
     xmlns:l="using:WinUI3Localizer"
@@ -33,20 +33,22 @@
                 FontSize="16" 
                 Margin="0,10,10,0"
                 RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignTopWithPanel="True"/>
+            <!-- Zoom mode selector -->
+            <StackPanel Orientation="Horizontal" Margin="0,8,10,0" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True">
+                <TextBlock Text="Zoom:" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="cmbZoomMode" Width="120" SelectionChanged="cmbZoomMode_SelectionChanged">
+                    <ComboBoxItem Tag="X" Content="X (time)" />
+                    <ComboBoxItem Tag="Y" Content="Y (temperature)" />
+                    <ComboBoxItem Tag="XY" Content="Both" />
+                </ComboBox>
+                <Button x:Name="btnResetZoom" Content="Reset zoom" Click="btnResetZoom_Click" VerticalAlignment="Center"/>
+            </StackPanel>
 
-            <helpers:CustomBtn  HorizontalAlignment="Right" VerticalAlignment="Top" RelativePanel.RightOf="txtTitle" RelativePanel.AlignBottomWith="txtTitle"
-                Style="{StaticResource MK_ButtonStyle}" BorderThickness="0" Width="30" Padding="2,2,2,2" Margin="0,0,10,0"
-                Command="{Binding ToggleFullScreenModeCommand}" Background="Transparent">
-                <helpers:CustomBtn.CommandParameter>
-                    <enums:FullScreenMode>Graph</enums:FullScreenMode>
-                </helpers:CustomBtn.CommandParameter>
-                <FontIcon Glyph="{Binding Glyph}" FontFamily="Segoe Fluent Icons" FontWeight="Normal" Width="20"/>
-            </helpers:CustomBtn>
         </RelativePanel>
         <lvc:CartesianChart Grid.Row="1" SizeChanged="Graph_SizeChanged"
             x:Name="thisChart"
             Series="{Binding SeriesGraph}" 
-            ZoomMode="Both"
+            ZoomMode="X"
             
             XAxes="{Binding XAxesGraph}"
             YAxes="{Binding YAxesGraph}"
@@ -57,27 +59,7 @@
             >
         </lvc:CartesianChart>
 
-        <ProgressRing x:Name="progressRing" Grid.Row="1"
-                      HorizontalAlignment="Center" VerticalAlignment="Center"
-                      IsActive="{Binding IsLoadingFromJsonGraph}" 
-                      Visibility="{x:Bind converters:Functions.TrueToVisible(progressRing.IsActive), Mode=OneWay}"/>
-
-        <StackPanel Grid.Row="1" x:Name="layoutRoot" Background="black" Opacity="0.5" 
-            HorizontalAlignment="Center" VerticalAlignment="Center"
-            Margin="0,0,0,0"
-            Visibility="{x:Bind converters:Functions.TrueToVisible(_viewModel.IsUpdatingGraph), Mode=OneWay}">
-            <StackPanel BorderBrush="PaleGoldenrod"  BorderThickness="2" Padding="12">
-                <TextBlock  l:Uids.Uid="GrahicView_UpdateText" />
-                <StackPanel Orientation="Vertical">
-                    <ProgressBar x:Name="progressBar2" 
-                    Value="{Binding ProgressValueGraph}" 
-                    Maximum="100" 
-                    Margin="0,12"/>
-                    <TextBlock Text="{x:Bind converters:Functions.Int32ToString(_viewModel.ProgressValueGraph,'{0:0} %'), Mode=OneWay}"/>
-                </StackPanel>
-            </StackPanel>
-
-        </StackPanel>
+        
     </Grid>
 
 

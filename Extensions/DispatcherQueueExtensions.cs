@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.UI.Dispatching;
 
-namespace CryptoPortfolioTracker.Extensions;
+namespace TemperatureMonitor.Extensions;
 
 public static class DispatcherQueueExtensions
 {

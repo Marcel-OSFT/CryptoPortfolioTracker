@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows10.0.26100.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>TemperatureMonitor</RootNamespace>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
+    <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
+    <UseWinUI>true</UseWinUI>
+    <ApplicationIcon>Assets\AppIcons\TemperatureMonitor.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <Version>1.0.0.0</Version>
+    <StartupObject></StartupObject>
+    <Nullable>enable</Nullable>
+	<LangVersion>preview</LangVersion>
+	<WindowsSdkPackageVersion>10.0.26100.52</WindowsSdkPackageVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="MultilingualAppToolkit">
+    <MultilingualAppToolkitVersion>4.0</MultilingualAppToolkitVersion>
+    <MultilingualFallbackLanguage>en-US</MultilingualFallbackLanguage>
+    <TranslationReport Condition="'$(Configuration)' == 'Release'">true</TranslationReport>
+    <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
+    <DefaultLanguage>en-US</DefaultLanguage>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AK.Toolkit.WinUI3.ScrollBarExtensions" Version="1.0.5" />
+    <PackageReference Include="CoinGeckoFluentApi.Client" Version="1.0.0-preview.1" />
+    <PackageReference Include="ColorCode.WinUI" Version="2.0.15" />
+    <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240916" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Animations" Version="7.1.2" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="EntityFramework" Version="6.5.1" />
+    <PackageReference Include="LanguageExt.Core" Version="4.4.8" />
+    <PackageReference Include="LiveChartsCore" Version="2.0.0-rc4.5" />
+    <PackageReference Include="LiveChartsCore.Behaviours" Version="2.0.0-rc4.5" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-rc4.5" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc4.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="7.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.15">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.4" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.241107002" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Polly.Core" Version="8.3.0" />
+    <PackageReference Include="QuestPDF" Version="2025.7.3" />
+    <PackageReference Include="Serilog" Version="4.2.1-dev-02337" />
+    <PackageReference Include="Serilog.Expressions" Version="5.1.0-dev-00186" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1-dev-02308" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.MemorySink" Version="0.1.1-alpha" />
+    <PackageReference Include="Serilog.Sinks.WinUi3" Version="0.2.1-alpha" />
+    <PackageReference Include="Serilog.Sinks.WinUi3.LogViewModels" Version="0.2.1-alpha" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="9.0.2" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.2" />
+    <PackageReference Include="TaskScheduler" Version="2.11.0" />
+    <PackageReference Include="WinUI3Localizer" Version="2.2.0" />
+    <PackageReference Include="WinUIEx" Version="2.2.0" />
+    <PackageReference Include="WinUIEx.TestTools" Version="1.0.0" />
+    <PackageReference Include="WinUIEx.TestTools.MSTest" Version="1.0.0" />
+    <PackageReference Include="Zeroconf" Version="3.7.16" />
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+  <!-- 
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup>
+    <Page Update="CoinDescriptionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Controls\GraphControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Dialogs\WhatsNewDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="MK_Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Templates\CoinLibraryListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="AddCoinDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Fonts\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="MultilingualResources\" />
+    <Folder Include="Properties\PublishProfiles\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\AppIcons\TemperatureMonitor.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\TemperatureMonitor.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\ninegrid.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Splash_Image_1000x565.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Dialogs\WhatsNewDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Controls\DaySelectorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <None Update="Fonts\Segoe Fluent Icons.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Page Update="Views\DashboardView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <None Update="HelpFile_NL.rtf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <!-- 
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if 
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NoWarn>0108;8305;0060</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NoWarn>0108;8305;0060</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <NoWarn>0108;8305</NoWarn>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.PriResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.PriResources.targets')" />
+  <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.PriResources.targets')" Label="MultilingualAppToolkit">
+    <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
+  </Target>
+
+	<PropertyGroup>
+		<!-- Keep only these satellite resource languages in build/publish output -->
+		<SatelliteResourceLanguages>en-US;nl-NL</SatelliteResourceLanguages>
+	</PropertyGroup>
+	
+  <ItemGroup>
+    <PRIResource Update="Strings\en-us\Resources.resw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </PRIResource>
+  </ItemGroup>
+	<!-- Copy all "Resources.resw" files in the "Strings" folder to the output folder. -->
+	<ItemGroup>
+		<Content Include="Strings\**\*.resw">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Controls\DaySelectorControl.xaml" />
+	</ItemGroup>
+
+	<Target Name="RemoveFoldersWithMuiFiles" AfterTargets="Build">
+		<ItemGroup>
+			<RemovingFiles Include="$(OutDir)*\*.mui" Exclude="$(OutDir)en-US\*.mui;$(OutDir)nl-NL\*.mui" />
+			<RemovingFolders Include="@(RemovingFiles->'%(RootDir)%(Directory)')" />
+		</ItemGroup>
+		<RemoveDir Directories="@(RemovingFolders)" />
+		<Message Text="Removed unnecessary language folders from Build" Importance="high" />
+	</Target>
+
+	<Target Name="RemoveNonWindowsRuntimes" AfterTargets="Build">
+		<Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;if (Test-Path '$(OutDir)runtimes') { Get-ChildItem -Path '$(OutDir)runtimes' -Directory | Where-Object { $_.Name -notlike 'win*' } | ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force -ErrorAction SilentlyContinue } }&quot;" />
+		<Message Text="Removed Non-Windows runtimes from Build" Importance="high" />
+	</Target>
+
+</Project>

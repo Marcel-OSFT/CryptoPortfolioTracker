@@ -20,13 +20,13 @@ This app is retrieving its information via the GoinGecko public API.
 Enjoy HODL-ing
 Marcel
 
-![CPT Assets_blurred_800](https://github.com/Marcel-OSFT/CryptoPortfolioTracker/assets/141166641/b7155ba5-184a-4d84-aa89-6d624a3c3d5b)
+![CPT Assets_blurred_800](https://github.com/Marcel-OSFT/TemperatureMonitor/assets/141166641/b7155ba5-184a-4d84-aa89-6d624a3c3d5b)
 
-![CPT Assets and Tx_blurred_800](https://github.com/Marcel-OSFT/CryptoPortfolioTracker/assets/141166641/b5597c08-4bc9-480c-b329-0279acca2bb3)
+![CPT Assets and Tx_blurred_800](https://github.com/Marcel-OSFT/TemperatureMonitor/assets/141166641/b5597c08-4bc9-480c-b329-0279acca2bb3)
 
-![CPT accounts_blurred_800](https://github.com/Marcel-OSFT/CryptoPortfolioTracker/assets/141166641/57bc1e9f-2ce1-499d-86dd-384484c6d6bd)
+![CPT accounts_blurred_800](https://github.com/Marcel-OSFT/TemperatureMonitor/assets/141166641/57bc1e9f-2ce1-499d-86dd-384484c6d6bd)
 
-![CPT account and assets_blurred_800](https://github.com/Marcel-OSFT/CryptoPortfolioTracker/assets/141166641/7cf004fe-4bbc-4458-bfe2-d3da477c65e8)
+![CPT account and assets_blurred_800](https://github.com/Marcel-OSFT/TemperatureMonitor/assets/141166641/7cf004fe-4bbc-4458-bfe2-d3da477c65e8)
 
 
 

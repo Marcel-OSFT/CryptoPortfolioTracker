@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
 
-namespace CryptoPortfolioTracker.Configuration.Stores;
+namespace TemperatureMonitor.Configuration.Stores;
 
 public class FilePreferenceStore : IPreferenceStore
 {

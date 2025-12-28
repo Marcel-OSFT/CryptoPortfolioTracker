@@ -1,13 +1,13 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
-using CryptoPortfolioTracker.ViewModels;
-using CryptoPortfolioTracker.Controls;
-using CryptoPortfolioTracker.Enums;
+using TemperatureMonitor.ViewModels;
+using TemperatureMonitor.Controls;
+using TemperatureMonitor.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using System;
 
-namespace CryptoPortfolioTracker.Views;
+namespace TemperatureMonitor.Views;
 [ObservableObject]
 public partial class DashboardView : Page, IDisposable
 {
@@ -21,9 +21,6 @@ public partial class DashboardView : Page, IDisposable
         InitializeComponent();
         _viewModel = dashboardVm;
         DataContext = _viewModel;
-        PortfolioPie.pieHeader.Tag = "Portfolio";
-        AccountsPie.pieHeader.Tag = "Accounts";
-        NarrativesPie.pieHeader.Tag = "Narratives";
     }
 
     private async void View_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -52,5 +49,19 @@ public partial class DashboardView : Page, IDisposable
                 //_viewModel = null;
             }
         }
+    }
+
+    private void DaySelector_ModeChanged(object sender, TemperatureMonitor.Enums.DaySelectorMode e)
+    {
+        // handle mode change (e == DaySelectorMode.Now or DaySelectorMode.Day)
+        if (e == null) return;
+        _viewModel?.CurrentMode = e;
+    }
+
+    private void DaySelector_SelectedDateChanged(object sender, DateTime e)
+    {
+        // handle selected date change (e is the new SelectedDate)
+        if (e == null) return;
+        _viewModel?.SelectedDate = e;
     }
 }

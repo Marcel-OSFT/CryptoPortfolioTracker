@@ -1,4 +1,4 @@
-﻿using CryptoPortfolioTracker.Services;
+﻿using TemperatureMonitor.Services;
 using Microsoft.UI.Xaml.Data;
 using System;
 using System.Diagnostics;
@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Reflection;
 
 
-namespace CryptoPortfolioTracker.Converters;
+namespace TemperatureMonitor.Converters;
 
 public class FormatValueToString : IValueConverter
 {

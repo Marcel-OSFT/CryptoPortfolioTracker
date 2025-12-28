@@ -8,7 +8,7 @@ using Serilog.Events;
 using Serilog.Sinks.WinUi3;
 using Serilog.Sinks.WinUi3.LogViewModels;
 
-namespace CryptoPortfolioTracker.Helpers;
+namespace TemperatureMonitor.Helpers;
 public class ItemsRepeaterLogBroker : IWinUi3LogBroker
 {
     private readonly ILogViewModelBuilder _logViewModelBuilder;

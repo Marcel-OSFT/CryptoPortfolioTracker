@@ -2,7 +2,7 @@
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml.Controls;
 
-namespace CryptoPortfolioTracker.Helpers
+namespace TemperatureMonitor.Helpers
 {
     public partial class CustomBtn : AppBarButton
     {

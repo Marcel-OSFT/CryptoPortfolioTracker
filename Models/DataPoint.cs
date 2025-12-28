@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace CryptoPortfolioTracker.Models;
+namespace TemperatureMonitor.Models;
 public class DataPoint
 {
-    public DateOnly Date { get; set; }
+    public DateTime Timestamp { get; set; }
     public double Value { get; set; }
 }
 

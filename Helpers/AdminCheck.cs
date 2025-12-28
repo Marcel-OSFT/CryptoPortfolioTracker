@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Principal;
 
-namespace CryptoPortfolioTracker
+namespace TemperatureMonitor
 {
     public static class AdminCheck
     {

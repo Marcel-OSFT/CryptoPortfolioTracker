@@ -2,7 +2,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
-namespace CryptoPortfolioTracker.Helpers;
+namespace TemperatureMonitor.Helpers;
 
 public static class AncestorSource
 {

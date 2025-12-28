@@ -1,9 +1,9 @@
 <Page
-    x:Class="CryptoPortfolioTracker.MainPage"
+    x:Class="TemperatureMonitor.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CryptoPortfolioTracker"
-    xmlns:converters="using:CryptoPortfolioTracker.Converters"
+    xmlns:local="using:TemperatureMonitor"
+    xmlns:converters="using:TemperatureMonitor.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
@@ -45,91 +45,15 @@
             
             <NavigationView.MenuItems>
 
-                <NavigationViewItem l:Uids.Uid="Navigation_Dashboard" Tag="DashboardView" >
+                <NavigationViewItem x:Name="Navigation_Dashboard" Tag="DashboardView" >
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
-
-
-                <NavigationViewItem x:Name="AssetsView" l:Uids.Uid="Navigation_Assets" Tag="AssetsView" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE825;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem x:Name="AccountsView" l:Uids.Uid="Navigation_Accounts" Tag="AccountsView" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE910;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem x:Name="NarrativeView" l:Uids.Uid="Navigation_Narratives" Tag="NarrativesView" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED0E;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItemSeparator  Margin="0,5,0,5"/>
-
-
-                <NavigationViewItem x:Name="CoinLibraryView" l:Uids.Uid="Navigation_CoinLibrary" Tag="CoinLibraryView" >
-                        <NavigationViewItem.Icon>
-                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F1;"/>
-                        </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItem l:Uids.Uid="Navigation_PriceLevels" Tag="PriceLevelsView" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF272;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItemSeparator  Margin="0,5,0,5" Visibility="{Binding NavigationVisibility}"/>
-
-                <NavigationViewItem l:Uids.Uid="Navigation_SwitchPortfolio" Tag="SwitchPortfolioView" Padding="0,0,-10,0" Visibility="{Binding NavigationVisibility}">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8AB;" Margin="0,0,0,0"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItem l:Uids.Uid="Navigation_Admin" Tag="AdminView" Padding="0,0,-10,0"  Visibility="{Binding NavigationVisibility}">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE912;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-
-
             </NavigationView.MenuItems>
 
-            <NavigationView.FooterMenuItems >
-
-                <NavigationViewItem l:Uids.Uid="Navigation_About" Tag="About" Style="{StaticResource FooterNavItemStyle}" >
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA1F;" FontSize="14"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItem l:Uids.Uid="Navigation_Help" Tag="Help" Style="{StaticResource FooterNavItemStyle}">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE897;" FontSize="14"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                
-                <NavigationViewItem l:Uids.Uid="Navigation_WhatsNew" Tag="WhatsNew" Style="{StaticResource FooterNavItemStyle}">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE789;" FontSize="14"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-                <NavigationViewItem l:Uids.Uid="Navigation_Exit" Tag="Exit" Style="{StaticResource FooterNavItemStyle}">
-                        <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF78A;" FontSize="14"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-
-            </NavigationView.FooterMenuItems>
+           
 
             <Frame x:Name="contentFrame" Margin="0"/>
         </NavigationView>

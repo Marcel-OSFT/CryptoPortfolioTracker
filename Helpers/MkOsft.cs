@@ -1,5 +1,5 @@
 ﻿
-using CryptoPortfolioTracker.Models;
+using TemperatureMonitor.Models;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml;
 using System;
@@ -12,7 +12,7 @@ using Microsoft.VisualBasic.FileIO;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace CryptoPortfolioTracker.Helpers;
+namespace TemperatureMonitor.Helpers;
 
 public class MkOsft
 {

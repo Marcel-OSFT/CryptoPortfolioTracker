@@ -2,10 +2,10 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CryptoPortfolioTracker"
-    xmlns:converters="using:CryptoPortfolioTracker.Converters"
+    xmlns:local="using:TemperatureMonitor"
+    xmlns:converters="using:TemperatureMonitor.Converters"
     xmlns:ext="using:CommunityToolkit.WinUI"
-    xmlns:controls="using:CryptoPortfolioTracker.Controls">
+    xmlns:controls="using:TemperatureMonitor.Controls">
 
     <!-- my own values -->
     <x:String x:Key="RegExPositiveDecimalEn">^([0-9])*(\.[0-9]+)?$</x:String>

@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="MK-OSFT.CryptoPortfolioTracker"
+    Name="MK-OSFT.TemperatureMonitor"
     Publisher="CN=MK-OSFT, O=MK-OSFT, C=NL, E=mk_osft@hotmail.com"
     Version="1.0.13.0" />
 

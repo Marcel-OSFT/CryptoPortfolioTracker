@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Models;
-using CryptoPortfolioTracker.Services;
+using TemperatureMonitor.Models;
+using TemperatureMonitor.Services;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 
-namespace CryptoPortfolioTracker.ViewModels;
+namespace TemperatureMonitor.ViewModels;
 
 public partial class BaseViewModel : ObservableObject
 {
@@ -26,7 +26,6 @@ public partial class BaseViewModel : ObservableObject
     public BaseViewModel(Settings appSettings)
     {
         AppSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-        IsScrollBarsExpanded = AppSettings.IsScrollBarsExpanded;
         SetFontLevels();
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

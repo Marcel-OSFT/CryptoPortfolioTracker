@@ -1,4 +1,4 @@
-﻿namespace CryptoPortfolioTracker.Enums;
+﻿namespace TemperatureMonitor.Enums;
 
 public enum AppUpdaterResult
 {

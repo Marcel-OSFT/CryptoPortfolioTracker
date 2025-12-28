@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using CryptoPortfolioTracker.Services;
+using TemperatureMonitor.Services;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Net.Http;
@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace CryptoPortfolioTracker.Dialogs;
+namespace TemperatureMonitor.Dialogs;
 
 [ObservableObject]
 public sealed partial class WhatsNewDialog : ContentDialog
@@ -21,8 +21,8 @@ public sealed partial class WhatsNewDialog : ContentDialog
     [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto, PreserveSig = true, SetLastError = false)]
     public static extern IntPtr GetActiveWindow();
     
-    private const string RtfUrl_NL = "https://marcel-osft.github.io/CryptoPortfolioTracker/docs/WhatsNew_NL.rtf";
-    private const string RtfUrl_EN = "https://marcel-osft.github.io/CryptoPortfolioTracker/docs/WhatsNew_EN.rtf";
+    private const string RtfUrl_NL = "https://marcel-osft.github.io/TemperatureMonitor/docs/WhatsNew_NL.rtf";
+    private const string RtfUrl_EN = "https://marcel-osft.github.io/TemperatureMonitor/docs/WhatsNew_EN.rtf";
     private static readonly System.Net.Http.HttpClient _httpClient = new HttpClient();
     private readonly Settings _appSettings;
 
