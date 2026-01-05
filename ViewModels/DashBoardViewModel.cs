@@ -26,19 +26,24 @@ public partial class DashboardViewModel : BaseViewModel
     private static ILocalizer loc = Localizer.Get();
     private readonly IGraphService _graphService;
     private readonly Esp32Service _esp32Service;
+    private readonly ITemperatureLoggerStore _temperatureLoggerStore;
     private readonly IMessenger _messenger;
+
 
     public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
 
+   
     [ObservableProperty] public partial string LastTemperatureReading { get; set; } = string.Empty;
 
     [ObservableProperty] public partial string LastReadingTimestamp { get; set; } = string.Empty;
 
 
     [ObservableProperty] public partial DaySelectorMode CurrentMode { get; set; } = DaySelectorMode.Dag;
-    [ObservableProperty] public partial DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.Now;
+    [ObservableProperty] public partial DateTimeOffset SelectedDate { get; set; } = DateTimeOffset.UtcNow;
 
     private DateTime nowStart;
+    private bool isTodaySelected = true;
+
 
     partial void OnCurrentModeChanged(DaySelectorMode oldValue, DaySelectorMode newValue)
     {
@@ -49,27 +54,28 @@ public partial class DashboardViewModel : BaseViewModel
             nowStart = DateTime.Now;
         }
     }
+    async partial void OnSelectedDateChanged(DateTimeOffset oldValue, DateTimeOffset newValue)
+    {
+        Debug.WriteLine($"DashboardViewModel: SelectedDate changed from {oldValue} to {newValue}");
+        isTodaySelected = newValue.Date == DateTime.Now.Date; 
+        await GetValuesGraph(DateOnly.FromDateTime(newValue.Date));
+        SetSeriesGraph();
+    }
 
     private void UpdateSampleRateForMode(DaySelectorMode mode)
     {
         var sampleRateInSeconds = mode == DaySelectorMode.Nu ? AppSettings.SampleIntervalFastSeconds : AppSettings.SampleIntervalSlowMinutes * 60;
         _esp32Service.SetSampleRate(sampleRateInSeconds);
-        // synchronize GraphUpdateService via Messenger
+        // synchronize TemperaturePollingService via Messenger
         MainPage.Current.DispatcherQueue.TryEnqueue(() =>
         {
             _messenger.Send(new CurrentModeChangedMessage(sampleRateInSeconds));
         });
     }
 
-    async partial void OnSelectedDateChanged(DateTimeOffset oldValue, DateTimeOffset newValue)
-    {
-        Debug.WriteLine($"DashboardViewModel: SelectedDate changed from {oldValue} to {newValue}");
-        await GetValuesGraph(DateOnly.FromDateTime(SelectedDate.Date));
-        SetSeriesGraph();
-    }
 
 
-    public DashboardViewModel(Esp32Service esp32Service, IGraphService graphService, IMessenger messenger, Settings appSettings) : base(appSettings)
+    public DashboardViewModel(Esp32Service esp32Service, IGraphService graphService, ITemperatureLoggerStore temperatureLoggerStore ,IMessenger messenger, Settings appSettings) : base(appSettings)
     {
         messenger.Register<GraphUpdatedMessage>(this, (r, m) =>
         {
@@ -86,6 +92,7 @@ public partial class DashboardViewModel : BaseViewModel
         Current = this;
         _graphService = graphService;
         _esp32Service = esp32Service;
+        _temperatureLoggerStore = temperatureLoggerStore;
         _messenger = messenger;
 
     }

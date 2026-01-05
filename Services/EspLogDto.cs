@@ -40,7 +40,7 @@ namespace TemperatureMonitor.Services
             get
             {
                 if (DateTime.TryParse(Date, out var dt))
-                    return DateOnly.FromDateTime(dt);
+                    return new DateOnly(dt.Year, dt.Month, dt.Day);
                 return null;
             }
         }

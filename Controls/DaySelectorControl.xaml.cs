@@ -68,7 +68,7 @@ namespace TemperatureMonitor.Controls
 
         private void UpdateNavButtons()
         {
-            var today = DateTime.Now.Date;
+            var today = DateTime.UtcNow.Date;
             bool isToday = SelectedDate.Date == today;
             if (NextButton != null)
                 NextButton.IsEnabled = !isToday;

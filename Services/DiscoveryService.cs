@@ -10,10 +10,7 @@ namespace TemperatureMonitor.Services
     public static class DiscoveryService
     {
         // Discover once and return found devices
-        public static async Task<IReadOnlyList<DeviceInfo>> DiscoverOnceAsync(
-            string serviceType = "_temperature._tcp.local.",
-            int scanMilliseconds = 3000,
-            CancellationToken cancellationToken = default)
+        public static async Task<IReadOnlyList<DeviceInfo>> DiscoverOnceAsync(string serviceType = "_temperature._tcp.local.", int scanMilliseconds = 3000, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -28,8 +25,6 @@ namespace TemperatureMonitor.Services
                     Hostname = h.Id,
                     IP = h.IPAddress
                 }).ToList();
-
-
             }
             catch (Exception ex)
             {
@@ -39,41 +34,6 @@ namespace TemperatureMonitor.Services
 
         }
 
-        // Optional: continuously watch and call the callback when changes occur
-        public static async Task StartWatchingAsync(
-            Action<IReadOnlyList<DeviceInfo>> onUpdate,
-            string serviceType = "_temperature._tcp.local.",
-            int intervalMilliseconds = 5000,
-            CancellationToken cancellationToken = default)
-        {
-            IReadOnlyList<DeviceInfo> previous = Array.Empty<DeviceInfo>();
-
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                var current = await DiscoverOnceAsync(serviceType, scanMilliseconds: Math.Min(intervalMilliseconds, 5000), cancellationToken: cancellationToken);
-
-                // Simple change detection
-                if (!AreEqual(previous, current))
-                {
-                    previous = current;
-                    onUpdate?.Invoke(current);
-                }
-
-                try
-                {
-                    await Task.Delay(intervalMilliseconds, cancellationToken);
-                }
-                catch (OperationCanceledException) { break; }
-            }
-        }
-
-        static bool AreEqual(IReadOnlyList<DeviceInfo> a, IReadOnlyList<DeviceInfo> b)
-        {
-            if (a.Count != b.Count) return false;
-            var sa = new HashSet<string>(a.Select(d => d.IP + "|" + d.Name));
-            var sb = new HashSet<string>(b.Select(d => d.IP + "|" + d.Name));
-            return sa.SetEquals(sb);
-        }
     }
 
     public class DeviceInfo

@@ -91,6 +91,7 @@ namespace TemperatureMonitor.Converters
         {
             // Not needed for one-way display binding
             throw new NotImplementedException();
+
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace TemperatureMonitor.Services
 {
-    public interface IGraphUpdateService
+    public interface ITemperaturePollingService
     {
         public bool IsUpdating { get; }
         public Task StartAsync();

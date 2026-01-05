@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ public class Esp32Service : IDisposable
     private readonly Settings _appSettings;
     private readonly IGraphService _graphService;
     private readonly IMessenger _messenger;
+    private readonly ITemperatureLoggerStore _temperatureLoggerStore;
     private string EspIpAddress = string.Empty;
 
     // Replace simple bool locker with AsyncLock to support timeout and cancellation
@@ -47,11 +49,12 @@ public class Esp32Service : IDisposable
     // single HttpClient instance for this service (reused to avoid socket exhaustion)
     private readonly HttpClient _httpClient;
 
-    public Esp32Service(IGraphService graphService, IMessenger messenger, Settings appSettings)
+    public Esp32Service(IGraphService graphService,ITemperatureLoggerStore temperatureLoggerStore ,IMessenger messenger, Settings appSettings)
     {
         _appSettings = appSettings;
         _graphService = graphService;
         _messenger = messenger;
+        _temperatureLoggerStore = temperatureLoggerStore;
 
         // Initialize single HttpClient instance with an appropriate timeout
         _httpClient = new HttpClient()
@@ -70,208 +73,80 @@ public class Esp32Service : IDisposable
     private async Task<string> GetJsonContentAsync(string requestUri, CancellationToken ct = default)
     {
         var json = await _httpClient.GetStringAsync(requestUri);
-
-       // using var resp = await _httpClient.GetAsync(requestUri, ct).ConfigureAwait(false);
-        //resp.EnsureSuccessStatusCode();
         return json;
     }
 
-
-    
-
-
-
-    // Centralized resolver for ESP IP (prefers manual setting, falls back to discovery)
-    // If showMessageIfNotFound is true and no IP is found, a user dialog will be enqueued.
-    private async Task<(bool usedManualIp, string ip)> ResolveEspIpAsync(CancellationToken ct = default, bool showMessageIfNotFound = true)
+    public async Task<EspLogDto> GetTemperatureLogFromESP(CancellationToken cancellationToken = default)
     {
-        // prefer manual configured IP
-        if (!string.IsNullOrWhiteSpace(_appSettings.EspIpAddress))
-        {
-            Debug.WriteLine($"ResolveEspIpAsync: using manual IP from settings: '{_appSettings.EspIpAddress}'");
-            return (true, _appSettings.EspIpAddress);
-        }
-
-        // use cached discovered IP if present
-        if (!string.IsNullOrWhiteSpace(EspIpAddress))
-        {
-            Debug.WriteLine($"ResolveEspIpAsync: using cached discovered IP: '{EspIpAddress}'");
-            return (false, EspIpAddress);
-        }
-
-        const int attempts = 3;
-        const int scanMilliseconds = 1500; // per-attempt scan window
-        const int delayBetweenMs = 500;     // small backoff between attempts
-
-        List<DeviceInfo>? lastDiscovered = null;
-
-        for (int attempt = 1; attempt <= attempts && !ct.IsCancellationRequested; attempt++)
-        {
-            try
-            {
-                Debug.WriteLine($"ResolveEspIpAsync: discovery attempt {attempt}/{attempts} (scan {scanMilliseconds}ms)");
-                var discovered = (List<DeviceInfo>?)await DiscoveryService.DiscoverOnceAsync(
-                    scanMilliseconds: scanMilliseconds,
-                    cancellationToken: ct).ConfigureAwait(false);
-
-                lastDiscovered = discovered?.ToList();
-
-                var espDevice = discovered?.FirstOrDefault();
-                EspIpAddress = espDevice?.IP ?? string.Empty;
-
-                Debug.WriteLine($"ResolveEspIpAsync: discovered devices: {(discovered == null ? "none" : discovered.Count.ToString())}");
-                Debug.WriteLine($"ResolveEspIpAsync: EspIpAddress set to: '{EspIpAddress}'");
-
-                if (!string.IsNullOrWhiteSpace(EspIpAddress))
-                {
-                    return (false, EspIpAddress);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                Debug.WriteLine("ResolveEspIpAsync cancelled.");
-                break;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"ResolveEspIpAsync attempt {attempt} failed: {ex}");
-                // clear any potentially stale cache
-                EspIpAddress = string.Empty;
-            }
-
-            if (attempt < attempts)
-            {
-                try { await Task.Delay(delayBetweenMs, ct).ConfigureAwait(false); } catch (OperationCanceledException) { break; }
-            }
-        }
-
-        // nothing found via Zeroconf; optionally run a lightweight subnet scan to list responsive hosts
-        List<DeviceInfo>? responsiveHosts = null;
-        try
-        {
-            // perform a conservative scan (ScanLocalSubnetAsync limits to /24 and is parallel)
-            responsiveHosts = await NetworkScanner.ScanLocalSubnetAsync(pingTimeoutMs: 350, maxDegreeOfParallelism: 80, ct: ct).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            Debug.WriteLine("ResolveEspIpAsync: network scan cancelled.");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"ResolveEspIpAsync: network scan failed: {ex}");
-        }
-
-        Debug.WriteLine("ResolveEspIpAsync: no ESP IP available after discovery attempts.");
-        if (showMessageIfNotFound && MainPage.Current != null)
-        {
-            // build message including discovered service devices and responsive hosts if any
-            string message;
-            var parts = new List<string>
-            {
-                "No ESP32 discovered on the network."
-            };
-
-            if (lastDiscovered != null && lastDiscovered.Count > 0)
-            {
-                parts.Add("");
-                parts.Add("Devices advertising the temperature service:");
-                parts.AddRange(lastDiscovered.Select(d => $"- {d.IP} ({d.Name ?? "unknown"})"));
-            }
-
-            if (responsiveHosts != null && responsiveHosts.Count > 0)
-            {
-                parts.Add("");
-                parts.Add("Other responsive hosts on your subnet:");
-                // limit list length to avoid overly long dialogs
-                foreach (var d in responsiveHosts.Take(50))
-                    parts.Add($"- {d.IP} ({d.Name ?? "unknown"})");
-                if (responsiveHosts.Count > 50)
-                    parts.Add($"... and {responsiveHosts.Count - 50} more");
-            }
-
-            parts.Add("");
-            parts.Add("If your ESP is not listed, enter its IP address manually in Settings -> ESP32 — Manual IP.");
-
-            message = string.Join(Environment.NewLine, parts);
-
-            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
-                _ = ShowMessageDialog("ESP not found", message, "OK"));
-        }
-
-        return (false, string.Empty);
-    }
-
-    public async Task<bool> GetTemperatureLogFromESP(CancellationToken cancellationToken = default)
-    {
+        EspLogDto dto = new();
         var releaser = await _asyncLock.LockAsync(LockTimeout, cancellationToken).ConfigureAwait(false);
         if (!releaser.IsAcquired)
         {
             Debug.WriteLine("GetTemperatureLogFromESP: failed to acquire lock within timeout.");
-            return false;
+            return dto;
         }
 
         using (releaser)
         {
             bool usedManualIp = false;
             string ipToUse = string.Empty;
+            string response = string.Empty;
             try
             {
-                // use cached discovered IP if present
-                if (!string.IsNullOrWhiteSpace(EspIpAddress))
-                {
-                    ipToUse = EspIpAddress;
-                }
-                else
-                {
-                    var resolved = await ResolveEspIpAsync(cancellationToken, showMessageIfNotFound: true).ConfigureAwait(false);
-                    usedManualIp = resolved.usedManualIp;
-                    ipToUse = resolved.ip;
-                }
-
+                const int scanMilliseconds = 1500; // per-attempt scan window
+                var discovered = (List<DeviceInfo>?)await DiscoveryService.DiscoverOnceAsync(scanMilliseconds: scanMilliseconds, cancellationToken: default).ConfigureAwait(false);
+                // first build app for one device.
+                var espDevice = discovered?.FirstOrDefault();
+                ipToUse = espDevice?.IP ?? string.Empty;
 
                 if (string.IsNullOrWhiteSpace(ipToUse))
                 {
-                    return false;
+                    return dto;
                 }
+                // Handshake with ESP device to inform that communication is starting (this ensures that the WiFi ON window of the device is extended for the communication duration
+                response = await GetStringContentAsync($"http://{ipToUse}/session/start", cancellationToken).ConfigureAwait(false);
+                Debug.WriteLine($"{response}");
 
                 Debug.WriteLine($"GetTemperatureLogFromESP: downloading log from http://{ipToUse}/logs.json");
 
                 //string logData = await GetStringContentAsync($"http://{ipToUse}/logs", cancellationToken).ConfigureAwait(false);
                 var json = await GetJsonContentAsync($"http://{ipToUse}/logs.json", cancellationToken).ConfigureAwait(false);
-                var dto = EspLogDto.FromJson(json);
-
-
-                // Save to file
-                string path = Path.Combine(AppConstants.AppDataPath, "TemperatureLog.txt");
-                await File.WriteAllTextAsync(path, logData, cancellationToken).ConfigureAwait(false);
-
-                Debug.WriteLine($"Saved log to {path}");
-
+                dto = EspLogDto.FromJson(json);
+                
+                // cache logger instance
+                var TempLogger = _temperatureLoggerStore.GetOrCreate(dto.Device);
+                TempLogger?.IpAddress = ipToUse;
                 // Clear log file on ESP
-                var result = !string.IsNullOrEmpty(logData);
-                if (!result)
+                var result = dto != null && dto.Days.Any();
+                if (result)
+                {
+                    Debug.WriteLine($"GetTemperatureLogFromESP: downloaded log with {dto.Days.Sum(d => d.Count)} records over {dto.Days.Count} days.");
+                    // clear the logs on the ESP device
+                    response = await GetStringContentAsync($"http://{ipToUse}/clearlogs", cancellationToken).ConfigureAwait(false);
+                    Debug.WriteLine($"Clearing logs on ESP: {response}");
+                }
+                else
                 {
                     Debug.WriteLine("GetTemperatureLogFromESP: downloaded log is empty.");
-                    // only clear discovered cache (not user-provided setting)
-                    //if (!usedManualIp) EspIpAddress = string.Empty;
-                    return false;
                 }
 
-                string response = await GetStringContentAsync($"http://{ipToUse}/clearlogs", cancellationToken).ConfigureAwait(false);
-                Debug.WriteLine($"Clearing log on ESP: {response}");
-                return true;
+                // Handshake with ESP device to inform that communication is finsihed (this enables the device to go into early sleep)
+                response = await GetStringContentAsync($"http://{ipToUse}/session/end", cancellationToken).ConfigureAwait(false);
+                Debug.WriteLine($"{response}");
+
+                return dto;
             }
             catch (OperationCanceledException)
             {
                 Debug.WriteLine("GetTemperatureLogFromESP cancelled.");
-                return false;
+                return dto;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"GetTemperatureLogFromESP failed: {ex}");
                 // if we used a discovered IP, clear it so next call will rediscover
                 if (!usedManualIp) EspIpAddress = string.Empty;
-                return false;
+                return dto;
             }
         }
     }
@@ -291,17 +166,10 @@ public class Esp32Service : IDisposable
             string ipToUse = string.Empty;
             try
             {
-                // use cached discovered IP if present
-                if (!string.IsNullOrWhiteSpace(EspIpAddress))
-                {
-                    ipToUse = EspIpAddress;
-                }
-                else
-                {
-                    var resolved = await ResolveEspIpAsync(cancellationToken, showMessageIfNotFound: true).ConfigureAwait(false);
-                    usedManualIp = resolved.usedManualIp;
-                    ipToUse = resolved.ip;
-                }
+                const int scanMilliseconds = 1500; // per-attempt scan window
+                var discovered = (List<DeviceInfo>?)await DiscoveryService.DiscoverOnceAsync(scanMilliseconds: scanMilliseconds, cancellationToken: default).ConfigureAwait(false);
+                var espDevice = discovered?.FirstOrDefault();
+                ipToUse = espDevice?.IP ?? string.Empty;
 
                 if (string.IsNullOrWhiteSpace(ipToUse))
                 {

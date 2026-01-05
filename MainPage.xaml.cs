@@ -6,17 +6,17 @@ public partial class MainPage : Page //INotifyPropertyChanged
     public static MainPage Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private readonly Settings _appSettings;
-    private IGraphUpdateService _graphUpdateService;
+    private ITemperaturePollingService _temperaturePollingService;
     private Type lastPageType;
     private NavigationViewItem lastSelectedNavigationItem;
 
-    public MainPage(IGraphUpdateService graphUpdateService, Settings appSettings)
+    public MainPage(ITemperaturePollingService temperaturePollingService, Settings appSettings)
     {
         _appSettings = appSettings;
         InitializeComponent();
         Current = this;
         DataContext = this;
-        _graphUpdateService = graphUpdateService;
+        _temperaturePollingService = temperaturePollingService;
 
     }
 
@@ -58,7 +58,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
     {
         lastPageType = pageType;
         contentFrame.Content = App.Container.GetService(pageType);
-        _graphUpdateService.StartAsync();
+        _temperaturePollingService.StartAsync();
     }
 
     public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")

@@ -1,5 +1,4 @@
-﻿
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using TemperatureMonitor.Enums;
 using TemperatureMonitor.Models;
 using LanguageExt.Common;
@@ -14,22 +13,24 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Threading;
+using Newtonsoft.Json;
 
 namespace TemperatureMonitor.Services;
 
 public partial class GraphService : ObservableObject, IGraphService
 {
     private Graph TemperatureGraph { get; set; } = new();
-    public DateOnly selectedDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    public DateOnly selectedDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
     public List<DataPoint> CurrentDayTemperatures { get; private set; } = new();
     public List<DataPoint> ViewedDayTemperatures { get; private set; } = new();
 
 
     [ObservableProperty] private bool isLoadingFromJson;
-    
-    public GraphService() 
+
+    public GraphService()
     {
-       
+
     }
 
     public async Task<ObservableCollection<DateTimePoint>> GetValues(DateOnly date)
@@ -47,14 +48,56 @@ public partial class GraphService : ObservableObject, IGraphService
     /// </summary>
     public async Task<ObservableCollection<DateTimePoint>> LoadArchivedDayAsync(DateOnly date, CancellationToken ct = default)
     {
-        // Load archived points for that day
-        var points = await DailyArchiveService.LoadDayAsync(date, AppConstants.AppDataPath, useLocalDate: true, ct).ConfigureAwait(false);
+        var archiveFolder = Path.Combine(AppConstants.AppDataPath, "DailyArchive");
+        var fileName = Path.Combine(archiveFolder, $"{date:yyyy-MM-dd}.json");
+
+        if (!File.Exists(fileName))
+            return new ObservableCollection<DateTimePoint>();
+
+        string json;
+        try
+        {
+            json = await File.ReadAllTextAsync(fileName, ct).ConfigureAwait(false);
+        }
+        catch
+        {
+            return new ObservableCollection<DateTimePoint>();
+        }
+
+        var points = new List<DataPoint>();
+
+        try
+        {
+            // Expect DayDto shape only: { "date": "...", "count": n, "records": [ { "ts": 12345, "temp": 23.4 }, ... ] }
+            var day = JsonConvert.DeserializeObject<DayDto>(json);
+            if (day?.Records != null)
+            {
+                foreach (var r in day.Records)
+                {
+                    if (ct.IsCancellationRequested) break;
+                    try
+                    {
+                        var dtoTime = DateTimeOffset.FromUnixTimeSeconds(r.Ts).LocalDateTime;
+                        points.Add(new DataPoint { Timestamp = dtoTime, Value = r.Temp });
+                    }
+                    catch
+                    {
+                        // ignore invalid ts
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // If deserialization fails, return empty result (we only support DayDto)
+            return new ObservableCollection<DateTimePoint>();
+        }
 
         // Order by timestamp (UTC) for consistent presentation
         ViewedDayTemperatures = points.OrderBy(p => p.Timestamp.ToUniversalTime()).ToList();
 
         // If the requested day is today, update the current-day list
-        if (date == DateOnly.FromDateTime(DateTime.Now))
+        if (date == DateOnly.FromDateTime(DateTime.UtcNow))
         {
             CurrentDayTemperatures = ViewedDayTemperatures.ToList();
         }
@@ -76,7 +119,7 @@ public partial class GraphService : ObservableObject, IGraphService
             CurrentDayTemperatures = CurrentDayTemperatures
                 .OrderBy(p => p.Timestamp.ToUniversalTime())
                 .ToList();
-            
+
         }
     }
 

@@ -116,7 +116,7 @@ public partial class App : Application
         services.AddScoped<BaseViewModel>();
 
         services.AddSingleton<IGraphService, GraphService>();
-        services.AddSingleton<IGraphUpdateService, GraphUpdateService>();
+        services.AddSingleton<ITemperaturePollingService, TemperaturePollingService>();
         services.AddSingleton<IPreferenceStore, FilePreferenceStore>();
 
         services.AddSingleton<Settings>();
@@ -124,6 +124,8 @@ public partial class App : Application
         services.AddSingleton<DateToStringConverter>(); // converter instance
 
         services.AddSingleton<IMessenger, WeakReferenceMessenger>();
+        // inside the service registration section
+        services.AddSingleton<ITemperatureLoggerStore, TemperatureLoggerStore>();
 
         return services.BuildServiceProvider();
     }

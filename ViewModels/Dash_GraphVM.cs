@@ -89,6 +89,11 @@ public partial class DashboardViewModel : BaseViewModel
 
     private async Task UpdateSeriesValues()
     {
+        //adjust SelectedDate in case a new day starts and "Today' is selected 
+        if (isTodaySelected && DateTime.Now.Date != SelectedDate.Date)
+        {
+            SelectedDate = DateTime.Now.Date;
+        }
         await GetValuesGraph(DateOnly.FromDateTime(SelectedDate.Date));
 
         SeriesGraph[0].Values = CurrentMode == DaySelectorMode.Nu ? ChartValues.Where(t => t.DateTime >= nowStart).ToList() : ChartValues;
