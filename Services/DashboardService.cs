@@ -296,6 +296,13 @@ public partial class DashboardService : ObservableObject, IDashboardService
         var context = _portfolioService.Context;
         var dataPoints = new List<CapitalFlowPoint>();
 
+        var mut1 = await context.Mutations
+            .AsNoTracking()
+            .Where(x => x.Type == transactionKind)
+            .Include(t => t.Transaction)
+            .GroupBy(g => g.Transaction.TimeStamp.Year).ToListAsync();
+
+
         var mutations = await context.Mutations
             .AsNoTracking()
             .Where(x => x.Type == transactionKind)

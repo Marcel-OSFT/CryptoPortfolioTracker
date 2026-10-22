@@ -41,8 +41,6 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] public double legendTextSizeCapitalFlow = 12;
 
 
-
-
     [ObservableProperty]
     Axis[] yAxesCapitalFlow = new Axis[]
         {
@@ -119,7 +117,7 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
             CostBasePerc = 100 * (TotalValue - CostBase) / CostBase;
 
 
-        }
+}
         catch (Exception ex)
         {
             Logger.Error(ex, "An error occurred while calculating value gains.");
@@ -128,61 +126,76 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
 
     public async Task GetCapitalFlowData()
     {
+        ObservableCollection<CapitalFlowPoint> deposits =
+            new(await _dashboardService.GetYearlyMutationsByTransactionKind(TransactionKind.Deposit));
 
-        var deposits = await _dashboardService.GetYearlyMutationsByTransactionKind(TransactionKind.Deposit);
-        var withdrawals = await _dashboardService.GetYearlyMutationsByTransactionKind(TransactionKind.Withdraw);
+        ObservableCollection<CapitalFlowPoint> withdrawals =
+            new(await _dashboardService.GetYearlyMutationsByTransactionKind(TransactionKind.Withdraw));
 
-        NetCapitalFlow = deposits.Sum(x => x.Value) - withdrawals.Sum(x => x.Value);
+        NetCapitalFlow = deposits.Sum(point => point.Value)
+            - withdrawals.Sum(point => point.Value);
 
-        if (XAxesCapitalFlow is not null)
-        {
-            XAxesCapitalFlow = Array.Empty<Axis>();
-        }
-        XAxesCapitalFlow = new Axis[]
-        {
+        List<string> years = deposits
+            .Select(point => point.Year)
+            .Concat(withdrawals.Select(point => point.Year))
+            .Distinct()
+            .OrderBy(year => year)
+            .ToList();
+
+        ObservableCollection<double> depositValues = new(
+            years.Select(year =>
+                deposits.FirstOrDefault(point => point.Year == year)?.Value ?? 0));
+
+        ObservableCollection<double> withdrawalValues = new(
+            years.Select(year =>
+                withdrawals.FirstOrDefault(point => point.Year == year)?.Value ?? 0));
+
+        XAxesCapitalFlow =
+        [
             new Axis
-            {
-                Labels = new List<string>(deposits.Select(x => x.Year).ToList()),
-                LabelsPaint = new SolidColorPaint
-                {
-                    Color = SKColors.DarkGoldenrod,
-                    FontFamily = "Times New Roman",
-                    SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-                },
-                TextSize = 12,
-                Padding = new LiveChartsCore.Drawing.Padding(0, 0),
-                LabelsRotation = 0,
-            }
-        };
-
-
-        //if (SeriesCapFlow is not null)
-        //{
-        //    SeriesCapFlow.Clear();
-        //}
-        SeriesCapFlow = new ObservableCollection<ISeries>
         {
-            new ColumnSeries<double>
+            Labels = years,
+            LabelsPaint = new SolidColorPaint
             {
-                
-                MiniatureShapeSize=2,
-                Values = new ObservableCollection<double>(deposits.Select(x => x.Value).ToList()),
-                Stroke = new SolidColorPaint(SKColors.Yellow) { StrokeThickness = 2 },
-                Fill = new SolidColorPaint(SKColors.Yellow.WithAlpha(220)),
-                Name = loc.GetLocalizedString("GraphicView_InFlowSeriesTitle"), //"Inflow",
+                Color = SKColors.DarkGoldenrod,
+                FontFamily = "Times New Roman",
+                SKFontStyle = new SKFontStyle(
+                    SKFontStyleWeight.Normal,
+                    SKFontStyleWidth.Normal,
+                    SKFontStyleSlant.Italic)
             },
+            TextSize = 12,
+            Padding = new LiveChartsCore.Drawing.Padding(0, 0),
+            LabelsRotation = 0
+        }
+        ];
+
+        SeriesCapFlow =
+        [
             new ColumnSeries<double>
+        {
+            MiniatureShapeSize = 2,
+            Values = depositValues,
+            Stroke = new SolidColorPaint(SKColors.Yellow)
             {
-
-                MiniatureShapeSize=2,
-                Values = new ObservableCollection<double>(withdrawals.Select(x => x.Value).ToList()),
-                Stroke = new SolidColorPaint(SKColors.Green) { StrokeThickness = 2 },
-                Fill = new SolidColorPaint(SKColors.Green.WithAlpha(220)),
-                Name = loc.GetLocalizedString("GraphicView_OutFlowSeriesTitle"), //"Inflow",
+                StrokeThickness = 2
             },
+            Fill = new SolidColorPaint(SKColors.Yellow.WithAlpha(220)),
+            Name = loc.GetLocalizedString("GraphicView_InFlowSeriesTitle")
+        },
 
-        };
-
+        new ColumnSeries<double>
+        {
+            MiniatureShapeSize = 2,
+            Values = withdrawalValues,
+            Stroke = new SolidColorPaint(SKColors.Green)
+            {
+                StrokeThickness = 2
+            },
+            Fill = new SolidColorPaint(SKColors.Green.WithAlpha(220)),
+            Name = loc.GetLocalizedString("GraphicView_OutFlowSeriesTitle")
+        }
+        ];
     }
 
     public void ChangeLabelSizeCapitalFlow(SizeChangedEventArgs e)

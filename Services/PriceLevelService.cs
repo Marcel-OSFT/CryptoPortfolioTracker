@@ -368,13 +368,58 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 }
                 else if (selectedHeatMapIndex == 1)
                 {
-                    
+
                     index = AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
                 }
                 else if (selectedHeatMapIndex == 2)
                 {
                     // Add other heat map points if needed
                     index = AddHeatMapPointEma(index, heatMapPoints, sumMarketValue, asset);
+                }
+                else if (selectedHeatMapIndex == 3)
+                {
+                    // Add other heat map points if needed
+                    index = AddHeatMapPointBreakEven(index, heatMapPoints, sumMarketValue, asset);
+                }
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+
+        return heatMapPoints;
+    }
+    public async Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(BubbleMap bubbleMap)
+    {
+        var heatMapPoints = new ObservableCollection<HeatMapPoint>();
+
+        try
+        {
+            var assets = (await _assetService.PopulateAssetTotalsList()).Where(x => x.MarketValue > 0).OrderBy(x => x.Coin.Rank).ToList();
+            var sumMarketValue = assets.Sum(x => x.MarketValue);
+            int index = 0;
+
+            foreach (var asset in assets)
+            {
+                if (bubbleMap.Type == BubbleMapType.Target)
+                {
+                    index = AddHeatMapPointTarget(index, heatMapPoints, sumMarketValue, asset);
+                }
+                else if (bubbleMap.Type == BubbleMapType.Rsi)
+                {
+
+                    index = AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
+                }
+                else if (bubbleMap.Type == BubbleMapType.Ma)
+                {
+                    // Add other heat map points if needed
+                    index = AddHeatMapPointEma(index, heatMapPoints, sumMarketValue, asset);
+                }
+                else if (bubbleMap.Type == BubbleMapType.BreakEven)
+                {
+                    // Add other heat map points if needed
+                    index = AddHeatMapPointBreakEven(index, heatMapPoints, sumMarketValue, asset);
                 }
             }
         }
@@ -408,12 +453,12 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     private static int AddHeatMapPointTarget(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
-        if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0) 
-        { 
-            return index; 
+        if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0)
+        {
+            return index;
         }
 
-        
+
         var priceLevel = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First();
 
         priceLevel.DistanceToValuePerc = (100 * (asset.Coin.Price - priceLevel.Value) / priceLevel.Value);
@@ -430,6 +475,34 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             {
                 X = index += 1,
                 Y = perc,
+                // Y = -1 * perc,
+                Weight = weight,
+                Label = asset.Coin.Symbol
+            };
+            heatMapPoints.Add(hmPoint);
+        }
+        return index;
+    }
+    private static int AddHeatMapPointBreakEven(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    {
+        if (asset is null || asset.NetInvestment <= 0 || asset.Coin.Symbol == "USDT" || asset.Coin.Symbol == "USDC")
+        {
+            return index;
+        }
+        
+        // only show a bubble when net Investment > 0
+        var breakEvenPerc= 100 * ((asset.MarketValue - asset.NetInvestment)/asset.MarketValue) ;
+
+        var weight = 100 * asset.MarketValue / sumMarketValue;
+
+        if (!double.IsInfinity(breakEvenPerc))
+        {
+            var hmPoint = new HeatMapPoint
+            {
+                X = index += 1,
+                // limit calculated distance to BE to a maximum of -1050. This because the Bubble map axis is limited as well
+                Y = Math.Max(-1050,breakEvenPerc),
+                RealYValue = breakEvenPerc,
                 // Y = -1 * perc,
                 Weight = weight,
                 Label = asset.Coin.Symbol

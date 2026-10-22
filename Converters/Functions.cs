@@ -93,7 +93,7 @@ public class Functions
         }
         return new Uri(result);
     }
-    
+
     public static string FormatValueToString(double value, string format)
     {
         if (format == null || format == string.Empty)
@@ -110,7 +110,7 @@ public class Functions
         {
             return "********";
         }
-        
+
         if (double.IsInfinity((double)value))
         {
             return "-";
@@ -121,13 +121,46 @@ public class Functions
             long integerPartLength = Math.Abs((long)number).ToString().Length;
             int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
             decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
-            format =  "$ {0:F" + decimalPlaces.ToString() + "}";
+            format = "$ {0:F" + decimalPlaces.ToString() + "}";
             // '$ {0:F5}'
         }
         return string.Format(ci, format, value);
     }
 
-    
+    public static string FormatNetProfitLossPercToString(double value, string format)
+    {
+        if (format == null || format == string.Empty)
+        {
+            return value.ToString();
+        }
+
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
+
+        var isValueAsterix = _settings.AreValuesMasked;
+
+        if (isValueAsterix && !format.Contains("%"))
+        {
+            return "********";
+        }
+
+        if (double.IsInfinity((double)value))
+        {
+            return "∞";
+        }
+
+        if (value is double number && format == " $ {0:0.########}")
+        {
+            long integerPartLength = Math.Abs((long)number).ToString().Length;
+            int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
+            decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
+            format = "$ {0:F" + decimalPlaces.ToString() + "}";
+            // '$ {0:F5}'
+        }
+        return string.Format(ci, format, value);
+    }
+
+
 
 
     public static SolidColorBrush DoubleToColour(double value, string parameter = "")

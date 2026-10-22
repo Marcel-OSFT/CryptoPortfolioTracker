@@ -194,9 +194,15 @@ public class GraphUpdateService : IGraphUpdateService
             {
                 days = await GetDaysBasedOnOldestTransaction();
 
-                //*** CoinGecko provides data for 'only' the last 365 days. If oldest Transaction is beyond 365 days 
-                //*** an initial starting Point needs to be set as first portfolio value
-                if (days > 365)
+                // Existing 365-day fallback is used only when old market-chart data is unavailable.
+                int oldestMarketChartDays = await GetDaysBasedOnOldestMarketChartData();
+
+                if (oldestMarketChartDays > 0)
+                {
+                    days = Math.Max(days, oldestMarketChartDays);
+                }
+
+                if (days > 365 && oldestMarketChartDays <= 365)
                 {
                     ObtainFirstPortfolioValue();
                     days = 365;
@@ -482,7 +488,12 @@ public class GraphUpdateService : IGraphUpdateService
         var nrOfPointsAdded = 0;
         try
         {
-            var dates = dataByIds.First().DataPoints.Select(x => x.Date).ToList();
+            //var dates = dataByIds.First().DataPoints.Select(x => x.Date).ToList();
+            var dates = dataByIds
+                .MaxBy(x => x.DataPoints.Count)?
+                .DataPoints
+                .Select(x => x.Date)
+                .ToList() ?? new List<DateOnly>();
 
             foreach (var date in dates)
             {
@@ -724,6 +735,105 @@ public class GraphUpdateService : IGraphUpdateService
            App.UpdateSemaphore.Release();
         }
     }
+
+    private async Task<int> GetDaysBasedOnOldestMarketChartData()
+    {
+   
+        try
+        {
+            if (!Directory.Exists(AppConstants.ChartsFolder))
+            {
+                Logger.Warning(
+                    "MarketCharts folder does not exist: {ChartsFolder}",
+                    AppConstants.ChartsFolder);
+
+                return 0;
+            }
+
+            DateOnly oldestDate = DateOnly.MaxValue;
+
+            IEnumerable<string> marketChartFiles = Directory.EnumerateFiles(
+                AppConstants.ChartsFolder,
+                "MarketChart_*.json",
+                SearchOption.TopDirectoryOnly);
+
+            foreach (string fileName in marketChartFiles)
+            {
+                try
+                {
+                    await using FileStream stream = File.OpenRead(fileName);
+
+                    decimal?[][]? prices =
+                        await System.Text.Json.JsonSerializer.DeserializeAsync<decimal?[][]>(stream);
+
+                    if (prices is null)
+                    {
+                        continue;
+                    }
+
+                    foreach (decimal?[]? pricePoint in prices)
+                    {
+                        if (pricePoint is null ||
+                            pricePoint.Length == 0 ||
+                            !pricePoint[0].HasValue)
+                        {
+                            continue;
+                        }
+                        decimal timestamp = pricePoint[0].Value;
+
+                        if (timestamp <= 0)
+                        {
+                            continue;
+                        }
+
+                        DateTime pointDate = DateTime.UnixEpoch
+                            .AddMilliseconds((double)timestamp)
+                            .Date;
+
+                        DateOnly date = DateOnly.FromDateTime(pointDate);
+
+                        if (date < oldestDate)
+                        {
+                            oldestDate = date;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // One corrupt market-chart file should not prevent the other
+                    // market-chart files from being scanned.
+                    Logger.Warning(
+                        ex,
+                        "Could not scan market-chart file {FileName}",
+                        fileName);
+                }
+            }
+
+            if (oldestDate == DateOnly.MaxValue)
+            {
+                return 0;
+            }
+
+            int days = DateTime.UtcNow.Date
+                .Subtract(oldestDate.ToDateTime(TimeOnly.MinValue))
+                .Days + 1;
+
+            Logger.Information(
+                "Oldest market-chart data point is {OldestDate}; using {Days} days",
+                oldestDate,
+                days);
+
+            return Math.Max(days, 0);
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(
+                ex,
+                "GetDaysBasedOnOldestMarketChartData failed. Returned 0 days");
+
+            return 0;
+        }
+    }
     private async Task<int> GetDaysBasedOnOldestTransaction()
     {
         await App.UpdateSemaphore.WaitAsync();
@@ -907,7 +1017,100 @@ public class GraphUpdateService : IGraphUpdateService
         return await Task.FromResult(checkedChart);
     }
 
+    private async Task DebugMarketChartDates()
+    {
+        Debug.WriteLine("----- Market-chart date diagnostics -----");
+        Debug.WriteLine($"Folder: {AppConstants.ChartsFolder}");
 
+        if (!Directory.Exists(AppConstants.ChartsFolder))
+        {
+            Debug.WriteLine("MarketCharts folder does not exist.");
+            return;
+        }
+
+        IEnumerable<string> files = Directory.EnumerateFiles(
+            AppConstants.ChartsFolder,
+            "MarketChart_*.json",
+            SearchOption.TopDirectoryOnly);
+
+        foreach (string fileName in files)
+        {
+            try
+            {
+                await using FileStream stream = File.OpenRead(fileName);
+
+                decimal?[][]? prices =
+                    await System.Text.Json.JsonSerializer.DeserializeAsync<decimal?[][]>(stream);
+
+                decimal? rawOldestTimestamp = null;
+                decimal? validOldestTimestamp = null;
+                int invalidTimestampCount = 0;
+                int pointCount = prices?.Length ?? 0;
+
+                if (prices is not null)
+                {
+                    foreach (decimal?[]? pricePoint in prices)
+                    {
+                        if (pricePoint is null ||
+                            pricePoint.Length == 0 ||
+                            !pricePoint[0].HasValue)
+                        {
+                            invalidTimestampCount++;
+                            continue;
+                        }
+
+                        decimal timestamp = pricePoint[0].Value;
+
+                        if (!rawOldestTimestamp.HasValue ||
+                            timestamp < rawOldestTimestamp.Value)
+                        {
+                            rawOldestTimestamp = timestamp;
+                        }
+
+                        if (timestamp <= 0)
+                        {
+                            invalidTimestampCount++;
+                            continue;
+                        }
+
+                        if (!validOldestTimestamp.HasValue ||
+                            timestamp < validOldestTimestamp.Value)
+                        {
+                            validOldestTimestamp = timestamp;
+                        }
+                    }
+                }
+
+                string rawDate = rawOldestTimestamp.HasValue
+                    ? DateTime.UnixEpoch
+                        .AddMilliseconds((double)rawOldestTimestamp.Value)
+                        .ToString("yyyy-MM-dd HH:mm:ss")
+                    : "none";
+
+                string validDate = validOldestTimestamp.HasValue
+                    ? DateTime.UnixEpoch
+                        .AddMilliseconds((double)validOldestTimestamp.Value)
+                        .ToString("yyyy-MM-dd HH:mm:ss")
+                    : "none";
+
+                Debug.WriteLine(
+                    $"{Path.GetFileName(fileName)} | " +
+                    $"Points: {pointCount} | " +
+                    $"Raw oldest timestamp: {rawOldestTimestamp?.ToString() ?? "none"} | " +
+                    $"Raw oldest date: {rawDate} | " +
+                    $"Valid oldest timestamp: {validOldestTimestamp?.ToString() ?? "none"} | " +
+                    $"Valid oldest date: {validDate} | " +
+                    $"Invalid timestamps: {invalidTimestampCount}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    $"{Path.GetFileName(fileName)} | ERROR | {ex.Message}");
+            }
+        }
+
+        Debug.WriteLine("----- End market-chart date diagnostics -----");
+    }
 
 }
 

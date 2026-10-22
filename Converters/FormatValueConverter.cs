@@ -29,7 +29,7 @@ public class FormatValueToString : IValueConverter
                 return null;
 
             // If your App exposes a ServiceProvider property (common pattern), try to resolve Settings:
-            var prop = app.GetType().GetProperty("Services", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+            var prop = app.GetType().GetProperty("Container", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
             var services = prop?.GetValue(app) as IServiceProvider;
             if (services != null)
                 return services.GetService(typeof(Settings)) as Settings;

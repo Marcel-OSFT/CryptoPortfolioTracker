@@ -1359,8 +1359,8 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <target state="final">dagelijkse RSI</target>
         </trans-unit>
         <trans-unit id="HeatMapView_Target_YAxisTitle" translate="yes" xml:space="preserve">
-          <source>Distance to Profit Take Level [%]</source>
-          <target state="final">Afstand tot target [%]</target>
+          <source>Distance to Target Level [%]</source>
+          <target state="translated">Afstand tot target [%]</target>
         </trans-unit>
         <trans-unit id="HeatMapView_Rsi_YAxisTitle" translate="yes" xml:space="preserve">
           <source>daily RSI</source>
@@ -1865,6 +1865,28 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
         <trans-unit id="Settings_MaxPieCoins.Header" translate="yes" xml:space="preserve">
           <source>Maximum number of coins in the Portfolio Pie Chart</source>
           <target state="translated">Maximaal aantal munten in de portefeuille-cirkeldiagram</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_NetProfitLossPerc.Text" translate="yes" xml:space="preserve">
+          <source>net P/L %</source>
+          <target state="final">netto W/V %</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_NetProfitLossPerc.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>100% * (Market value - Net Investment)/Net Investment
+(∞ when Net Investment ≤ 0)</source>
+          <target state="translated">100% * (Marktwaarde - Netto Investering)/Netto Investering
+(∞ wanneer netto investering ≤ 0)</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_ProfitLossPerc.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>100% * (Market value - Cost Base)/Cost Base</source>
+          <target state="translated">100% * (Marktwaarde - Aankoopwaarde)/Aankoopwaarde</target>
+        </trans-unit>
+        <trans-unit id="AssetsLV_ProfitLoss.ToolTipService.ToolTip" translate="yes" xml:space="preserve">
+          <source>Market value - Cost Base</source>
+          <target state="translated">Marktwaarde - Aankoopwaarde</target>
+        </trans-unit>
+        <trans-unit id="HeatMapView_BreakEven_YAxisTitle" translate="yes" xml:space="preserve">
+          <source>Distance to Break-Even Level [%]</source>
+          <target state="translated">Afstand tot break-even [%]</target>
         </trans-unit>
       </group>
     </body>

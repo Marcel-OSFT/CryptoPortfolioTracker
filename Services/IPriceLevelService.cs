@@ -32,7 +32,8 @@ public interface IPriceLevelService
     public Task<Either<Error,Coin>> ResetPriceLevels(Coin coin);
 
     public Task<Either<Error,Coin>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels);
-    Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(int selectedHeatMapIndex);
+    Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(BubbleMap bubbleMap);
+    //Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(int selectedHeatMapIndex);
     void UpdateHeatMap();
     void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
     Portfolio GetPortfolio();

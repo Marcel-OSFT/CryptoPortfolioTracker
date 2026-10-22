@@ -1403,4 +1403,20 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Settings_MaxPieCoins.Header" xml:space="preserve">
     <value>Maximaal aantal munten in de portefeuille-cirkeldiagram</value>
   </data>
+  <data name="AssetsLV_NetProfitLossPerc.Text" xml:space="preserve">
+    <value>netto W/V %</value>
+  </data>
+  <data name="AssetsLV_NetProfitLossPerc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>100% * (Marktwaarde - Netto Investering)/Netto Investering
+(∞ wanneer netto investering ≤ 0)</value>
+  </data>
+  <data name="AssetsLV_ProfitLossPerc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>100% * (Marktwaarde - Aankoopwaarde)/Aankoopwaarde</value>
+  </data>
+  <data name="AssetsLV_ProfitLoss.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Marktwaarde - Aankoopwaarde</value>
+  </data>
+  <data name="HeatMapView_BreakEven_YAxisTitle" xml:space="preserve">
+    <value>Afstand tot break-even [%]</value>
+  </data>
 </root>

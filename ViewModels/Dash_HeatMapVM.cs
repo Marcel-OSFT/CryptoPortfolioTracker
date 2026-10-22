@@ -18,17 +18,16 @@ namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class DashboardViewModel : BaseViewModel
 {
-    public static double[] SeparatorsTarget = new double[5];
-    public static double[] SeparatorsRsi = new double[5];
-    public static double[] SeparatorsEma = new double[5];
     private ObservableCollection<HeatMapPoint> HeatMapPoints = new();
 
     private double bubbleSizeMax = 100;
     private double bubbleSizeMin = 1;
+    private const double BreakEvenMinimum = -1050;
 
     [ObservableProperty] public int selectedHeatMapIndex = -1;
     [ObservableProperty] public string maRbContent = string.Empty;
     [ObservableProperty] public string rsiRbContent = string.Empty;
+    [ObservableProperty] public string breakEvenRbContent = string.Empty;
     
     async partial void OnSelectedHeatMapIndexChanged(int oldValue, int newValue)
     {
@@ -49,190 +48,87 @@ public partial class DashboardViewModel : BaseViewModel
     {
         new Axis
         {
-           // MinLimit = 0,
             Labeler = value => string.Empty,
         }
     };
 
-    public RectangularSection[] sectionsTarget = new RectangularSection[]
-    {
-        new()
-        {
-            // creates a section from 3 to 4 in the y axis
-            Yi = 0,
-            Yj = 0,
-            //Fill = new SolidColorPaint(new SKColor(180,207,186)),
-            Fill = new SolidColorPaint(SKColors.DarkOliveGreen.WithAlpha(100)),
+    public BubbleMap TargetBubbleMap { get; } = new(
+        0,
+        BubbleMapType.Target,
+        "Target Bubbles",
+        "HeatMapView_Target_YAxisTitle",
+        -100,
+        10,
+        SKColors.DarkOliveGreen);
 
-        },
-    };
+    public BubbleMap BreakEvenBubbleMap { get; } = new(
+        3,
+        BubbleMapType.BreakEven,
+        "Break-Even Bubbles",
+        "HeatMapView_BreakEven_YAxisTitle",
+        -1100,
+        100,
+        SKColors.DarkOliveGreen);
 
-    public RectangularSection[] sectionsRsi = new RectangularSection[]
-        {
-        new()
-        {
-            // creates a section from 3 to 4 in the y axis
-            Yi = 0,
-            Yj = 0,
-            //Fill = new SolidColorPaint(new SKColor(180,207,186)),
-            Fill = new SolidColorPaint(SKColors.DarkOliveGreen.WithAlpha(100)),
+    public BubbleMap RsiBubbleMap { get; } = new(
+        1,
+        BubbleMapType.Rsi,
+        "RSI Bubbles",
+        "HeatMapView_Rsi_YAxisTitle",
+        0,
+        100,
+        SKColors.DarkOliveGreen);
 
-        },
+    public BubbleMap MaBubbleMap { get; } = new(
+        2,
+        BubbleMapType.Ma,
+        "MA Bubbles",
+        "HeatMapView_Ema_YAxisTitle",
+        -50,
+        10,
+        SKColors.DarkRed);
+
+    private BubbleMap ActiveBubbleMap =>
+        SelectedHeatMapIndex switch
+        {
+            0 => TargetBubbleMap,
+            1 => RsiBubbleMap,
+            2 => MaBubbleMap,
+            3 => BreakEvenBubbleMap,
+            _ => TargetBubbleMap
         };
 
-    public RectangularSection[] sectionsEma = new RectangularSection[]
-    {
-        new()
-        {
-            // creates a section from 3 to 4 in the y axis
-            Yi = 0,
-            Yj = 0,
-            //Fill = new SolidColorPaint(new SKColor(180,207,186)),
-            Fill = new SolidColorPaint(SKColors.DarkRed.WithAlpha(100)),
-
-        },
-    };
-
-    public Axis[] yAxesTarget = new Axis[]
-    {
-        new Axis
-        {
-            MinLimit=-100,
-            MaxLimit=10,
-            Name = loc.GetLocalizedString("HeatMapView_Target_YAxisTitle"),
-            NamePadding = new LiveChartsCore.Drawing.Padding(0, 0),
-
-            NamePaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-            },
-            NameTextSize = 15,
-            TextSize = 12,
-            LabelsPaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-                FontFamily = "Times New Roman",
-                SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-            },
-            Padding =  new LiveChartsCore.Drawing.Padding(1),
-            Labeler = value => string.Format("{0:N0}", value),
-            SeparatorsPaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-                StrokeThickness = 1
-            },
-        }
-
-    };
-
-    public Axis[] yAxesRsi = new Axis[]
-    {
-        new Axis
-        {
-            MinLimit=0,
-            MaxLimit=100,
-            Name = loc.GetLocalizedString("HeatMapView_Rsi_YAxisTitle"),
-            NamePadding = new LiveChartsCore.Drawing.Padding(0, 0),
-
-            NamePaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-            },
-            NameTextSize = 15,
-            TextSize = 12,
-            LabelsPaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-                FontFamily = "Times New Roman",
-                SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-            },
-            Padding =  new LiveChartsCore.Drawing.Padding(1),
-            Labeler = value => string.Format("{0:N0}", value),
-            SeparatorsPaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-                StrokeThickness = 1
-            },
-        }
-
-    };
-
-    public Axis[] yAxesEma = new Axis[]
-    {
-        new Axis
-        {
-            MinLimit=-50,
-            MaxLimit=10,
-            Name = loc.GetLocalizedString("HeatMapView_Ema_YAxisTitle"),
-            NamePadding = new LiveChartsCore.Drawing.Padding(0, 0),
-
-            NamePaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-            },
-            NameTextSize = 15,
-            TextSize = 12,
-            LabelsPaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-                FontFamily = "Times New Roman",
-                SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-            },
-            Padding =  new LiveChartsCore.Drawing.Padding(1),
-            Labeler = value => string.Format("{0:N0}", value),
-            SeparatorsPaint = new SolidColorPaint
-            {
-                Color = SKColors.DarkGoldenrod,
-                StrokeThickness = 1
-            },
-        }
-
-    };
 
     private void SetCustomSeparatorsAll()
     {
-        SetCustomSeparatorsMa();
-        SetCustomSeparatorsRsi();
-        SetCustomSeparatorsTarget();
-    }
-    private void SetCustomSeparatorsTarget()
-    {
         var withinRangePerc = AppSettings.WithinRangePerc;
-        //*** Target
-        SeparatorsTarget = new double[] { -100, -50, -1 * withinRangePerc, 0, 100 };
 
-        var targetSection = sectionsTarget.First();
-        targetSection.Yi = SeparatorsTarget[2];
-        targetSection.Yj = SeparatorsTarget[3];
 
-        var targetAxis = yAxesTarget.First();
-        targetAxis.CustomSeparators = SeparatorsTarget;
+        TargetBubbleMap.Configure(withinRangePerc);
+        BreakEvenBubbleMap.Configure(withinRangePerc);
+        RsiBubbleMap.Configure(withinRangePerc);
+        MaBubbleMap.Configure(withinRangePerc);
     }
-    private void SetCustomSeparatorsRsi()
-    {
-        //*** RSI
-        SeparatorsRsi = new double[] { 0, 30, 50, 70, 100 };
 
-        var rsiSection = sectionsRsi.First();
-        rsiSection.Yi = SeparatorsRsi[1];
-        rsiSection.Yj = SeparatorsRsi[3];
+    //private void SetCustomSeparatorsTarget()
+    //{
+    //    TargetBubbleMap.Configure(AppSettings.WithinRangePerc);
+    //}
 
-        var rsiAxis = yAxesRsi.First();
-        rsiAxis.CustomSeparators = SeparatorsRsi;
-    }
-    private void SetCustomSeparatorsMa()
-    {
-        //*** Ema
-        var withinRangePerc = AppSettings.WithinRangePerc;
-        SeparatorsEma = new double[] { -100, -0.5 * withinRangePerc, 0, 0.5 * withinRangePerc, 100 };
+    //private void SetCustomSeparatorsBreakEven()
+    //{
+    //    BreakEvenBubbleMap.Configure(AppSettings.WithinRangePerc);
+    //}
 
-        var emaSection = sectionsEma.First();
-        emaSection.Yi = SeparatorsEma[1];
-        emaSection.Yj = SeparatorsEma[3];
+    //private void SetCustomSeparatorsRsi()
+    //{
+    //    RsiBubbleMap.Configure(AppSettings.WithinRangePerc);
+    //}
 
-        var emaAxis = yAxesEma.First();
-        emaAxis.CustomSeparators = SeparatorsEma;
-    }
+    //private void SetCustomSeparatorsMa()
+    //{
+    //    MaBubbleMap.Configure(AppSettings.WithinRangePerc);
+    //}
 
 
     /// <summary>   
@@ -247,6 +143,7 @@ public partial class DashboardViewModel : BaseViewModel
             SetCustomSeparatorsAll();
             RsiRbContent = $"1D RSI({AppSettings.RsiPeriod})";
             MaRbContent = $"1D {AppSettings.MaType}({AppSettings.MaPeriod})";
+            BreakEvenRbContent = $"Break-even";
             SelectedHeatMapIndex = AppSettings.HeatMapIndex;
             await _dashboardService.EvaluatePriceLevels();
             await SetSeriesHeatMap(SelectedHeatMapIndex);
@@ -258,35 +155,27 @@ public partial class DashboardViewModel : BaseViewModel
 
     private async Task RefreshHeatMapPoints()
     {
-        
-        if (!SeriesHeatMap.Any())
-        {
-            await SetSeriesHeatMap(SelectedHeatMapIndex);
-        }
-        else
-        {
-            HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(SelectedHeatMapIndex));
-            ObservableCollection<HeatMapPoint> dummyPoints;
-            SetMinMaxY(SelectedHeatMapIndex, out dummyPoints);
-            SeriesHeatMap[0].Values = HeatMapPoints;
-            SeriesHeatMap[1].Values = dummyPoints;
+        BubbleMap bubbleMap = ActiveBubbleMap;
 
-        }
+        SetMinMaxY(bubbleMap, out ObservableCollection<HeatMapPoint> dummyPoints);
+
+        HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(bubbleMap));
+        SeriesHeatMap[0].Values = HeatMapPoints;
+        SeriesHeatMap[1].Values = dummyPoints;
+
     }
 
     private async Task SetSeriesHeatMap(int selectedHeatMapIndex)
     {
         var loc = Localizer.Get();
+        BubbleMap bubbleMap = ActiveBubbleMap;
 
         SolidColorPaint labelColor = AppSettings.AppTheme == ElementTheme.Dark ? new SolidColorPaint(SKColors.White) : new SolidColorPaint(SKColors.Black);
 
-        HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(selectedHeatMapIndex));
-        ObservableCollection<HeatMapPoint> dummyPoints;
-        SetMinMaxY(selectedHeatMapIndex, out dummyPoints);
+        HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(bubbleMap));
 
+        SetMinMaxY(bubbleMap, out ObservableCollection<HeatMapPoint> dummyPoints);
         HasTargets = HeatMapPoints.Count > 0;
-
-        //SeriesHeatMap?.Clear();
 
         SeriesHeatMap = new ObservableCollection<ISeries>
         {
@@ -317,84 +206,91 @@ public partial class DashboardViewModel : BaseViewModel
         };
 
         var serie = SeriesHeatMap.First() as ScatterSeries<HeatMapPoint>;
-        if (selectedHeatMapIndex == 0)
-        {
-            serie.YToolTipLabelFormatter = (point) => $"{point.Model!.Label} {point.Model!.Y:N2} % ({point.Model!.Weight:N1} % of Portfolio)";
-        }
-        else if (selectedHeatMapIndex == 1)
-        {
-            serie.YToolTipLabelFormatter = (point) => $"{point.Model!.Label}  RSI: {point.Model!.Y:N2}";
-        }
-        else
-        {
-            serie.YToolTipLabelFormatter = (point) => $"{point.Model!.Label}  Dist to EMA: {point.Model!.Y:N2} %";
-        }
+
+        serie.YToolTipLabelFormatter = point => bubbleMap.FormatTooltip(point.Model!);
+
         return;
 
     }
 
-    private void SetMinMaxY(int selectedHeatMapIndex, out ObservableCollection<HeatMapPoint> dummyPoints)
+    private void SetMinMaxY(BubbleMap bubbleMap, out ObservableCollection<HeatMapPoint> dummyPoints)
     {
-        //*** Introduce dummyPoints for a second (not-visible) serie to force Bubble Geometry for weight 100
-        //*** and MinGeometry to weight 1. In this way interpolation is in range 1 to 100.
-        //*** example: 3 almost equal weights will now return in also 3 almost equal sized bubbels.
+        // Introduce dummy points for a second invisible series.
+        // This forces bubble geometry interpolation between weight 1 and 100.
+        double dummyY = bubbleMap.Type == BubbleMapType.BreakEven
+            ? BreakEvenMinimum
+            : -150;
+
         HeatMapPoint dummyMax = new()
         {
             X = 0,
-            Y = -150,
+            Y = dummyY,
             Weight = 100
         };
 
         HeatMapPoint dummyMin = new()
         {
             X = 0,
-            Y = -150,
+            Y = dummyY,
             Weight = 1
         };
 
-        dummyPoints = new ObservableCollection<HeatMapPoint>() { dummyMin, dummyMax };
-        if (HeatMapPoints is null || HeatMapPoints.Count == 0) return;
+        dummyPoints =
+        [
+            dummyMin,
+        dummyMax
+        ];
 
-        if (selectedHeatMapIndex == 0) //*** Target
+        if (HeatMapPoints is null || HeatMapPoints.Count == 0)
         {
-            var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
-
-            YAxesHeatMap.First().MaxLimit = maxYValuePoint?.Y > 10 ? maxYValuePoint.Y + 10 : 10;
-
-            //*** Normalize the value to a multiple of 10
-            YAxesHeatMap.First().MaxLimit = ((double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) + 1) * 10;
-            var separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
-
-            var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
-            separators[^1] = (double)maxLimit;
-            YAxesHeatMap.First().CustomSeparators = separators;
+            return;
         }
-        else if (selectedHeatMapIndex == 2) //*** EMA
+
+        Axis axis = bubbleMap.YAxes.First();
+
+        if (bubbleMap.Type == BubbleMapType.Target)
         {
-            var maxYValuePoint = HeatMapPoints.OrderByDescending(x => x.Y).FirstOrDefault();
+            HeatMapPoint? maxYValuePoint = HeatMapPoints
+                .OrderByDescending(point => point.Y)
+                .FirstOrDefault();
 
-            YAxesHeatMap.First().MaxLimit = maxYValuePoint?.Y > 10 ? maxYValuePoint.Y + 10 : 10;
+            double maxLimit = (double)(maxYValuePoint is not null && maxYValuePoint.Y > 10
+                ? maxYValuePoint.Y + 10
+                : 10);
 
-            //*** Normalize the value to a multiple of 10
-            YAxesHeatMap.First().MaxLimit = ((double)Math.Floor((decimal)(YAxesHeatMap.First().MaxLimit ?? 0) / 10) + 1) * 10;
-            var separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
+            axis.MaxLimit = (Math.Floor(maxLimit / 10) + 1) * 10;
 
-            var maxLimit = YAxesHeatMap.First().MaxLimit ?? 0;
-            separators[^1] = (double)maxLimit;
-            YAxesHeatMap.First().CustomSeparators = separators;
+            double[] separators = bubbleMap.Separators.ToArray();
+            separators[^1] = axis.MaxLimit.Value;
+            axis.CustomSeparators = separators;
+        }
+        else if (bubbleMap.Type == BubbleMapType.Ma)
+        {
+            HeatMapPoint? maxYValuePoint = HeatMapPoints
+                .OrderByDescending(point => point.Y)
+                .FirstOrDefault();
 
-            //*** likewise for the min value
-            var minYValuePoint = HeatMapPoints.OrderBy(x => x.Y).FirstOrDefault();
+            double maxLimit = (double)(maxYValuePoint is not null && maxYValuePoint.Y > 10
+                ? maxYValuePoint.Y + 10
+                : 10);
 
-            YAxesHeatMap.First().MinLimit = minYValuePoint?.Y < -10 ? minYValuePoint.Y - 10 : -10;
+            axis.MaxLimit = (Math.Floor(maxLimit / 10) + 1) * 10;
 
-            //*** Normalize the value to a multiple of 10
-            YAxesHeatMap.First().MinLimit = (double)Math.Floor((decimal)(YAxesHeatMap.First().MinLimit ?? 0) / 10) * 10;
-            separators = YAxesHeatMap.First().CustomSeparators?.ToArray() ?? Array.Empty<double>();
+            double[] separators = bubbleMap.Separators.ToArray();
+            separators[^1] = axis.MaxLimit.Value;
 
-            var minLimit = YAxesHeatMap.First().MinLimit ?? 0;
-            separators[0] = (double)minLimit;
-            YAxesHeatMap.First().CustomSeparators = separators;
+            HeatMapPoint? minYValuePoint = HeatMapPoints
+                .OrderBy(point => point.Y)
+                .FirstOrDefault();
+
+            double minLimit = (double)(minYValuePoint is not null && minYValuePoint.Y < -10
+                ? minYValuePoint.Y - 10
+                : -10);
+
+            axis.MinLimit = Math.Floor(minLimit / 10) * 10;
+            separators[0] = axis.MinLimit.Value;
+
+            axis.CustomSeparators = separators;
         }
     }
 
@@ -403,7 +299,6 @@ public partial class DashboardViewModel : BaseViewModel
         if (YAxesHeatMap is null) return;
 
         var bubbleScale = Math.Min(Math.Max(e.NewSize.Width / 317, 1), 6);
-        //var bubbleSizeMax = Math.Min(Math.Max(e.NewSize.Width / 12, 20), 200);
         var labelSize = Math.Min(Math.Max(e.NewSize.Width / 70, 10), 18);
 
         YAxesHeatMap.First().TextSize = labelSize;
@@ -428,30 +323,14 @@ public partial class DashboardViewModel : BaseViewModel
         AppSettings.HeatMapIndex = index;
         SelectedHeatMapIndex = index;
 
-        if (SelectedHeatMapIndex == 0)
-        {
-            HeatMapTitle = "Target Bubbles";
-            SectionsHeatMap = sectionsTarget;
-            YAxesHeatMap = yAxesTarget;
-            await SetSeriesHeatMap(SelectedHeatMapIndex);
-        }
-        else if (SelectedHeatMapIndex == 1)
-        {
-            HeatMapTitle = "RSI Bubbles";
-            SectionsHeatMap = sectionsRsi;
-            YAxesHeatMap = yAxesRsi;
-            await SetSeriesHeatMap(SelectedHeatMapIndex);
-        }
-        else
-        {
-            HeatMapTitle = $"MA Bubbles";
-            SectionsHeatMap = sectionsEma;
-            YAxesHeatMap = yAxesEma;
-            await SetSeriesHeatMap(SelectedHeatMapIndex);
-        }
-        
-    }
+        var bubbleMap = ActiveBubbleMap;
 
+        HeatMapTitle = bubbleMap.Title;
+        SectionsHeatMap = bubbleMap.Sections;
+        YAxesHeatMap = bubbleMap.YAxes;
+
+        await SetSeriesHeatMap(index);
+    }
 
 
 

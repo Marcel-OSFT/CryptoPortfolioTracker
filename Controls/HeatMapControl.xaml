@@ -284,6 +284,7 @@
                     <RadioButton l:Uids.Uid="HeatMapType_Target" Style="{StaticResource CustomRadioButtonStyle}"/>
                     <RadioButton Content="{Binding RsiRbContent}" Style="{StaticResource CustomRadioButtonStyle}"/>
                     <RadioButton Content="{Binding MaRbContent}" Style="{StaticResource CustomRadioButtonStyle}"/>
+                    <RadioButton Content="{Binding BreakEvenRbContent}" Style="{StaticResource CustomRadioButtonStyle}"/>
                 </RadioButtons>
             </StackPanel>
 

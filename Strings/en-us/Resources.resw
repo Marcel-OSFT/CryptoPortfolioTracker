@@ -990,7 +990,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>'Close To' Threshold percentage</value>
   </data>
   <data name="HeatMapView_Target_YAxisTitle" xml:space="preserve">
-    <value>Distance to Profit Take Level [%]</value>
+    <value>Distance to Target Level [%]</value>
   </data>
   <data name="HeatMapView.Text" xml:space="preserve">
     <value>Target Bubbels</value>
@@ -1510,5 +1510,21 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   </data>
   <data name="Settings_DashBoard_RsiPeriod.Header" xml:space="preserve">
     <value>RSI Period</value>
+  </data>
+  <data name="AssetsLV_NetProfitLossPerc.Text" xml:space="preserve">
+    <value>net P/L %</value>
+  </data>
+  <data name="AssetsLV_NetProfitLossPerc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>100% * (Market value - Net Investment)/Net Investment
+(∞ when Net Investment ≤ 0)</value>
+  </data>
+  <data name="AssetsLV_ProfitLossPerc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>100% * (Market value - Cost Base)/Cost Base</value>
+  </data>
+  <data name="AssetsLV_ProfitLoss.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Market value - Cost Base</value>
+  </data>
+  <data name="HeatMapView_BreakEven_YAxisTitle" xml:space="preserve">
+    <value>Distance to Break-Even Level [%]</value>
   </data>
 </root>
