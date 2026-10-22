@@ -223,10 +223,19 @@ public partial class DashboardViewModel : BaseViewModel
     {
         MaRbContent = $"1D {AppSettings.MaType}({AppSettings.MaPeriod})";
         await _dashboardService.CalculateMaAllCoins();
-        if (SelectedHeatMapIndex == 2) 
+        if (SelectedHeatMapIndex == 2)
         {
-            SetCustomSeparatorsMa();
-            await RefreshHeatMapPoints(); 
+            //SetCustomSeparatorsMa();
+            await RefreshHeatMapPoints();
+        }
+    }
+    public async Task RefreshBreakEvenBubbles()
+    {
+       // await _dashboardService.CalculateMaAllCoins();
+        if (SelectedHeatMapIndex == 3)
+        {
+            //SetCustomSeparatorsMa();
+            await RefreshHeatMapPoints();
         }
     }
 
@@ -241,10 +250,10 @@ public partial class DashboardViewModel : BaseViewModel
 
     public async Task RefreshTargetBubbles()
     {
-        RsiRbContent = $"1D RSI({AppSettings.RsiPeriod})";
+        //RsiRbContent = $"1D RSI({AppSettings.RsiPeriod})";
         if (SelectedHeatMapIndex == 0) 
         {
-            SetCustomSeparatorsTarget();
+            //SetCustomSeparatorsTarget();
             await _dashboardService.EvaluatePriceLevels();
             await SetSeriesHeatMap(SelectedHeatMapIndex);
         }

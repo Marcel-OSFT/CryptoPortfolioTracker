@@ -264,6 +264,12 @@ public sealed partial class AssetsViewModel : BaseViewModel
         SortList(sortingOrder, x => x.ProfitLossPerc);
     }
 
+    [RelayCommand]
+    public void SortOnNetPnLPerc(SortingOrder sortingOrder)
+    {
+        SortList(sortingOrder, x => x.NetProfitLossPerc);
+    }
+
     private void SortList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
     {
         currentSortFunc = sortFunc;

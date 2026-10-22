@@ -14,12 +14,15 @@ public class HeatMapPoint : WeightedPoint
 {
     public HeatMapPoint()
     {
-       Label=string.Empty;
+        Label=string.Empty;
+        RealYValue = 0;
     }
 
     //public ObservablePoint Point { get; set;}
 
-    public string Label  { get; set; }
+    public string Label { get; set; }
+    public double RealYValue { get; set; }
+
 }
 
 

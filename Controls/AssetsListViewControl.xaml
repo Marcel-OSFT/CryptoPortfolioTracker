@@ -221,6 +221,21 @@
                 Command="{Binding SortOnPnLPercCommand}"
                 CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
                 />
+            <local:ColumnHeaderButton 
+                Visibility="{x:Bind converters:Functions.TrueToVisible(IsShowingNetInvestment), Mode=OneWay}"
+                x:Name="NettPnlPercHeader"
+                l:Uids.Uid="AssetsLV_NetProfitLossPerc" 
+                IsEnabled="{x:Bind converters:Functions.InvertBool(IsAssetsExtendedView), Mode=OneWay}" 
+                Margin="0,0,0,0"
+                FontSize="12"
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                HorizontalTextAlignment="Right"
+                PointerHoverColor="Goldenrod"
+                Group="{Binding SortGroup}"
+                Command="{Binding SortOnNetPnLPercCommand}"
+                CommandParameter="{Binding Path=SortingOrder, RelativeSource={RelativeSource Self}}"
+                />
         </StackPanel>
 
 
@@ -327,6 +342,11 @@
                                                 Text="{x:Bind converters:Functions.FormatValueToString(ProfitLossPerc,'{0:0.00} %'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtProfitLoss" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"
                                                 Foreground="{x:Bind converters:Functions.DoubleToColour(ProfitLossPerc,''), Mode=OneWay}"/>
+                                            <TextBlock Name="txtNettProfitLossPerc" 
+                                                Text="{x:Bind converters:Functions.FormatNetProfitLossPercToString(NetProfitLossPerc,'{0:0.00} %'), Mode=OneWay}" 
+                                                RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtProfitLossPerc" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"
+                                                Visibility="{x:Bind BtnNetInvestment.Visibility, Mode=OneWay}"
+                                                Foreground="{x:Bind converters:Functions.DoubleToColour(NetProfitLossPerc,''), Mode=OneWay}"/>
                                         </RelativePanel>
                                     </Border>
                                 </Grid>
