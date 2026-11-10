@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Helpers;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
 using Microsoft.UI;
@@ -90,7 +90,7 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
         {
             try
             {
-                if (listView.SelectedItem is AssetTotals asset)
+                if (listView.SelectedItem is AssetTotalsDisplay asset)
                 {
                     selectedItemIndex = listView.SelectedIndex;
 
@@ -120,9 +120,9 @@ public partial class AssetsListViewControl : UserControl, INotifyPropertyChanged
 
         if (listView != null && viewModel != null && viewModel.IsAssetsExtendedView)
         {
-            if (viewModel.selectedAsset != null && listView.SelectedItem != viewModel.selectedAsset)
+            if (viewModel.SelectedAsset != null && listView.SelectedItem != viewModel.SelectedAsset)
             {
-                listView.SelectedItem = viewModel.selectedAsset;
+                listView.SelectedItem = viewModel.SelectedAsset;
 
             }
             listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);

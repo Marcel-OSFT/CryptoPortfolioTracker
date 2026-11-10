@@ -27,24 +27,26 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,5,10" VerticalAlignment="Stretch" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="110"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="120"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <controls:HomePageHeaderImage Grid.Row="0" Grid.RowSpan="3" Height="265" VerticalAlignment="Top"/>
-            <RelativePanel>
-                <TextBlock AutomationProperties.AutomationId="__ClickableAreaTextBlock" />
-                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod" Margin="36,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding PortfolioName}"  Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" RelativePanel.Below="smallHeaderText" />
-                <TextBlock l:Uids.Uid="Library_Title" x:Name="txtCoinLibrary" Margin="36,5,0,0" Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" RelativePanel.Below="txtPortfolio" />
-                <TextBlock x:Name="txtCount" Text="{x:Bind converters:Functions.AddPrefixAndSuffixToString(_viewModel.CoinsCount,' \(','\)'), Mode=OneWay}" 
-                    Margin="0,8,0,0" 
-                    Foreground="DarkGoldenrod" 
-                    Style="{StaticResource SubSampleHeaderTextStyle}" 
-                    RelativePanel.Below="txtPortfolio" RelativePanel.RightOf="txtCoinLibrary" />
-            </RelativePanel>
-            <TextBlock l:Uids.Uid="Library_Explainer" Grid.Row="1" VerticalAlignment="Bottom" Style="{StaticResource ExplainerTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"> </TextBlock>
-            <Border Grid.Row="2" VerticalAlignment="Stretch" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <!--<ColumnDefinition Width="*"/>-->
+            </Grid.ColumnDefinitions>
+
+            <controls:PortfolioHeaderControl
+                x:Name="PortfolioHeader"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                PortfolioName="{Binding PortfolioName}"
+                ViewTitle="{Binding ViewTitle}"
+                ItemCountText="{x:Bind converters:Functions.AddPrefixAndSuffixToString(_viewModel.CoinsCount,' \(','\)'), Mode=OneWay}"
+                ExplainerText="{Binding ExplainerText}"
+                ShowPortfolioTotals="False"/>
+
+
+            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" VerticalAlignment="Stretch">
                 <Grid Name="LibraryContent" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>

@@ -1,13 +1,14 @@
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public partial class PortfolioSettingsDialog : ContentDialog
+public partial class PortfolioSettingsDialog : BaseDialog, IDialog<bool>
 {
-    private readonly ILocalizer loc = Localizer.Get();
+    public bool Result { get; private set; } = true;
     private readonly AssetsViewModel _viewModel;
     [ObservableProperty] bool isCardExpanded;
     [ObservableProperty] bool isCardEnabled;
-
+    [ObservableProperty] private bool isScrollBarsExpanded;
+    partial void OnIsScrollBarsExpandedChanged(bool value) => _viewModel.AppSettings.IsScrollBarsExpanded = value;
     [ObservableProperty]
     private bool isHidingZeroBalances;
     partial void OnIsHidingZeroBalancesChanged(bool value) => _viewModel.AppSettings.IsHidingZeroBalances = value;
@@ -26,16 +27,6 @@ public partial class PortfolioSettingsDialog : ContentDialog
         SetDialogTitleAndButtons();
         InitializeFields();
     }
-
-    private async void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        var theme = _viewModel.AppSettings.AppTheme;
-        if (sender.ActualTheme != theme)
-        {
-            sender.RequestedTheme = theme;
-        }
-    }
-
     private void InitializeFields()
     {
         var numberFormat = _viewModel.AppSettings.NumberFormat;
@@ -51,9 +42,6 @@ public partial class PortfolioSettingsDialog : ContentDialog
         PrimaryButtonText = loc.GetLocalizedString("Common_CloseButton");
         IsPrimaryButtonEnabled = true;
     }
-
-
-
 
 }
 

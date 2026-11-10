@@ -20,6 +20,7 @@ public class UserPreferences
         }
         numberFormat = new NumberFormatInfo();
         numberFormat = CultureInfo.CurrentUICulture.NumberFormat;
+        currency = "usd";
 
         closeToPerc = 5;
         withinRangePerc = 20;
@@ -133,6 +134,18 @@ public class UserPreferences
             if (value.ToLower() != appCultureLanguage.ToLower())
             {
                 appCultureLanguage = value.ToLower();
+            }
+        }
+    }
+    private string currency = string.Empty;
+    public string Currency
+    {
+        get => currency;
+        set
+        {
+            if (value.ToLower() != currency.ToLower())
+            {
+                currency = value.ToLower();
             }
         }
     }
@@ -284,12 +297,6 @@ public class UserPreferences
             }
         }
     }
-
-
-
-
-
-
 
 
 }

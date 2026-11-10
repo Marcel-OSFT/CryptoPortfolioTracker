@@ -278,9 +278,9 @@
                 <FontIcon Glyph="{Binding Glyph}" FontFamily="Segoe Fluent Icons" FontWeight="Normal" Width="20"/>
             </helpers:CustomBtn>
 
-            <StackPanel Grid.Row="0" RelativePanel.AlignRightWithPanel="True">
-                <RadioButtons l:Uids.Uid="HeatMap_Type" x:Name="rbtHeatMap" TabIndex="0" Style="{StaticResource MK_RButtonsStyle}"  
-                              FontWeight="SemiBold" SelectionChanged="HeatMapType_SelectionChanged" Margin="0,10,0,0" SelectedIndex="{Binding SelectedHeatMapIndex, Mode=TwoWay}">
+            <StackPanel Grid.Row="0" RelativePanel.AlignRightWithPanel="True" Orientation="Horizontal" Margin="0,20,0,0" >
+                <RadioButtons l:Uids.Uid="HeatMap_Type" x:Name="rbtHeatMap" TabIndex="0" Style="{StaticResource MK_RButtonsStyle}"
+                              FontWeight="SemiBold" SelectionChanged="HeatMapType_SelectionChanged" MaxColumns="2" Margin="0,10,0,0" SelectedIndex="{Binding SelectedHeatMapIndex, Mode=TwoWay}">
                     <RadioButton l:Uids.Uid="HeatMapType_Target" Style="{StaticResource CustomRadioButtonStyle}"/>
                     <RadioButton Content="{Binding RsiRbContent}" Style="{StaticResource CustomRadioButtonStyle}"/>
                     <RadioButton Content="{Binding MaRbContent}" Style="{StaticResource CustomRadioButtonStyle}"/>

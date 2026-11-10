@@ -69,6 +69,7 @@ public class PreferencesService
 
         // Number formatting and display
         _settings.NumberFormat = userPreferences.NumberFormat;
+        _settings.Currency = userPreferences.Currency;
         _settings.FontSize = userPreferences.FontSize;
         _settings.AreValuesMasked = userPreferences.AreValuesMasked;
 

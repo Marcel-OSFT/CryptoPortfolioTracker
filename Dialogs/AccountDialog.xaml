@@ -1,43 +1,64 @@
-<ContentDialog
+<local:BaseDialog
     x:Class="CryptoPortfolioTracker.Dialogs.AccountDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:local="using:CryptoPortfolioTracker" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CryptoPortfolioTracker.Dialogs"
     xmlns:l="using:WinUI3Localizer"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     Title="Add a new Account"
-    Loading="Dialog_Loading"
     DefaultButton="Primary"
     PrimaryButtonClick="Button_Click_AcceptAccount">
 
-    <ContentDialog.Resources>
-        <!-- Overriding ContentDialogMaxWidth value -->
-        <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
-    </ContentDialog.Resources>
+    <local:BaseDialog.Resources>
+        <x:Double x:Key="ContentDialogMaxWidth">600</x:Double>
+    </local:BaseDialog.Resources>
 
-    <Grid  Margin="0,0,0,0" Width="600">
+    <Grid MinWidth="400" MaxWidth="520">
         <Grid.RowDefinitions>
-            <RowDefinition Height="70"/>
-            <RowDefinition Height="200"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" MaxWidth="600"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
-            <StackPanel.Background>
-                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
-            </StackPanel.Background>
-            <TextBox l:Uids.Uid="AccountDialog_Name" x:Name="txtAccountName" PlaceholderForeground="Wheat" 
-                     TextChanging="AccountName_TextChanging" LosingFocus="AccountName_LosingFocus" Margin="10,0,10,0"></TextBox>
+
+        <!-- Account name -->
+        <StackPanel Grid.Row="0" Spacing="6" Margin="0,4,0,20">
+            <TextBlock
+                l:Uids.Uid="AccountDialog_NameHeader"
+                Style="{StaticResource BodyStrongTextBlockStyle}"/>
+
+            <TextBox
+                l:Uids.Uid="AccountDialog_Name"
+                x:Name="txtAccountName"
+                TextChanging="AccountName_TextChanging"
+                LosingFocus="AccountName_LosingFocus"
+                HorizontalAlignment="Stretch"
+                MinWidth="0"/>
         </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
-            <StackPanel.Background>
-                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
-            </StackPanel.Background>
-            <TextBox l:Uids.Uid="AccountDialog_Description" PlaceholderForeground="Wheat" x:Name="DescriptionText" Margin="10,0,10,0" AutomationProperties.Name="multi-line TextBox" 
-                     TextWrapping="Wrap" AcceptsReturn="True" MinWidth="400" MinHeight="150">
-            </TextBox>
+
+        <!-- Description -->
+        <StackPanel Grid.Row="1" Spacing="6">
+            <TextBlock
+                l:Uids.Uid="AccountDialog_DescriptionHeader"
+                Style="{StaticResource BodyStrongTextBlockStyle}"/>
+
+            <TextBlock
+                l:Uids.Uid="AccountDialog_Description_Explain"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                TextWrapping="Wrap"
+                Opacity="0.75"/>
+
+            <TextBox
+                l:Uids.Uid="AccountDialog_Description"
+                x:Name="DescriptionText"
+             
+                AutomationProperties.Name="Account description"
+                TextWrapping="Wrap"
+                AcceptsReturn="True"
+                VerticalAlignment="Stretch"
+                MinHeight="120"
+                MaxHeight="200"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                ScrollViewer.VerticalScrollMode="Auto"/>
         </StackPanel>
     </Grid>
 
-</ContentDialog>
+</local:BaseDialog>
+

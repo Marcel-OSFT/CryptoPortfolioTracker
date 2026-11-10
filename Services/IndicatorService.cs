@@ -1,33 +1,64 @@
 ﻿using CryptoPortfolioTracker.Infrastructure.Response.Coins;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.Services;
+
+public interface IIndicatorService
+{
+    Task<double> CalculateRsiAsync(Coin coin);
+    Task<double> CalculateMaAsync(Coin coin);
+    double GetRsi(Coin coin);
+    double GetEma(Coin coin);
+}
 
 public class IndicatorService : IIndicatorService
 {
     private readonly Settings _settings;
+
+    // Cache lifetime is service-scoped, not EF-scoped
+    private readonly ConcurrentDictionary<string, List<double>> _closingPricesCache = new();
+    private readonly ConcurrentDictionary<string, DateTime> _closingPricesFileDateCache = new();
+    private readonly ConcurrentDictionary<string, double> _rsiCache = new();
+    private readonly ConcurrentDictionary<string, double> _emaCache = new();
 
     public IndicatorService(Settings settings)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    public async Task CalculateRsiAsync(Coin coin)
+    public double GetRsi(Coin coin)
+    {
+        if (coin is null) throw new ArgumentNullException(nameof(coin));
+        return _rsiCache.TryGetValue(coin.ApiId, out var value) ? value : 0;
+    }
+
+    public double GetEma(Coin coin)
+    {
+        if (coin is null) throw new ArgumentNullException(nameof(coin));
+        return _emaCache.TryGetValue(coin.ApiId, out var value) ? value : 0;
+    }
+
+    public async Task<double> CalculateRsiAsync(Coin coin)
     {
         if (coin is null) throw new ArgumentNullException(nameof(coin));
 
         try
         {
-            var prices = await LoadClosingPricesAsync(coin);
-            prices.Add(coin.Price);
+            var prices = await GetClosingPricesAsync(coin);
+            prices = AppendCurrentPriceForCalculationOnly(prices, coin.Price);
 
             int period = _settings.RsiPeriod;
             if (period == 0 || prices == null || prices.Count < period + 1)
             {
-                coin.Rsi = 0;
-                return;
+                _rsiCache[coin.ApiId] = 0; 
+                return 0;
             }
 
-            var rsiValues = new List<double>();
             var gains = new List<double>();
             var losses = new List<double>();
 
@@ -50,9 +81,8 @@ public class IndicatorService : IIndicatorService
             double avgLoss = losses.Average();
             double alpha = 1.0 / period;
 
-            double rs = avgGain / avgLoss;
-            double rsi = 100 - (100 / (1 + rs));
-            rsiValues.Add(rsi);
+            double rs = avgLoss == 0 ? 0 : avgGain / avgLoss;
+            double rsi = avgLoss == 0 ? 100 : 100 - (100 / (1 + rs));
 
             for (int i = period + 1; i < prices.Count; i++)
             {
@@ -63,16 +93,15 @@ public class IndicatorService : IIndicatorService
                 avgGain = (gain * alpha) + (avgGain * (1 - alpha));
                 avgLoss = (loss * alpha) + (avgLoss * (1 - alpha));
 
-                rs = avgGain / avgLoss;
-                rsi = 100 - (100 / (1 + rs));
-                rsiValues.Add(rsi);
+                rs = avgLoss == 0 ? 0 : avgGain / avgLoss;
+                rsi = avgLoss == 0 ? 100 : 100 - (100 / (1 + rs));
             }
 
-            coin.Rsi = rsiValues.Last();
+            return _rsiCache[coin.ApiId] = rsi;
         }
         catch
         {
-            coin.Rsi = 0;
+            return _rsiCache[coin.ApiId] = 0;
         }
     }
 
@@ -80,131 +109,98 @@ public class IndicatorService : IIndicatorService
     {
         if (coin is null) throw new ArgumentNullException(nameof(coin));
 
-        var prices = await LoadClosingPricesAsync(coin);
-        prices.Add(coin.Price);
-
-        int period = _settings.MaPeriod;
-        string maType = _settings.MaType;
-
-        if (period == 0 || prices == null || prices.Count < period)
-        {
-            coin.Ema = 0;
-            return 0;
-        }
-
-        if (string.Equals(maType, "SMA", StringComparison.OrdinalIgnoreCase))
-        {
-            double smaRecent = prices.TakeLast(period).Average();
-            coin.Ema = smaRecent;
-            UpdatePriceLevelEma(coin);
-            return smaRecent;
-        }
-
-        // EMA calculation
-        double sma = prices.Take(period).Average();
-        double multiplier = 2.0 / (period + 1);
-        double ema = sma;
-
-        for (int i = period; i < prices.Count; i++)
-        {
-            ema = ((prices[i] - ema) * multiplier) + ema;
-        }
-
-        coin.Ema = ema;
-        UpdatePriceLevelEma(coin);
-        return ema;
-    }
-
-    public void EvaluatePriceLevels(Coin coin, double newValue)
-    {
-        if (coin is null) throw new ArgumentNullException(nameof(coin));
-        if (newValue == 0) return;
-
-        var withinRangePerc = _settings.WithinRangePerc;
-        var closeToPerc = _settings.CloseToPerc;
-
-        foreach (var level in coin.PriceLevels)
-        {
-            if (level.Value == 0) continue;
-
-            var dist = (100 * (newValue - level.Value) / level.Value);
-            level.DistanceToValuePerc = dist;
-
-            if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
-                (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
-                (level.Type == PriceLevelType.Stop && newValue <= level.Value) ||
-                (level.Type == PriceLevelType.Ema && newValue <= level.Value))
-            {
-                level.Status = PriceLevelStatus.TaggedPrice;
-                continue;
-            }
-
-            if (dist >= -1 * closeToPerc)
-            {
-                level.Status = PriceLevelStatus.CloseToPrice;
-                continue;
-            }
-
-            if (dist >= -1 * withinRangePerc)
-            {
-                level.Status = PriceLevelStatus.WithinRange;
-                continue;
-            }
-
-            level.Status = PriceLevelStatus.NotWithinRange;
-        }
-
-        // Note: original model invoked OnPropertyChanged(nameof(PriceLevels)).
-        // If UI binding requires a change notification for the collection itself,
-        // caller should raise it (or Coin should expose a method to do so).
-    }
-
-    // --- Helpers ---
-
-    private async Task<List<double>> LoadClosingPricesAsync(Coin coin)
-    {
-        // Loads market chart JSON and returns the recent closing prices (no caching here).
         try
         {
-            var fileName = Path.Combine(AppConstants.ChartsFolder, $"MarketChart_{coin.ApiId}.json");
-            if (!File.Exists(fileName))
-                return new List<double>();
+            var prices = await GetClosingPricesAsync(coin);
+            prices = AppendCurrentPriceForCalculationOnly(prices, coin.Price);
 
-            var suffix = coin.Name.Contains("_pre-listing") ? "-prelisting" : "";
-            var marketChart = new MarketChartById();
-            await marketChart.LoadMarketChartJson(coin.ApiId + suffix);
+            int period = _settings.MaPeriod;
+            string maType = _settings.MaType;
 
-            if (marketChart.Prices?.Length > 0)
-                return marketChart.Prices.TakeLast(150).Select(p => (double)p[1].Value).ToList();
+            if (period == 0 || prices == null || prices.Count < period)
+            {
+                return _emaCache[coin.ApiId] = 0;
+            }
 
-            return new List<double>();
+            if (string.Equals(maType, "SMA", StringComparison.OrdinalIgnoreCase))
+            {
+                double smaRecent = prices.TakeLast(period).Average();
+                return _emaCache[coin.ApiId] = smaRecent;
+            }
+
+            double sma = prices.Take(period).Average();
+            double multiplier = 2.0 / (period + 1);
+            double ema = sma;
+
+            for (int i = period; i < prices.Count; i++)
+            {
+                ema = ((prices[i] - ema) * multiplier) + ema;
+            }
+
+            return _emaCache[coin.ApiId] = ema;
         }
         catch
         {
-            return new List<double>();
+            return _emaCache[coin.ApiId] = 0;
         }
     }
 
-    private void UpdatePriceLevelEma(Coin coin)
+    
+
+    private async Task<List<double>> GetClosingPricesAsync(Coin coin)
     {
-        var priceLevelEma = coin.PriceLevels.FirstOrDefault(p => p.Type == PriceLevelType.Ema);
-        if (priceLevelEma != null)
+        if (coin is null) throw new ArgumentNullException(nameof(coin));
+
+        var apiId = coin.ApiId;
+        var fileName = Path.Combine(AppConstants.ChartsFolder, $"MarketChart_{apiId}.json");
+
+        if (!File.Exists(fileName))
         {
-            priceLevelEma.Value = coin.Ema;
-            if (coin.Ema != 0)
-                priceLevelEma.DistanceToValuePerc = (100 * (coin.Price - coin.Ema) / coin.Ema);
+            _closingPricesCache[apiId] = new List<double>();
+            _closingPricesFileDateCache[apiId] = DateTime.MinValue;
+            return new List<double>();
         }
-        else
+
+        var lastWriteUtc = File.GetLastWriteTimeUtc(fileName);
+
+        if (_closingPricesCache.TryGetValue(apiId, out var cachedPrices) &&
+            _closingPricesFileDateCache.TryGetValue(apiId, out var cachedFileDate) &&
+            cachedFileDate == lastWriteUtc)
         {
-            var newPriceLevel = new PriceLevel
-            {
-                Type = PriceLevelType.Ema,
-                Value = coin.Ema,
-                Coin = coin,
-                DistanceToValuePerc = coin.Ema != 0 ? (100 * (coin.Price - coin.Ema) / coin.Ema) : 0
-            };
-            coin.PriceLevels.Add(newPriceLevel);
+            return cachedPrices.ToList(); // return copy, not shared reference
         }
-        // As above: if UI needs the PriceLevels property changed notification, raise it from the caller / model.
+
+        var suffix = coin.Name.Contains("_pre-listing") ? "-prelisting" : "";
+        var marketChart = new MarketChartById();
+
+        await marketChart.LoadMarketChartJson(apiId + suffix);
+
+        var prices = marketChart.Prices != null && marketChart.Prices.Length > 0
+            ? marketChart.Prices.TakeLast(150).Select(p => (double)p[1].Value).ToList()
+            : new List<double>();
+
+        _closingPricesCache[apiId] = prices;
+        _closingPricesFileDateCache[apiId] = lastWriteUtc;
+
+        return prices.ToList(); // copy again to avoid accidental mutation
     }
+
+    private static List<double> AppendCurrentPriceForCalculationOnly(List<double> prices, double currentPrice)
+    {
+        if (prices == null)
+        {
+            prices = new List<double>();
+        }
+
+        var working = prices.ToList();
+
+        if (working.Count == 0 || Math.Abs(working.Last() - currentPrice) > 0.0000001)
+        {
+            working.Add(currentPrice);
+        }
+
+        return working;
+    }
+
+    
 }

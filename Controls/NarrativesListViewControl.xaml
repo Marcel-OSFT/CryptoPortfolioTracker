@@ -120,16 +120,16 @@
         <Rectangle Grid.Row="1" Grid.ColumnSpan="4" Fill="#eebc3f" Height="2" Margin="5,0,8,0"/>
         <TextBlock x:Name="proxy2" Width="0" Height="0" Grid.Row="1" Visibility="{x:Bind converters:Functions.FalseToVisible(_viewModel.IsExtendedView), Mode=OneWay}"/>
 
-        <ListView x:Name="NarrativesListView" Grid.Row="2" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding _narrativeService.ListNarratives}" 
+        <ListView x:Name="NarrativesListView" Grid.Row="2" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding ListNarratives}" 
                   BorderBrush="Transparent" BorderThickness="1" IsItemClickEnabled="True" SelectionMode="Single" 
-                  toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
+                  toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" SelectedValue="{Binding SelectedNarrativeId, Mode=TwoWay}" SelectedValuePath="Id"
                   ui:ListViewExtensions.Command="{Binding NarrativeItemClickedCommand}" SizeChanged="ListView_SizeChanged"
                   ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                   ScrollViewer.VerticalScrollMode="{x:Bind converters:Functions.TrueToScrollModeDisabled(_viewModel.IsExtendedView), Mode=OneWay}" 
                   CanReorderItems="False" AllowDrop="false" Margin="0,0,0,0">
             
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Narrative">
+                <DataTemplate x:DataType="models:NarrativeDisplay">
                     <UserControl>
                         <Grid AutomationProperties.Name="{x:Bind Id}">
                             <SwipeControl x:Name="NarrativesListViewSwipeContainer" Height="60">
@@ -173,7 +173,7 @@
                                                     </ItemsPanelTemplate>
                                                 </GridView.ItemsPanel>
                                                 <GridView.ItemTemplate>
-                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:Coin" >
+                                                    <DataTemplate x:Name="ImageOverlayTemplate" x:DataType="models:CoinDisplay" >
                                                         <Image Name="Image" HorizontalAlignment="Left" Height="20" Width="39" 
                                                                Source="{x:Bind converters:Functions.StringToImageSource(ImageUri), Mode=OneWay}"
                                                                />
@@ -186,11 +186,11 @@
                                     <Border Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtMarketValue" 
-                                                       Text="{x:Bind converters:Functions.FormatValueToString(TotalValue,'$ {0:N0}'), Mode=OneWay}" 
+                                                       Text="{x:Bind converters:Functions.FormatCurrencyToString(TotalValue,'{0:N0}'), Mode=OneWay}" 
                                                        FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" 
                                                        RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtCostBase" 
-                                                       Text="{x:Bind converters:Functions.FormatValueToString(CostBase,'$ {0:N0}'), Mode=OneWay}" 
+                                                       Text="{x:Bind converters:Functions.FormatCurrencyToString(CostBase,'{0:N0}'), Mode=OneWay}" 
                                                        RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketValue" 
                                                        FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
                                         </RelativePanel>
@@ -199,11 +199,11 @@
                                     <Border Grid.Column="2" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtProfitLoss" 
-                                                       Text="{x:Bind converters:Functions.FormatValueToString(ProfitLoss,'$ {0:N0}'), Mode=OneWay}"  
+                                                       Text="{x:Bind converters:Functions.FormatCurrencyToString(ProfitLoss,'{0:N0}'), Mode=OneWay}"  
                                                        FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"  
                                                        RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtProfitLossPerc" 
-                                                       Text="{x:Bind converters:Functions.FormatValueToString(ProfitLossPerc,'{0:0.00} %'), Mode=OneWay}" 
+                                                       Text="{x:Bind converters:Functions.FormatPercentToString(ProfitLossPerc,'{0:0.00} %'), Mode=OneWay}" 
                                                        RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtProfitLoss" 
                                                        FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"
                                                        Foreground="{x:Bind converters:Functions.DoubleToColour(ProfitLossPerc,''), Mode=OneWay}"/>

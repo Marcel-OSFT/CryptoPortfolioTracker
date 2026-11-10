@@ -13,8 +13,9 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        
         <Style x:Key="CustomListViewItemsStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-            <Setter Property="MinHeight" Value="60"/>
+            <Setter Property="MinHeight" Value="30"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -32,42 +33,43 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         
-        <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-              Margin="0,0,5,10" VerticalAlignment="Stretch" >
+        <Grid x:Name="HeaderGrid" CornerRadius="8,8,0,0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,5,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="170"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <!-- General Header -->
-            <controls:HomePageHeaderImage x:Name="HeaderImage" Grid.Row="0" Grid.RowSpan="3" Height="265" VerticalAlignment="Top"/>
-            <RelativePanel>
-                <TextBlock x:Name="smallHeaderText" Text="Crypto Portfolio Tracker" Foreground="DarkGoldenrod"
-                           Margin="36,0,0,0" VerticalAlignment="Top" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBlock x:Name="txtPortfolio" Margin="36,0,0,0" Text="{Binding SelectedPortfolio.Name}"
-                    Foreground="DarkGoldenrod" Style="{StaticResource SubSampleHeaderTextStyle}" 
-                    RelativePanel.Below="smallHeaderText">
-                    <TextBlock.RenderTransform>
-                        <TranslateTransform x:Name="TextBlockTransform" x:FieldModifier="public"/>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-                <TextBlock l:Uids.Uid="SwitchPortfolio_Title" x:Name="txtSwitchPortfolio" Margin="36,5,0,0"
-                           Foreground="DarkGoldenrod" Style="{StaticResource SampleHeaderTextStyle}" 
-                           RelativePanel.Below="txtPortfolio" RelativePanel.AlignBottomWithPanel="True"/>
-            </RelativePanel>
-            <TextBlock l:Uids.Uid="SwitchPortfolio_Explainer" Grid.Row="1" VerticalAlignment="Bottom"
-                       Style="{StaticResource ExplainerTextStyle}" Margin="35,0,20,20" TextWrapping="Wrap"/>
-            <!-- End of General Header -->
-            <Border Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="10,50,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <!--<ColumnDefinition Width="*"/>-->
+            </Grid.ColumnDefinitions>
+
+            <controls:PortfolioHeaderControl
+                x:Name="PortfolioHeader"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                PortfolioName="{Binding SelectedPortfolio.Name}"
+                ViewTitle="{Binding ViewTitle}"
+                ExplainerText="{Binding ExplainerText}"
+                ShowPortfolioTotals="False"/>
+
+
+            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" VerticalAlignment="Stretch"
+                Padding="12"
+                CornerRadius="10"
+                BorderThickness="1"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+
                 <Grid Name="SwitchPortfolioContent">
                     <ListView x:Name="PortfoliosLV" BorderThickness="0" VerticalAlignment="Stretch"
-                        BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
-                        DoubleTapped="PortfoliosListView_DoubleTapped" IsDoubleTapEnabled="True" IsTapEnabled="False"
-                        Width="650"  HorizontalAlignment="Left" 
-                        ItemsSource="{Binding _portfolioService.Portfolios}"
-                        IsItemClickEnabled="False" SelectionMode="Single" Loaded="ListView_Loaded"
-                        ItemContainerStyle="{StaticResource CustomListViewItemsStyle}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                        CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10"  >
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
+                    DoubleTapped="PortfoliosListView_DoubleTapped" IsDoubleTapEnabled="True" IsTapEnabled="False"
+                    Width="650"  HorizontalAlignment="Left"
+                    ItemsSource="{Binding ListPortfolios}"
+                    IsItemClickEnabled="False" SelectionMode="Single" Loaded="ListView_Loaded" SizeChanged="ListView_SizeChanged"
+                    ItemContainerStyle="{StaticResource CustomListViewItemsStyle}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                    CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10"  >
 
                         <ListView.Header>
                             <Grid>
@@ -96,13 +98,25 @@
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="models:Portfolio">
                                 <Border x:Name="ItemBorder" Background="Transparent" Margin="0,0,0,0">
-                                    <RelativePanel x:Name="ItemPanel" VerticalAlignment="Stretch">
-                                        <TextBlock x:Name="txt1" Text="{Binding Name}" FontSize="20" Margin="20,0,0,5" 
-                                                   RelativePanel.AlignVerticalCenterWithPanel="True"/>
-                                        <TextBlock x:Name="txt2" Text="{Binding LastAccess}" FontSize="12" Margin="0,0,10,10" 
-                                                  RelativePanel.RightOf="txt1"  RelativePanel.AlignRightWithPanel="True"
-                                                   HorizontalTextAlignment="Right" RelativePanel.AlignBottomWithPanel="True"  />
-                                    </RelativePanel>
+                                    <Grid Padding="12,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" x:Name="txt1"
+                                            Text="{Binding Name}"
+                                            FontSize="16"
+                                            VerticalAlignment="Center"/>
+
+                                        <TextBlock Grid.Column="1" x:Name="txt2"
+                                            Text="{Binding LastAccess}"
+                                            FontSize="12"
+                                            Opacity="0.7"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Right"
+                                            Margin="12,0,8,0"/>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </ListView.ItemTemplate>

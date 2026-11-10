@@ -1,55 +1,71 @@
-<ContentDialog
+<local:BaseDialog
     x:Class="CryptoPortfolioTracker.Dialogs.AssignNarrativeDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:local="using:CryptoPortfolioTracker" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CryptoPortfolioTracker.Dialogs"
     xmlns:l="using:WinUI3Localizer"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    Loading="Dialog_Loading"
-    DefaultButton="Primary"
-    PrimaryButtonClick="Button_Click_AcceptNarrative"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     x:Name="Root"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    DefaultButton="Primary"
+    PrimaryButtonClick="Button_Click_AcceptNarrative">
 
-
-
-    <ContentDialog.Resources>
-        <!-- Overriding ContentDialogMaxWidth value -->
+    <local:BaseDialog.Resources>
         <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
-    </ContentDialog.Resources>
+    </local:BaseDialog.Resources>
 
-    <Grid  Margin="0,0,0,0" Width="400">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="70"/>
-            <RowDefinition Height="100"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" MaxWidth="600"/>
-        </Grid.ColumnDefinitions>
+    <StackPanel
+        Width="520"
+        Spacing="14">
 
-        <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,0,0" >
-            <StackPanel.Background>
-                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
-            </StackPanel.Background>
-            <ComboBox x:Name="cbNarratives" l:Uids.Uid="AssignNarrativeDialog_ComboHeader" Grid.Row="1" Grid.ColumnSpan="2"
-                     MinWidth="200" MaxWidth="590" Margin="10,0,10,0"
-                      ItemsSource="{Binding Narratives, ElementName=Root}"  DisplayMemberPath="Name" SelectedItem="{Binding InitialNarrative, ElementName=Root}" 
-                     Header="Narrative"/>
-        
-        </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,0,0">
-            <StackPanel.Background>
-                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
-            </StackPanel.Background>
-        
-                
-            <!--<TextBlock l:Uids.Uid="AssignNarrativeDialog_AboutHeader" Margin="10,0,10,0" />-->
-                        
-            <TextBlock x:Name="DescriptionText" Margin="10,20,10,0"  Text="{Binding Path=SelectedItem.About, ElementName=cbNarratives}"
-                        TextWrapping="Wrap" MinWidth="200" MinHeight="100" ScrollViewer.VerticalScrollBarVisibility="Auto" />
-      
-        </StackPanel>
+        <!-- Narrative selection -->
+        <Border
+            Padding="16"
+            CornerRadius="8"
+            BorderThickness="1"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
 
-    </Grid>
+            <StackPanel Spacing="10">
+                <TextBlock
+                    l:Uids.Uid="AssignNarrativeDialog_ComboHeader"
+                    Style="{StaticResource BodyStrongTextBlockStyle}" />
 
-</ContentDialog>
+                <ComboBox
+                    x:Name="cbNarratives"
+                    MinWidth="200"
+                    HorizontalAlignment="Stretch"
+                    ItemsSource="{x:Bind Narratives}"
+                    DisplayMemberPath="Name"
+                    SelectedItem="{x:Bind SelectedNarrative, Mode=TwoWay}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Narrative description -->
+        <Border
+            Padding="16"
+            CornerRadius="8"
+            BorderThickness="1"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+            <StackPanel Spacing="10">
+                <TextBlock
+                    l:Uids.Uid="AssignNarrativeDialog_DescriptionHeader"
+                    Text="Description"
+                    Style="{StaticResource BodyStrongTextBlockStyle}" />
+
+                <ScrollViewer
+                    MaxHeight="180"
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled">
+
+                    <TextBlock
+                        x:Name="DescriptionText"
+                        Text="{x:Bind About, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
+    </StackPanel>
+</local:BaseDialog>

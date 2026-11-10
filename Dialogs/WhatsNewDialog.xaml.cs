@@ -10,8 +10,10 @@ using Windows.Storage.Streams;
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public sealed partial class WhatsNewDialog : ContentDialog
+public sealed partial class WhatsNewDialog : BaseDialog, IDialog<bool>
 {
+    public bool Result { get; private set; } = true;
+
     [ComImport, System.Runtime.InteropServices.Guid("3E68D4BD-7135-4D10-8018-9FB6D9F33FA1"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IInitializeWithWindow
     {

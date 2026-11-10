@@ -1,10 +1,16 @@
-using CryptoPortfolioTracker.Reporting.Services;
-using QuestPDF.Companion;
+using CommunityToolkit.Mvvm.Messaging;
+using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Reporting.Documents;
+using CryptoPortfolioTracker.Reporting.Services;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Media;
+using QuestPDF.Companion;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace CryptoPortfolioTracker;
 [ObservableObject]
-public partial class MainPage : Page //INotifyPropertyChanged
+public partial class MainPage : Page, IRecipient<ExchangeRateMissingMessage>
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static MainPage Current;
@@ -12,27 +18,128 @@ public partial class MainPage : Page //INotifyPropertyChanged
     public IGraphUpdateService _graphUpdateService;
     public IPriceUpdateService _priceUpdateService;
     private readonly IQuestPdfService _pdfService;
+
     private readonly Settings _appSettings;
     private Type lastPageType;
     private NavigationViewItem lastSelectedNavigationItem;
     private ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(MainPage).Name.PadRight(22));
     [ObservableProperty] public partial Visibility NavigationVisibility { get; set; }
     [ObservableProperty] public partial bool IsSettingsVisible { get; set; }
+    [ObservableProperty] public partial string ExchangeRateText { get; set; } = "Exchange rate: --";
+    [ObservableProperty] public partial string ExchangeRateUpdatedText { get; set; } = "Updated: --";
+    private string _priceUpdateStatusText = string.Empty;
+    public string PriceUpdateStatusText
+    {
+        get => _priceUpdateStatusText;
+        set => SetProperty(ref _priceUpdateStatusText, value);
+    }
+    //[ObservableProperty]
+    private SolidColorBrush _exchangeRateStatusBrush;
+    public SolidColorBrush ExchangeRateStatusBrush
+    {
+        get => _exchangeRateStatusBrush;
+        set => SetProperty(ref _exchangeRateStatusBrush, value);
+    }
 
-    public MainPage(PortfolioService portfolioService, IGraphUpdateService graphUpdateService, IPriceUpdateService priceUpdateService, IQuestPdfService pdfService, Settings appSettings)
+    private readonly IExchangeRateService _exchangeRateService;
+    private readonly IMessenger _messenger;
+    private readonly IDialogService _dialogService;
+    private readonly DispatcherTimer _exchangeRateStatusTimer;
+    private readonly DispatcherTimer _notificationTimer;
+
+    public MainPage(IGraphUpdateService graphUpdateService, 
+                        IPriceUpdateService priceUpdateService, IMessenger messenger, 
+                        IQuestPdfService pdfService, IExchangeRateService exchangeRateService, 
+                        IDialogService dialogService ,Settings appSettings)
     {
         _appSettings = appSettings;
+        _exchangeRateService = exchangeRateService;
+        _messenger = messenger;
+        _dialogService = dialogService;
         InitializeComponent();
         Current = this;
         DataContext = this;
+        _exchangeRateStatusTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(30)
+        };
+        _exchangeRateStatusTimer.Tick += (_, _) => UpdateExchangeRateStatus();
+
+        _notificationTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(20)
+        };
+        _notificationTimer.Tick += (_, _) =>
+        {
+            NotificationInfoBar.IsOpen = false;
+            NotificationInfoBar.Title = string.Empty;
+            NotificationInfoBar.Message = string.Empty;
+        };
+
+        // Set default value for ExchangeRateStatusBrush
+        ExchangeRateStatusBrush = new SolidColorBrush(Colors.Red);
+
+        _exchangeRateService.PropertyChanged += ExchangeRateService_PropertyChanged;
+        UpdateExchangeRateStatus();
+
+        _messenger.Register<ExchangeRateMissingMessage>(this);
 
         _graphUpdateService = graphUpdateService;
         _priceUpdateService = priceUpdateService;
         _pdfService = pdfService;
     }
 
+    public void Receive(ExchangeRateMissingMessage message)
+    {
+        if (message.Date == default)
+        {
+            return;
+        }
+        ShowTransientNotification("Capital Flow calculation warning.", message.Reason, InfoBarSeverity.Warning);
+    }
+
+    private void ExchangeRateService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(IExchangeRateService.EurUsdRate) or nameof(IExchangeRateService.LastUpdated) or nameof(IExchangeRateService.LastUpdatedDisplay))
+        {
+            UpdateExchangeRateStatus();
+        }
+    }
+
+    private void ShowTransientNotification(string title, string message, InfoBarSeverity severity)
+    {
+        NotificationInfoBar.Title = title;
+        NotificationInfoBar.Message = message;
+        NotificationInfoBar.Severity = severity;
+        NotificationInfoBar.IsOpen = true;
+
+        _notificationTimer.Stop();
+        _notificationTimer.Start();
+    }
+
+    private void UpdateExchangeRateStatus()
+    {
+        bool isFresh = _exchangeRateService.LastUpdated != default &&
+            DateTimeOffset.UtcNow - _exchangeRateService.LastUpdated < TimeSpan.FromMinutes(15);
+
+        if (_exchangeRateService.EurUsdRate <= 0)
+        {
+            ExchangeRateText = "Exchange rate: unavailable";
+            ExchangeRateUpdatedText = $"Updated: {_exchangeRateService.LastUpdatedDisplay}";
+            ExchangeRateStatusBrush = isFresh ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+            return;
+        }
+
+        ExchangeRateText = $"1 EUR = {_exchangeRateService.EurUsdRate:F4} USD";
+        ExchangeRateUpdatedText = $"Updated: {_exchangeRateService.LastUpdatedDisplay}";
+        ExchangeRateStatusBrush = isFresh ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+    }
+
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
     {
+        _dialogService.XamlRoot = this.XamlRoot;
+        _exchangeRateStatusTimer.Start();
+
         navigationView.SelectedItem = navigationView.MenuItems.OfType<NavigationViewItem>().Where(x => x.Name == "AssetsView").First();
         App.Splash?.Close();
         App.Splash = null;
@@ -57,7 +164,6 @@ public partial class MainPage : Page //INotifyPropertyChanged
                 await CheckUpdateNow();
             }
         }
-
     }
 
     private async Task ShowWhatsNewDialogIfNeeded()
@@ -67,9 +173,11 @@ public partial class MainPage : Page //INotifyPropertyChanged
 
         if (!string.Equals(currentVersion, lastVersion, StringComparison.OrdinalIgnoreCase))
         {
-            var dialog = new WhatsNewDialog(_appSettings);
-            dialog.XamlRoot = MainPage.Current.XamlRoot;
-            await dialog.ShowAsync();
+            //var dialog = new WhatsNewDialog(_appSettings);
+            //dialog.XamlRoot = MainPage.Current.XamlRoot;
+            //await dialog.ShowAsync();
+
+            await _dialogService.ShowAsync<WhatsNewDialog, bool>();
 
             _appSettings.LastVersion = currentVersion;
         }
@@ -86,11 +194,12 @@ public partial class MainPage : Page //INotifyPropertyChanged
         {
             Logger.Information("Update Available");
 
-            var dlgResult = await ShowMessageDialog(
+            var dlgResult = await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_UpdateChecker_NewVersionTitle"),
                 loc.GetLocalizedString("Messages_UpdateChecker_NewVersionMsg"),
                 loc.GetLocalizedString("Common_DownloadButton"),
                 loc.GetLocalizedString("Common_CancelButton"));
+
 
             if (dlgResult == ContentDialogResult.Primary)
             {
@@ -102,7 +211,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
                     //*** Download is doen, wait till there is no other dialog box open
                     await App.DialogCompletionTask;
                     Logger.Information("Download Succesfull");
-                    var installRequest = await ShowMessageDialog(
+                    var installRequest = await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesTitle"),
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesMsg"),
                         loc.GetLocalizedString("Common_InstallButton"),
@@ -116,7 +225,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
                 else
                 {
                     Logger.Warning("Download failed");
-                    await ShowMessageDialog(
+                    await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedTitle"),
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedMsg"),
                         loc.GetLocalizedString("Common_CloseButton"));
@@ -173,9 +282,12 @@ public partial class MainPage : Page //INotifyPropertyChanged
                         }
                     case "About":
                         {
-                            var dialog = new AboutDialog(_appSettings.AppTheme);
-                            dialog.XamlRoot = MainPage.Current.XamlRoot;
-                            var result = await dialog.ShowAsync();
+                            //var dialog = new AboutDialog();
+                            //dialog.XamlRoot = MainPage.Current.XamlRoot;
+                            //var result = await dialog.ShowAsync();
+
+                            await _dialogService.ShowAsync<AboutDialog, bool>();
+
                             break;
                         }
                 }
@@ -185,11 +297,13 @@ public partial class MainPage : Page //INotifyPropertyChanged
         }
     }
     private void LoadView(Type pageType)
-    {
+    { 
+
         if (pageType.Name == "CoinLibraryView")
         {
             _graphUpdateService.Pause();
             _priceUpdateService.Pause();
+            UpdatePriceUpdateStatus(true);
         }
         else if (lastPageType is not null && (lastPageType.Name == "CoinLibraryView"))
         {
@@ -212,9 +326,23 @@ public partial class MainPage : Page //INotifyPropertyChanged
                 _priceUpdateService = App.Container.GetService<IPriceUpdateService>();
                 _priceUpdateService?.Start();
             }
+
+            UpdatePriceUpdateStatus(false);
         }
+        else
+        {
+            UpdatePriceUpdateStatus(false);
+        }
+
         lastPageType = pageType;
         contentFrame.Content = App.Container.GetService(pageType);
+    }
+
+    private void UpdatePriceUpdateStatus(bool isPaused)
+    {
+        PriceUpdateStatusText = isPaused
+            ? "Price updates paused while Coin Library is open to avoid CoinGecko API conflicts."
+            : string.Empty;
     }
 
     private async void DisplayHelpFile()
@@ -234,7 +362,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
         catch (Exception ex)
         {
             Logger.Warning(ex, "Failed to display HelpFile");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_HelpFile_FailedTitle"),
                 loc.GetLocalizedString("Messages_HelpFile_FailedMsg"),
                 loc.GetLocalizedString("Common_CloseButton"));
@@ -257,7 +385,7 @@ public partial class MainPage : Page //INotifyPropertyChanged
         catch (Exception ex)
         {
             Logger.Warning(ex, "Failed to display What's New File");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_WhatsNewFile_FailedTitle"),
                 loc.GetLocalizedString("Messages_WhatsNewFile_FailedMsg"),
                 loc.GetLocalizedString("Common_CloseButton"));
@@ -303,21 +431,6 @@ public partial class MainPage : Page //INotifyPropertyChanged
         }
     }
 
-
-    public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
-    {
-        var dialog = new ContentDialog()
-        {
-            Title = title,
-            XamlRoot = Current.XamlRoot,
-            Content = message,
-            PrimaryButtonText = primaryButtonText,
-            CloseButtonText = closeButtonText,
-            RequestedTheme = _appSettings.AppTheme
-        };
-        var dlgResult = await dialog.ShowAsync();
-        return dlgResult;
-    }
 
 }
 

@@ -6,7 +6,7 @@ public partial class AssetTotals : BaseModel
 {
     public AssetTotals()
     {
-        
+
     }
 
     [ObservableProperty] private double qty;
@@ -34,16 +34,11 @@ public partial class AssetTotals : BaseModel
         AverageCostPrice = value / Qty;
         ProfitLoss = MarketValue - value;
         ProfitLossPerc = 100 * ((MarketValue - value) / value);
-
     }
     partial void OnMarketValueChanged(double value)
     {
         ProfitLoss = value - CostBase;
         ProfitLossPerc = 100 * ((value - CostBase) / CostBase);
-    }
-    partial void OnNetInvestmentChanged(double value)
-    {
-        NetProfitLossPerc = value > 0 ? 100 * ((MarketValue - value) / value) : double.PositiveInfinity ;
     }
     partial void OnCoinChanged(Coin value)
     {

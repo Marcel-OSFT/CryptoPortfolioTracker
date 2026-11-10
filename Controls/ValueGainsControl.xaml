@@ -42,7 +42,7 @@
                         RelativePanel.AlignVerticalCenterWith="txtValue"
                         RelativePanel.AlignLeftWithPanel="True" />
                     <Viewbox x:Name="txtValue" Stretch="Uniform" Width="200" Height="35" HorizontalAlignment="Right" RelativePanel.AlignRightWithPanel="True">
-                        <TextBlock  Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.TotalValue,'$ {0:N0}'), Mode=OneWay}" 
+                        <TextBlock  Text="{x:Bind converters:Functions.FormatCurrencyToString(_viewModel.TotalValue,'{0:N0}'), Mode=OneWay}" 
                             Foreground="DarkGoldenrod"
                             FontWeight="Normal"
                             TextAlignment="Center"
@@ -60,7 +60,7 @@
                         RelativePanel.Below="txtValue"
                         RelativePanel.AlignLeftWithPanel="True" />
                     <TextBlock Name="txt24hPerc"
-                        Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.DayPerc,'{0:0.00} %'), Mode=OneWay}" 
+                        Text="{x:Bind converters:Functions.FormatPercentToString(_viewModel.DayPerc,'{0:0.00} %'), Mode=OneWay}" 
                         Foreground="{x:Bind converters:Functions.DoubleToColour(_viewModel.DayPerc, ''), Mode=OneWay}"
                         FontWeight="Normal"
                         Margin="0,5,0,0"
@@ -78,7 +78,7 @@
                         RelativePanel.Below="txt24h"
                         RelativePanel.AlignLeftWithPanel="True" />
                     <TextBlock Name="txt7dayPerc"
-                        Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.WeekPerc,'{0:0.00} %'), Mode=OneWay}" 
+                        Text="{x:Bind converters:Functions.FormatPercentToString(_viewModel.WeekPerc,'{0:0.00} %'), Mode=OneWay}" 
                         Foreground="{x:Bind converters:Functions.DoubleToColour(_viewModel.WeekPerc,''), Mode=OneWay}"
                         FontWeight="Normal"
                         FontSize="16"
@@ -95,7 +95,7 @@
                         RelativePanel.Below="txt7day"
                         RelativePanel.AlignLeftWithPanel="True" />
                     <TextBlock Name="txt1monthPerc"
-                        Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.MonthPerc,'{0:0.00} %'), Mode=OneWay}" 
+                        Text="{x:Bind converters:Functions.FormatPercentToString(_viewModel.MonthPerc,'{0:0.00} %'), Mode=OneWay}" 
                         Foreground="{x:Bind converters:Functions.DoubleToColour(_viewModel.MonthPerc,''), Mode=OneWay}"
                         FontWeight="Normal"
                         FontSize="16"
@@ -112,7 +112,7 @@
                         RelativePanel.Below="txt1month"
                         RelativePanel.AlignLeftWithPanel="True" />
                     <TextBlock Name="txt1yearPerc"
-                        Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.YearPerc,'{0:0.00} %'), Mode=OneWay}" 
+                        Text="{x:Bind converters:Functions.FormatPercentToString(_viewModel.YearPerc,'{0:0.00} %'), Mode=OneWay}" 
                         Foreground="{x:Bind converters:Functions.DoubleToColour(_viewModel.YearPerc,''), Mode=OneWay}"
                         FontWeight="Normal"
                         FontSize="16"
@@ -129,7 +129,7 @@
                         RelativePanel.Below="txt1year"
                         RelativePanel.AlignLeftWithPanel="True" />
                     <TextBlock x:Name="txtYearToDatePerc"
-                        Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.YearToDatePerc,'{0:0.00} %'), Mode=OneWay}" 
+                        Text="{x:Bind converters:Functions.FormatPercentToString(_viewModel.YearToDatePerc,'{0:0.00} %'), Mode=OneWay}" 
                         Foreground="{x:Bind converters:Functions.DoubleToColour(_viewModel.YearToDatePerc,''), Mode=OneWay}"
                         FontWeight="Normal"
                         FontSize="16"
@@ -151,7 +151,7 @@
                     <Viewbox x:Name="txtCostbaseValue2" Stretch="Uniform" Width="200" Height="20" Margin ="0,10,0,0" HorizontalAlignment="Right" 
                         RelativePanel.Below="txtYearToDatePerc"
                         RelativePanel.AlignRightWithPanel="True">
-                        <TextBlock  Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.CostBase,'$ {0:N0}'), Mode=OneWay}" 
+                        <TextBlock  Text="{x:Bind converters:Functions.FormatCurrencyToString(_viewModel.CostBase,'{0:N0}'), Mode=OneWay}" 
                             Foreground="DarkGoldenrod"
                             FontWeight="Normal"
                             TextAlignment="Center"
@@ -168,7 +168,7 @@
                         RelativePanel.Below="txtCostBase2"
                         RelativePanel.AlignLeftWithPanel="True" />
                     <TextBlock Name="txtCostPerc"
-                        Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.CostBasePerc,'{0:0.00} %'), Mode=OneWay}" 
+                        Text="{x:Bind converters:Functions.FormatPercentToString(_viewModel.CostBasePerc,'{0:0.00} %'), Mode=OneWay}" 
                         Foreground="{x:Bind converters:Functions.DoubleToColour(_viewModel.CostBasePerc,''), Mode=OneWay}"
                         FontWeight="Normal"
                         FontSize="16"
@@ -201,7 +201,7 @@
                             RelativePanel.AlignLeftWithPanel="True" />
                 <Viewbox x:Name="txtCapFlowValue2" Stretch="Uniform" Width="200" Height="20" Margin ="0,0,0,0" HorizontalAlignment="Right" 
                             RelativePanel.AlignRightWithPanel="True">
-                    <TextBlock Text="{x:Bind converters:Functions.FormatValueToString(_viewModel.NetCapitalFlow,'$ {0:N0}'), Mode=OneWay}" 
+                    <TextBlock Text="{x:Bind converters:Functions.FormatCapitalFlowToString(_viewModel.NetCapitalFlow,'{0:N0}'), Mode=OneWay}" 
                                 Foreground="DarkGoldenrod"
                                 FontWeight="Normal"
                                 TextAlignment="Center"

@@ -189,20 +189,14 @@ public partial class RegExTextBox : TextBox, INotifyPropertyChanged
 
     private void SetBorderColor()
     {
-        if (IsEntryValid)
-        {
-            BorderBrush = new SolidColorBrush(Colors.Green);
-        }
-        else
-        {
-            BorderBrush = new SolidColorBrush(Colors.Red);
-        }
+        var color = IsEntryValid ? Colors.Green : Colors.Red;
+        BorderBrush = new SolidColorBrush(color) { Opacity = 0.5 }; // Set opacity to 50%
     }
     private void InitBorderBrush()
     {
         if (Text == "0" && !IsZeroAllowed && SelectedRegEx != MyEnum.RegExEmail && SelectedRegEx != MyEnum.RegExPhone)
         {
-            BorderBrush = new SolidColorBrush(Colors.Green);
+            BorderBrush = new SolidColorBrush(Colors.Green) { Opacity = 0.5 };
         }
     }
 

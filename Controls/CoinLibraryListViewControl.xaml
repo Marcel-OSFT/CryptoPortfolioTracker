@@ -40,9 +40,9 @@
                 <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="0.25*"/>
                 <ColumnDefinition Width="0.25*"/>
-                <ColumnDefinition Width="0.27*"/>
-                <ColumnDefinition Width="0.28*"/>
-                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="0.20*"/>
+                <ColumnDefinition Width="0.20*"/>
+                <ColumnDefinition Width="70"/>
             </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
@@ -185,12 +185,12 @@
         </StackPanel>
 
         <Rectangle Grid.Row="1" Grid.ColumnSpan="7" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
-        <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="7" x:FieldModifier="public" ItemsSource="{Binding _libraryService.ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
+        <ListView x:Name="CoinLibraryListView" Grid.Row="2" Grid.ColumnSpan="7" x:FieldModifier="public" ItemsSource="{Binding CoinsList, Mode=OneWay}" BorderBrush="Transparent" BorderThickness="1"                           
                             IsItemClickEnabled="True" SelectionMode="None" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
-                            ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                            ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectedValue="{Binding SelectedCoinId, Mode=TwoWay}" SelectedValuePath="Id"
                             CanReorderItems="False" AllowDrop="false" Margin="10,0,0,0" >
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Coin">
+                <DataTemplate x:DataType="models:CoinDisplay">
                     <UserControl >
                         <Grid AutomationProperties.Name="{x:Bind ApiId}">
                             <SwipeControl x:Name="CoinListHoverSwipeContainer" >
@@ -204,9 +204,9 @@
                                             <ColumnDefinition Width="0.3*"/>
                                             <ColumnDefinition Width="0.25*"/>
                                             <ColumnDefinition Width="0.25*"/>
-                                            <ColumnDefinition Width="0.25*"/>
-                                            <ColumnDefinition Width="0.28*"/>
-                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="0.20*"/>
+                                            <ColumnDefinition Width="0.20*"/>
+                                            <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock x:Name="proxy" helpers:AncestorSource.AncestorType="ListView" Visibility="Collapsed" />
                                         <Border Grid.Column="0" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
@@ -232,10 +232,10 @@
                                         <Border Grid.Column="3" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
                                                 <TextBlock Name="txtPrice" 
-                                                    Text="{x:Bind converters:Functions.FormatValueToString(Price,'$ {0:0.########}'), Mode=OneWay}" 
+                                                    Text="{x:Bind converters:Functions.FormatCurrencyToString(Price,'{0:0.########}'), Mode=OneWay}" 
                                                     FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" />
                                                 <TextBlock Name="txtChange24Hr" 
-                                                    Text="{x:Bind converters:Functions.FormatValueToString(Change24Hr,'{0:0.00} %'), Mode=OneWay}" 
+                                                    Text="{x:Bind converters:Functions.FormatPercentToString(Change24Hr,'{0:0.00} %'), Mode=OneWay}" 
                                                     Foreground="{x:Bind converters:Functions.DoubleToColour(Change24Hr,''), Mode=OneWay}" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtPrice">
 
                                                 </TextBlock>
@@ -244,20 +244,20 @@
                                         <Border Grid.Column="4" Margin="0,2,0,2"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
                                                 <TextBlock Name="txtChange52Week" 
-                                                   Text="{x:Bind converters:Functions.FormatValueToString(Change52Week,'{0:0.00} %'), Mode=OneWay}" 
+                                                   Text="{x:Bind converters:Functions.FormatPercentToString(Change52Week,'{0:0.00} %'), Mode=OneWay}" 
                                                            Foreground="{x:Bind converters:Functions.DoubleToColour(Change52Week,''), Mode=OneWay}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
                                                 <TextBlock Name="txtChange1Month" 
-                                                    Text="{x:Bind converters:Functions.FormatValueToString(Change1Month,'{0:0.00} %'), Mode=OneWay}" 
+                                                    Text="{x:Bind converters:Functions.FormatPercentToString(Change1Month,'{0:0.00} %'), Mode=OneWay}" 
                                                            Foreground="{ x:Bind converters:Functions.DoubleToColour(Change1Month,''), Mode=OneWay}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange52Week" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
                                                 <TextBlock Name="txtATH" 
-                                                    Text="{x:Bind converters:Functions.FormatValueToString(Ath,'$ {0:0.########}'), Mode=OneWay}"   
+                                                    Text="{x:Bind converters:Functions.FormatCurrencyToString(Ath,'{0:0.########}'), Mode=OneWay}"   
                                                     TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange1Month" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"/>
                                             </RelativePanel>
                                         </Border>
                                         <Border Grid.Column="5" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel  >
                                                 <TextBlock Name="txtMarketCap"
-                                                    Text="{x:Bind converters:Functions.FormatValueToString(MarketCap,'$ {0:0.# }'), Mode=OneWay}" 
+                                                    Text="{x:Bind converters:Functions.FormatMarketCapToString(MarketCap,'{0:N0}'), Mode=OneWay}" 
                                                     TextWrapping="Wrap" />
                                                 <TextBlock Name="txtRank" Text="{Binding Rank}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketCap" 
                                                            FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"/>
@@ -279,7 +279,7 @@
                                                     <FontIcon  Glyph="&#xEA3C;" FontWeight="Normal"  />
                                                 </AppBarButton>
                                                 
-                                                <AppBarButton l:Uids.Uid="LibraryLV_AssignNarrative" Visibility="Visible" x:Name="HoverButtonNarrative" Command="{Binding DataContext.DataContext.AssignNarrativeToCoinCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
+                                                <AppBarButton l:Uids.Uid="LibraryLV_AssignNarrative" Visibility="Visible" x:Name="HoverButtonNarrative" Command="{Binding DataContext.DataContext.ShowAssignNarrativeDialogCommand, ElementName=proxy}"  CommandParameter="{x:Bind }">
                                                     <FontIcon  Glyph="&#xED0E;" FontWeight="Normal"  />
                                                 </AppBarButton>
 

@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 using CommunityToolkit.WinUI.UI;
-using CommunityToolkit.WinUI.UI.Animations;
+using CommunityToolkit.WinUI.Animations;
 using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.UI;
 using Microsoft.UI.Composition;
@@ -55,7 +55,7 @@ public sealed partial class HomePageHeaderImage : UserControl
         _imageGridBottomGradientBrush = _compositor.CreateLinearGradientBrush();
         _imageGridBottomGradientBrush.MappingMode = CompositionMappingMode.Absolute;
         _imageGridBottomGradientBrush.StartAnimation(_bottomGradientStartPointAnimation);
-        _imageGridBottomGradientBrush.StartAnimation(CreateExpressionAnimation(nameof(CompositionLinearGradientBrush.EndPoint), "Vector2(0.5, Visual.Size.Y)"));
+        _imageGridBottomGradientBrush.StartAnimation(CreateExpressionAnimation(nameof(CompositionLinearGradientBrush.EndPoint), "Vector2(0.5, Visual.Size.Y * 0.90)"));
         _imageGridBottomGradientBrush.CreateColorStopsWithEasingFunction(EasingType.Sine, EasingMode.EaseInOut, 0f, 1f);
 
         var alphaMask = new AlphaMaskEffect
@@ -102,7 +102,7 @@ public sealed partial class HomePageHeaderImage : UserControl
     }
     private void SetBottomGradientStartPoint()
     {
-        _bottomGradientStartPointAnimation?.Properties.InsertScalar(GradientSizeKey, 180);
+        _bottomGradientStartPointAnimation?.Properties.InsertScalar(GradientSizeKey, 230);
     }
 
     private void OnImageOpened(object sender, RoutedEventArgs e)
@@ -113,13 +113,13 @@ public sealed partial class HomePageHeaderImage : UserControl
     private void AnimateImage()
     {
         AnimationBuilder.Create()
-            .Opacity(1, 0, duration: TimeSpan.FromMilliseconds(300), easingMode: EasingMode.EaseOut)
-            .Scale(1, 1.1f, duration: TimeSpan.FromMilliseconds(400), easingMode: EasingMode.EaseOut)
+            .Opacity(1, 0, duration: TimeSpan.FromMilliseconds(3000), easingMode: EasingMode.EaseOut)
+            .Scale(1, 1.1f, duration: TimeSpan.FromMilliseconds(4000), easingMode: EasingMode.EaseOut)
             .Start(HeroImage);
 
         AnimationBuilder.Create()
-            .Opacity(0.5, 0, duration: TimeSpan.FromMilliseconds(300), easingMode: EasingMode.EaseOut)
-            .Scale(1, 1.1f, duration: TimeSpan.FromMilliseconds(400), easingMode: EasingMode.EaseOut)
+            .Opacity(0.5, 0, duration: TimeSpan.FromMilliseconds(3000), easingMode: EasingMode.EaseOut)
+            .Scale(1, 1.1f, duration: TimeSpan.FromMilliseconds(4000), easingMode: EasingMode.EaseOut)
             .Start(HeroOverlayImage);
     }
 

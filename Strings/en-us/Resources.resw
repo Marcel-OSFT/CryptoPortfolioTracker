@@ -126,8 +126,14 @@
   <data name="Settings_NumberFormat.Description" xml:space="preserve">
     <value>How do you want numbers to be presented.</value>
   </data>
+  <data name="Settings_Currency.Description" xml:space="preserve">
+    <value>In which currency would you like the portfolio value to be displayed?</value>
+  </data>
   <data name="Settings_NumberFormat.Header" xml:space="preserve">
     <value>Number Format</value>
+  </data>
+  <data name="Settings_Currency.Header" xml:space="preserve">
+    <value>Currency</value>
   </data>
   <data name="Settings_CheckUpdate.Description" xml:space="preserve">
     <value>Enables automatic checking for available updates.</value>
@@ -237,12 +243,12 @@
   <data name="AssetsLV_Quantity.Text" xml:space="preserve">
     <value>Quantity</value>
   </data>
-  <data name="Assets_Explainer.Text" xml:space="preserve">
+  <data name="Assets_Explainer" xml:space="preserve">
     <value>Assets are the crypto currencies that you have in portfolio at one or more accounts.
 Crypto of your interest need to be added first to the Coin Library. Also one or more accounts need to be configured.
 Build up your assets by adding transactions using the 'Add Transaction' button at the bottom of this window.</value>
   </data>
-  <data name="Assets_Title.Text" xml:space="preserve">
+  <data name="Assets_Title" xml:space="preserve">
     <value>Assets</value>
   </data>
   <data name="Assets_TransactionButton.Content" xml:space="preserve">
@@ -278,16 +284,16 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Narratives_AddNarrative.Content" xml:space="preserve">
     <value>Add Narrative</value>
   </data>
-  <data name="Accounts_Explainer.Text" xml:space="preserve">
+  <data name="Accounts_Explainer" xml:space="preserve">
     <value>The Accounts list gives you an overview of locations where you have your crypto assets in custody.</value>
   </data>
-  <data name="Narratives_Explainer.Text" xml:space="preserve">
+  <data name="Narratives_Explainer" xml:space="preserve">
     <value>The Narratives view gives you an overview of your crypto assets in relation to their narrative. Go to the Library View to assign a Narrative to a coin that is already in the Library. When you add e new coin then a narrative can be assigned right away. The app comes with an initial Narrative List that can be modified. The Name and Description can be changed and also new Narratives can be added.</value>
   </data>
-  <data name="Accounts_Title.Text" xml:space="preserve">
+  <data name="Accounts_Title" xml:space="preserve">
     <value>Accounts</value>
   </data>
-  <data name="Narratives_Title.Text" xml:space="preserve">
+  <data name="Narratives_Title" xml:space="preserve">
     <value>Narratives</value>
   </data>
   <data name="AccountsLV_Delete.Label" xml:space="preserve">
@@ -335,10 +341,10 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Library_AddCoin.Content" xml:space="preserve">
     <value>Add Coin</value>
   </data>
-  <data name="Library_Explainer.Text" xml:space="preserve">
+  <data name="Library_Explainer" xml:space="preserve">
     <value>The Library is a collection of crypto coins that you are interested in. So you won't be distracted or disturbed by the large amount of unimportant coins out there. The coins in the library can be used to build your portfolio.</value>
   </data>
-  <data name="Library_Title.Text" xml:space="preserve">
+  <data name="Library_Title" xml:space="preserve">
     <value>Coin Library</value>
   </data>
   <data name="TransactionsLV_Delete.Label" xml:space="preserve">
@@ -362,7 +368,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="TransactionDialog_AccountToHeader" xml:space="preserve">
     <value>To Account</value>
   </data>
-  <data name="TransactionDialog_Buy_Explainer" xml:space="preserve">
+  <data name="TransactionType_Buy.ToolTipService.ToolTip" xml:space="preserve">
     <value>A Buy is a conversion from a StableCoin to a Non-StableCoin and can be combined with a Transfer from accounts.</value>
   </data>
   <data name="TransactionDialog_CloseButton" xml:space="preserve">
@@ -377,13 +383,13 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="TransactionDialog_CoinToHeader" xml:space="preserve">
     <value>To Coin</value>
   </data>
-  <data name="TransactionDialog_Convert_Explainer" xml:space="preserve">
-    <value>A Convert is a conversion from Coin_A to Coin_B and can be combined with a Transfer from accounts.</value>
+  <data name="TransactionType_Convert.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A Convert is a conversion from Coin_A to Coin_B (or Stablecoin A to Stablecoin B) and can be combined with a Transfer from accounts.</value>
   </data>
   <data name="TransactionDialog_DatePicker.Header" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="TransactionDialog_Deposit_Explainer" xml:space="preserve">
+  <data name="TransactionType_Deposit.ToolTipService.ToolTip" xml:space="preserve">
     <value>A Deposit is a transaction where 'new' crypto flows into your portfolio. The source could be any fiat bank account, but will not be registered. Only the receiving Account is registered.</value>
   </data>
   <data name="TransactionDialog_FeeCoin.Header" xml:space="preserve">
@@ -405,7 +411,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>calculated price...</value>
   </data>
   <data name="TransactionDialog_PriceA.Header" xml:space="preserve">
-    <value>Price</value>
+    <value>Price (USD)</value>
   </data>
   <data name="TransactionDialog_PriceA.PlaceholderText" xml:space="preserve">
     <value>Set price...</value>
@@ -422,7 +428,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="TransactionDialog_QtyHeader" xml:space="preserve">
     <value>Qty</value>
   </data>
-  <data name="TransactionDialog_Sell_Explainer" xml:space="preserve">
+  <data name="TransactionType_Sell.ToolTipService.ToolTip" xml:space="preserve">
     <value>A Sell is a conversion from a Non-StableCoin to a StableCoin and can be combined with a Transfer from accounts.</value>
   </data>
   <data name="TransactionDialog_TimePicker.Header" xml:space="preserve">
@@ -434,13 +440,10 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="TransactionDialog_Title_Edit" xml:space="preserve">
     <value>Edit Transaction</value>
   </data>
-  <data name="TransactionDialog_TransactionType.Header" xml:space="preserve">
-    <value>Transaction Type</value>
-  </data>
-  <data name="TransactionDialog_Transfer_Explainer" xml:space="preserve">
+  <data name="TransactionType_Transfer.ToolTipService.ToolTip" xml:space="preserve">
     <value>A Transfer is a 'transaction' where crypto moves from one account to another.</value>
   </data>
-  <data name="TransactionDialog_Withdraw_Explainer" xml:space="preserve">
+  <data name="TransactionType_Withdraw.ToolTipService.ToolTip" xml:space="preserve">
     <value>A Withdraw is a transaction where crypto flows out of your portfolio. The destination could be any fiat bank account.</value>
   </data>
   <data name="TransactionType_Buy.Content" xml:space="preserve">
@@ -462,13 +465,19 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>Withdraw</value>
   </data>
   <data name="TransactionDialog_PriceB.Header" xml:space="preserve">
-    <value>Price</value>
+    <value>Price (USD)</value>
   </data>
-  <data name="NarrativeDialog_Description.Header" xml:space="preserve">
-    <value>Narrative Description</value>
-  </data>
-  <data name="AccountDialog_Description.Header" xml:space="preserve">
+  <data name="AccountDialog_DescriptionHeader.Text" xml:space="preserve">
     <value>Account Description</value>
+  </data>
+  <data name="NarrativeDialog_DescriptionHeader.Text" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="AccountDialog_Description_Explain.Text" xml:space="preserve">
+    <value>Add details to help identify this account.</value>
+  </data>
+  <data name="NarrativeDialog_Description_Explain.Text" xml:space="preserve">
+    <value>Add a description for  this Narrative....</value>
   </data>
   <data name="AccountDialog_Description.PlaceholderText" xml:space="preserve">
     <value>Description goes here....</value>
@@ -476,11 +485,11 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="NarrativeDialog_Description.PlaceholderText" xml:space="preserve">
     <value>Description goes here....</value>
   </data>
-  <data name="AccountDialog_Name.Header" xml:space="preserve">
+  <data name="AccountDialog_NameHeader.Text" xml:space="preserve">
     <value>Account Name</value>
   </data>
-  <data name="NarrativeDialog_Name.Header" xml:space="preserve">
-    <value>Narrative Name</value>
+  <data name="NarrativeDialog_NameHeader.Text" xml:space="preserve">
+    <value>Name</value>
   </data>
   <data name="AccountDialog_Name.PlaceholderText" xml:space="preserve">
     <value>e.g. Bybit Funding...</value>
@@ -498,7 +507,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>Accept Account</value>
   </data>
   <data name="NarrativeDialog_PrimaryButton_Add" xml:space="preserve">
-    <value>Accept Narrative</value>
+    <value>Accept</value>
   </data>
   <data name="AccountDialog_PrimaryButton_Edit" xml:space="preserve">
     <value>Accept</value>
@@ -534,7 +543,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>Name</value>
   </data>
   <data name="CoinDialog_Price.Text" xml:space="preserve">
-    <value>Price</value>
+    <value>Price (USD)</value>
   </data>
   <data name="CoinDialog_PrimaryButton" xml:space="preserve">
     <value>Accept</value>
@@ -551,8 +560,11 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="NoteDialog_CloseButton" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="NoteDialog_Note.Header" xml:space="preserve">
+  <data name="NoteDialog_NoteHeader.Text" xml:space="preserve">
     <value>Note</value>
+  </data>
+  <data name="NoteDialog_Note_Explain.Text" xml:space="preserve">
+    <value>Add details that you want to attach to this coin</value>
   </data>
   <data name="NoteDialog_Note.PlaceholderText" xml:space="preserve">
     <value>e.g. this is the place to put a note....</value>
@@ -732,10 +744,10 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>30 days</value>
   </data>
   <data name="CoinDialog_SearchBox.MyPlaceholderText" xml:space="preserve">
-    <value>search using name, symbol, id</value>
+    <value>Search by name, symbol or ID. Use multiple terms to narrow results (e.g. Tether, USDT)</value>
   </data>
   <data name="CoinDialog_SearchBox.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Search coin using name, symbol, id</value>
+    <value>Search by name, symbol or ID. Use multiple terms to narrow results (e.g. Tether, USDT)</value>
   </data>
   <data name="Messages_AddingCoinFailed" xml:space="preserve">
     <value>Adding coin to the Library failed</value>
@@ -779,19 +791,22 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Library_AddPreListingCoin.Content" xml:space="preserve">
     <value>Add Pre-Listing Coin</value>
   </data>
-  <data name="PreListingCoinDialog_About.Header" xml:space="preserve">
+  <data name="PreListingCoinDialog_AboutHeader.Text" xml:space="preserve">
     <value>Description/Note</value>
+  </data>
+  <data name="PreListingCoinDialog_AboutExplain.Text" xml:space="preserve">
+    <value>describe the project or its purpose.</value>
   </data>
   <data name="PreListingCoinDialog_About.PlaceholderText" xml:space="preserve">
     <value>e.g. Coin listing expected to be in Q1 2025</value>
   </data>
-  <data name="PreListingCoinDialog_Name.Header" xml:space="preserve">
+  <data name="PreListingCoinDialog_NameHeader.Text" xml:space="preserve">
     <value>Coin Name</value>
   </data>
   <data name="PreListingCoinDialog_Name.PlaceholderText" xml:space="preserve">
     <value>e.g. Promising Project</value>
   </data>
-  <data name="PreListingCoinDialog_Symbol.Header" xml:space="preserve">
+  <data name="PreListingCoinDialog_SymbolHeader.Text" xml:space="preserve">
     <value>Coin Symbol</value>
   </data>
   <data name="PreListingCoinDialog_Symbol.PlaceholderText" xml:space="preserve">
@@ -800,8 +815,8 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="PreListingCoinDialog_Title" xml:space="preserve">
     <value>Add a Pre-listing Coin</value>
   </data>
-  <data name="PreListingCoinDialog_Price.Header" xml:space="preserve">
-    <value>Price</value>
+  <data name="PreListingCoinDialog_PriceHeader.Text" xml:space="preserve">
+    <value>Price (USD)</value>
   </data>
   <data name="LibraryLV_Merge.Label" xml:space="preserve">
     <value>Merge pre-listing coin...</value>
@@ -846,7 +861,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>About</value>
   </data>
   <data name="TransactionDialog_Earnings.Content" xml:space="preserve">
-    <value>Staking yield</value>
+    <value>concerns proceeds of Staking yield</value>
   </data>
   <data name="AboutDialog_Title" xml:space="preserve">
     <value>About</value>
@@ -911,17 +926,17 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="PriceLevelsLV_Symbol.Text" xml:space="preserve">
     <value>Symbol</value>
   </data>
-  <data name="PriceLevels_Explainer.Text" xml:space="preserve">
+  <data name="PriceLevels_Explainer" xml:space="preserve">
     <value>This overview gives an indication if the actual price of a coin is within range of a specified level. The levels that can be set are, a Take Profit, a buy and a Stop level. If the price is within range of a level it will be indicated by a colour. </value>
   </data>
-  <data name="PriceLevels_Title.Text" xml:space="preserve">
+  <data name="PriceLevels_Title" xml:space="preserve">
     <value>Price Levels</value>
   </data>
   <data name="PriceLevelsLV_AddEditLevels.Label" xml:space="preserve">
     <value>Add/Edit Price Levels</value>
   </data>
   <data name="PriceLevelsLV_Delete.Label" xml:space="preserve">
-    <value>Delete Price Levels</value>
+    <value>Reset Price Levels</value>
   </data>
   <data name="Navigation_PriceLevels.Content" xml:space="preserve">
     <value>Price Levels</value>
@@ -936,6 +951,12 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>Price Levels Dialog Failure</value>
   </data>
   <data name="PriceLevelsDialog_BuyHeader.Text" xml:space="preserve">
+    <value>Buy price (USD)</value>
+  </data>
+  <data name="PriceLevelsDialog_NoteHeader.Text" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="PriceLevelsDialog_BuyHeaderSection.Text" xml:space="preserve">
     <value>Buy level</value>
   </data>
   <data name="PriceLevelsDialog_CloseButton" xml:space="preserve">
@@ -945,16 +966,22 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
     <value>Accept</value>
   </data>
   <data name="PriceLevelsDialog_StopHeader.Text" xml:space="preserve">
+    <value>Stop price (USD)</value>
+  </data>
+  <data name="PriceLevelsDialog_StopHeaderSection.Text" xml:space="preserve">
     <value>Stop level</value>
   </data>
   <data name="PriceLevelsDialog_Title" xml:space="preserve">
-    <value>Price Levels for </value>
+    <value>Price Levels for</value>
   </data>
   <data name="PriceLevelsDialog_TpHeader.Text" xml:space="preserve">
+    <value>Target price (USD)</value>
+  </data>
+  <data name="PriceLevelsDialog_TpHeaderSection.Text" xml:space="preserve">
     <value>Take profit level</value>
   </data>
   <data name="PriceLevelsDialog_Note.PlaceholderText" xml:space="preserve">
-    <value>Write a note....</value>
+    <value>Optional - Write a note....</value>
   </data>
   <data name="PriceLevelsLV_AvgCost.Text" xml:space="preserve">
     <value>Avg. cost price</value>
@@ -1088,8 +1115,11 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="AssignNarrativeDialog_AboutHeader.Text" xml:space="preserve">
     <value>Description/Note</value>
   </data>
-  <data name="AssignNarrativeDialog_ComboHeader.Header" xml:space="preserve">
-    <value>Narrative</value>
+  <data name="AssignNarrativeDialog_ComboHeader.Text" xml:space="preserve">
+    <value>Select Narrative</value>
+  </data>
+  <data name="AssignNarrativeDialog_DescriptionHeader.Text" xml:space="preserve">
+    <value>Description</value>
   </data>
   <data name="AssignNarrativeDialog_Title_Edit" xml:space="preserve">
     <value>Assign/Edit Narrative for</value>
@@ -1103,7 +1133,13 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="NarrativeDialog_NarrativeNameExists" xml:space="preserve">
     <value>a Narrative with this name already exists</value>
   </data>
+  <data name="NarrativeDialog_NarrativeNotAllowed" xml:space="preserve">
+    <value>NOT Allowed: Stablecoin is reserved </value>
+  </data>
   <data name="AccountDialog_AccountNameExists" xml:space="preserve">
+    <value>an Account with this name already exists</value>
+  </data>
+  <data name="AccountDialog_AccountNameNotAllowed" xml:space="preserve">
     <value>an Account with this name already exists</value>
   </data>
   <data name="Navigation_TeachNarrative.Title" xml:space="preserve">
@@ -1172,10 +1208,10 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="HeatMap_TeachRsi.Title" xml:space="preserve">
     <value>New Feature: daily RSI bubbles</value>
   </data>
-  <data name="SwitchPortfolio_Title.Text" xml:space="preserve">
+  <data name="SwitchPortfolio_Title" xml:space="preserve">
     <value>Switch Portfolio</value>
   </data>
-  <data name="SwitchPortfolio_Explainer.Text" xml:space="preserve">
+  <data name="SwitchPortfolio_Explainer" xml:space="preserve">
     <value>The Crypto Portfolio Tracker supports multiple portfolios. Go to the Portfolio Admin view to manage and setup your portfolio(s). Switch from portfolio by double-clicking one of the portfolios in the list below.</value>
   </data>
   <data name="SwitchPortfolioLV_Title.Text" xml:space="preserve">
@@ -1190,10 +1226,10 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="Navigation_Admin.Content" xml:space="preserve">
     <value>Portfolio Admin</value>
   </data>
-  <data name="PortfolioAdmin_Title.Text" xml:space="preserve">
+  <data name="PortfolioAdmin_Title" xml:space="preserve">
     <value>Portfolio Admin</value>
   </data>
-  <data name="PortfolioAdmin_Explainer.Text" xml:space="preserve">
+  <data name="PortfolioAdmin_Explainer" xml:space="preserve">
     <value>This view provides you with the means to maintain your portfolio's with regard to renaming, adding, removing and copying of a portfolio. The App also creates Restore Points at specific moments. In case of a faulty portfolio, you wil have the possibility to restore the portfolio by using a Restore Point. Besides that, you can also create/restore your own backup. This could be usefull for example for (temporary) moving your portfolio to a laptop during holiday.</value>
   </data>
   <data name="PortfolioDialog_Title_Edit" xml:space="preserve">
@@ -1307,7 +1343,7 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="CopyPortfolioDialog_CopyOptions.Text" xml:space="preserve">
     <value>Choose which Copy option you prefer. A Full copy results in an exact copy including Assets and Transactions. A Partial copy contains the Coin Library (including PriceLevels and Narratives) and the Accounts.</value>
   </data>
-  <data name="CopyPortfolioDialog_Name.Header" xml:space="preserve">
+  <data name="CopyPortfolioDialog_NameHeader.Text" xml:space="preserve">
     <value>New Portfolio Name</value>
   </data>
   <data name="PortfolioDialog_PrimaryButton_Copy" xml:space="preserve">
@@ -1322,8 +1358,14 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   <data name="PortfolioDialog_PrimaryButton_Restore" xml:space="preserve">
     <value>Restore</value>
   </data>
-  <data name="RestorePortfolioDialog_Name.Header" xml:space="preserve">
+  <data name="RestorePortfolioDialog_NameHeader.Text" xml:space="preserve">
     <value>Portfolio Name</value>
+  </data>
+  <data name="RestorePortfolioDialog_BrowseButton.Content" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="RestorePortfolioDialog_FileHeader.Text" xml:space="preserve">
+    <value>Selected backup</value>
   </data>
   <data name="RestorePortfolioDialog_ExplNoSignature" xml:space="preserve">
     <value>Invalid Backup. Cannot continue with Restore</value>
@@ -1526,5 +1568,17 @@ Build up your assets by adding transactions using the 'Add Transaction' button a
   </data>
   <data name="HeatMapView_BreakEven_YAxisTitle" xml:space="preserve">
     <value>Distance to Break-Even Level [%]</value>
+  </data>
+  <data name="TransactionDialog_AccountLink.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Link Account selection</value>
+  </data>
+  <data name="PreListingCoinDialog_SymbolPriceHeader.Text" xml:space="preserve">
+    <value>Symbol and initial price</value>
+  </data>
+  <data name="RestorePortfolioDialog_FileNamePlaceholder" xml:space="preserve">
+    <value>Select a file to restore...</value>
+  </data>
+  <data name="CoinDialog_SearchBoxHeader.Text" xml:space="preserve">
+    <value>Find a coin</value>
   </data>
 </root>

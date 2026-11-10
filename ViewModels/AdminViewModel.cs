@@ -40,14 +40,19 @@ namespace CryptoPortfolioTracker.ViewModels
     {
         public static AdminViewModel Current;
         private readonly IMessenger _messenger;
-        public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+        public Settings AppSettings => base._appSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
 
         public PortfolioService _portfolioService { get; private set; }
+        [ObservableProperty] public partial string ExplainerText { get; set; }
+        [ObservableProperty] public partial string ViewTitle { get; set; }
+
+        [ObservableProperty] private ObservableCollection<Portfolio> listPortfolios = new();
         [ObservableProperty] private ObservableCollection<Backup> backups = new();
         [ObservableProperty] private Backup? selectedBackup;
         [ObservableProperty] private string? selectedBrowseFolder;
         [ObservableProperty] private Portfolio? selectedPortfolio;
         
+        //[ObservableProperty] public partial int? SelectedPortfolioId { get; set; }
         partial void OnSelectedPortfolioChanged(Portfolio? oldValue, Portfolio? newValue)
         {
             Backups = newValue != null ? PortfolioService.GetBackups(newValue.Signature) : new();
@@ -55,7 +60,7 @@ namespace CryptoPortfolioTracker.ViewModels
             
         }
 
-        public AdminViewModel(PortfolioService portfolioService, IMessenger messenger, Settings appSettings) : base(appSettings)
+        public AdminViewModel(PortfolioService portfolioService, IMessenger messenger, Settings appSettings, IDialogService dialogService) : base(appSettings, dialogService, messenger)
         {
             Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AdminViewModel).Name.PadRight(22));
             Current = this;
@@ -66,9 +71,12 @@ namespace CryptoPortfolioTracker.ViewModels
         /// <summary>  
         /// This method is called by the AdminPortfolioView_Loaded event.  
         /// </summary>  
-        public void AdminViewLoading()
+        public async Task AdminViewLoading()
         {
-            SelectedPortfolio =  _portfolioService.CurrentPortfolio;
+            ExplainerText = loc.GetLocalizedString("PortfolioAdmin_Explainer");
+            ViewTitle = loc.GetLocalizedString("PortfolioAdmin_Title");
+            await PopulatePortfoliosList();
+            SelectedPortfolio =  _portfolioService.GetCurrentPortfolio();
             
         }
         
@@ -106,29 +114,22 @@ namespace CryptoPortfolioTracker.ViewModels
         private async Task AddPortfolio()
         {
             var loc = Localizer.Get();
-            
-            // Show the rename dialog
-            PortfolioDialog dialog = new PortfolioDialog(this);
 
-            dialog.RequestedTheme = AppSettings.AppTheme;
-            dialog.XamlRoot = MainPage.Current.XamlRoot;
+            var portfolio = await _dialogService.ShowAsync<PortfolioDialog, Portfolio>(new PortfolioDialogParameters(DialogAction.Add, null));
 
-            var result = await App.ShowContentDialogAsync(dialog);
-            var portfolio = dialog.newPortfolio;
-
-            if (result == ContentDialogResult.Primary && portfolio is not null)
+            if (portfolio is not null)
             {
                 Logger.Information("Adding Portfolio ({0})", portfolio.Name);
                 var renameResult = await _portfolioService.AddPortfolio(portfolio);
                 renameResult.Match(
                     Right: _ =>
                     {
-
+                        AddToPortfoliosList(portfolio);
                         Logger.Information("Adding Portfolio successful");
                     },
                     Left: async error =>
                     {
-                        await ShowMessageDialog(
+                        await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_PortfolioAddFailed_Title"),
                         error.Message,
                         loc.GetLocalizedString("Common_CloseButton"));
@@ -138,33 +139,29 @@ namespace CryptoPortfolioTracker.ViewModels
             
         }
 
+        
         [RelayCommand]
         private async Task RenamePortfolio(Portfolio portfolio)
         {
             var loc = Localizer.Get();
             if (SelectedPortfolio != null)
             {
-                // Show the rename dialog
-                PortfolioDialog dialog = new PortfolioDialog(this, Enums.DialogAction.Edit, portfolio);
+                var newPortfolio = await _dialogService.ShowAsync<PortfolioDialog, Portfolio>(new PortfolioDialogParameters(DialogAction.Edit, portfolio));
 
-                dialog.RequestedTheme = AppSettings.AppTheme;
-                dialog.XamlRoot = MainPage.Current.XamlRoot;
-
-                var result =  await App.ShowContentDialogAsync(dialog);
-
-                if (result == ContentDialogResult.Primary && dialog.newPortfolio is not null)
+                if (newPortfolio is not null)
                 {
                     Logger.Information("Renaming Portfolio ({0})", portfolio.Name);
-                    var renameResult = await _portfolioService.RenamePortfolio(portfolio, dialog.newPortfolio);
+                    var renameResult = await _portfolioService.RenamePortfolio(portfolio, newPortfolio);
                     renameResult.Match(
                         Right: _ =>
                         {
+                            UpdatePortfoliosList(newPortfolio);
                             SelectedPortfolio = portfolio;
                             Logger.Information("Renaming Portfolio successful");
                         },
                         Left: async error =>
                         {
-                            await ShowMessageDialog(
+                            await _dialogService.ShowMessageAsync(
                             loc.GetLocalizedString("Messages_PortfolioRenameFailed_Title"),
                             error.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
@@ -179,28 +176,23 @@ namespace CryptoPortfolioTracker.ViewModels
         {
             if (portfolio != null)
             {
-                // Show the copy dialog
-                CopyPortfolioDialog dialog = new CopyPortfolioDialog(this, portfolio);
+                var dialogResult = await _dialogService.ShowAsync<CopyPortfolioDialog, CopyPortfolioDialogResult>(new CopyPortfolioDialogParameters(portfolio));
 
-                dialog.RequestedTheme = AppSettings.AppTheme;
-                dialog.XamlRoot = MainPage.Current.XamlRoot;
-
-                var result = await App.ShowContentDialogAsync(dialog);
-
-                if (result == ContentDialogResult.Primary && dialog.NewPortfolioName != string.Empty)
+                if (dialogResult != null)
                 {
-                    var newPortfolio = new Portfolio { Name = dialog.NewPortfolioName };
+                    var newPortfolio = new Portfolio { Name = dialogResult.PortfolioName };
                     Logger.Information("Copying Portfolio ({0})", portfolio.Name);
-                    var copyResult = await _portfolioService.CopyPortfolio(portfolio, newPortfolio, dialog.NeedPartialCopy);
+                    var copyResult = await _portfolioService.CopyPortfolio(portfolio, newPortfolio, dialogResult.NeedPartialCopy);
                     copyResult.Match(
                         Right: _ =>
                         {
+                            AddToPortfoliosList(newPortfolio);
                             Logger.Information("Copying Portfolio successful");
                         },
                         Left: async error =>
                         {
                             var loc = Localizer.Get();
-                            await ShowMessageDialog(
+                            await _dialogService.ShowMessageAsync(
                             loc.GetLocalizedString("Messages_PortfolioCopyFailed_Title"),
                             error.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
@@ -217,8 +209,8 @@ namespace CryptoPortfolioTracker.ViewModels
             // this command is dummy because the final command is run through the Flyout that 
             // shows when the user clicks on the delete button.
         }
-        
 
+        
         [RelayCommand]
         private async Task DeletePortfolio(Portfolio portfolio)
         {
@@ -236,13 +228,14 @@ namespace CryptoPortfolioTracker.ViewModels
                 deleteResult.Match(
                     Right: _ =>
                     {
+                        RemoveFromListPortfolios(portfolio);
                         SelectedPortfolio = _portfolioService.CurrentPortfolio;
                         Logger.Information("Succesfully deleted Portfolio ({0})", portfolio.Name);
                     },
                     Left: async error =>
                     {
                         var loc = Localizer.Get();
-                        await ShowMessageDialog(
+                        await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_PortfolioDeleteFailed_Title"),
                         error.Message,
                         loc.GetLocalizedString("Common_CloseButton"));
@@ -269,6 +262,7 @@ namespace CryptoPortfolioTracker.ViewModels
                     backupResult.Match(
                         Right: succ =>
                         {
+                            RefreshBackupList(portfolio.Signature);
                             Logger.Information("Backup of portfolio {PortfolioName} successful", portfolio.Name);
                         },
                         Left: err =>
@@ -312,7 +306,18 @@ namespace CryptoPortfolioTracker.ViewModels
                 {
                     var sourcePathZip = Path.Combine(AppConstants.PortfoliosPath, portfolio.Signature, AppConstants.BackupFolder);
                     var backupFilePath = Path.Combine(sourcePathZip, SelectedBackup.FileName);
-                    await DoRestore(portfolio, backupFilePath);
+                    //await DoRestore(portfolio, backupFilePath);
+
+                    var restoreResult = await DoRestore(portfolio, backupFilePath);
+                    restoreResult.Match(
+                        Right: succ =>
+                        {
+                            _messenger.Send(new ShowAnimationMessage(Colors.Green));
+                        },
+                        Left: err =>
+                        {
+                            _messenger.Send(new ShowAnimationMessage(Colors.Red));
+                        });
                 }
                 await ResumeServicesAndConnect(portfolio);
             }
@@ -332,6 +337,7 @@ namespace CryptoPortfolioTracker.ViewModels
                         _messenger.Send(new ShowAnimationMessage(Colors.Red));
                     });
             }
+            RefreshPortfoliosList();
         }
 
         private async Task ResumeServicesAndConnect(Portfolio portfolio)
@@ -347,7 +353,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 Left: async error =>
                 {
                     var loc = Localizer.Get();
-                    await ShowMessageDialog(
+                    await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_PortfolioRestoreConnectFailed_Title"),
                         error.Message,
                         loc.GetLocalizedString("Common_CloseButton"));
@@ -374,7 +380,7 @@ namespace CryptoPortfolioTracker.ViewModels
                 Left: async error =>
                 {
                     var loc = Localizer.Get();
-                    await ShowMessageDialog(
+                    await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_PortfolioRestoreDisconnectFailed_Title"),
                         error.Message,
                         loc.GetLocalizedString("Common_CloseButton"));
@@ -407,7 +413,7 @@ namespace CryptoPortfolioTracker.ViewModels
                                 Left: async err =>
                                 {
                                     var loc = Localizer.Get();
-                                    await ShowMessageDialog(
+                                    await _dialogService.ShowMessageAsync(
                                     loc.GetLocalizedString("Messages_PortfolioRestoreWarning_Title"),
                                     loc.GetLocalizedString("Messages_PortfolioRestoreWarning_Message"),
                                     loc.GetLocalizedString("Common_CloseButton"));
@@ -424,7 +430,7 @@ namespace CryptoPortfolioTracker.ViewModels
                         {
                             Logger.Error($"Restoring Signature Folder returned unsuccesfull (ErrorCriticalCanContinue) -> continued with existing portfolio");
                             var loc = Localizer.Get();
-                            await ShowMessageDialog(
+                            await _dialogService.ShowMessageAsync(
                             loc.GetLocalizedString("Messages_PortfolioRestoreCriticalError_Title"),
                             loc.GetLocalizedString("Messages_PortfolioRestoreCriticalError_Message"),
                             loc.GetLocalizedString("Common_CloseButton"));
@@ -438,7 +444,7 @@ namespace CryptoPortfolioTracker.ViewModels
                             RevertRestore(portfolio);
 
                             var loc = Localizer.Get();
-                            await ShowMessageDialog(
+                            await _dialogService.ShowMessageAsync(
                             loc.GetLocalizedString("Messages_PortfolioRestoreCriticalError_Title"),
                             loc.GetLocalizedString("Messages_PortfolioRestoreCriticalError_Message"),
                             loc.GetLocalizedString("Common_CloseButton"));
@@ -695,53 +701,114 @@ namespace CryptoPortfolioTracker.ViewModels
         [RelayCommand]
         private async Task BrowseAndRestorePortfolio()
         {
+            var dialogResult = await _dialogService.ShowAsync<RestorePortfolioDialog, RestorePortfolioDialogResult>();
 
-            // Show the copy dialog
-            RestorePortfolioDialog dialog = new RestorePortfolioDialog(this, _portfolioService);
-
-            dialog.RequestedTheme = AppSettings.AppTheme;
-            dialog.XamlRoot = MainPage.Current.XamlRoot;
-
-            var result = await App.ShowContentDialogAsync(dialog);
-
-            if (result == ContentDialogResult.Primary && dialog.Portfolio != null)
+            if (dialogResult != null && dialogResult.Portfolio != null)
             {
 
-                if (dialog.Portfolio == _portfolioService.CurrentPortfolio)
+                if (dialogResult.Portfolio == _portfolioService.CurrentPortfolio)
                 {
-                    var isSuccesfull = await PauseServicesAndDisconnect(dialog.Portfolio);
+                    var isSuccesfull = await PauseServicesAndDisconnect(dialogResult.Portfolio);
                     if (isSuccesfull)
                     {
-                        var restoreResult = await DoRestore(dialog.Portfolio, dialog.FileName);
+                        var restoreResult = await DoRestore(dialogResult.Portfolio, dialogResult.FileName);
                         restoreResult.Match(
                             Right: succ =>
                             {
-                                _messenger.Send(new ShowAnimationMessage(Colors.Green, true, dialog.Portfolio));
+                                _messenger.Send(new ShowAnimationMessage(Colors.Green, true, dialogResult.Portfolio));
                             },
                             Left: err =>
                             {
-                                _messenger.Send(new ShowAnimationMessage(Colors.Red, true, dialog.Portfolio));
+                                _messenger.Send(new ShowAnimationMessage(Colors.Red, true, dialogResult.Portfolio));
                             });
                     }
-                    await ResumeServicesAndConnect(dialog.Portfolio);
+                    await ResumeServicesAndConnect(dialogResult.Portfolio);
                 }
                 else
                 {
-                    var restoreResult = await DoRestore(dialog.Portfolio, dialog.FileName);
+                    var restoreResult = await DoRestore(dialogResult.Portfolio, dialogResult.FileName);
                     restoreResult.Match(
                         Right: succ =>
                         {
-                            _messenger.Send(new ShowAnimationMessage(Colors.Green, true, dialog.Portfolio));
+                            _messenger.Send(new ShowAnimationMessage(Colors.Green, true, dialogResult.Portfolio));
                         },
                         Left: err =>
                         {
-                            _messenger.Send(new ShowAnimationMessage(Colors.Red, true, dialog.Portfolio));
+                            _messenger.Send(new ShowAnimationMessage(Colors.Red, true, dialogResult.Portfolio));
                         });
                 }
-               
+                RefreshPortfoliosList();
             }
         }
-        
+
+        private async Task PopulatePortfoliosList()
+        {
+            var list = await _portfolioService.GetPortfolios();
+
+            ListPortfolios = new ObservableCollection<Portfolio>(list.ToList());
+        }
+
+
+        private async Task RefreshPortfoliosList()
+        {
+            if (ListPortfolios == null || ListPortfolios.Count == 0) { return; }
+
+            var refreshedList = await _portfolioService.GetPortfolios();
+
+            foreach (var item in refreshedList)
+            {
+                // Find the corresponding item in the existing collection and update its properties
+                var existingItem = ListPortfolios?.FirstOrDefault(x => x.Signature == item.Signature);
+                if (existingItem != null)
+                {
+                    existingItem.Name = item.Name;
+                    existingItem.Signature = item.Signature;
+                    existingItem.LastAccess = item.LastAccess;
+                }
+                else
+                {
+                    ListPortfolios.Add(item);
+                }
+            }
+
+        }
+        private void RefreshBackupList(string signature)
+        {
+            Backups = PortfolioService.GetBackups(signature);
+        }
+
+
+        private void UpdatePortfoliosList(Portfolio portfolio)
+        {
+            if (portfolio == null || string.IsNullOrWhiteSpace(portfolio.Signature)) { return; }
+
+            // Find the corresponding item in the existing collection and update its properties
+            var existingItem = ListPortfolios?.FirstOrDefault(x => x.Signature == portfolio.Signature);
+            if (existingItem != null)
+            {
+                existingItem.Name = portfolio.Name;
+                existingItem.Signature = portfolio.Signature;
+                existingItem.LastAccess = portfolio.LastAccess;
+            }
+        }
+
+        private void RemoveFromListPortfolios(Portfolio portfolio)
+        {
+            var portfolioToRemove = ListPortfolios.FirstOrDefault(x => x.Signature == portfolio.Signature);
+            if (portfolioToRemove != null)
+            {
+                ListPortfolios.Remove(portfolioToRemove);
+            }
+            
+        }
+
+        private void AddToPortfoliosList(Portfolio portfolio)
+        {
+            if (!string.IsNullOrWhiteSpace(portfolio.Signature))
+            {
+                ListPortfolios.Add(portfolio);
+            }
+        }
 
     }
 }

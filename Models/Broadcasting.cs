@@ -1,24 +1,28 @@
 ﻿
 namespace CryptoPortfolioTracker.Models;
 
-//public class UpdatePricesMessage
-//{
-//    public Coin Coin { get; }
-//    public UpdatePricesMessage(Coin coin)
-//    {
-//        Coin = coin;
-//    }
-//}
-public class UpdatePricesMessage
+public class ExchangeRateMissingMessage
 {
-    
-}
+    public DateOnly Date { get; }
+    public string Reason { get; }
 
-public class UpdateDashboardMessage
-{
+    public ExchangeRateMissingMessage(DateOnly date, string reason)
+    {
+        Date = date;
+        Reason = reason;
+    }
 
 }
 
+public class DashboardSettingsChangedMessage
+{
+    public IReadOnlyCollection<string> ChangedSettings { get; }
+
+    public DashboardSettingsChangedMessage(IEnumerable<string> changedSettings)
+    {
+        ChangedSettings = changedSettings?.ToList() ?? new List<string>();
+    }
+}
 public class UpdateProgressValueMessage
 {
     public int ProgressValue { get; }
@@ -29,9 +33,28 @@ public class UpdateProgressValueMessage
     }
 }
 
-public class GraphUpdatedMessage
+public class UpdatePricesMessage
 {
     
+}
+
+public class UpdateDashboardMessage
+{
+
+}
+
+
+public class GraphUpdatedMessage
+{
+
+}
+public class CurrencyChangedMessage
+{
+
+}
+public class FontSizeChangedMessage
+{
+
 }
 
 public class PortfolioConnectionChangedMessage
@@ -39,11 +62,6 @@ public class PortfolioConnectionChangedMessage
 
 }
 public class ShowBePatienceMessage
-{
-
-}
-
-public class PreferencesChangedMessage
 {
 
 }

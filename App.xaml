@@ -12,6 +12,39 @@
                 <ResourceDictionary Source="Resources/Styles.xaml"/>
                 <ResourceDictionary Source="Resources/MK_Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#EEBC3F" />
+            <Color x:Key="SystemAccentColor">#EEBC3F</Color>
+            <!-- Primary button -->
+            <SolidColorBrush x:Key="AccentButtonBackground" Color="#EEBC3F" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#D9A82F" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#C99725" />
+             <!-- Progress Ring -->
+            <SolidColorBrush x:Key="ProgressRingForegroundThemeBrush" Color="#EEBC3F" />
+             <!-- NavigationViewSelection Indicator -->
+            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#EEBC3F" />
+            <!-- ListView selection indicator -->
+            <SolidColorBrush x:Key="ListViewItemSelectionIndicatorBrush"  Color="#EEBC3F" />
+            <SolidColorBrush x:Key="ListViewItemSelectionIndicatorPointerOverBrush"  Color="#EEBC3F" />
+            <SolidColorBrush x:Key="ListViewItemSelectionIndicatorPressedBrush" Color="#EEBC3F" />
+            <!-- GridView selection indicator -->
+            <SolidColorBrush x:Key="GridViewItemSelectedBorderBrush"  Color="#EEBC3F" />
+            <SolidColorBrush x:Key="GridViewItemSelectedPointerOverBorderBrush"  Color="#EEBC3F" />
+            <SolidColorBrush x:Key="GridViewItemSelectedPressedBorderBrush" Color="#EEBC3F" />
+            <!-- CheckBox checked state -->
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#EEBC3F" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#D9A82F" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#C99725" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#EEBC3F" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#D9A82F" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#C99725" />
+            <!-- RadioButton checked state -->
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFill" Color="#EEBC3F" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPointerOver" Color="#D9A82F" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPressed" Color="#C99725" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStroke" Color="#EEBC3F" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver" Color="#D9A82F" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePressed" Color="#C99725" />
+
             <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>

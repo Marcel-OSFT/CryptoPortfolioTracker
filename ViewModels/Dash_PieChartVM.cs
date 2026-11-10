@@ -18,8 +18,6 @@ public partial class DashboardViewModel : BaseViewModel
 {
     public List<PieChartControl> PieChartControls { get; set; } = new();
 
-    
-
     /// <summary>   
     /// This method is called by the PieChartControl_Loaded event.  
     /// </summary>

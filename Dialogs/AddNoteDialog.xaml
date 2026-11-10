@@ -1,34 +1,49 @@
-<ContentDialog
+<local:BaseDialog
     x:Class="CryptoPortfolioTracker.Dialogs.AddNoteDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:local="using:CryptoPortfolioTracker" 
+    xmlns:local="using:CryptoPortfolioTracker.Dialogs" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     DefaultButton="Primary"
     xmlns:l="using:WinUI3Localizer"
-    Loading="Dialog_Loading"
     PrimaryButtonClick="Button_Click_AcceptNote">
 
-    <ContentDialog.Resources>
+    <local:BaseDialog.Resources>
         <!-- Overriding ContentDialogMaxWidth value -->
         <x:Double x:Key="ContentDialogMaxWidth">800</x:Double>
-    </ContentDialog.Resources>
+    </local:BaseDialog.Resources>
 
-    <Grid  Margin="0,0,0,0" Width="600">
+    <Grid MinWidth="400" MaxWidth="520">
         <Grid.RowDefinitions>
-            <RowDefinition Height="200"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" MaxWidth="600"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Margin="15,0,0,0" >
-            <StackPanel.Background>
-                <SolidColorBrush Color ="#eebc3f" Opacity="0.1"/>
-            </StackPanel.Background>
-            <TextBox l:Uids.Uid="NoteDialog_Note" x:Name="NoteText" PlaceholderForeground="Wheat" Margin="10,0,10,0" AutomationProperties.Name="multi-line TextBox" 
-                     TextWrapping="Wrap" AcceptsReturn="True" MinWidth="400" MinHeight="150">
-            </TextBox>
+        
+        <!-- Description -->
+        <StackPanel Grid.Row="0" Spacing="6">
+            <TextBlock
+            l:Uids.Uid="NoteDialog_NoteHeader"
+            Style="{StaticResource BodyStrongTextBlockStyle}"/>
+
+            <TextBlock
+            l:Uids.Uid="NoteDialog_Note_Explain"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            TextWrapping="Wrap"
+            Opacity="0.75"/>
+
+            <TextBox
+            l:Uids.Uid="NoteDialog_Note"
+            x:Name="NoteText"
+         
+            AutomationProperties.Name="Note"
+            TextWrapping="Wrap"
+            AcceptsReturn="True"
+            VerticalAlignment="Stretch"
+            MinHeight="120"
+            MaxHeight="200"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollMode="Auto"/>
         </StackPanel>
     </Grid>
 
-</ContentDialog>
+
+</local:BaseDialog>

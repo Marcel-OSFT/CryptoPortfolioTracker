@@ -17,9 +17,9 @@
     SizeChanged="GridView_SizeChanged"
     mc:Ignorable="d">
 
-    <GridView x:Name="AssetAccountsGridView" x:FieldModifier="public" ItemsSource="{Binding _accountService.ListAssetAccounts, Mode=TwoWay}" 
+    <GridView x:Name="AssetAccountsGridView" x:FieldModifier="public" ItemsSource="{Binding ListAssetAccounts, Mode=TwoWay}" 
               ScrollViewer.HorizontalScrollBarVisibility="Visible" ui:ListViewExtensions.Command="{Binding AccountItemClickedCommand}" 
-        ScrollViewer.HorizontalScrollMode="Enabled" SelectedIndex="0"
+        ScrollViewer.HorizontalScrollMode="Enabled" SelectedValue="{Binding SelectedAccountId, Mode=TwoWay}" SelectedValuePath="AssetId"   SelectedIndex="0"
         IsItemClickEnabled="True" SelectionMode="Single"  Margin="30,0,0,20" toolkit:ScrollBarExtensions.KeepHorizontalExpanded="{Binding IsScrollBarsExpanded}"  >
         <GridView.ItemContainerStyle>
             <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
@@ -44,7 +44,7 @@
                                Width="{Binding Tag, ElementName=AssetAccountsGridView}"
                                 FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="NoWrap" />
                     <TextBlock Name="txtQty" 
-                        Text="{x:Bind converters:Functions.FormatValueToString(Qty,'{0:0.########}'), Mode=OneWay}" 
+                        Text="{x:Bind converters:Functions.FormatQuantityToString(Qty,'{0:0.########}'), Mode=OneWay}" 
                         TextWrapping="NoWrap" RelativePanel.Below="txtName"  
                        HorizontalAlignment="Stretch" 
                        FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"/>

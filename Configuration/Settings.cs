@@ -1,17 +1,20 @@
-﻿using System;
-using System.Globalization;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Models;
 using Microsoft.UI.Dispatching;
+using System;
+using System.Globalization;
 
 namespace CryptoPortfolioTracker.Configuration;
 
 public partial class Settings : ObservableObject
 {
     private readonly IPreferenceStore _store;
+    private readonly IMessenger _messenger;
 
-    public Settings(IPreferenceStore store)
+    public Settings(IPreferenceStore store, IMessenger messenger)
     {
         _store = store;
+        _messenger = messenger;
     }
 
     public ElementTheme AppTheme
@@ -40,6 +43,19 @@ public partial class Settings : ObservableObject
             App.Localizer.SetLanguage(value.ToLower());
         }
     }
+    public string Currency
+    {
+        get => _store.Get("Currency", "usd");
+        set
+        {
+            _store.Set("Currency", value.ToLower());
+            OnPropertyChanged(nameof(Currency));
+            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                _messenger.Send(new CurrencyChangedMessage());
+            });
+        }
+    }   
 
     public string UserID
     {
@@ -53,7 +69,7 @@ public partial class Settings : ObservableObject
 
     public int PriceUpdateIntervalMinutes
     {
-        get => _store.Get("PriceUpdateIntervalMinutes", 2);
+        get => _store.Get("PriceUpdateIntervalMinutes", 5);
         set
         {
             _store.Set("PriceUpdateIntervalMinutes", value);
@@ -117,6 +133,10 @@ public partial class Settings : ObservableObject
         {
             _store.Set("FontSize", value);
             OnPropertyChanged(nameof(FontSize));
+            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                _messenger.Send(new FontSizeChangedMessage());
+            });
         }
     }
 

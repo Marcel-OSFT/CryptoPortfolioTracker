@@ -1,10 +1,11 @@
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public sealed partial class AddPriceLevelsDialog : ContentDialog
+public sealed partial class AddPriceLevelsDialog : BaseDialog, IDialog<ICollection<PriceLevel>>
 {
-    private readonly ILocalizer loc = Localizer.Get();
+    public ICollection<PriceLevel> Result { get; private set; }
     private readonly PriceLevelsViewModel _viewModel;
+    private readonly Settings _appSettings;
     [ObservableProperty] private double tpValue;
     [ObservableProperty] private string tpNote = string.Empty;
 
@@ -22,17 +23,18 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
     public ICollection<PriceLevel> newPriceLevels { get; set; }
      
 
-    public AddPriceLevelsDialog(Coin coin, PriceLevelsViewModel viewModel)
+    public AddPriceLevelsDialog(PriceLevelsViewModel viewModel, Settings appSettings, AddPriceLevelsDialogParameters parameters)
     {
         _viewModel = viewModel;
         InitializeComponent();
-       // DataContext = this;
+        // DataContext = this;
+        _appSettings = appSettings;
 
-        DecimalSeparator = _viewModel.AppSettings.NumberFormat.NumberDecimalSeparator;
+        DecimalSeparator = _appSettings.NumberFormat.NumberDecimalSeparator;
         newPriceLevels = new List<PriceLevel>(); // Initialize newPriceLevels
-        InitializeFields(coin.PriceLevels);
+        InitializeFields(parameters.coin.PriceLevels);
 
-        SetDialogTitleAndButtons(coin);
+        SetDialogTitleAndButtons(parameters.coin);
     }
 
 
@@ -62,7 +64,7 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
 
     private void SetDialogTitleAndButtons(Coin coin)
     {
-        Title = loc.GetLocalizedString("PriceLevelsDialog_AddTitle") + " " + coin.Name;
+        Title = loc.GetLocalizedString("PriceLevelsDialog_Title") + " " + coin.Name;
         PrimaryButtonText = loc.GetLocalizedString("PriceLevelsDialog_PrimaryButton");
         CloseButtonText = loc.GetLocalizedString("PriceLevelsDialog_CloseButton");
     }
@@ -91,14 +93,14 @@ public sealed partial class AddPriceLevelsDialog : ContentDialog
             }
         };
 
-       
+        Result = newPriceLevels;
     }
 
     private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
     {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
+        if (sender.ActualTheme != _appSettings.AppTheme)
         {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
+            sender.RequestedTheme = _appSettings.AppTheme;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using System.Security.Cryptography;
 using Windows.Security.Credentials;
 
 namespace CryptoPortfolioTracker.ViewModels;
@@ -7,7 +8,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static SettingsViewModel Current;
-    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+    public Settings AppSettings => base._appSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
 
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -38,10 +39,14 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     [ObservableProperty]
     private int numberFormatIndex;
     partial void OnNumberFormatIndexChanged(int value) => SetNumberSeparatorsFromIndex(value);
-    
+
     [ObservableProperty]
     private int appCultureIndex;
     partial void OnAppCultureIndexChanged(int value) => SetCulturePreferenceFromIndex(value);
+
+    [ObservableProperty]
+    private int currencyIndex;
+    partial void OnCurrencyIndexChanged(int value) => SetCurrencyFromIndex(value);
 
     [ObservableProperty]
     private double fontSize;
@@ -96,7 +101,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-    public SettingsViewModel(Settings appSettings) : base(appSettings)
+    public SettingsViewModel(Settings appSettings, IDialogService dialogService, IMessenger messenger) : base(appSettings, dialogService, messenger)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
         Current = this;
@@ -112,7 +117,8 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         AppTheme = AppSettings.AppTheme;
         NumberFormatIndex = AppSettings.NumberFormat.NumberDecimalSeparator == "," ? 0 : 1;
         AppCultureIndex = AppSettings.AppCultureLanguage[..2].ToLower() == "nl" ? 0 : 1;
-        
+        CurrencyIndex = AppSettings.Currency == "usd" ? 0 : 1;
+
         CheckPasswordCredentials();
     }
 
@@ -121,6 +127,12 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     {
         string language = index == 0 ? "nl" : "en-US";
         AppSettings.AppCultureLanguage = language;
+    }
+
+    private void SetCurrencyFromIndex(int index)
+    {
+        string currency = index == 0 ? "usd" : "eur";
+        AppSettings.Currency = currency;
     }
 
     private void SetNumberSeparatorsFromIndex(int index)
@@ -144,7 +156,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         if (result == AppUpdaterResult.NeedUpdate)
         {
             Logger.Information("Update Available");
-            var dlgResult = await ShowMessageDialog(
+            var dlgResult = await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_UpdateChecker_NewVersionTitle"),
                 loc.GetLocalizedString("Messages_UpdateChecker_NewVersionMsg"),
                 loc.GetLocalizedString("Common_DownloadButton"),
@@ -160,7 +172,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                     //*** wait till there is no other dialog box open
                     await App.DialogCompletionTask;
                     Logger.Information("Download Succesfull");
-                    var installRequest = await ShowMessageDialog(
+                    var installRequest = await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesTitle"),
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadSuccesMsg"),
                         loc.GetLocalizedString("Common_InstallButton"),
@@ -175,7 +187,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 else
                 {
                     Logger.Warning("Download failed");
-                    await ShowMessageDialog(
+                    await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedTitle"),
                         loc.GetLocalizedString("Messages_UpdateChecker_DownloadFailedMsg"),
                         loc.GetLocalizedString("Common_CloseButton"));
@@ -185,7 +197,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         else
         {
             Logger.Information("Application is up-to-date");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_UpdateChecker_UpToDate_Title"),
                 loc.GetLocalizedString("Messages_UpdateChecker_UpToDate_Msg"),
                 loc.GetLocalizedString("Common_OkButton"));
@@ -203,7 +215,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             // No password set yet, allow setting new password directly
             if (string.IsNullOrWhiteSpace(NewPassword))
             {
-                await ShowMessageDialog(
+                await _dialogService.ShowMessageAsync(
                     loc.GetLocalizedString("Messages_Password_New_Required_Title"),
                     loc.GetLocalizedString("Messages_Password_New_Required_Msg"),
                     loc.GetLocalizedString("Common_OkButton"));
@@ -213,7 +225,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             var newHash = AuthenticationService.HashPassword(NewPassword);
             vault.Add(new PasswordCredential("CryptoPortfolioTracker", "Password", newHash));
             IsPasswordSet = true;
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_Password_Set_Title"),
                 loc.GetLocalizedString("Messages_Password_Set_Msg"),
                 loc.GetLocalizedString("Common_OkButton"));
@@ -230,14 +242,14 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 var newHash = AuthenticationService.HashPassword(NewPassword);
                 vault.Remove(credential);
                 vault.Add(new PasswordCredential("CryptoPortfolioTracker", "Password", newHash));
-                await ShowMessageDialog(
+                await _dialogService.ShowMessageAsync(
                     loc.GetLocalizedString("Messages_Password_Changed_Title"),
                     loc.GetLocalizedString("Messages_Password_Changed_Msg"),
                     loc.GetLocalizedString("Common_OkButton"));
             }
             else
             {
-                await ShowMessageDialog(
+                await _dialogService.ShowMessageAsync(
                     loc.GetLocalizedString("Messages_Password_Incorrect_Title"),
                     loc.GetLocalizedString("Messages_Password_Incorrect_Msg"),
                     loc.GetLocalizedString("Common_OkButton"));
@@ -258,7 +270,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             // No password set yet, allow setting new password directly
             if (string.IsNullOrWhiteSpace(NewDuressPassword))
             {
-                await ShowMessageDialog(
+                await _dialogService.ShowMessageAsync(
                     loc.GetLocalizedString("Messages_duressPassword_New_Required_Title"),
                     loc.GetLocalizedString("Messages_duressPassword_New_Required_Msg"),
                     loc.GetLocalizedString("Common_OkButton"));
@@ -268,7 +280,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
             var newHash = AuthenticationService.HashPassword(NewDuressPassword);
             vault.Add(new PasswordCredential("CryptoPortfolioTracker", "DuressPassword", newHash));
             IsDuressPasswordSet = true;
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_duressPassword_Set_Title"),
                 loc.GetLocalizedString("Messages_duressPassword_Set_Msg"),
                 loc.GetLocalizedString("Common_OkButton"));
@@ -285,14 +297,14 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
                 var newHash = AuthenticationService.HashPassword(NewDuressPassword);
                 vault.Remove(credential);
                 vault.Add(new PasswordCredential("CryptoPortfolioTracker", "DuressPassword", newHash));
-                await ShowMessageDialog(
+                await _dialogService.ShowMessageAsync(
                     loc.GetLocalizedString("Messages_duressPassword_Changed_Title"),
                     loc.GetLocalizedString("Messages_duressPassword_Changed_Msg"),
                     loc.GetLocalizedString("Common_OkButton"));
             }
             else
             {
-                await ShowMessageDialog(
+                await _dialogService.ShowMessageAsync(
                     loc.GetLocalizedString("Messages_duressPassword_Incorrect_Title"),
                     loc.GetLocalizedString("Messages_duressPassword_Incorrect_Msg"),
                     loc.GetLocalizedString("Common_OkButton"));

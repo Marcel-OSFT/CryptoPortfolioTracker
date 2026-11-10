@@ -67,7 +67,7 @@
                 x:Name="HideZeroBalances"
                 l:Uids.Uid="AssetsLV_HideZeroBalances" x:FieldModifier="public" FontSize="12" FontStyle="Normal" 
                 Margin="15,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center"
-                IsChecked="{Binding _assetService.IsHidingZeroBalances, Mode=TwoWay}" 
+                IsChecked="{Binding IsHidingZeroBalances, Mode=TwoWay}" 
                 Command="{Binding HideZeroBalancesCommand}" 
                 CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"/>
         </StackPanel>
@@ -243,8 +243,8 @@
 
 
         <ListView x:Name="AssetsListView" Grid.Row="2" Grid.ColumnSpan="8" x:FieldModifier="public" 
-                  ItemsSource="{Binding _assetService.ListAssetTotals, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
-                        IsItemClickEnabled="True" SelectionMode="Single" 
+                  ItemsSource="{Binding ListAssetTotals, Mode=TwoWay}" BorderBrush="Transparent" BorderThickness="1"                             
+                        IsItemClickEnabled="True" SelectionMode="Single" SelectedValue="{Binding SelectedAssetApiId, Mode=TwoWay}" SelectedValuePath="Coin.ApiId"
                   toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                   ui:ListViewExtensions.Command="{Binding AssetItemClickedCommand}" SizeChanged="AssetsListView_SizeChanged" ItemClick="View_ItemClick"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -253,7 +253,7 @@
                   SelectionChanged="AssetsListView_SelectionChanged" Loading="AssetsListView_Loading" Loaded="AssetsListView_Loaded" >
 
             <ListView.ItemTemplate>
-            <DataTemplate x:DataType="models:AssetTotals" >
+            <DataTemplate x:DataType="models:AssetTotalsDisplay" >
                 <UserControl>
                     <Grid >
                         <SwipeControl x:Name="AssetsListHoverSwipeContainer" >
@@ -291,7 +291,7 @@
 
                                     <Border Grid.Column="2"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                        <RelativePanel HorizontalAlignment="Right">
-                                                <TextBlock Name="txtQty"  Text="{x:Bind converters:Functions.FormatValueToString(Qty,'{0:0.########}'), Mode=OneWay}" 
+                                                <TextBlock Name="txtQty"  Text="{x:Bind converters:Functions.FormatQuantityToString(Qty,'{0:0.########}'), Mode=OneWay}" 
                                                 FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" />
                                             <TextBlock Name="txtSymbol" Text="{Binding Coin.Symbol}" RelativePanel.RightOf="txtQty" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" Margin="5,0,0,0"/>
                                         </RelativePanel>
@@ -299,11 +299,11 @@
                                     <Border Grid.Column="3"  Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtChange24Hr" 
-                                                Text="{x:Bind converters:Functions.FormatValueToString(Coin.Change24Hr,'{0:0.00} %'), Mode=OneWay}" 
+                                                Text="{x:Bind converters:Functions.FormatPercentToString(Coin.Change24Hr,'{0:0.00} %'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"
                                                 Foreground="{x:Bind converters:Functions.DoubleToColour(Coin.Change24Hr,''), Mode=OneWay}"/>
                                             <TextBlock Name="txtChange30D" 
-                                                Text="{x:Bind converters:Functions.FormatValueToString(Coin.Change1Month,'{0:0.00} %'), Mode=OneWay}" 
+                                                Text="{x:Bind converters:Functions.FormatPercentToString(Coin.Change1Month,'{0:0.00} %'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtChange24Hr" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}"
                                                 Foreground="{x:Bind converters:Functions.DoubleToColour(Coin.Change1Month,''), Mode=OneWay}"/>
                                         </RelativePanel>
@@ -311,23 +311,23 @@
                                     <Border Grid.Column="4"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtMarketValue" 
-                                                Text="{x:Bind converters:Functions.FormatValueToString(MarketValue,'$ {0:N0}'), Mode=OneWay}" 
+                                                Text="{x:Bind converters:Functions.FormatCurrencyToString(MarketValue,'{0:N0}'), Mode=OneWay}" 
                                                 FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtPrice" 
-                                                Text="{x:Bind converters:Functions.FormatValueToString(Coin.Price,'$ {0:0.########}'), Mode=OneWay}" 
+                                                Text="{x:Bind converters:Functions.FormatCurrencyToString(Coin.Price,'{0:0.########}'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtMarketValue" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
                                         </RelativePanel>
                                     </Border>
                                     <Border Grid.Column="5"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                         <RelativePanel HorizontalAlignment="Right" >
                                             <TextBlock Name="txtCostBase"  
-                                                Text="{x:Bind converters:Functions.FormatValueToString(CostBase,'$ {0:N0}'), Mode=OneWay}" 
+                                                Text="{x:Bind converters:Functions.FormatCurrencyToString(CostBase,'{0:N0}'), Mode=OneWay}" 
                                                 FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtAverageCostPrice" 
-                                                Text="{x:Bind converters:Functions.FormatValueToString(AverageCostPrice,'$ {0:0.########}'), Mode=OneWay}" 
+                                                Text="{x:Bind converters:Functions.FormatCurrencyToString(AverageCostPrice,'{0:0.########}'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtCostBase" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
                                             <TextBlock Name="txtNetInvestment" 
-                                                Text="{x:Bind converters:Functions.FormatValueToString(NetInvestment,'$ {0:N0}'), Mode=OneWay}"
+                                                Text="{x:Bind converters:Functions.FormatCapitalFlowToString(NetInvestment,'{0:N0}'), Mode=OneWay}"
                                                 Foreground="{x:Bind converters:Functions.DoubleToColour(NetInvestment,'NetInvestment'), Mode=OneWay}"
                                                 Visibility="{x:Bind BtnNetInvestment.Visibility, Mode=OneWay}"
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtAverageCostPrice" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"/>
@@ -336,10 +336,10 @@
                                     <Border Grid.Column="6"  Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"  >
                                         <RelativePanel HorizontalAlignment="Right">
                                             <TextBlock Name="txtProfitLoss" 
-                                                Text="{x:Bind converters:Functions.FormatValueToString(ProfitLoss,'$ {0:N0}'), Mode=OneWay}"  
+                                                Text="{x:Bind converters:Functions.FormatCurrencyToString(ProfitLoss,'{0:N0}'), Mode=OneWay}"  
                                                 FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}"  RelativePanel.AlignRightWithPanel="True" TextAlignment="Right"/>
                                             <TextBlock Name="txtProfitLossPerc" 
-                                                Text="{x:Bind converters:Functions.FormatValueToString(ProfitLossPerc,'{0:0.00} %'), Mode=OneWay}" 
+                                                Text="{x:Bind converters:Functions.FormatPercentToString(ProfitLossPerc,'{0:0.00} %'), Mode=OneWay}" 
                                                 RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="txtProfitLoss" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" TextAlignment="Right"
                                                 Foreground="{x:Bind converters:Functions.DoubleToColour(ProfitLossPerc,''), Mode=OneWay}"/>
                                             <TextBlock Name="txtNettProfitLossPerc" 

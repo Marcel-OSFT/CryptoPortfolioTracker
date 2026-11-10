@@ -29,13 +29,38 @@ namespace CryptoPortfolioTracker.Views
         private Portfolio? selectedPortfolio;
         private Portfolio? deselectedPortfolio;
         private bool animationBusy = false;
-
+        private const double MinPortfolioItemHeight = 30;
+        private const double MaxPortfolioItemHeight = 80;
         public SwitchPortfolioView(SwitchPortfolioViewModel viewModel)
         {
             Current = this;
             _viewModel = viewModel;
             InitializeComponent();
             DataContext = _viewModel;
+        }
+
+        private async void ListView_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not ListView listView) return;
+
+            SetListViewItemHeight();
+            InProgress.IsActive = false;
+
+            listView.ItemsSource = _viewModel.ListPortfolios;
+
+            var selectedIndex = listView.Items
+                .Cast<Portfolio>()
+                .ToList()
+                .FindIndex(p => p.Name == _viewModel.SelectedPortfolio.Name);
+
+            if (selectedIndex == -1) return;
+
+            listView.SelectedIndex = selectedIndex;
+            selectedPortfolio = listView.SelectedItem as Portfolio;
+
+            var color = _viewModel.IsInitialPortfolioLoaded ? Colors.Green : Colors.Red;
+            await AnimatePortfolio(color, listView, selectedPortfolio);
+
         }
 
         private async void PortfoliosListView_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
@@ -165,26 +190,34 @@ namespace CryptoPortfolioTracker.Views
             animationBusy = false;
         }
 
-        private async void ListView_Loaded(object sender, RoutedEventArgs e)
+        private void SetListViewItemHeight()
         {
-            if (sender is not ListView listView) return;
+            int count = PortfoliosLV.Items.Count;
 
-            InProgress.IsActive = false;
+            if (count == 0)
+                return;
 
-            listView.ItemsSource = _viewModel._portfolioService.Portfolios;
+            double availableHeight = PortfoliosLV.ActualHeight - PortfoliosLV.Padding.Top - PortfoliosLV.Padding.Bottom;
 
-            var selectedIndex = listView.Items
-                .Cast<Portfolio>()
-                .ToList()
-                .FindIndex(p => p.Name == _viewModel.SelectedPortfolio.Name);
+            if (PortfoliosLV.Header is FrameworkElement header)
+                availableHeight -= header.ActualHeight;
 
-            if (selectedIndex == -1) return;
+            double itemHeight = Math.Clamp(availableHeight / count, MinPortfolioItemHeight, MaxPortfolioItemHeight);
 
-            listView.SelectedIndex = selectedIndex;
-            selectedPortfolio = listView.SelectedItem as Portfolio;
-
-            var color = _viewModel.IsInitialPortfolioLoaded ? Colors.Green : Colors.Red;
-            await AnimatePortfolio(color, listView, selectedPortfolio);
+            for (int i = 0; i < count; i++)
+            {
+                if (PortfoliosLV.ContainerFromIndex(i) is ListViewItem item)
+                {
+                    item.Height = itemHeight;
+                }
+            }
         }
+
+        private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetListViewItemHeight();
+        }
+
+        
     }
 }

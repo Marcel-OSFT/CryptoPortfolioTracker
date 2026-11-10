@@ -12,26 +12,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CryptoPortfolioTracker.Services;
 
+public interface INarrativeService
+{
+    public Task<Result<bool>> CreateNarrative(Narrative? newNarrative);
+    public Task<Result<bool>> EditNarrative(Narrative newNarrative, Narrative NarrativeToEdit);
+    public Task<Result<bool>> RemoveNarrative(int NarrativeId);
+    public Task<Result<bool>> NarrativeHasNoCoins(int assetId);
+    Task<ObservableCollection<Narrative>> PopulateNarrativesList();
+    Task<bool> RemoveFromListNarratives(int NarrativeId);
+    Task<bool> AddToListNarratives(Narrative? newNarrative);
+    Task<ObservableCollection<Narrative>> UpdateListNarratives(Narrative? narrative);
+    Narrative GetNarrativeByCoin(Coin coin);
+    Task<Result<List<Narrative>>> GetNarratives();
+    Task<Result<bool>> AssignNarrative(Coin coin, Narrative newNarrative);
+    bool DoesNarrativeNameExist(string name);
+    Narrative GetDefaultNarrative();
+    void ClearNarrativesList();
+}
+
 public partial class NarrativeService : ObservableObject, INarrativeService
 {
-    private readonly PortfolioService _portfolioService;
-    [ObservableProperty] private static ObservableCollection<Narrative>? listNarratives;
+    private readonly IAppState _appState;
+    private PortfolioContext Context => _appState.Context;
+    private ObservableCollection<Narrative>? ListNarratives {  get; set; } = new ObservableCollection<Narrative>();
 
     private SortingOrder currentSortingOrder;
     private Func<Narrative, object> currentSortFunc;
 
-   // [ObservableProperty] public bool showOnlyAssets;
-
-    //async partial void OnShowOnlyAssetsChanged(bool value)
-    //{
-    //    await PopulateNarrativesList(value);
-    //}
-
-    public NarrativeService(PortfolioService portfolioService)
+    public NarrativeService(IAppState appState)
     {
-        _portfolioService = portfolioService;
-        currentSortFunc = x => x.TotalValue;
-        currentSortingOrder = SortingOrder.Descending;
+        _appState = appState;
+        _appState.ContextChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(Context));
+        };
     }
 
     public async Task<ObservableCollection<Narrative>> PopulateNarrativesList()
@@ -39,64 +53,22 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         var getResult = await GetNarratives();
 
         ListNarratives = getResult.Match(
-            list => SortedList(list),
+            list => new ObservableCollection<Narrative>(list),
             err => new ObservableCollection<Narrative>());
         return ListNarratives;
     }
 
-    //public async Task<ObservableCollection<Narrative>> PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc, bool onlyAssets = false)
-    public async Task PopulateNarrativesList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc)
-    {
-        var getResult = await GetNarratives();
-        ListNarratives = getResult.Match(
-            list => SortedList(list, sortingOrder, sortFunc),
-            err => new ObservableCollection<Narrative>()); 
-      //  return ListNarratives;
-    }
-
     public void ClearNarrativesList()
     {
-        //ListNarratives?.Clear();
         ListNarratives = null;
         OnPropertyChanged(nameof(ListNarratives));
     }
 
-    private ObservableCollection<Narrative> SortedList(List<Narrative> list, SortingOrder sortingOrder = SortingOrder.None, Func<Narrative, object>? sortFunc = null)
+   
+    
+    public async Task<bool> RemoveFromListNarratives(int NarrativeId)
     {
-        if (sortingOrder != SortingOrder.None && sortFunc != null)
-        {
-            currentSortFunc = sortFunc;
-            currentSortingOrder = sortingOrder;
-        }
-        return currentSortingOrder == SortingOrder.Ascending
-            ? new ObservableCollection<Narrative>(list.OrderBy(currentSortFunc).ThenByDescending(x => x.IsHoldingCoins))
-            : new ObservableCollection<Narrative>(list.OrderByDescending(currentSortFunc).ThenByDescending(x => x.IsHoldingCoins));
-    }
-
-    public void ReloadValues()
-    {
-        var tempListNarratives = ListNarratives;
-        ListNarratives = null;
-        ListNarratives = tempListNarratives;
-    }
-
-    public bool IsNarrativeHoldingCoins(Narrative Narrative)
-    {
-        if (Narrative is null || ListNarratives is null || !ListNarratives.Any()) { return false; }
-        var result = false;
-        try
-        {
-            result = ListNarratives.Where(x => x.Id == Narrative.Id).Single().IsHoldingCoins;
-        }
-        catch (Exception)
-        {
-            //Element just removed from the list...
-        }
-        return result;
-    }
-    public Task RemoveFromListNarratives(int NarrativeId)
-    {
-        if (ListNarratives is null || !ListNarratives.Any()) { return Task.FromResult(false); }
+        if (ListNarratives is null || !ListNarratives.Any()) { return false; }
         try
         {
             var Narrative = ListNarratives.Where(x => x.Id == NarrativeId).Single();
@@ -104,45 +76,49 @@ public partial class NarrativeService : ObservableObject, INarrativeService
         }
         catch (Exception)
         {
-            return Task.FromResult(false);
+            return false;
         }
-        return Task.FromResult(true);
+        return true;
     }
-    public Task AddToListNarratives(Narrative? newNarrative)
+    public async Task<bool> AddToListNarratives(Narrative? newNarrative)
     {
-        if (ListNarratives is null || newNarrative is null) { return Task.FromResult(false); }
+        if (ListNarratives is null || newNarrative is null) { return false; }
         try
         {
             ListNarratives.Add(newNarrative);
         }
-        catch (Exception) { Task.FromResult(false); }
+        catch (Exception) { return false; }
 
-        return Task.FromResult(true);
+        return true;
     }
-    public Task UpdateListNarratives(Narrative? narrative)
+    public async Task<ObservableCollection<Narrative>> UpdateListNarratives(Narrative? narrative)
     {
-        if (ListNarratives is null || narrative is null) { return Task.FromResult(false); }
+        ObservableCollection<Narrative> updated = new();
+
+        if (ListNarratives is null || !ListNarratives.Any() || narrative is null) { return updated; }
         try
         {
-            var context = _portfolioService.Context;
+            var context = Context;
 
-            var narrativeToUpdateIndex = ListNarratives.IndexOf(narrative);
+            var narrativeToUpdate = ListNarratives.Where(x => x.Id == narrative.Id).Single();
             var updatedNarrative = context.Narratives.AsNoTracking()
+                .Include(i => i.Coins)
                 .Where(x => x.Id == narrative.Id)
-                .Include(x => x.Coins)
                 .SingleOrDefault();
 
-            ListNarratives.RemoveAt(narrativeToUpdateIndex);
-            ListNarratives.Insert(narrativeToUpdateIndex, updatedNarrative);
+            var index = ListNarratives.IndexOf(narrativeToUpdate);
+            ListNarratives[index].Name = updatedNarrative?.Name;
+            ListNarratives[index].About = updatedNarrative?.About;
+            updated.Add(updatedNarrative);
         }
-        catch (Exception) { Task.FromResult(false); }
+        catch (Exception) { return new ObservableCollection<Narrative>(); }
 
-        return Task.FromResult(true);
+        return updated;
     }
     public async Task<Result<bool>> CreateNarrative(Narrative? newNarrative)
     {
         bool _result;
-        var context = _portfolioService.Context;
+        var context = Context;
         context.ChangeTracker?.Clear();
 
         if (newNarrative == null) { return false; }
@@ -163,7 +139,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public async Task<Result<bool>> EditNarrative(Narrative newNarrative, Narrative NarrativeToEdit)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         context.ChangeTracker?.Clear();
         bool _result;
         if (newNarrative == null || newNarrative.Name == "" || NarrativeToEdit == null) { return false; }
@@ -190,7 +166,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public async Task<Result<bool>> RemoveNarrative(int NarrativeId)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         context.ChangeTracker?.Clear();
         bool _result;
         if (NarrativeId <= 0) { return false; }
@@ -212,7 +188,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public async Task<Result<List<Narrative>>> GetNarratives()
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         List<Narrative> Narratives = null;
         try
         {
@@ -239,7 +215,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public async Task<Result<bool>> NarrativeHasNoCoins(int NarrativeId)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         Narrative Narrative;
         if (NarrativeId <= 0) { return false; }
         try
@@ -259,7 +235,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public async Task<double> CalculateTotalValue(Narrative narrative)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         if (narrative == null || narrative.Coins == null || !narrative.Coins.Any()) return 0.0;
 
         var sum = await context.Assets
@@ -273,7 +249,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public async Task<double> CalculateCostBase(Narrative narrative)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         if (narrative == null || narrative.Coins == null || !narrative.Coins.Any()) return 0.0;
 
         var sum = await context.Assets
@@ -287,7 +263,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public Narrative GetDefaultNarrative()
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         Narrative narrative;
         try
         {
@@ -306,7 +282,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public Narrative GetNarrativeByCoin(Coin coin)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         Narrative narrative;
         try
         {
@@ -323,7 +299,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
     }
     public bool DoesNarrativeNameExist(string name)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         Narrative? narrative;
         try
         {
@@ -341,17 +317,19 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     public async Task<Result<bool>> AssignNarrative(Coin coin, Narrative newNarrative)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         context.ChangeTracker?.Clear();
         bool result;
         if (newNarrative == null || coin == null) { return false; }
         try
         {
+            var narrative = await context.Narratives.FirstOrDefaultAsync(x => x.Name == newNarrative.Name);
+
             var coinToUpdate = await context.Coins
                 .Where(x => x.Id == coin.Id)
                 .SingleAsync();
 
-            coinToUpdate.Narrative = newNarrative;
+            coinToUpdate.Narrative = narrative;
             context.Update(coinToUpdate);
 
             result = await context.SaveChangesAsync() > 0;
@@ -370,7 +348,7 @@ public partial class NarrativeService : ObservableObject, INarrativeService
 
     private void RejectChanges()
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         foreach (var entry in context.ChangeTracker.Entries())
         {
             switch (entry.State)
@@ -386,43 +364,6 @@ public partial class NarrativeService : ObservableObject, INarrativeService
             }
         }
     }
-
-
-    public void SortList(SortingOrder sortingOrder, Func<Narrative, object> sortFunc)
-    {
-        if (ListNarratives is not null || !ListNarratives.Any())
-        {
-            if (sortingOrder == SortingOrder.Ascending)
-            {
-                ListNarratives = new ObservableCollection<Narrative>(ListNarratives.OrderBy(sortFunc));
-            }
-            else
-            {
-                ListNarratives = new ObservableCollection<Narrative>(ListNarratives.OrderByDescending(sortFunc));
-            }
-        }
-        currentSortingOrder = sortingOrder;
-        currentSortFunc = sortFunc;
-    }
-    /// <summary>
-    /// this function without parameters will sort the list using the last used settings.
-    /// </summary>
-    public void SortList()
-    {
-        if (ListNarratives is not null || !ListNarratives.Any())
-        {
-            if (currentSortingOrder == SortingOrder.Ascending)
-            {
-                ListNarratives = new ObservableCollection<Narrative>(ListNarratives.OrderBy(currentSortFunc));
-            }
-            else
-            {
-                ListNarratives = new ObservableCollection<Narrative>(ListNarratives.OrderByDescending(currentSortFunc));
-            }
-        }
-    }
-
-
 
 
 }

@@ -6,12 +6,26 @@
     xmlns:local="using:CryptoPortfolioTracker"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:winuiex="using:WinUIEx"
-   
+    xmlns:controls="using:CryptoPortfolioTracker.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
-        <Image Source="Assets\Splash_Image_1000x565.jpg" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <TextBlock Name="versionTxt" VerticalAlignment="Bottom" FontWeight="SemiBold" Foreground="DarkGoldenrod" HorizontalAlignment="Right" Margin="0,0,22,5"/>
+    <Grid RequestedTheme="Dark" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <!--<Image Source="Assets\Splash_Image_1000x565.jpg" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.5"/>-->
+
+        <controls:HomePageHeaderImage
+            Height="300"
+            Opacity="1"
+            VerticalAlignment="Top"
+            />
+        <StackPanel VerticalAlignment="Bottom">
+            <TextBlock Name="title" Text="Crypto Portfolio Tracker" FontSize="22"
+                       FontWeight="SemiBold" Foreground="DarkGoldenrod" 
+                       HorizontalAlignment="Right" Margin="0,0,22,5"/>
+            <TextBlock Name="versionTxt" FontWeight="SemiBold" Foreground="DarkGoldenrod" FontSize="14"
+                       HorizontalAlignment="Right" Margin="0,0,22,5"/>
+            
+        </StackPanel>
+
     </Grid>
 </Window>

@@ -2,8 +2,10 @@
 using CryptoPortfolioTracker.Converters;
 using CryptoPortfolioTracker.Reporting.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection; // <-- Add this line
 
 using System.Reflection;
+using static CryptoPortfolioTracker.Services.PortfolioService;
 using Task = System.Threading.Tasks.Task;
 
 namespace CryptoPortfolioTracker;
@@ -25,6 +27,8 @@ public partial class App : Application
     public static IServiceProvider Container { get; private set; }
 
     private static TaskCompletionSource<bool>? dialogCompletionSource; // = new TaskCompletionSource<bool>();
+    private IDialogService _dialogService;
+
     public static Task DialogCompletionTask => dialogCompletionSource?.Task ?? Task.CompletedTask;
     private static readonly byte[] keyBytes = { 77, 121, 83, 117, 112, 101, 114, 83, 101, 99, 114, 101, 116, 75, 101, 121, 49, 50, 51 };
     private const string TriggerTime = "02:00"; // 2 AM daily
@@ -40,9 +44,6 @@ public partial class App : Application
 
         AppConstants.GetAppEnvironmentals();
         Container = RegisterServices();
-        //expose Functions and IValueConverter(s) to XAML too:
-       // Application.Current.Resources["FormatValueConverter"] = Container.GetRequiredService<FormatValueToString>();
-       // Application.Current.Resources["Functions"] = Container.GetRequiredService<IFunctions>();
         
         _appSettings = Container.GetRequiredService<Settings>();
     }
@@ -53,15 +54,15 @@ public partial class App : Application
         Splash.Activate();
         await Task.Delay(1000);
 
+        // initialize the dialogService and set its XamlRoot to the splash screen's XamlRoot
+        _dialogService = Container.GetRequiredService<IDialogService>();
+        _dialogService.XamlRoot = Splash.Content.XamlRoot;
+
         if (!await EnsureSingleInstanceAsync()) return;
         InitializeLogger();
         await InitializeLocalizer();
 
-
         MoveUserPreferencesToSettingsIfNeeded();
-
-
-
 
 
         var authService = Container.GetRequiredService<AuthenticationService>();
@@ -73,6 +74,11 @@ public partial class App : Application
             return;
         }
 
+        // Start exchange-rate refresh as early as possible so the main page can display current data immediately.
+        var exchangeRateService = Container.GetRequiredService<IExchangeRateService>();
+        await exchangeRateService.CopyExchangeRatesMarketChartIfNeeded();
+        await exchangeRateService.RefreshAsync();
+
         var scheduledTaskService = new ScheduledTaskService(
             AppConstants.ScheduledTaskName,
             AppConstants.ScheduledTaskExe,
@@ -83,8 +89,9 @@ public partial class App : Application
         await scheduledTaskService.SetupScheduledTaskAsync(Splash);
 
         await Container.GetService<PortfolioService>().InitializeAsync();
+        
 
-        var iconCacheService = new IconCacheService(AppConstants.IconsPath, Container.GetService<PortfolioService>(), Logger);
+    var iconCacheService = new IconCacheService(AppConstants.IconsPath, Container.GetService<PortfolioService>(), Logger);
         await iconCacheService.CacheLibraryIconsAsync();
 
         Window = Container.GetService<MainWindow>();
@@ -112,7 +119,8 @@ public partial class App : Application
 
             if (!createdNew && !AdminCheck.IsRunAsAdmin())
             {
-                await ShowErrorMessage("Another instance of the application is already running.");
+                //await ShowErrorMessage("Another instance of the application is already running.");
+                await _dialogService.ShowMessageAsync("Error","Another instance of the application is already running. Please close the other instance before starting a new one.");
                 _mutex.Close();
                 _mutex = null;
                 Application.Current.Exit();
@@ -123,14 +131,17 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            var dialog = new ContentDialog
-            {
-                Title = "Error",
-                Content = $"Failed to check for single instance: {ex.Message}",
-                CloseButtonText = "OK"
-            };
+            //var dialog = new ContentDialog
+            //{
+            //    Title = "Error",
+            //    Content = $"Failed to check for single instance: {ex.Message}",
+            //    CloseButtonText = "OK"
+            //};
 
-            await dialog.ShowAsync();
+            //await dialog.ShowAsync();
+
+            await _dialogService.ShowMessageAsync("Error", $"Failed to check for single instance: {ex.Message}");
+
             return false;
         }
     }
@@ -223,13 +234,26 @@ public partial class App : Application
         services.AddSingleton<PreferencesService>();
         services.AddSingleton<Settings>();
         services.AddSingleton<IIndicatorService, IndicatorService>();
-        services.AddSingleton<FormatValueToString>(); // converter instance
+        //services.AddSingleton<FormatValueToString>(); // converter instance
 
         services.AddScoped<PortfolioService>();
         services.AddSingleton<IMessenger, WeakReferenceMessenger>();
         services.AddSingleton<IQuestPdfService, QuestPdfService>();
 
-        services.AddSingleton<AuthenticationService>(sp => new AuthenticationService(keyBytes, sp.GetRequiredService<Settings>()));
+        services.AddSingleton<AuthenticationService>(sp => new AuthenticationService(keyBytes, sp.GetRequiredService<Settings>(), sp.GetRequiredService<IDialogService>()));
+
+        //services.AddHttpClient();
+        services.AddSingleton<IExchangeRateService, ExchangeRateService>();
+
+        services.AddScoped<ICapitalFlowService, CapitalFlowService>();
+
+        //Dialogs
+        services.AddSingleton<IDialogService, DialogService>();
+
+        services.AddTransient<TransactionDialog>();
+
+        services.AddSingleton<IAppState, AppState>();
+
 
         return services.BuildServiceProvider();
     }
@@ -263,7 +287,7 @@ public partial class App : Application
         Logger.Information("Started Crypto Portfolio Tracker {0}", AppConstants.ProductVersion);
     }
 
-    public void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    public async void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
         // Log the exception details (optional)
         Logger?.Error($"Unhandled exception: {e.Message}");
@@ -273,80 +297,81 @@ public partial class App : Application
         e.Handled = true;
 
         // Show a user-friendly message
-        _ = ShowErrorMessage(e.Message);
+        //_ = ShowErrorMessage(e.Message);
+        _ = await _dialogService.ShowMessageAsync("An error occurred", e.Message);
     }
 
-    public static async Task ShowErrorMessage(string message)
-    {
-        Window? tempWindow = null;
-        var xamlRoot = MainPage.Current?.XamlRoot;
-        if (xamlRoot == null && Splash is not null)
-        {
-            xamlRoot = Splash.Content.XamlRoot;
-        }
-        else if (xamlRoot == null)
-        {
-            tempWindow = new SplashScreen();
-            tempWindow.Activate();
-            await Task.Delay(1000);
-            xamlRoot = tempWindow?.Content.XamlRoot;
-        }
-        var dialog = new ContentDialog
-        {
-            Title = "Error",
-            Content = message,
-            CloseButtonText = "OK",
-            XamlRoot = xamlRoot
-        };
+    //public static async Task ShowErrorMessage(string message)
+    //{
+    //    Window? tempWindow = null;
+    //    var xamlRoot = MainPage.Current?.XamlRoot;
+    //    if (xamlRoot == null && Splash is not null)
+    //    {
+    //        xamlRoot = Splash.Content.XamlRoot;
+    //    }
+    //    else if (xamlRoot == null)
+    //    {
+    //        tempWindow = new SplashScreen();
+    //        tempWindow.Activate();
+    //        await Task.Delay(1000);
+    //        xamlRoot = tempWindow?.Content.XamlRoot;
+    //    }
+    //    var dialog = new ContentDialog
+    //    {
+    //        Title = "Error",
+    //        Content = message,
+    //        CloseButtonText = "OK",
+    //        XamlRoot = xamlRoot
+    //    };
 
-        await dialog.ShowAsync();
+    //    await dialog.ShowAsync();
 
-        tempWindow?.Close();
-    }
+    //    tempWindow?.Close();
+    //}
 
-    public static async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
-    {
-        Window? tempWindow = null;
-        var xamlRoot = MainPage.Current?.XamlRoot;
-        if (xamlRoot == null && Splash is not null)
-        {
-            xamlRoot = Splash.Content.XamlRoot;
-        }
-        else if (xamlRoot == null)
-        {
-            tempWindow = new SplashScreen();
-            tempWindow.Activate();
-            await Task.Delay(1000);
-            xamlRoot = tempWindow?.Content.XamlRoot;
-        }
-        var dialog = new ContentDialog()
-        {
-            Title = title,
-            XamlRoot = xamlRoot,
-            Content = message,
-            PrimaryButtonText = primaryButtonText,
-            CloseButtonText = closeButtonText,
-            RequestedTheme = _appSettings.AppTheme
-        };
+    //public static async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
+    //{
+    //    Window? tempWindow = null;
+    //    var xamlRoot = MainPage.Current?.XamlRoot;
+    //    if (xamlRoot == null && Splash is not null)
+    //    {
+    //        xamlRoot = Splash.Content.XamlRoot;
+    //    }
+    //    else if (xamlRoot == null)
+    //    {
+    //        tempWindow = new SplashScreen();
+    //        tempWindow.Activate();
+    //        await Task.Delay(1000);
+    //        xamlRoot = tempWindow?.Content.XamlRoot;
+    //    }
+    //    var dialog = new ContentDialog()
+    //    {
+    //        Title = title,
+    //        XamlRoot = xamlRoot,
+    //        Content = message,
+    //        PrimaryButtonText = primaryButtonText,
+    //        CloseButtonText = closeButtonText,
+    //        RequestedTheme = _appSettings.AppTheme
+    //    };
 
-        var result = await ShowContentDialogAsync(dialog);
-        return result;
-    }
+    //    var result = await ShowContentDialogAsync(dialog);
+    //    return result;
+    //}
 
-    public static async Task<ContentDialogResult> ShowContentDialogAsync(ContentDialog dialog)
-    {
-        dialogCompletionSource = new TaskCompletionSource<bool>();
+    //public static async Task<ContentDialogResult> ShowContentDialogAsync(ContentDialog dialog)
+    //{
+    //    dialogCompletionSource = new TaskCompletionSource<bool>();
 
-        dialog.Closed += (s, e) => dialogCompletionSource.TrySetResult(true);
+    //    dialog.Closed += (s, e) => dialogCompletionSource.TrySetResult(true);
 
-        var result = await dialog.ShowAsync();
+    //    var result = await dialog.ShowAsync();
 
-        // Ensure the completion source is set in case Closed wasn't triggered
-        if (!dialogCompletionSource.Task.IsCompleted)
-            dialogCompletionSource.TrySetResult(true);
+    //    // Ensure the completion source is set in case Closed wasn't triggered
+    //    if (!dialogCompletionSource.Task.IsCompleted)
+    //        dialogCompletionSource.TrySetResult(true);
 
-        return result;
-    }
+    //    return result;
+    //}
 
     
 

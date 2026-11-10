@@ -43,13 +43,20 @@ public partial class AccountsListViewControl : UserControl
 
     private void KeepIntoView(ListView listView)
     {
-        if (listView?.DataContext is AccountsViewModel viewModel && viewModel.IsExtendedView)
+        try
         {
-            if (viewModel.selectedAccount != null && listView.SelectedItem != viewModel.selectedAccount)
+            if (listView?.DataContext is AccountsViewModel viewModel && viewModel.IsExtendedView)
             {
-                listView.SelectedItem = viewModel.selectedAccount;
+                if (viewModel.SelectedAccount != null && listView.SelectedItem != viewModel.SelectedAccount)
+                {
+                    listView.SelectedItem = viewModel.SelectedAccount;
+                }
+                listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
             }
-            listView.ScrollIntoView(listView.SelectedItem, ScrollIntoViewAlignment.Leading);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("AccountsListViewControl - KeepIntoView -> Exception");
         }
     }
 
@@ -147,19 +154,12 @@ public partial class AccountsListViewControl : UserControl
     {
         if (sender is FrameworkElement frameworkElement && frameworkElement.Parent is FrameworkElement parentElement)
         {
-            var account = parentElement.Tag as Account;
+            var account = parentElement.Tag as AccountDisplay;
             if (account != null)
             {
                 await _viewModel.AccountItemClicked(account);
             }
         }
     }
-
-    //public event PropertyChangedEventHandler? PropertyChanged;
-
-    //protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    //{
-    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    //}
 
 }

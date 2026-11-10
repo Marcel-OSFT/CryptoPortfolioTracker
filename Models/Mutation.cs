@@ -12,17 +12,15 @@ public partial class Mutation : BaseModel
     }
 
     //******* Public Properties
-
-    [ObservableProperty] private int id;
-    [ObservableProperty] private TransactionKind type;
-    [ObservableProperty] private double qty;
-    [ObservableProperty] private double price;
-    [ObservableProperty] private MutationDirection direction;
+    public int Id { get; set; }
+    public TransactionKind Type { get; set; }
+    public double Qty { get; set; }
+    public double Price { get; set; }
+    public MutationDirection Direction { get; set; }
 
     //******* Navigation Properties
-
-    [ObservableProperty] private Asset asset;
-    [ObservableProperty] private Transaction transaction;
+    public Asset Asset { get; set; }
+    public Transaction Transaction { get; set; }
 
 
 }

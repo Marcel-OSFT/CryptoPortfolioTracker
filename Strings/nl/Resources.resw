@@ -1,5 +1,110 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -21,8 +126,14 @@
   <data name="Settings_NumberFormat.Description" xml:space="preserve">
     <value>Hoe wilt u dat cijfers worden weergegeven?</value>
   </data>
+  <data name="Settings_Currency.Description" xml:space="preserve">
+    <value>In welke valuta wilt u de portefeuillewaarde weergegeven hebben.</value>
+  </data>
   <data name="Settings_NumberFormat.Header" xml:space="preserve">
     <value>Getalsnotatie</value>
+  </data>
+  <data name="Settings_Currency.Header" xml:space="preserve">
+    <value>Valuta</value>
   </data>
   <data name="Settings_CheckUpdate.Description" xml:space="preserve">
     <value>Hiermee wordt automatisch gecontroleerd op beschikbare updates.</value>
@@ -54,11 +165,11 @@
   <data name="Settings_HideZeroBalances.Header" xml:space="preserve">
     <value>Nulsaldi verbergen</value>
   </data>
-  <data name="Settings_KeepScrollBarsExpanded.Header" xml:space="preserve">
-    <value>Houd schuifbalken zichtbaar</value>
-  </data>
   <data name="Settings_KeepScrollBarsExpanded.Description" xml:space="preserve">
     <value>Standaard worden schuifbalken zichtbaar en groter wanneer de aanwijzer het gebied binnengaat. Zet dit AAN om altijd duidelijk te zien of een lijst meer items bevat of niet.</value>
+  </data>
+  <data name="Settings_KeepScrollBarsExpanded.Header" xml:space="preserve">
+    <value>Houd schuifbalken zichtbaar</value>
   </data>
   <data name="Settings_CheckUpdate_Toggle.OffContent" xml:space="preserve">
     <value>Uit</value>
@@ -81,11 +192,11 @@
   <data name="Settings_CheckUpdate_CheckNow.Content" xml:space="preserve">
     <value>Controleer nu</value>
   </data>
-  <data name="Settings_Title.Text" xml:space="preserve">
-    <value>Instellingen</value>
-  </data>
   <data name="Navigation_Accounts.Content" xml:space="preserve">
     <value>Accounts</value>
+  </data>
+  <data name="Navigation_Narratives.Content" xml:space="preserve">
+    <value>Narratief</value>
   </data>
   <data name="Navigation_Assets.Content" xml:space="preserve">
     <value>Portefeuille</value>
@@ -96,16 +207,8 @@
   <data name="Navigation_Help.Content" xml:space="preserve">
     <value>Help</value>
   </data>
-  <data name="Assets_Title.Text" xml:space="preserve">
-    <value>Portefeuille</value>
-  </data>
-  <data name="Assets_Explainer.Text" xml:space="preserve">
-    <value>Activa zijn de cryptovaluta die u op één of meerdere rekeningen in portefeuille heeft.
-Crypto van uw interesse moet eerst worden toegevoegd aan de muntenbibliotheek. Ook dient een of meerdere accounts te worden geconfigureerd.
-Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie Toevoegen' onderaan dit venster.</value>
-  </data>
-  <data name="Assets_TransactionButton.Content" xml:space="preserve">
-    <value>Transactie Toevoegen</value>
+  <data name="Settings_Title.Text" xml:space="preserve">
+    <value>Instellingen</value>
   </data>
   <data name="AssetsLV_24Hour.Text" xml:space="preserve">
     <value>24 Uur</value>
@@ -116,6 +219,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="AssetsLV_AverageCostPrice.Text" xml:space="preserve">
     <value>Gem. Kostprijs</value>
   </data>
+  <data name="AssetsLV_Change.Text" xml:space="preserve">
+    <value>Verand. %</value>
+  </data>
   <data name="AssetsLV_CostBase.Text" xml:space="preserve">
     <value>Aankoop Waarde</value>
   </data>
@@ -125,23 +231,37 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="AssetsLV_MarketValue.Text" xml:space="preserve">
     <value>Marktwaarde</value>
   </data>
-  <data name="AssetsLV_ProfitLoss.Text" xml:space="preserve">
-    <value>Winst/Verlies</value>
-  </data>
-  <data name="AssetsLV_Quantity.Text" xml:space="preserve">
-    <value>Aantal</value>
-  </data>
   <data name="AssetsLV_Name.Text" xml:space="preserve">
     <value>Naam</value>
   </data>
-  <data name="AssetsLV_Change.Text" xml:space="preserve">
-    <value>Verand. %</value>
+  <data name="AssetsLV_ProfitLoss.Text" xml:space="preserve">
+    <value>Winst/Verlies</value>
   </data>
   <data name="AssetsLV_ProfitLossPerc.Text" xml:space="preserve">
     <value>W/V %</value>
   </data>
+  <data name="AssetsLV_Quantity.Text" xml:space="preserve">
+    <value>Aantal</value>
+  </data>
+  <data name="Assets_Explainer" xml:space="preserve">
+    <value>Activa zijn de cryptovaluta die u op één of meerdere rekeningen in portefeuille heeft.
+Crypto van uw interesse moet eerst worden toegevoegd aan de muntenbibliotheek. Ook dient een of meerdere accounts te worden geconfigureerd.
+Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie Toevoegen' onderaan dit venster.</value>
+  </data>
+  <data name="Assets_Title" xml:space="preserve">
+    <value>Portefeuille</value>
+  </data>
+  <data name="Assets_TransactionButton.Content" xml:space="preserve">
+    <value>Transactie Toevoegen</value>
+  </data>
   <data name="AccountsLV_Edit.Label" xml:space="preserve">
     <value>Wijzigen</value>
+  </data>
+  <data name="NarrativesLV_Edit.Label" xml:space="preserve">
+    <value>Wijzigen</value>
+  </data>
+  <data name="NarrativesLV_MarketValue.Text" xml:space="preserve">
+    <value>Marktwaarde</value>
   </data>
   <data name="AccountsLV_MarketValue.Text" xml:space="preserve">
     <value>Marktwaarde</value>
@@ -149,19 +269,37 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="AccountsLV_Name.Text" xml:space="preserve">
     <value>Naam</value>
   </data>
+  <data name="NarrativesLV_Name.Text" xml:space="preserve">
+    <value>Naam</value>
+  </data>
   <data name="AccountsLV_Note.Text" xml:space="preserve">
+    <value>Notitie</value>
+  </data>
+  <data name="NarrativesLV_Note.Text" xml:space="preserve">
     <value>Notitie</value>
   </data>
   <data name="Accounts_AddAccount.Content" xml:space="preserve">
     <value>Account Toevoegen</value>
   </data>
-  <data name="Accounts_Explainer.Text" xml:space="preserve">
+  <data name="Narratives_AddNarrative.Content" xml:space="preserve">
+    <value>Narratief toevoegen</value>
+  </data>
+  <data name="Accounts_Explainer" xml:space="preserve">
     <value>De Accountslijst geeft u een overzicht van locaties waar u uw crypto-activa in bewaring heeft.</value>
   </data>
-  <data name="Accounts_Title.Text" xml:space="preserve">
+  <data name="Narratives_Explainer" xml:space="preserve">
+    <value>Het Narratieven overzicht geeft u een lijst van uw crypto-activa in relatie tot hun narratief. Ga naar het Bibliotheek overzicht om een ​​Narrative toe te wijzen aan een munt die al in uw Bibliotheek zit. Indien u een nieuwe munt gaat toevoegen kunt u daar gelijk een Narratief toekennen. De app wordt geleverd met een initiële  narratievenList die kan worden aangepast. De naam en beschrijving kunnen worden gewijzigd en er kunnen ook nieuwe narratieven worden toegevoegd.</value>
+  </data>
+  <data name="Accounts_Title" xml:space="preserve">
     <value>Accounts</value>
   </data>
+  <data name="Narratives_Title" xml:space="preserve">
+    <value>Narratieven</value>
+  </data>
   <data name="AccountsLV_Delete.Label" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="NarrativesLV_Delete.Label" xml:space="preserve">
     <value>Verwijderen</value>
   </data>
   <data name="LibraryLV_24HrChange.Text" xml:space="preserve">
@@ -203,11 +341,17 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Library_AddCoin.Content" xml:space="preserve">
     <value>Munt Toevoegen</value>
   </data>
-  <data name="Library_Explainer.Text" xml:space="preserve">
+  <data name="Library_Explainer" xml:space="preserve">
     <value>De Bibliotheek is een verzameling cryptomunten waarin u geïnteresseerd bent. U wordt dus niet afgeleid of gestoord door de grote hoeveelheid onbelangrijke munten die er zijn. De munten in de bibliotheek kunnen worden gebruikt bij het opbouwen van uw portefeuille.</value>
   </data>
-  <data name="Library_Title.Text" xml:space="preserve">
+  <data name="Library_Title" xml:space="preserve">
     <value>Bibliotheek</value>
+  </data>
+  <data name="TransactionsLV_Delete.Label" xml:space="preserve">
+    <value>Transactie Verwijderen</value>
+  </data>
+  <data name="TransactionsLV_Edit.Label" xml:space="preserve">
+    <value>Wijzigen</value>
   </data>
   <data name="TransactionsLV_From.Text" xml:space="preserve">
     <value>Van</value>
@@ -218,19 +362,13 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="TransactionsLV_Type.Text" xml:space="preserve">
     <value>Type Transactie</value>
   </data>
-  <data name="TransactionsLV_Delete.Label" xml:space="preserve">
-    <value>Transactie Verwijderen</value>
-  </data>
-  <data name="TransactionsLV_Edit.Label" xml:space="preserve">
-    <value>Wijzigen</value>
-  </data>
   <data name="TransactionDialog_AccountFromHeader" xml:space="preserve">
     <value>Van Account</value>
   </data>
   <data name="TransactionDialog_AccountToHeader" xml:space="preserve">
     <value>Naar Account</value>
   </data>
-  <data name="TransactionDialog_Buy_Explainer" xml:space="preserve">
+  <data name="TransactionType_Buy.ToolTipService.ToolTip" xml:space="preserve">
     <value>Een aankoop is een conversie van een StableCoin naar een Non-StableCoin en kan worden gecombineerd met een transfer van het ene account naar een andere.</value>
   </data>
   <data name="TransactionDialog_CloseButton" xml:space="preserve">
@@ -245,13 +383,13 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="TransactionDialog_CoinToHeader" xml:space="preserve">
     <value>Naar Munt</value>
   </data>
-  <data name="TransactionDialog_Convert_Explainer" xml:space="preserve">
-    <value>Wisselen is een conversie van de ene munt naar een andere munt en kan worden gecombineerd met een transfer van de ene account naar de andere.</value>
+  <data name="TransactionType_Convert.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Wisselen is een conversie van munt A naar munt B (of Stablecoin A naar Stablecoin B) en kan worden gecombineerd met een transfer van de ene account naar de andere.</value>
   </data>
   <data name="TransactionDialog_DatePicker.Header" xml:space="preserve">
     <value>Datum</value>
   </data>
-  <data name="TransactionDialog_Deposit_Explainer" xml:space="preserve">
+  <data name="TransactionType_Deposit.ToolTipService.ToolTip" xml:space="preserve">
     <value>Een Storting is een transactie waarbij ‘nieuwe’ cryptovaluta uw portefeuille binnenstromen. De bron kan elke fiat-bankrekening zijn, maar wordt niet geregistreerd. Alleen het ontvangende account wordt geregistreerd.</value>
   </data>
   <data name="TransactionDialog_FeeCoin.Header" xml:space="preserve">
@@ -260,34 +398,52 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="TransactionDialog_FeeQty.Header" xml:space="preserve">
     <value>Kosten</value>
   </data>
+  <data name="TransactionDialog_FeeQty.PlaceholderText" xml:space="preserve">
+    <value>Kosten opgeven...</value>
+  </data>
   <data name="TransactionDialog_Note.Header" xml:space="preserve">
     <value>Notitie</value>
+  </data>
+  <data name="TransactionDialog_Note.PlaceholderText" xml:space="preserve">
+    <value>bijv. hier kun je een notitie ingeven</value>
+  </data>
+  <data name="TransactionDialog_PriceB.PlaceholderText" xml:space="preserve">
+    <value>berekende prijs...</value>
+  </data>
+  <data name="TransactionDialog_PriceA.Header" xml:space="preserve">
+    <value>Prijs (USD)</value>
+  </data>
+  <data name="TransactionDialog_PriceA.PlaceholderText" xml:space="preserve">
+    <value>price opgeven...</value>
   </data>
   <data name="TransactionDialog_PrimaryButton" xml:space="preserve">
     <value>Transactie Accepteren</value>
   </data>
+  <data name="TransactionDialog_QtyB.Header" xml:space="preserve">
+    <value>Aantal</value>
+  </data>
+  <data name="TransactionDialog_QtyB.PlaceholderText" xml:space="preserve">
+    <value>aantal opgeven...</value>
+  </data>
   <data name="TransactionDialog_QtyHeader" xml:space="preserve">
     <value>Aantal</value>
   </data>
-  <data name="TransactionDialog_Sell_Explainer" xml:space="preserve">
+  <data name="TransactionType_Sell.ToolTipService.ToolTip" xml:space="preserve">
     <value>Een Verkoop is een conversie van een Non-StableCoin naar een StableCoin en kan worden gecombineerd met een transfer van de ene account naar de andere.</value>
   </data>
   <data name="TransactionDialog_TimePicker.Header" xml:space="preserve">
     <value>Tijd</value>
   </data>
   <data name="TransactionDialog_Title_Add" xml:space="preserve">
-    <value>Transactie Toevoegen</value>
+    <value>Nieuwe Transactie</value>
   </data>
   <data name="TransactionDialog_Title_Edit" xml:space="preserve">
     <value>Transactie Wijzigen</value>
   </data>
-  <data name="TransactionDialog_TransactionType.Header" xml:space="preserve">
-    <value>Type Transactie</value>
-  </data>
-  <data name="TransactionDialog_Transfer_Explainer" xml:space="preserve">
+  <data name="TransactionType_Transfer.ToolTipService.ToolTip" xml:space="preserve">
     <value>Een Transfer is een ‘transactie’ waarbij cryptovaluta van de ene rekening naar de andere wordt verplaatst.</value>
   </data>
-  <data name="TransactionDialog_Withdraw_Explainer" xml:space="preserve">
+  <data name="TransactionType_Withdraw.ToolTipService.ToolTip" xml:space="preserve">
     <value>Een Opname is een transactie waarbij cryptovaluta uit uw portefeuille gaat. De bestemming kan elke fiat-bankrekening zijn.</value>
   </data>
   <data name="TransactionType_Buy.Content" xml:space="preserve">
@@ -308,56 +464,68 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="TransactionType_Withdraw.Content" xml:space="preserve">
     <value>Opname</value>
   </data>
-  <data name="TransactionDialog_PriceA.Header" xml:space="preserve">
-    <value>Prijs</value>
-  </data>
-  <data name="TransactionDialog_QtyB.Header" xml:space="preserve">
-    <value>Aantal</value>
-  </data>
-  <data name="TransactionDialog_FeeQty.PlaceholderText" xml:space="preserve">
-    <value>Kosten opgeven...</value>
-  </data>
-  <data name="TransactionDialog_Note.PlaceholderText" xml:space="preserve">
-    <value>bijv. hier kun je een notitie ingeven</value>
-  </data>
-  <data name="TransactionDialog_PriceA.PlaceholderText" xml:space="preserve">
-    <value>price opgeven...</value>
-  </data>
-  <data name="TransactionDialog_QtyB.PlaceholderText" xml:space="preserve">
-    <value>aantal opgeven...</value>
-  </data>
-  <data name="TransactionDialog_PriceB.PlaceholderText" xml:space="preserve">
-    <value>berekende prijs...</value>
-  </data>
   <data name="TransactionDialog_PriceB.Header" xml:space="preserve">
-    <value>Prijs</value>
+    <value>Prijs (USD)</value>
   </data>
-  <data name="AccountDialog_Description.Header" xml:space="preserve">
+  <data name="AccountDialog_DescriptionHeader.Text" xml:space="preserve">
     <value>Omschrijving</value>
+  </data>
+  <data name="NarrativeDialog_DescriptionHeader.Text" xml:space="preserve">
+    <value>Omschrijving</value>
+  </data>
+  <data name="AccountDialog_Description_Explain.Text" xml:space="preserve">
+    <value>Voeg details toe om dit account te helpen identificeren.</value>
+  </data>
+  <data name="NarrativeDialog_Description_Explain.Text" xml:space="preserve">
+    <value>Voeg een omschrijving toe voor dit Narratief....</value>
   </data>
   <data name="AccountDialog_Description.PlaceholderText" xml:space="preserve">
     <value>beschrijving kan hier....</value>
   </data>
-  <data name="AccountDialog_Name.Header" xml:space="preserve">
+  <data name="NarrativeDialog_Description.PlaceholderText" xml:space="preserve">
+    <value>Omschrijving komt hier...</value>
+  </data>
+  <data name="AccountDialog_NameHeader.Text" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="NarrativeDialog_NameHeader.Text" xml:space="preserve">
     <value>Naam</value>
   </data>
   <data name="AccountDialog_Name.PlaceholderText" xml:space="preserve">
     <value>bijv: Bybit Funding...</value>
   </data>
+  <data name="NarrativeDialog_Name.PlaceholderText" xml:space="preserve">
+    <value>bijv. Layer 1...</value>
+  </data>
   <data name="AccountDialog_CloseButton" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="NarrativeDialog_CloseButton" xml:space="preserve">
     <value>Annuleren</value>
   </data>
   <data name="AccountDialog_PrimaryButton_Add" xml:space="preserve">
     <value>Account Accepteren</value>
   </data>
+  <data name="NarrativeDialog_PrimaryButton_Add" xml:space="preserve">
+    <value>Accepteren</value>
+  </data>
   <data name="AccountDialog_PrimaryButton_Edit" xml:space="preserve">
+    <value>Accepteren</value>
+  </data>
+  <data name="NarrativeDialog_PrimaryButton_Edit" xml:space="preserve">
     <value>Accepteren</value>
   </data>
   <data name="AccountDialog_Title_Add" xml:space="preserve">
     <value>Account Toevoegen</value>
   </data>
+  <data name="NarrativeDialog_Title_Add" xml:space="preserve">
+    <value>Narratief toevoegen</value>
+  </data>
   <data name="AccountDialog_Title_Edit" xml:space="preserve">
     <value>Account Wijzigen</value>
+  </data>
+  <data name="NarrativeDialog_Title_Edit" xml:space="preserve">
+    <value>Narratief wijzigen</value>
   </data>
   <data name="CoinDialog_BePatient.Text" xml:space="preserve">
     <value>* Wees geduldig - momenteel druk bij CoinGecko API.</value>
@@ -375,7 +543,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Naam</value>
   </data>
   <data name="CoinDialog_Price.Text" xml:space="preserve">
-    <value>Prijs</value>
+    <value>Prijs (USD)</value>
   </data>
   <data name="CoinDialog_PrimaryButton" xml:space="preserve">
     <value>Accepteren</value>
@@ -392,11 +560,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="NoteDialog_CloseButton" xml:space="preserve">
     <value>Annuleren</value>
   </data>
-  <data name="NoteDialog_Note.Header" xml:space="preserve">
+  <data name="NoteDialog_NoteHeader.Text" xml:space="preserve">
     <value>Notitie</value>
   </data>
+  <data name="NoteDialog_Note_Explain.Text" xml:space="preserve">
+    <value>Voeg details toe specifiek voor deze munt.</value>
+  </data>
   <data name="NoteDialog_Note.PlaceholderText" xml:space="preserve">
-    <value>bijv. hier kun je een notitie ingeven</value>
+    <value>hier kun je een notitie ingeven....</value>
   </data>
   <data name="NoteDialog_PrimaryButton" xml:space="preserve">
     <value>Accepteren</value>
@@ -434,17 +605,32 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_AccountAddFailed_Title" xml:space="preserve">
     <value>Fout bij toevoegen van Account</value>
   </data>
+  <data name="Messages_NarrativeAddFailed_Title" xml:space="preserve">
+    <value>Fout bij het toevoegen van een narratief</value>
+  </data>
+  <data name="Messages_NarrativeDeleteFailed_Msg" xml:space="preserve">
+    <value>Aan het narratief zijn al munten gekoppeld</value>
+  </data>
   <data name="Messages_AccountDeleteFailed_Msg" xml:space="preserve">
     <value>Het account bevat mogelijk nog cryptomunten.</value>
   </data>
   <data name="Messages_AccountDeleteFailed_Title" xml:space="preserve">
     <value>Fout bij het verwijderen van het Account</value>
   </data>
+  <data name="Messages_NarrativeDeleteFailed_Title" xml:space="preserve">
+    <value>Fout bij het verwijderen van een narratief</value>
+  </data>
   <data name="Messages_AccountDialogFailed_Title" xml:space="preserve">
     <value>Fout bij openen van het dialoog venster.</value>
   </data>
+  <data name="Messages_NarrativeDialogFailed_Title" xml:space="preserve">
+    <value>Fout bij het openen van het Narratief dialoogvenster</value>
+  </data>
   <data name="Messages_AccountUpdateFailed_Title" xml:space="preserve">
     <value>Fout bij het wijzigen van het Accout</value>
+  </data>
+  <data name="Messages_NarrativetUpdateFailed_Title" xml:space="preserve">
+    <value>Fout bij het updaten van het narratief</value>
   </data>
   <data name="Messages_CoinAddFailed_Title" xml:space="preserve">
     <value>Fout bij toevoegen van een munt</value>
@@ -485,6 +671,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_UpdateChecker_DownloadFailedTitle" xml:space="preserve">
     <value>Fout bij het downloaden van de Setup File.</value>
   </data>
+  <data name="Messages_UpdateChecker_DownloadSuccesTitle" xml:space="preserve">
+    <value>Download gereed</value>
+  </data>
   <data name="Messages_UpdateChecker_DownloadSuccesMsg" xml:space="preserve">
     <value>Het installatiebestand is opgeslagen in uw Downloads map. Klik op 'Installeren' om door te gaan met de installatie. De applicatie wordt automatisch gesloten.</value>
   </data>
@@ -506,8 +695,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_AccountDeleteNotAllowd_Title" xml:space="preserve">
     <value>Verwijderen niet toegestaan!</value>
   </data>
+  <data name="Messages_NarrativeDeleteNotAllowd_Title" xml:space="preserve">
+    <value>Verwijderen niet toegestaan!</value>
+  </data>
   <data name="Messages_AccountDeleteNotAllowed_Msg" xml:space="preserve">
     <value>Deze account maakt nog onderdeel uit van uw portefeuille.</value>
+  </data>
+  <data name="Messages_NarrativeDeleteNotAllowed_Msg" xml:space="preserve">
+    <value>Het narratief is aan één of meer munten gekoppeld</value>
   </data>
   <data name="Settings_AppTheme_Toggle.OffContent" xml:space="preserve">
     <value>Licht</value>
@@ -520,9 +715,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="Settings_AppTheme.Header" xml:space="preserve">
     <value>Thema</value>
-  </data>
-  <data name="Messages_UpdateChecker_DownloadSuccesTitle" xml:space="preserve">
-    <value>Download gereed</value>
   </data>
   <data name="Settings_AppCulture.Description" xml:space="preserve">
     <value>Selecteer uw taal voorkeur voor deze app.</value>
@@ -552,10 +744,10 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>30 dagen</value>
   </data>
   <data name="CoinDialog_SearchBox.MyPlaceholderText" xml:space="preserve">
-    <value>zoek op naam, symbool, id</value>
+    <value>Zoek op naam, symbool of ID. Gebruik meerdere termen om de resultaten te verfijnen (bijv. Tether, USDT)</value>
   </data>
   <data name="CoinDialog_SearchBox.ToolTipService.ToolTip" xml:space="preserve">
-    <value>zoek op naam, symbool, id</value>
+    <value>Zoek op naam, symbool of ID. Gebruik meerdere termen om de resultaten te verfijnen (bijv. Tether, USDT)</value>
   </data>
   <data name="Messages_AddingCoinFailed" xml:space="preserve">
     <value>Fout bij toevoegen van de munt</value>
@@ -599,19 +791,22 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Library_AddPreListingCoin.Content" xml:space="preserve">
     <value>Pre-Listing Munt toevoegen</value>
   </data>
-  <data name="PreListingCoinDialog_About.Header" xml:space="preserve">
+  <data name="PreListingCoinDialog_AboutHeader.Text" xml:space="preserve">
     <value>Omschrijving/Notitie</value>
+  </data>
+  <data name="PreListingCoinDialog_AboutExplain.Text" xml:space="preserve">
+    <value>Beschrijf het project of zijn doel.</value>
   </data>
   <data name="PreListingCoinDialog_About.PlaceholderText" xml:space="preserve">
     <value>bijv. munt listing verwacht in Q1-2025</value>
   </data>
-  <data name="PreListingCoinDialog_Name.Header" xml:space="preserve">
+  <data name="PreListingCoinDialog_NameHeader.Text" xml:space="preserve">
     <value>Munt Naam</value>
   </data>
   <data name="PreListingCoinDialog_Name.PlaceholderText" xml:space="preserve">
     <value>bijv. Veelbelovend Project</value>
   </data>
-  <data name="PreListingCoinDialog_Symbol.Header" xml:space="preserve">
+  <data name="PreListingCoinDialog_SymbolHeader.Text" xml:space="preserve">
     <value>Munt Symbool</value>
   </data>
   <data name="PreListingCoinDialog_Symbol.PlaceholderText" xml:space="preserve">
@@ -620,14 +815,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="PreListingCoinDialog_Title" xml:space="preserve">
     <value>Voeg een pre-listing munt toe</value>
   </data>
-  <data name="PreListingCoinDialog_Price.Header" xml:space="preserve">
-    <value>Prijs</value>
-  </data>
-  <data name="PreListingCoinDialog_Explainer.Text" xml:space="preserve">
-    <value>Soms staat een nieuwe munt waarin je hebt geïnvesteerd nog niet vermeld bij data-aggregators zoals CoinGecko. In dit geval kun je hier een pre-listingmunt toevoegen. In een later stadium, wanneer de munt genoteerd (gelist) wordt, kunt u deze munt samenvoegen met de 'geliste' munt. Zie de actie 'samenvoegen' bij de drie stippen...</value>
+  <data name="PreListingCoinDialog_PriceHeader.Text" xml:space="preserve">
+    <value>Prijs (USD)</value>
   </data>
   <data name="LibraryLV_Merge.Label" xml:space="preserve">
     <value>Pre-listing munt Samenvoegen...</value>
+  </data>
+  <data name="PreListingCoinDialog_Explainer.Text" xml:space="preserve">
+    <value>Soms staat een nieuwe munt waarin je hebt geïnvesteerd nog niet vermeld bij data-aggregators zoals CoinGecko. In dit geval kun je hier een pre-listingmunt toevoegen. In een later stadium, wanneer de munt genoteerd (gelist) wordt, kunt u deze munt samenvoegen met de 'geliste' munt. Zie de actie 'samenvoegen' bij de drie stippen...</value>
   </data>
   <data name="CoinDialog_MergeTitle" xml:space="preserve">
     <value>Pre-listing Munt samenvoegen </value>
@@ -666,7 +861,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Over</value>
   </data>
   <data name="TransactionDialog_Earnings.Content" xml:space="preserve">
-    <value>Staking opbrengst</value>
+    <value>betreft Staking opbrengst</value>
   </data>
   <data name="AboutDialog_Title" xml:space="preserve">
     <value>Over</value>
@@ -731,17 +926,17 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="PriceLevelsLV_Symbol.Text" xml:space="preserve">
     <value>Symbool</value>
   </data>
-  <data name="PriceLevels_Explainer.Text" xml:space="preserve">
+  <data name="PriceLevels_Explainer" xml:space="preserve">
     <value>Dit overzicht geeft een indicatie of de actuele prijs van een munt binnen het bereik van een bepaald niveau ligt. De niveaus die kunnen worden ingesteld zijn een Take Profit, een buy en een Stop-niveau. Als de prijs binnen het bereik van een niveau ligt, wordt dit aangegeven door een kleur.</value>
   </data>
-  <data name="PriceLevels_Title.Text" xml:space="preserve">
+  <data name="PriceLevels_Title" xml:space="preserve">
     <value>Prijsniveaus</value>
   </data>
   <data name="PriceLevelsLV_AddEditLevels.Label" xml:space="preserve">
     <value>Toevoegen/wijzigen Prijsniveaus</value>
   </data>
   <data name="PriceLevelsLV_Delete.Label" xml:space="preserve">
-    <value>Verwijder Prijsniveaus</value>
+    <value>Reset Prijsniveaus</value>
   </data>
   <data name="Navigation_PriceLevels.Content" xml:space="preserve">
     <value>Prijsniveaus</value>
@@ -755,29 +950,41 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_PriceLevelsDialogFailed_Title" xml:space="preserve">
     <value>Fout bij het openen van het Prijsniveaus venster</value>
   </data>
+  <data name="PriceLevelsDialog_BuyHeader.Text" xml:space="preserve">
+    <value>Koopprijs (USD)</value>
+  </data>
+  <data name="PriceLevelsDialog_NoteHeader.Text" xml:space="preserve">
+    <value>Notitie</value>
+  </data>
+  <data name="PriceLevelsDialog_BuyHeaderSection.Text" xml:space="preserve">
+    <value>Koopniveau</value>
+  </data>
   <data name="PriceLevelsDialog_CloseButton" xml:space="preserve">
     <value>Annuleren</value>
   </data>
   <data name="PriceLevelsDialog_PrimaryButton" xml:space="preserve">
     <value>Accepteren</value>
   </data>
+  <data name="PriceLevelsDialog_StopHeader.Text" xml:space="preserve">
+    <value>Stop prijs (USD)</value>
+  </data>
+  <data name="PriceLevelsDialog_StopHeaderSection.Text" xml:space="preserve">
+    <value>Stopniveau</value>
+  </data>
   <data name="PriceLevelsDialog_Title" xml:space="preserve">
-    <value>Prijsniveaus voor </value>
+    <value>Prijsniveaus voor</value>
+  </data>
+  <data name="PriceLevelsDialog_TpHeader.Text" xml:space="preserve">
+    <value>Doelprijs (USD)</value>
+  </data>
+  <data name="PriceLevelsDialog_TpHeaderSection.Text" xml:space="preserve">
+    <value>Winstname-niveau</value>
   </data>
   <data name="PriceLevelsDialog_Note.PlaceholderText" xml:space="preserve">
-    <value>Schrijf hier een notitie...</value>
+    <value>Optioneel - Schrijf hier een notitie...</value>
   </data>
   <data name="PriceLevelsLV_AvgCost.Text" xml:space="preserve">
     <value>gem. kostprijs</value>
-  </data>
-  <data name="PriceLevelsDialog_BuyHeader.Text" xml:space="preserve">
-    <value>Koopniveau</value>
-  </data>
-  <data name="PriceLevelsDialog_StopHeader.Text" xml:space="preserve">
-    <value>Stopniveau</value>
-  </data>
-  <data name="PriceLevelsDialog_TpHeader.Text" xml:space="preserve">
-    <value>Winstname-niveau</value>
   </data>
   <data name="settingsExpander_AssetView.Description" xml:space="preserve">
     <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Portfolio overzicht' zoals KapitaalStroom verbergen, Nulsaldi verbergen</value>
@@ -791,11 +998,44 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="settingsExpander_General.Header" xml:space="preserve">
     <value>Algemene instellingen</value>
   </data>
+  <data name="settingsExpander_Bubbles.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Bubbles'-grafiek, zoals doelbereiken, RSI en MA.</value>
+  </data>
+  <data name="settingsExpander_Bubbles.Header" xml:space="preserve">
+    <value>Instellingen Bubble grafiek</value>
+  </data>
+  <data name="Settings_Bubbles1.Description" xml:space="preserve">
+    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de werkelijke prijs binnen het bereik van het doelniveau ligt.</value>
+  </data>
+  <data name="Settings_Bubbles1.Header" xml:space="preserve">
+    <value>'Binnen bereik' drempelpercentage</value>
+  </data>
+  <data name="Settings_Bubbles2.Description" xml:space="preserve">
+    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de werkelijke prijs zich binnen het bereik van het doelniveau bevindt.</value>
+  </data>
+  <data name="Settings_Bubbles2.Header" xml:space="preserve">
+    <value>'Dichtbij' drempelpercentage</value>
+  </data>
+  <data name="HeatMapView_Target_YAxisTitle" xml:space="preserve">
+    <value>Afstand tot target [%]</value>
+  </data>
   <data name="HeatMapView.Text" xml:space="preserve">
     <value>Target Bubbels</value>
   </data>
   <data name="GraphicView.Text" xml:space="preserve">
     <value>Portefeuille waarde</value>
+  </data>
+  <data name="settingsExpander_Pie.Description" xml:space="preserve">
+    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de cirkeldiagram(men)</value>
+  </data>
+  <data name="settingsExpander_Pie.Header" xml:space="preserve">
+    <value>Instellingen voor cirkeldiagrammen</value>
+  </data>
+  <data name="Settings_MaxPieCoins.Description" xml:space="preserve">
+    <value>Het aantal munten dat zichtbaar is in de Portfolio Pie. De overige munten worden gegroepeerd in 'Overige'.</value>
+  </data>
+  <data name="Settings_MaxPieCoins.Header" xml:space="preserve">
+    <value>Maximaal aantal munten in de portefeuille-cirkeldiagram</value>
   </data>
   <data name="Dashboard_Title.Text" xml:space="preserve">
     <value>Dashboard</value>
@@ -815,6 +1055,9 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="ValueGainsView_Day.Text" xml:space="preserve">
     <value>dag</value>
   </data>
+  <data name="ValueGainsView_Week.Text" xml:space="preserve">
+    <value>week</value>
+  </data>
   <data name="ValueGainsView_Month.Text" xml:space="preserve">
     <value>maand</value>
   </data>
@@ -833,9 +1076,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="ValueGainsView_NetCapFlow.Text" xml:space="preserve">
     <value>netto kapitaalstroom</value>
   </data>
-  <data name="ValueGainsView_Week.Text" xml:space="preserve">
-    <value>week</value>
-  </data>
   <data name="HeatMapView_NoTargets.Text" xml:space="preserve">
     <value>Ga naar het overzicht 'Prijsniveaus' om streefniveaus in te stellen.</value>
   </data>
@@ -845,89 +1085,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="PieChartView_Accounts.Text" xml:space="preserve">
     <value>Accounts verdeling</value>
   </data>
+  <data name="PieChartView_Narratives.Text" xml:space="preserve">
+    <value>Narratief verdeling</value>
+  </data>
   <data name="AssetsLV_NetInvestment.Text" xml:space="preserve">
     <value>Netto Investering</value>
   </data>
   <data name="ValueGainsView_NetInvestment.Text" xml:space="preserve">
     <value>Netto investering</value>
-  </data>
-  <data name="Navigation_Narratives.Content" xml:space="preserve">
-    <value>Narratief</value>
-  </data>
-  <data name="NarrativesLV_Edit.Label" xml:space="preserve">
-    <value>Wijzigen</value>
-  </data>
-  <data name="NarrativesLV_MarketValue.Text" xml:space="preserve">
-    <value>Marktwaarde</value>
-  </data>
-  <data name="NarrativesLV_Name.Text" xml:space="preserve">
-    <value>Naam</value>
-  </data>
-  <data name="NarrativesLV_Note.Text" xml:space="preserve">
-    <value>Notitie</value>
-  </data>
-  <data name="Narratives_AddNarrative.Content" xml:space="preserve">
-    <value>Narratief toevoegen</value>
-  </data>
-  <data name="Narratives_Explainer.Text" xml:space="preserve">
-    <value>Het Narratieven overzicht geeft u een lijst van uw crypto-activa in relatie tot hun narratief. Ga naar het Bibliotheek overzicht om een ​​Narrative toe te wijzen aan een munt die al in uw Bibliotheek zit. Indien u een nieuwe munt gaat toevoegen kunt u daar gelijk een Narratief toekennen. De app wordt geleverd met een initiële  narratievenList die kan worden aangepast. De naam en beschrijving kunnen worden gewijzigd en er kunnen ook nieuwe narratieven worden toegevoegd.</value>
-  </data>
-  <data name="Narratives_Title.Text" xml:space="preserve">
-    <value>Narratieven</value>
-  </data>
-  <data name="NarrativesLV_Delete.Label" xml:space="preserve">
-    <value>Verwijderen</value>
-  </data>
-  <data name="NarrativeDialog_Description.Header" xml:space="preserve">
-    <value>Narratief omschrijving</value>
-  </data>
-  <data name="NarrativeDialog_Description.PlaceholderText" xml:space="preserve">
-    <value>Omschrijving komt hier...</value>
-  </data>
-  <data name="NarrativeDialog_Name.Header" xml:space="preserve">
-    <value>Narratief naam</value>
-  </data>
-  <data name="NarrativeDialog_Name.PlaceholderText" xml:space="preserve">
-    <value>bijv. Layer 1...</value>
-  </data>
-  <data name="NarrativeDialog_CloseButton" xml:space="preserve">
-    <value>Annuleren</value>
-  </data>
-  <data name="NarrativeDialog_PrimaryButton_Add" xml:space="preserve">
-    <value>Accepteer narratief</value>
-  </data>
-  <data name="NarrativeDialog_PrimaryButton_Edit" xml:space="preserve">
-    <value>Accepteren</value>
-  </data>
-  <data name="NarrativeDialog_Title_Add" xml:space="preserve">
-    <value>Narratief toevoegen</value>
-  </data>
-  <data name="NarrativeDialog_Title_Edit" xml:space="preserve">
-    <value>Narratief wijzigen</value>
-  </data>
-  <data name="Messages_NarrativeAddFailed_Title" xml:space="preserve">
-    <value>Fout bij het toevoegen van een narratief</value>
-  </data>
-  <data name="Messages_NarrativeDeleteFailed_Msg" xml:space="preserve">
-    <value>Aan het narratief zijn al munten gekoppeld</value>
-  </data>
-  <data name="Messages_NarrativeDeleteFailed_Title" xml:space="preserve">
-    <value>Fout bij het verwijderen van een narratief</value>
-  </data>
-  <data name="Messages_NarrativeDialogFailed_Title" xml:space="preserve">
-    <value>Fout bij het openen van het Narratief dialoogvenster</value>
-  </data>
-  <data name="Messages_NarrativetUpdateFailed_Title" xml:space="preserve">
-    <value>Fout bij het updaten van het narratief</value>
-  </data>
-  <data name="Messages_NarrativeDeleteNotAllowd_Title" xml:space="preserve">
-    <value>Verwijderen niet toegestaan!</value>
-  </data>
-  <data name="Messages_NarrativeDeleteNotAllowed_Msg" xml:space="preserve">
-    <value>Het narratief is aan één of meer munten gekoppeld</value>
-  </data>
-  <data name="PieChartView_Narratives.Text" xml:space="preserve">
-    <value>Narratief verdeling</value>
   </data>
   <data name="dummy" xml:space="preserve">
     <value>dummy</value>
@@ -944,17 +1109,20 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_AssignNarrativeDialogFailed_Title" xml:space="preserve">
     <value>Fout bij het openen van het dialoogvenster</value>
   </data>
+  <data name="AssignNarrativeDialog_AboutHeader.Text" xml:space="preserve">
+    <value>Omschrijving/notitie</value>
+  </data>
+  <data name="AssignNarrativeDialog_ComboHeader.Text" xml:space="preserve">
+    <value>Selecteer Narratief</value>
+  </data>
+  <data name="AssignNarrativeDialog_DescriptionHeader.Text" xml:space="preserve">
+    <value>Omschrijving</value>
+  </data>
   <data name="AssignNarrativeDialog_Title_Edit" xml:space="preserve">
     <value>Toekennen/wijzigen narratief voor</value>
   </data>
   <data name="AssignNarrativeDialog_PrimaryButton_Edit" xml:space="preserve">
     <value>Narratief toekennen</value>
-  </data>
-  <data name="AssignNarrativeDialog_AboutHeader.Text" xml:space="preserve">
-    <value>Omschrijving/notitie</value>
-  </data>
-  <data name="AssignNarrativeDialog_ComboHeader.Header" xml:space="preserve">
-    <value>Narratief</value>
   </data>
   <data name="LibraryLV_Narrative.Text" xml:space="preserve">
     <value>Narratief</value>
@@ -962,53 +1130,59 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="NarrativeDialog_NarrativeNameExists" xml:space="preserve">
     <value>er bestaat al een narratief met deze naam</value>
   </data>
+  <data name="NarrativeDialog_NarrativeNotAllowed" xml:space="preserve">
+    <value>NIET toegestaan: Stablecoin is gereserveerd</value>
+  </data>
   <data name="AccountDialog_AccountNameExists" xml:space="preserve">
+    <value>er bestaat al een account met deze naam</value>
+  </data>
+  <data name="AccountDialog_AccountNameNotAllowed" xml:space="preserve">
     <value>er bestaat al een account met deze naam</value>
   </data>
   <data name="Navigation_TeachNarrative.Title" xml:space="preserve">
     <value>Nieuwe functie! Het narratieven overzicht</value>
   </data>
-  <data name="Navigation_TeachAssets.Title" xml:space="preserve">
-    <value>Hoe starten! (3 van 3)</value>
-  </data>
-  <data name="Navigation_TeachAccounts.Title" xml:space="preserve">
-    <value>Hoe starten! (2 van 3)</value>
-  </data>
-  <data name="Navigation_TeachLibrary.Title" xml:space="preserve">
-    <value>Hoe starten! (1 van 3)</value>
-  </data>
-  <data name="Dashboard_TeachNarrative.Title" xml:space="preserve">
-    <value>Nieuwe functie! (2 van 2)</value>
-  </data>
-  <data name="Dashboard_TeachPortfolio.Title" xml:space="preserve">
-    <value>Nieuwe functie! (1 van 2)</value>
-  </data>
-  <data name="Narrative_TeachGeneral.Title" xml:space="preserve">
-    <value>Klik op een narratief in de lijst om deze uit te vouwen en de bijbehorende munten te tonen</value>
-  </data>
-  <data name="Library_TeachNarrative.Title" xml:space="preserve">
-    <value>Narratief kolom toegevoegd!</value>
-  </data>
   <data name="Navigation_TeachNarrative.Subtitle" xml:space="preserve">
     <value>Wijs een narratief toe aan elk van uw munten om een ​​narratief overzicht te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt.</value>
+  </data>
+  <data name="Navigation_TeachAssets.Title" xml:space="preserve">
+    <value>Hoe starten! (3 van 3)</value>
   </data>
   <data name="Navigation_TeachAssets.Subtitle" xml:space="preserve">
     <value>Stap 3: Bouw uw portefeuille op door transacties toe te voegen in de portefeuilleweergave</value>
   </data>
+  <data name="Navigation_TeachAccounts.Title" xml:space="preserve">
+    <value>Hoe starten! (2 van 3)</value>
+  </data>
   <data name="Navigation_TeachAccounts.Subtitle" xml:space="preserve">
     <value>Stap 2: Accounts toevoegen. Een account is een locatie waar u uw munten bewaart, zoals Bybit, MEXC, Ledger, Trezor of een andere exchange of wallet</value>
+  </data>
+  <data name="Navigation_TeachLibrary.Title" xml:space="preserve">
+    <value>Hoe starten! (1 van 3)</value>
   </data>
   <data name="Navigation_TeachLibrary.Subtitle" xml:space="preserve">
     <value>Stap 1: Voeg munten toe aan uw bibliotheek.</value>
   </data>
+  <data name="Dashboard_TeachNarrative.Title" xml:space="preserve">
+    <value>Nieuwe functie! (2 van 2)</value>
+  </data>
   <data name="Dashboard_TeachNarrative.Subtitle" xml:space="preserve">
     <value>Wijs een narratief toe aan elk van uw munten om een ​​narrtief verdeling te krijgen. Toewijzen kan worden gedaan in de bibliotheek voor reeds bestaande munten of bij het toevoegen van een nieuwe munt</value>
+  </data>
+  <data name="Dashboard_TeachPortfolio.Title" xml:space="preserve">
+    <value>Nieuwe functie! (1 van 2)</value>
   </data>
   <data name="Dashboard_TeachPortfolio.Subtitle" xml:space="preserve">
     <value>Stel het maximale aantal zichtbare munten in 'Instellingen -&gt; Dashboardinstellingen' in. De resterende munten worden gegroepeerd in 'Others'</value>
   </data>
+  <data name="Narrative_TeachGeneral.Title" xml:space="preserve">
+    <value>Klik op een narratief in de lijst om deze uit te vouwen en de bijbehorende munten te tonen</value>
+  </data>
   <data name="Narrative_TeachGeneral.Subtitle" xml:space="preserve">
     <value>Eerst moet je een Narratief toewijzen aan elk van de munten. Dat kun je doen in de bibliotheek</value>
+  </data>
+  <data name="Library_TeachNarrative.Title" xml:space="preserve">
+    <value>Narratief kolom toegevoegd!</value>
   </data>
   <data name="Library_TeachNarrative.Subtitle" xml:space="preserve">
     <value>Het toewijzen van een narratief kan worden gedaan voor bestaande munten door de 'actie'-punten te selecteren, helemaal rechts naast elke munt.</value>
@@ -1022,8 +1196,8 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="HeatMapType_Rsi.Content" xml:space="preserve">
     <value>dagelijkse RSI</value>
   </data>
-  <data name="HeatMapView_Target_YAxisTitle" xml:space="preserve">
-    <value>Afstand tot target [%]</value>
+  <data name="HeatMapType_Ema.Content" xml:space="preserve">
+    <value>dagelijkse 50 EMA</value>
   </data>
   <data name="HeatMapView_Rsi_YAxisTitle" xml:space="preserve">
     <value>dagelijkse RSI</value>
@@ -1031,8 +1205,11 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="HeatMap_TeachRsi.Title" xml:space="preserve">
     <value>Nieuwe functie: dagelijkse RSI</value>
   </data>
-  <data name="SwitchPortfolio_Title.Text" xml:space="preserve">
+  <data name="SwitchPortfolio_Title" xml:space="preserve">
     <value>Wissel Portefeuille</value>
+  </data>
+  <data name="SwitchPortfolio_Explainer" xml:space="preserve">
+    <value>De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuilles te beheren en in te stellen. Wissel van portefeuille door te dubbelklikken op een van de portefeuilles in de onderstaande lijst.</value>
   </data>
   <data name="SwitchPortfolioLV_Title.Text" xml:space="preserve">
     <value>Portefeuille</value>
@@ -1043,14 +1220,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Navigation_SwitchPortfolio.Content" xml:space="preserve">
     <value>Wissel portefeuille</value>
   </data>
-  <data name="PortfolioAdmin_Title.Text" xml:space="preserve">
-    <value>Portefeuille Admin</value>
-  </data>
-  <data name="PortfolioAdmin_Explainer.Text" xml:space="preserve">
-    <value>Deze weergave biedt u de mogelijkheid om uw portefeuilles te onderhouden met betrekking tot het hernoemen, toevoegen, verwijderen en kopiëren van een portefeuille. De app maakt ook herstelpunten op specifieke momenten. In het geval van een defecte portefeuille, heeft u de mogelijkheid om deze te herstellen met behulp van een herstelpunt. Daarnaast kunt u ook uw eigen back-up maken/herstellen. Dit kan bijvoorbeeld handig zijn om uw portefeuille (tijdelijk) te verplaatsen naar een laptop voor tijdens de vakantie.</value>
-  </data>
   <data name="Navigation_Admin.Content" xml:space="preserve">
     <value>Portefeuille Admin</value>
+  </data>
+  <data name="PortfolioAdmin_Title" xml:space="preserve">
+    <value>Portefeuille Admin</value>
+  </data>
+  <data name="PortfolioAdmin_Explainer" xml:space="preserve">
+    <value>Deze weergave biedt u de mogelijkheid om uw portefeuilles te onderhouden met betrekking tot het hernoemen, toevoegen, verwijderen en kopiëren van een portefeuille. De app maakt ook herstelpunten op specifieke momenten. In het geval van een defecte portefeuille, heeft u de mogelijkheid om deze te herstellen met behulp van een herstelpunt. Daarnaast kunt u ook uw eigen back-up maken/herstellen. Dit kan bijvoorbeeld handig zijn om uw portefeuille (tijdelijk) te verplaatsen naar een laptop voor tijdens de vakantie.</value>
   </data>
   <data name="PortfolioDialog_Title_Edit" xml:space="preserve">
     <value>Portefeuille hernoemen</value>
@@ -1059,7 +1236,7 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
     <value>Accepteren</value>
   </data>
   <data name="PortfolioDialog_CloseButton" xml:space="preserve">
-    <value>annuleren</value>
+    <value>Annuleren</value>
   </data>
   <data name="PortfolioDialog_Title_Add" xml:space="preserve">
     <value>Een nieuwe portefeuille toevoegen</value>
@@ -1163,14 +1340,11 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="CopyPortfolioDialog_CopyOptions.Text" xml:space="preserve">
     <value>Kies welke kopieeroptie u verkiest. Een volledige kopie resulteert in een exacte kopie inclusief activa en transacties. Een gedeeltelijke kopie bevat de Muntenbibliotheek (inclusief prijsniveaus en narratieven) en de Accounts.</value>
   </data>
-  <data name="CopyPortfolioDialog_Name.Header" xml:space="preserve">
+  <data name="CopyPortfolioDialog_NameHeader.Text" xml:space="preserve">
     <value>Nieuwe portefeuille naam</value>
   </data>
   <data name="PortfolioDialog_PrimaryButton_Copy" xml:space="preserve">
     <value>Kopie maken</value>
-  </data>
-  <data name="SwitchPortfolio_Explainer.Text" xml:space="preserve">
-    <value>De Crypto Portfolio Tracker ondersteunt meerdere portefeuilles. Ga naar de Portefeuille Admin-weergave om uw portefeuilles te beheren en in te stellen. Wissel van portefeuille door te dubbelklikken op een van de portefeuilles in de onderstaande lijst.</value>
   </data>
   <data name="PortfolioAdmin_SaveBackupButton.Label" xml:space="preserve">
     <value>Backup opslaan</value>
@@ -1180,6 +1354,15 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="PortfolioDialog_PrimaryButton_Restore" xml:space="preserve">
     <value>Herstellen</value>
+  </data>
+  <data name="RestorePortfolioDialog_NameHeader.Text" xml:space="preserve">
+    <value>Portefeuillenaam</value>
+  </data>
+  <data name="RestorePortfolioDialog_BrowseButton.Content" xml:space="preserve">
+    <value>Bladeren....</value>
+  </data>
+  <data name="RestorePortfolioDialog_FileHeader.Text" xml:space="preserve">
+    <value>Geselecteerde backup</value>
   </data>
   <data name="RestorePortfolioDialog_ExplNoSignature" xml:space="preserve">
     <value>Ongeldige backup. Kan niet doorgaan met herstellen</value>
@@ -1193,14 +1376,14 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="PortfolioAdmin_RestoreBackupButton.Label" xml:space="preserve">
     <value>Backup terugzetten</value>
   </data>
-  <data name="RestorePortfolioDialog_Name.Header" xml:space="preserve">
-    <value>Portefeuillenaam</value>
-  </data>
   <data name="RestorePortfolioDialog_ExplError" xml:space="preserve">
     <value>Fout bij het uitpakken van de back-up. Kan niet doorgaan met herstellen.</value>
   </data>
   <data name="Messages_ScheduledTask_Explainer" xml:space="preserve">
     <value>De CryptoPortfolioTracker moet een geplande taak registreren om de marktgrafieken dagelijks bij te werken. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te registreren. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</value>
+  </data>
+  <data name="Messages_ScheduledTaskMod_Explainer" xml:space="preserve">
+    <value>De CryptoPortfolioTracker moet de geplande taak voor de dagelijkse update van de marktgrafieken aanpassen. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te wijzigen. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</value>
   </data>
   <data name="Messages_GraphUpdateService_InvalidChartsTitle" xml:space="preserve">
     <value>Ongeldige MarketChart gevonden voor</value>
@@ -1220,9 +1403,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="HeatMap_TeachEma.Title" xml:space="preserve">
     <value>Nieuw: dagelijkse 50 EMA bubbles</value>
   </data>
-  <data name="HeatMapType_Ema.Content" xml:space="preserve">
-    <value>dagelijkse 50 EMA</value>
-  </data>
   <data name="Messages_DashboardSettingsDialogFailed_Title" xml:space="preserve">
     <value>Fout bij het openen van het Dashboard Settings Dialoogvenster</value>
   </data>
@@ -1235,17 +1415,17 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="settingsExpander_Password.Header" xml:space="preserve">
     <value>Veiligheid</value>
   </data>
-  <data name="Settings_Password.Description" xml:space="preserve">
-    <value>Beveilig de toegang tot de app met een wachtwoord</value>
-  </data>
-  <data name="Settings_Password.Header" xml:space="preserve">
-    <value>Toegangswachtwoord</value>
-  </data>
   <data name="Settings_duressPassword.Description" xml:space="preserve">
     <value>Toegang tot je app onder dwang? Met het dwangwachtwoord open je de app met een nepportfolio. Deze is in eerste instantie leeg, maar je kunt er desgewenst kleine posities aan toevoegen.</value>
   </data>
   <data name="Settings_duressPassword.Header" xml:space="preserve">
     <value>Dwangwachtwoord</value>
+  </data>
+  <data name="Settings_Password.Description" xml:space="preserve">
+    <value>Beveilig de toegang tot de app met een wachtwoord</value>
+  </data>
+  <data name="Settings_Password.Header" xml:space="preserve">
+    <value>Toegangswachtwoord</value>
   </data>
   <data name="Messages_duressPassword_Changed_Msg" xml:space="preserve">
     <value>Uw dwangwachtwoord is bijgewerkt.</value>
@@ -1274,11 +1454,11 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Settings_duressPasswordBox_Current.PlaceholderText" xml:space="preserve">
     <value>Huidig dwangwachtwoord</value>
   </data>
-  <data name="Settings_PasswordBox_Current.PlaceholderText" xml:space="preserve">
-    <value>Huidig wachtwoord</value>
-  </data>
   <data name="Settings_duressPasswordBox_New.PlaceholderText" xml:space="preserve">
     <value>Nieuw dwangwachtwoord</value>
+  </data>
+  <data name="Settings_PasswordBox_Current.PlaceholderText" xml:space="preserve">
+    <value>Huidig wachtwoord</value>
   </data>
   <data name="Settings_PasswordBox_New.PlaceholderText" xml:space="preserve">
     <value>Nieuw wachtwoord</value>
@@ -1343,9 +1523,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Messages_Authentication_Required" xml:space="preserve">
     <value>Authenticatie vereist</value>
   </data>
-  <data name="Messages_ScheduledTaskMod_Explainer" xml:space="preserve">
-    <value>De CryptoPortfolioTracker moet de geplande taak voor de dagelijkse update van de marktgrafieken aanpassen. De applicatie moet één keer als beheerder worden uitgevoerd om de geplande taak te wijzigen. De applicatie wordt opnieuw opgestart en u wordt gevraagd de wijzigingen te accepteren.</value>
-  </data>
   <data name="Messages_WhatsNewFile_FailedMsg" xml:space="preserve">
     <value>De online 'Wat is er nieuw'-pagina kan niet worden geopend in uw standaardbrowser.</value>
   </data>
@@ -1373,36 +1550,6 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   <data name="Settings_DashBoard_RsiPeriod.Header" xml:space="preserve">
     <value>RSI Periode</value>
   </data>
-  <data name="settingsExpander_Bubbles.Description" xml:space="preserve">
-    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de 'Bubbles'-grafiek, zoals doelbereiken, RSI en MA.</value>
-  </data>
-  <data name="settingsExpander_Bubbles.Header" xml:space="preserve">
-    <value>Instellingen Bubble grafiek</value>
-  </data>
-  <data name="Settings_Bubbles1.Description" xml:space="preserve">
-    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de werkelijke prijs binnen het bereik van het doelniveau ligt.</value>
-  </data>
-  <data name="Settings_Bubbles1.Header" xml:space="preserve">
-    <value>'Binnen bereik' drempelpercentage</value>
-  </data>
-  <data name="Settings_Bubbles2.Description" xml:space="preserve">
-    <value>Deze drempelwaarde wordt gebruikt om visueel te bevestigen dat de werkelijke prijs zich binnen het bereik van het doelniveau bevindt.</value>
-  </data>
-  <data name="Settings_Bubbles2.Header" xml:space="preserve">
-    <value>'Dichtbij' drempelpercentage</value>
-  </data>
-  <data name="settingsExpander_Pie.Description" xml:space="preserve">
-    <value>Vouw dit uit om toegang te krijgen tot instellingen met betrekking tot de cirkeldiagram(men)</value>
-  </data>
-  <data name="settingsExpander_Pie.Header" xml:space="preserve">
-    <value>Instellingen voor cirkeldiagrammen</value>
-  </data>
-  <data name="Settings_MaxPieCoins.Description" xml:space="preserve">
-    <value>Het aantal munten dat zichtbaar is in de Portfolio Pie. De overige munten worden gegroepeerd in 'Overige'.</value>
-  </data>
-  <data name="Settings_MaxPieCoins.Header" xml:space="preserve">
-    <value>Maximaal aantal munten in de portefeuille-cirkeldiagram</value>
-  </data>
   <data name="AssetsLV_NetProfitLossPerc.Text" xml:space="preserve">
     <value>netto W/V %</value>
   </data>
@@ -1418,5 +1565,17 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
   </data>
   <data name="HeatMapView_BreakEven_YAxisTitle" xml:space="preserve">
     <value>Afstand tot break-even [%]</value>
+  </data>
+  <data name="TransactionDialog_AccountLink.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Link Account keuze</value>
+  </data>
+  <data name="PreListingCoinDialog_SymbolPriceHeader.Text" xml:space="preserve">
+    <value>Symbool en initiële prijs</value>
+  </data>
+  <data name="RestorePortfolioDialog_FileNamePlaceholder" xml:space="preserve">
+    <value>Selecteer een bestand om te herstellen...</value>
+  </data>
+  <data name="CoinDialog_SearchBoxHeader.Text" xml:space="preserve">
+    <value>Vind een munt</value>
   </data>
 </root>

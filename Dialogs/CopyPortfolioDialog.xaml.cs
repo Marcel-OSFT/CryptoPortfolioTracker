@@ -1,21 +1,21 @@
 namespace CryptoPortfolioTracker.Dialogs;
 
-public sealed partial class CopyPortfolioDialog : ContentDialog
+public sealed partial class CopyPortfolioDialog : BaseDialog, IDialog<CopyPortfolioDialogResult>
 {
+    public CopyPortfolioDialogResult Result { get; private set; }
     private Portfolio? _portfolioToCopy;
     public string NewPortfolioName { get; private set; }
     public bool NeedPartialCopy { get; private set; }
 
     public readonly AdminViewModel _viewModel;
 
-    private readonly ILocalizer loc = Localizer.Get();
-
-    public CopyPortfolioDialog(AdminViewModel viewModel, Portfolio portfolio)
+    public CopyPortfolioDialog(AdminViewModel viewModel, CopyPortfolioDialogParameters parameters)
     {
         this.InitializeComponent();
         _viewModel = viewModel;
-        _portfolioToCopy = portfolio;
+        _portfolioToCopy = parameters.portfolio;
         SetDialogTitleAndButtons();
+       
     }
 
 
@@ -33,20 +33,12 @@ public sealed partial class CopyPortfolioDialog : ContentDialog
     private void Button_Click_Accept(ContentDialog sender, ContentDialogButtonClickEventArgs e)
     {
         NewPortfolioName = MkOsft.NormalizeName(txtName.Text);
+        Result = new CopyPortfolioDialogResult(NewPortfolioName, NeedPartialCopy);
     }
 
     private void PortfolioName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
     {
         IsPrimaryButtonEnabled = txtName.Text.Length > 0;
-    }
-
-
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
     }
 
     private void PortfolioName_LosingFocus(Microsoft.UI.Xaml.UIElement sender, Microsoft.UI.Xaml.Input.LosingFocusEventArgs args)

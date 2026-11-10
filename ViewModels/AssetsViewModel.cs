@@ -1,13 +1,8 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI.UI;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
@@ -17,14 +12,21 @@ using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
 using LanguageExt;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Serilog;
 using Serilog.Core;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
 [ObservableRecipient]
-public sealed partial class AssetsViewModel : BaseViewModel
+public sealed partial class AssetsViewModel : BaseViewModel, IRecipient<UpdatePricesMessage>, IRecipient<PortfolioConnectionChangedMessage>, IRecipient<CurrencyChangedMessage>
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AssetsViewModel Current;
@@ -34,92 +36,120 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public IAssetService _assetService {  get; private set; }
     public ITransactionService _transactionService { get; private set; }
     public IAccountService _accountService { get; private set; }
+    //private readonly IDialogService _dialogService;
 
-    public readonly IGraphService _graphService;
-    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+    private readonly ICapitalFlowService _capitalFlowService;
+    private readonly IAppState _appState;
 
-
-    [ObservableProperty] public partial string PortfolioName { get; set; } = string.Empty;
-    [ObservableProperty] public partial Portfolio CurrentPortfolio { get; set; }
-
-    partial void OnCurrentPortfolioChanged(Portfolio oldValue, Portfolio newValue)
-    {
-        PortfolioName = newValue.Name;
-    }
+    public double InFlowForCurrency => _capitalFlowService.GetInFlowForCurrency();
+    public double OutFlowForCurrency => _capitalFlowService.GetOutFlowForCurrency();
+    public string PortfolioName => _appState.CurrentPortfolio?.Name ?? string.Empty;
+    public Settings AppSettings  => base._appSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+    
+    private readonly IGraphService _graphService;
 
     [ObservableProperty] public partial string SortGroup { get; set; }
 
-    public AssetTotals? selectedAsset = null;
+    public AssetTotalsDisplay? SelectedAsset { get; set; } = null;
     private AssetAccount? selectedAccount = null;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowTransactionDialogToAddCommand))]
     public partial bool IsAssetsExtendedView { get; set; } = false;
 
-  
-    //[ObservableProperty] public partial bool IsHidingCapitalFlow { get; set; }
-
     public static List<CoinList>? coinListGecko;
     private bool disposedValue;
 
     private SortingOrder currentSortingOrder;
-    private Func<AssetTotals, object> currentSortFunc;
+    private Func<AssetTotalsDisplay, object> currentSortFunc;
 
     [ObservableProperty] public partial string GlyphPrivacy { get; set; } = "\uE890";
 
     [ObservableProperty] public partial bool IsPrivacyMode { get; set; }
 
-    //private NumberFormatInfo numberFormatInfo;
+    [ObservableProperty] public partial string ExplainerText { get; set; }
+    [ObservableProperty] public partial string ViewTitle { get; set; }
 
     partial void OnIsPrivacyModeChanged(bool value)
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
         AppSettings.AreValuesMasked = value;
-        _assetService.ReloadValues();
-        _transactionService.ReloadValues();
+        MaskRelatedUiRefresh();
         ReloadTotals();
     }
 
     [ObservableProperty] public partial double TotalPortfolioValue { get; set; }
     [ObservableProperty] public partial double TotalCostBase { get; set; }
     [ObservableProperty] public partial double TotalPnlPerc { get; set; }
-    [ObservableProperty] public partial double TotalInflow { get; set; }
-    [ObservableProperty] public partial double TotalOutflow { get; set; }
     [ObservableProperty] public partial long VisibleAssetsCount { get; set; }
 
 
+    [ObservableProperty] public partial CapitalFlowData CapitalFlow { get; set; }
+    [ObservableProperty] public partial ObservableCollection<AssetAccount>? ListAssetAccounts { get; set; } = new ObservableCollection<AssetAccount>();
+    [ObservableProperty] public partial ObservableCollection<AssetTotalsDisplay>? ListAssetTotals { get; set; } = new ObservableCollection<AssetTotalsDisplay>();
+    [ObservableProperty] public partial ObservableCollection<TransactionDisplay>? ListAssetTransactions { get; set; } = new ObservableCollection<TransactionDisplay>();
+    [ObservableProperty] public partial int? SelectedAccountId { get; set; }
+    [ObservableProperty] public partial string? SelectedAssetApiId { get; set; } 
+
+    public bool IsHidingZeroBalances => _assetService.IsHidingZeroBalances;
+    
+
+    partial void OnCapitalFlowChanged(CapitalFlowData value)
+    {
+        _capitalFlowService.GetNetFlowForCurrency();
+    }
 
     public AssetsViewModel(IGraphService graphService, 
                             IAssetService assetService, 
                             IAccountService accountService, 
+                            IAppState appState,
                             ITransactionService transactionService, 
-                            IMessenger messenger, Settings appSettings) : base (appSettings)
+                            IMessenger messenger, 
+                            ICapitalFlowService capitalFlowService,
+                            IDialogService dialogService,
+                            Settings settings) : base (settings, dialogService, messenger)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
         Current = this;
 
-        messenger.Register<UpdatePricesMessage>(this, async (r, m) =>
-        {
-            await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
-            await GetPortfolioTotals();
-        });
-
-        messenger.Register<PortfolioConnectionChangedMessage>(this, async (r, m) =>
-        {
-            await LoadViewData();
-        });
-        //messenger.Register<PreferencesChangedMessage>(this, async (r, m) =>
-        //{
-        //    await RefreshViewAfterChangeOfPreferences();
-        //});
-
+        messenger.Register<UpdatePricesMessage>(this);
+        messenger.Register<PortfolioConnectionChangedMessage>(this);
+        messenger.Register<CurrencyChangedMessage>(this);
+        
         _assetService = assetService;
         _transactionService = transactionService;
         _graphService = graphService;
         _accountService = accountService;
+        _capitalFlowService = capitalFlowService;
+        _appState = appState;
+        _appState.CurrentPortfolioChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(PortfolioName));
+            // reload data if needed
+        };
 
         InitializeView();
 
+    }
+
+    public void Receive(UpdatePricesMessage message)
+    {
+        if (message is null) return;
+        _ = RefreshDataAsync();
+    }
+
+    public void Receive(PortfolioConnectionChangedMessage message)
+    {
+        if (message is null) return;
+        OnPropertyChanged(nameof(PortfolioName)); // gets portfolioname again in case Portfolio has switched.
+        _ = LoadViewDataAsync();
+    }
+
+    public void Receive(CurrencyChangedMessage message)
+    {
+        if (message is null) return;
+        OnPropertyChanged(nameof(InFlowForCurrency));
+        OnPropertyChanged(nameof(OutFlowForCurrency));
     }
 
     /// <summary>
@@ -128,53 +158,38 @@ public sealed partial class AssetsViewModel : BaseViewModel
     /// </summary>
     private async Task InitializeView()
     {
-        CurrentPortfolio = _assetService.GetPortfolio();
-        PortfolioName = CurrentPortfolio.Name;
+        
 
         SortGroup = "Assets";
         currentSortFunc = x => x.MarketValue;
         currentSortingOrder = SortingOrder.Descending;
         _assetService.IsHidingZeroBalances = AppSettings.IsHidingZeroBalances;
+        CapitalFlow = _capitalFlowService.CapitalFlow;
         IsPrivacyMode = AppSettings.AreValuesMasked;
-        //numberFormatInfo = AppSettings.NumberFormat;
-        await LoadViewData();
+        ExplainerText = loc.GetLocalizedString("Assets_Explainer");
+        ViewTitle = loc.GetLocalizedString("Assets_Title");
     }
 
     
     public async Task ViewLoading()
     {
-        await LoadViewData();
+        await LoadViewDataAsync();
     }
 
-    //private async Task RefreshViewAfterChangeOfPreferences()
-    //{
-    //    if (IsRelevantPreferenceChanged())
-    //    {
-    //        IsPrivacyMode = AppSettings.AreValuesMasked;
-    //        //IsHidingCapitalFlow = AppSettings.IsHidingCapitalFlow;
-    //        numberFormatInfo = AppSettings.NumberFormat;
-
-    //        //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
-    //        await GetPortfolioTotals();
-
-    //    }
-    //}
-
-    //private bool IsRelevantPreferenceChanged()
-    //{
-    //    return false; //IsPrivacyMode != AppSettings.AreValuesMasked || numberFormatInfo != AppSettings.NumberFormat;
-    //}
-
-    private async Task LoadViewData()
+    private async Task LoadViewDataAsync()
     {
-        CurrentPortfolio = _assetService.GetPortfolio();
-        PortfolioName = CurrentPortfolio.Name;
+        //OnPropertyChanged(nameof(PortfolioName)); // gets portfolioname again in case Portfolio has switched.
 
-        await _assetService.PopulateAssetTotalsList(currentSortingOrder, currentSortFunc);
+        await PopulateAssetTotalsList();
 
         //below setting(s) might have been changed while was moved away from the associated view
 
         //Numberformat might have changed!? So update below numbers to enforce immediate reflection of numberformat change
+        await GetPortfolioTotals();
+    }
+    private async Task RefreshDataAsync()
+    {
+        await RefreshAssetTotalsList(currentSortingOrder, currentSortFunc);
         await GetPortfolioTotals();
     }
 
@@ -183,15 +198,11 @@ public sealed partial class AssetsViewModel : BaseViewModel
         TotalPortfolioValue = 0;
         TotalCostBase = 0;
         TotalPnlPerc = 0;
-        TotalInflow = 0;
-        TotalOutflow = 0;
-
         TotalPortfolioValue = _assetService.GetTotalsAssetsValue();
         TotalCostBase = _assetService.GetTotalsAssetsCostBase();
         TotalPnlPerc = _assetService.GetTotalsAssetsPnLPerc();
-        TotalInflow = await _assetService.GetInFlow();
-        TotalOutflow = await _assetService.GetOutFlow();
-        VisibleAssetsCount = _assetService.VisibleAssetsCount;
+        VisibleAssetsCount = _assetService.GetVisibleAssetsCount();
+        await _assetService.CalculateYearlyCapitalFlow();
     }
 
 
@@ -201,9 +212,8 @@ public sealed partial class AssetsViewModel : BaseViewModel
     public void Terminate()
     {
         selectedAccount = null;
-        selectedAsset = null;
+        SelectedAsset = null;
         IsAssetsExtendedView = false;
-       // _assetService.ClearAssetTotalsList();
         
     }
 
@@ -211,9 +221,26 @@ public sealed partial class AssetsViewModel : BaseViewModel
     {
         OnPropertyChanged(nameof(TotalPortfolioValue));
         OnPropertyChanged(nameof(TotalCostBase));
-        OnPropertyChanged(nameof(TotalInflow));
-        OnPropertyChanged(nameof(TotalOutflow));
+        OnPropertyChanged(nameof(InFlowForCurrency));
+        OnPropertyChanged(nameof(OutFlowForCurrency));
+
     }
+
+    private void MaskRelatedUiRefresh()
+    {
+        var temp0 = ListAssetAccounts;
+        ListAssetAccounts = null;
+        ListAssetAccounts = temp0;
+
+        var temp1 = ListAssetTransactions;
+        ListAssetTransactions = null;
+        ListAssetTransactions = temp1;
+
+        var temp2 = ListAssetTotals;
+        ListAssetTotals = null;
+        ListAssetTotals = temp2;
+    }
+
 
 
     [RelayCommand]
@@ -222,104 +249,139 @@ public sealed partial class AssetsViewModel : BaseViewModel
         SortList(sortingOrder, x => x.Coin.Name);
     }
 
+
     [RelayCommand]
     public void SortOn24Hour(SortingOrder sortingOrder)
     {
         SortList(sortingOrder, x => x.Coin.Change24Hr);
+        
     }
 
     [RelayCommand]
     public void SortOn1Month(SortingOrder sortingOrder)
     {
         SortList(sortingOrder, x => x.Coin.Change1Month);
+        
     }
 
     [RelayCommand]
     public void SortOnMarketValue(SortingOrder sortingOrder)
     {
         SortList(sortingOrder, x => x.MarketValue);
+        
     }
 
     [RelayCommand]
     public void SortOnCostBase(SortingOrder sortingOrder)
     {
         SortList(sortingOrder, x => x.CostBase);
+        
     }
 
     [RelayCommand]
     public void SortOnNetInvestment(SortingOrder sortingOrder)
     {
         SortList(sortingOrder, x => x.NetInvestment);
+        
     }
 
     [RelayCommand]
     public void SortOnPnL(SortingOrder sortingOrder)
     {
         SortList(sortingOrder, x => x.ProfitLoss);
+        
     }
 
     [RelayCommand]
     public void SortOnPnLPerc(SortingOrder sortingOrder)
     {
         SortList(sortingOrder, x => x.ProfitLossPerc);
+        
     }
 
     [RelayCommand]
     public void SortOnNetPnLPerc(SortingOrder sortingOrder)
     {
         SortList(sortingOrder, x => x.NetProfitLossPerc);
+        
     }
 
-    private void SortList(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
+    private void SortList(SortingOrder sortingOrder, Func<AssetTotalsDisplay, object> sortFunc)
     {
+        if (ListAssetTotals is null || !ListAssetTotals.Any()) return;
+
         currentSortFunc = sortFunc;
         currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
+
+        if (currentSortingOrder == SortingOrder.Ascending)
+        {
+            ListAssetTotals = new ObservableCollection<AssetTotalsDisplay>(ListAssetTotals.OrderBy(currentSortFunc));
+        }
+        else
+        {
+            ListAssetTotals = new ObservableCollection<AssetTotalsDisplay>(ListAssetTotals.OrderByDescending(currentSortFunc));
+        }
+
     }
 
-   
 
     [RelayCommand]
-    public async Task AssetItemClicked(AssetTotals clickedAsset)
+    public async Task AssetItemClicked(AssetTotalsDisplay clickedAsset)
     {
-        
         //new item clicked and selected ?
-        if (selectedAsset == null || selectedAsset != clickedAsset)
+        if (SelectedAsset == null || SelectedAsset.Coin.Id != clickedAsset.Coin.Id)
         {
             await ShowAccountsAndTransactions(clickedAsset);
-            
+            SelectedAsset = clickedAsset;
             IsAssetsExtendedView = true;
         }
         //clicked already selected item
-        else if (selectedAsset != null && selectedAsset == clickedAsset)
+        else if (SelectedAsset != null && SelectedAsset.Coin.Id == clickedAsset.Coin.Id)
         {
             if (!IsAssetsExtendedView)
             {
                 await ShowAccountsAndTransactions(clickedAsset);
-                
                 IsAssetsExtendedView = true;
+                SelectedAsset = clickedAsset;
             }
             else
             {
-                await ShowAccountsAndTransactions();
-               
+                ClearAccountsAndTransactions();
+                SelectedAsset = null;
                 IsAssetsExtendedView = false;
             }
         }
-        selectedAsset = clickedAsset;
     }
+
+
+    public async Task ShowAccountsAndTransactions(AssetTotalsDisplay? clickedAsset = null)
+    {
+        if (clickedAsset == null) return;
+        
+        var result = await PopulateAccountsByAssetList(clickedAsset.Coin.Id);
+        if (result != null && result.Any())
+        {
+            var firstAccount = result.First();
+            if (firstAccount is not null)
+            {
+                await PopulateTransactionsByAssetList(firstAccount.AssetId);
+            }
+        }
+    }
+
 
     [RelayCommand]
     public async Task AccountItemClicked(AssetAccount clickedAccount)
     {
         //new item clicked and selected?
-        if (selectedAccount == null || selectedAccount != clickedAccount)
+        if (selectedAccount == null || selectedAccount.AssetId != clickedAccount.AssetId)
         {
-            await ShowAssetTransactions(clickedAccount);
+            await PopulateTransactionsByAssetList(clickedAccount.AssetId);
         }
         selectedAccount = clickedAccount;
     }
 
+    
 
     [RelayCommand(CanExecute = nameof(CanShowTransactionDialogToAdd))]
     public async Task ShowTransactionDialogToAdd()
@@ -328,33 +390,25 @@ public sealed partial class AssetsViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing Transaction Dialog for Adding");
-            var dialog = new TransactionDialog(this, _transactionService, DialogAction.Add)
-            {
-                XamlRoot = AssetsView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
 
-            if (dialog.Exception != null)
-            {
-                throw dialog.Exception;
-            }
+            var transaction = await _dialogService.ShowAsync<TransactionDialog, Transaction>(new TransactionDialogParameters(DialogAction.Add, null));
 
-            if (result == ContentDialogResult.Primary)
+            if (transaction != null)
             {
-                Logger.Information("Adding a new Transaction - {0}", dialog.transactionNew.Details.TransactionType);
-                await (await _transactionService.AddTransaction(dialog.transactionNew))
+                Logger.Information("Adding a new Transaction - {0}", transaction.Details.TransactionType);
+                await (await _transactionService.AddTransaction(transaction))
                     .Match(Succ: async newAsset =>
                     {
-                        await _assetService.UpdateListAssetTotals(dialog.transactionNew);
+                        await UpdateListAssetTotals(transaction);
                         //check if new transaction is anti-dated
-                        if (dialog.transactionNew.TimeStamp.Date < DateTime.Now.Date)
+                        if (transaction.TimeStamp.Date < DateTime.Now.Date)
                         {
-                            await _graphService.RegisterModification(dialog.transactionNew, null);
+                            await _graphService.RegisterModification(transaction, null);
                         }
                     },
                         Fail: async err =>
                         {
-                            await ShowMessageDialog(
+                            await _dialogService.ShowMessageAsync(
                             loc.GetLocalizedString("Messages_TransactionAddFailed_Title"),
                             err.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
@@ -366,7 +420,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to show Transaction Dialog");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_TransactionDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
@@ -379,45 +433,34 @@ public sealed partial class AssetsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    public async Task ShowTransactionDialogToEdit(Transaction transaction)
+    public async Task ShowTransactionDialogToEdit(TransactionDisplay transactionToEdit)
     {
         AssetAccount? accountAffected = null;
+        var domainTransactionToEdit = ModelMapper.MapToDomain(transactionToEdit);
         var loc = Localizer.Get();
         try
         {
             Logger.Information("Showing Transaction Dialog for Editing");
             //*** editing a transaction also involves a change for an element in the ListAssetAccounts
-            accountAffected = _accountService.GetAffectedAccount(transaction);  //  ListAssetAccounts.Where(t => t.AssetId == transaction.RequestedAsset.Id).Single();
+            accountAffected = ListAssetAccounts.Where(t => t.AssetId == transactionToEdit.RequestedAsset.Id).Single();
 
-            var dialog = new TransactionDialog(this, _transactionService, DialogAction.Edit, transaction)
-            {
-                XamlRoot = AssetsView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
+            var modifiedTransaction = await _dialogService.ShowAsync<TransactionDialog, Transaction>(new TransactionDialogParameters(DialogAction.Edit, domainTransactionToEdit));
 
-            if (dialog.Exception != null)
+            if (modifiedTransaction != null)
             {
-                throw dialog.Exception;
-            }
-
-            if (result == ContentDialogResult.Primary)
-            {
-                Logger.Information("Editing Transaction ({0}) - {1}", transaction.Id, transaction.Details.TransactionType);
-                await (await _transactionService.EditTransaction(dialog.transactionNew, transaction))
+                Logger.Information("Editing Transaction ({0}) - {1}", transactionToEdit.Id, transactionToEdit.Details.TransactionType);
+                await (await _transactionService.EditTransaction(modifiedTransaction, domainTransactionToEdit))
                         .Match(Succ: async newAsset =>
                         {
-                            //await UpdateListAssetTotals(dialog.transactionNew);
-                            await _assetService.UpdateListAssetTotals(dialog.transactionNew);
-                            //await UpdateListAssetAccount(accountAffected);
-                            await _accountService.UpdateListAssetAccount(accountAffected);
-                            //await UpdateListAssetTransaction(dialog.transactionNew, transaction);
-                            await _transactionService.UpdateListAssetTransactions(dialog.transactionNew, transaction);
+                            await UpdateListAssetTotals(modifiedTransaction);
+                            await UpdateListAssetAccount(accountAffected);
+                            await UpdateListAssetTransactions(modifiedTransaction);
 
-                            await _graphService.RegisterModification(dialog.transactionNew, transaction);
+                            await _graphService.RegisterModification(modifiedTransaction, domainTransactionToEdit);
                         },
                             Fail: async err =>
                             {
-                                await ShowMessageDialog(
+                                await _dialogService.ShowMessageAsync(
                                 loc.GetLocalizedString("Messages_TransactionUpdateFailed_Title"),
                                 err.Message,
                                 loc.GetLocalizedString("Common_CloseButton"));
@@ -430,7 +473,7 @@ public sealed partial class AssetsViewModel : BaseViewModel
         {
             Logger.Error(ex, "Failed to show Transaction Dialog");
 
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_TransactionDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
@@ -438,14 +481,15 @@ public sealed partial class AssetsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    public async Task DeleteTransaction(Transaction transaction)
+    public async Task DeleteTransaction(TransactionDisplay transaction)
     {
         var loc = Localizer.Get();
+        var domainTransaction = ModelMapper.MapToDomain(transaction);
         try
         {
             Logger.Information("Deletion Request for Transaction ({0}) - {1}", transaction.Id, transaction.Details.TransactionType);
 
-            var dlgResult = await ShowMessageDialog(
+            var dlgResult = await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_TransactionDelete_Title"),
                 loc.GetLocalizedString("Messages_TransactionDelete_Msg"),
                 loc.GetLocalizedString("Common_ConfirmButton"),
@@ -455,19 +499,19 @@ public sealed partial class AssetsViewModel : BaseViewModel
             {
                 Logger.Information("Deleting Transaction");
                 //*** editing a transaction also involves a change for an element in the ListAssetAccounts
-                var accountAffected = _accountService.GetAffectedAccount(transaction);
+                var accountAffected = _accountService.GetAffectedAccount(domainTransaction);
 
-                await (await _transactionService.DeleteTransaction(transaction, accountAffected))
+                await (await _transactionService.DeleteTransaction(domainTransaction, accountAffected))
                          .Match(Succ: async s =>
                          {
-                             await _assetService.UpdateListAssetTotals(transaction);
+                             await UpdateListAssetTotals(domainTransaction);
                              await _accountService.UpdateListAssetAccount(accountAffected);
-                             await _transactionService.RemoveFromListAssetTransactions(transaction);
-                             await _graphService.RegisterModification(transaction);
+                             await _transactionService.RemoveFromListAssetTransactions(domainTransaction);
+                             await _graphService.RegisterModification(domainTransaction);
                          },
                             Fail: async err =>
                             {
-                                await ShowMessageDialog(
+                                await _dialogService.ShowMessageAsync(
                                     loc.GetLocalizedString("Messages_TransactionDeleteFailed_Title"),
                                     err.Message,
                                     loc.GetLocalizedString("Common_CloseButton"));
@@ -480,45 +524,23 @@ public sealed partial class AssetsViewModel : BaseViewModel
         {
             Logger.Error(ex, "Deleting Transaction failed");
 
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_TransactionDeleteFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
     }
-    public async Task ShowAssetTransactions(AssetAccount clickedAccount)
-    {
-        await _transactionService.PopulateTransactionsByAssetList(clickedAccount.AssetId);
-    }
 
-    public async Task ShowAccountsAndTransactions(AssetTotals? clickedAsset = null)
-    {
-       
-        if (clickedAsset != null)
-        {
-            var list = await _accountService.PopulateAccountsByAssetList(clickedAsset.Coin.Id);
-            if (list != null && list.Any()) 
-            {
-                var firstAccount = list.First();
-                if (firstAccount is not null)
-                {
-                    await _transactionService.PopulateTransactionsByAssetList(firstAccount.AssetId);
-                }
-            }
-        }
-        else
-        {
-            _accountService.ClearAccountsByAssetList();
-            _transactionService.ClearAssetTransactionsList();
-        }
-    }
+    
+    
 
     [RelayCommand]
-    public void HideZeroBalances(bool param)
+    public async Task HideZeroBalances(bool param)
     {
         _assetService.IsHidingZeroBalances = param;
-        _assetService.PopulateAssetTotalsList();
-        VisibleAssetsCount = _assetService.VisibleAssetsCount;
+        await PopulateAssetTotalsList();
+        VisibleAssetsCount = _assetService.GetVisibleAssetsCount();
+        OnPropertyChanged(nameof(IsHidingZeroBalances));
     }
 
     [RelayCommand]
@@ -534,26 +556,131 @@ public sealed partial class AssetsViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing PortfolioSettings Dialog");
-            var dialog = new PortfolioSettingsDialog(this)
-            {
-                XamlRoot = AssetsView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
+            await _dialogService.ShowAsync<PortfolioSettingsDialog, bool>();
 
-            if (result == ContentDialogResult.Primary)
-            {
-                // Handle the result if needed  
-            }
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to show PortfolioSettings Dialog");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_PortfolioSettingsDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
     }
 
+    
+
+    private async Task PopulateAssetTotalsList()
+    {
+        var list = (await _assetService.PopulateAssetTotalsList())
+                .Select(ModelMapper.MapToDisplay)
+                .ToList();
+       
+        var sorted = currentSortingOrder == SortingOrder.Ascending
+            ? list.OrderBy(currentSortFunc).ToList()
+            : list.OrderByDescending(currentSortFunc).ToList();
+
+        ListAssetTotals = new ObservableCollection<AssetTotalsDisplay>(sorted);
+    }
+
+    private async Task<ObservableCollection<AssetAccount>> PopulateAccountsByAssetList(int coinId)
+    {
+        var list = (await _accountService.PopulateAccountsByAssetList(coinId)).ToList();
+
+        ListAssetAccounts = new ObservableCollection<AssetAccount>(list);
+
+        return ListAssetAccounts;
+    }
+
+    public async Task PopulateTransactionsByAssetList(int accountId)
+    {
+        var list = (await _transactionService.PopulateTransactionsByAssetList(accountId))
+                .Select(ModelMapper.MapToDisplay)
+                .ToList();
+
+        ListAssetTransactions = new ObservableCollection<TransactionDisplay>(list);
+    }
+
+
+    private async Task RefreshAssetTotalsList(SortingOrder currentSortingOrder, Func<AssetTotalsDisplay, object> currentSortFunc)
+    {
+        var refreshedList = (await _assetService.PopulateAssetTotalsList()).Select(ModelMapper.MapToDisplay).ToList();
+
+        foreach (var item in refreshedList)
+        {
+            // Find the corresponding item in the existing collection and update its properties
+            var existingItem = ListAssetTotals?.FirstOrDefault(x => x.Coin.Id == item.Coin.Id);
+            if (existingItem != null)
+            {
+                existingItem.Coin.Price = item.Coin.Price;
+                existingItem.Coin.Change1Month = item.Coin.Change1Month;
+                existingItem.Coin.Change24Hr = item.Coin.Change24Hr;
+
+                existingItem.MarketValue = item.MarketValue;
+                existingItem.ProfitLoss = item.ProfitLoss;
+                existingItem.ProfitLossPerc = item.ProfitLossPerc;
+                existingItem.NetProfitLossPerc = item.NetProfitLossPerc;
+            }
+        }
+
+        var copy = new List<AssetTotalsDisplay>(ListAssetTotals);
+        var sorted = currentSortingOrder == SortingOrder.Ascending
+            ? copy.OrderBy(currentSortFunc).ToList()
+            : copy.OrderByDescending(currentSortFunc).ToList();
+
+        CollectionReorderHelper.ApplyOrderedSequence(ListAssetTotals, sorted, x => x.Coin.Id);
+    }
+
+    private async Task UpdateListAssetTotals(Transaction transaction)
+    {
+        var selectedApiId = SelectedAssetApiId; // store the selected asset API ID before updating the list
+        var updatedList = (await _assetService.UpdateListAssetTotals(transaction))
+                .Select(ModelMapper.MapToDisplay)
+                .ToList(); 
+
+        ReplaceOrAddUpdatedItems(ListAssetTotals, updatedList, x => x.Coin.Id);
+        if (!string.IsNullOrEmpty(selectedApiId))
+        {
+            var selectedItem = ListAssetTotals.FirstOrDefault(x => x.Coin.ApiId == selectedApiId);
+            SelectedAssetApiId = selectedItem?.Coin.ApiId;
+        }
+    }
+
+
+    private async Task UpdateListAssetTransactions(Transaction modifiedTransaction)
+    {
+        var updatedList = (await _transactionService.UpdateListAssetTransactions(modifiedTransaction))
+            .Select(ModelMapper.MapToDisplay)
+            .ToList();
+
+        ReplaceOrAddUpdatedItems(ListAssetTransactions, updatedList, x => x.Id);
+    }
+
+    private async Task UpdateListAssetAccount(AssetAccount accountAffected)
+    {
+        var selectedId = SelectedAccountId;  
+        var updatedList = await _accountService.UpdateListAssetAccount(accountAffected);
+        ReplaceOrAddUpdatedItems(ListAssetAccounts, updatedList, x => x.AssetId);
+        if (selectedId.HasValue)
+        {
+            var selectedItem = ListAssetAccounts.FirstOrDefault(x => x.AssetId == selectedId.Value);
+            SelectedAccountId = selectedItem?.AssetId;
+        }
+    }
+
+    private void ClearAccountsAndTransactions()
+    {
+        _accountService.ClearAccountsByAssetList();
+        _transactionService.ClearAssetTransactionsList();
+
+        ListAssetAccounts?.Clear();
+        ListAssetTransactions?.Clear();
+    }
+
+
+    
+
 }
+
 

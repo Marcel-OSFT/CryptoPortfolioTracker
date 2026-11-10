@@ -22,12 +22,12 @@ public partial class Transaction : BaseModel
 
     #region Properties
     // properties obtained from Context
-    [ObservableProperty] private int id;
-    [ObservableProperty] private DateTime timeStamp;
-    [ObservableProperty] private string note = string.Empty;
+    public int Id { get; set; }
+    public DateTime TimeStamp { get; set; }
+    public string Note { get; set; } = string.Empty;
     [ObservableProperty] private ICollection<Mutation> mutations;
-    [ObservableProperty][NotMapped] private Asset? requestedAsset = null;
-    [ObservableProperty][NotMapped] private TransactionDetails details;
+    [NotMapped] public Asset? RequestedAsset { get; set; } = null;
+    [NotMapped] public TransactionDetails Details { get; set; }
 
     partial void OnMutationsChanged(ICollection<Mutation> value)
     {

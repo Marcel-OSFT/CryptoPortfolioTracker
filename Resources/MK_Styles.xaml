@@ -22,7 +22,7 @@
 
     <x:Double x:Key="DatePickerThemeMinWidth">200</x:Double>
     <x:Double x:Key="DatePickerThemeMaxWidth">456</x:Double>
-    <Thickness x:Key="DatePickerTopHeaderMargin">0,0,0,2</Thickness>
+    <Thickness x:Key="DatePickerTopHeaderMargin">0,0,0,6</Thickness>
     <Style x:Key="MK_DatePickerStyle" TargetType="DatePicker">
         <Setter Property="Orientation" Value="Horizontal" />
         <Setter Property="FocusVisualMargin" Value="0" />
@@ -151,6 +151,7 @@
                 Grid.Row="0"
                 Content="{TemplateBinding Header}"
                 ContentTemplate="{TemplateBinding HeaderTemplate}"
+                FontSize="12"
                 FontWeight="{StaticResource HeaderFontWeight}"
                 Foreground="{ThemeResource DatePickerHeaderForeground}"
                 Margin="{ThemeResource DatePickerTopHeaderMargin}"
@@ -187,7 +188,7 @@
 
     <x:Double x:Key="TimePickerThemeMinWidth">90</x:Double>
     <x:Double x:Key="TimePickerThemeMaxWidth">456</x:Double>
-    <Thickness x:Key="TimePickerTopHeaderMargin">0,0,0,2</Thickness>
+    <Thickness x:Key="TimePickerTopHeaderMargin">0,0,0,6</Thickness>
     <Style x:Key="MK_TimePickerStyle" TargetType="TimePicker">
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="FocusVisualMargin" Value="0" />
@@ -315,6 +316,7 @@
                 Grid.Row="0"
                 Content="{TemplateBinding Header}"
                 ContentTemplate="{TemplateBinding HeaderTemplate}"
+                FontSize="12"
                 FontWeight="{StaticResource HeaderFontWeight}"
                 Margin="{ThemeResource TimePickerTopHeaderMargin}"
                 MaxWidth="{ThemeResource TimePickerThemeMaxWidth}"
@@ -359,6 +361,8 @@
     <x:Double x:Key="RadioButtonsRowSpacing">8</x:Double>
     <Thickness x:Key="RadioButtonsTopHeaderMargin">0,0,0,8</Thickness>
     <Style x:Key="MK_RButtonsStyle" TargetType="RadioButtons">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="TabNavigation" Value="Once" />
         <Setter Property="Template">
@@ -624,7 +628,7 @@
     </Style>
 
     <FontWeight x:Key="HeaderFontWeight">SemiBold</FontWeight>
-    <Thickness x:Key="TextBoxTopHeaderMargin">0,0,0,3</Thickness>
+    <Thickness x:Key="TextBoxTopHeaderMargin">0,0,0,6</Thickness>
     <Style x:Key="MK_TextBoxStyle" TargetType="TextBox">
         <Setter Property="Foreground" Value="{ThemeResource TextControlForeground}" />
         <Setter Property="Background" Value="{ThemeResource TextControlBackground}" />
@@ -801,7 +805,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <ContentPresenter x:Name="HeaderContentPresenter" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" FontWeight="{StaticResource HeaderFontWeight}" Foreground="{ThemeResource TextControlHeaderForeground}" Margin="{ThemeResource TextBoxTopHeaderMargin}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed" x:DeferLoadStrategy="Lazy" />
+                        <ContentPresenter x:Name="HeaderContentPresenter" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" FontSize="12" FontWeight="{StaticResource HeaderFontWeight}" Foreground="{ThemeResource TextControlHeaderForeground}" Margin="{ThemeResource TextBoxTopHeaderMargin}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed" x:DeferLoadStrategy="Lazy" />
                         <Border x:Name="BorderElement" Grid.Row="1" Grid.Column="0" Grid.RowSpan="1" Grid.ColumnSpan="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Control.IsTemplateFocusTarget="True" MinWidth="{TemplateBinding MinWidth}" MinHeight="{TemplateBinding MinHeight}" />
                         <ScrollViewer x:Name="ContentElement" Grid.Row="1" Grid.Column="0" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}" IsTabStop="False" AutomationProperties.AccessibilityView="Raw" ZoomMode="Disabled" />
                         <TextBlock x:Name="PlaceholderTextContentPresenter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Foreground="{Binding PlaceholderForeground, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={ThemeResource TextControlPlaceholderForeground}}" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Text="{TemplateBinding PlaceholderText}" TextAlignment="{TemplateBinding TextAlignment}" TextWrapping="{TemplateBinding TextWrapping}" IsHitTestVisible="False" />

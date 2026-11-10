@@ -22,23 +22,27 @@ using WinUI3Localizer;
 namespace CryptoPortfolioTracker.ViewModels;
 
 [ObservableRecipient]
-public partial class DashboardViewModel : BaseViewModel
+public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSettingsChangedMessage>, IRecipient<UpdateDashboardMessage>, IRecipient<UpdateProgressValueMessage>, IRecipient<GraphUpdatedMessage>, IRecipient<CurrencyChangedMessage>
 {
     public static DashboardViewModel? Current;
     private static ILocalizer loc = Localizer.Get();
     public readonly IDashboardService _dashboardService;
     private readonly IGraphService _graphService;
     private readonly IPriceLevelService _priceLevelService;
-    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+    private readonly ICapitalFlowService _capitalFlowService;
+    public Settings AppSettings => base._appSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
 
     [ObservableProperty] public string portfolioName = string.Empty;
     [ObservableProperty] public Portfolio currentPortfolio;
 
     async partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
     {
-        await _dashboardService.CalculateIndicatorsAllCoins();
-        await UpdateDashboardAsync();
-        PortfolioName = newValue.Name;
+        if (oldValue is not null && newValue is not null && oldValue.Signature != newValue.Signature)
+        {
+            //await _dashboardService.CalculateIndicatorsAllCoins();
+            await UpdateDashboardAsync();
+            PortfolioName = newValue.Name;
+        }
     }
 
     [ObservableProperty] private string glyph = "\uEE47";
@@ -51,69 +55,116 @@ public partial class DashboardViewModel : BaseViewModel
         Glyph = value == FullScreenMode.None ? "\uEE47" : "\uEE49";
     }
 
-    private static Func<double, string> labelerYAxis = value => string.Format("$ {0:N0}", value);
+    private Func<double, string> labelerYAxis;
 
     [ObservableProperty] private bool isPrivacyMode;
 
     partial void OnIsPrivacyModeChanged(bool value)
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
-
-        labelerYAxis = value ? value => "****" : value => string.Format("$ {0:N0}", value);
-
+        UpdateCapitalFlowAxisFormatting();
         AppSettings.AreValuesMasked = value;
-
         ReloadAffectedControls();
     }
 
-    [ObservableProperty] bool needUpdateDashboard = false;
-    async partial void OnNeedUpdateDashboardChanged(bool oldValue, bool newValue)
+    private void UpdateCapitalFlowAxisFormatting()
     {
-        if (newValue)
-        {
-            await UpdateDashboardAsync();
+        labelerYAxis = IsPrivacyMode
+            ? _ => "****"
+            : value => string.Format(
+                "{0} {1:N0}",
+                string.Equals(AppSettings.Currency, "eur", StringComparison.OrdinalIgnoreCase) ? "€" : "$",
+                value);
 
-            NeedUpdateDashboard = false;
-        };
+        SetLabelerYAxisCapitalFlow(labelerYAxis);
     }
 
-    private async Task UpdateDashboardAsync()
-    {
-        //await SetSeriesHeatMap(SelectedHeatMapIndex);
-        await RefreshHeatMapPoints();
-        await GetTop5();
-        GetValueGains();
-    }
+    //[ObservableProperty] bool needUpdateDashboard = false;
+    //async partial void OnNeedUpdateDashboardChanged(bool oldValue, bool newValue)
+    //{
+    //    if (newValue)
+    //    {
+    //        await UpdateDashboardAsync();
+
+    //        NeedUpdateDashboard = false;
+    //    };
+    //}
+
 
     public DashboardViewModel(IDashboardService dashboardService, 
                                 IGraphService graphService, 
                                 IPriceLevelService priceLevelService, 
                                 IMessenger messenger,
-                                Settings appSettings) : base(appSettings)
+                                ICapitalFlowService capitalFlowService,
+                                Settings appSettings, 
+                                IDialogService dialogService) : base(appSettings, dialogService, messenger)
     {
         Current = this;
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AssetsViewModel).Name.PadRight(22));
 
-        messenger.Register<UpdateDashboardMessage>(this, (r, m) =>
-        {
-            NeedUpdateDashboard = true;
-        });
-        messenger.Register<UpdateProgressValueMessage>(this, (r, m) =>
-        {
-            ProgressValueGraph = m.ProgressValue;
-        });
-        messenger.Register<GraphUpdatedMessage>(this, (r, m) =>
-        {
-            SetValuesGraph();
-        });
+        messenger.Register<UpdateDashboardMessage>(this);
+        messenger.Register<UpdateProgressValueMessage>(this);
+        messenger.Register<GraphUpdatedMessage>(this);
+        messenger.Register<CurrencyChangedMessage>(this);
+        messenger.Register<DashboardSettingsChangedMessage>(this); //this works with IRecipient<DashboardSettingsChangedMessage> at the top of the class, which is a better way to handle messages than the previous approach of using a lambda expression
 
         _dashboardService = dashboardService;
         _graphService = graphService;
         _priceLevelService = priceLevelService;
         IsPrivacyMode = AppSettings.AreValuesMasked;
         CurrentPortfolio = _dashboardService.GetPortfolio();
-
+        _capitalFlowService = capitalFlowService;
+        NetCapitalFlow = _capitalFlowService.GetNetFlowForCurrency();
+        labelerYAxis = value => string.Format("{0} {1:N0}", string.Equals(AppSettings.Currency, "eur", StringComparison.OrdinalIgnoreCase) ? "€" : "$", value);
+        SetLabelerYAxisCapitalFlow(labelerYAxis);
     }
+
+    public void Receive(UpdateDashboardMessage message)
+    {
+        if (message is null) return;
+        _ = UpdateDashboardAsync();
+    }
+    public void Receive(UpdateProgressValueMessage message)
+    {
+        if (message is null) return;
+        ProgressValueGraph = message.ProgressValue;
+    }
+
+    public void Receive(GraphUpdatedMessage message)
+    {
+        if (message is null) return;
+        SetValuesGraph();
+    }
+
+    public void Receive(CurrencyChangedMessage message)
+    {
+        if (message is null) return;
+        _ = ForceUiUpdateAsync();
+    }
+
+    public void Receive(DashboardSettingsChangedMessage message)
+    {
+        if (message == null) return;
+
+        if (message.ChangedSettings.Contains(nameof(Settings.MaPeriod)) || message.ChangedSettings.Contains(nameof(Settings.MaType)))
+        {
+            _ = RefreshMaBubblesAsync();
+        }
+        if (message.ChangedSettings.Contains(nameof(Settings.RsiPeriod)))
+        {
+            _ = RefreshRsiBubblesAsync();
+        }
+        if (message.ChangedSettings.Contains(nameof(Settings.MaxPieCoins)))
+        {
+            _ = RefreshPortfolioPieAsync();
+        }
+
+        if (message.ChangedSettings.Contains(nameof(Settings.WithinRangePerc)))
+        {
+            _ = RefreshTargetBubblesAsync();
+        }
+    }
+
 
     /// <summary>  
     /// This method is called by the DashboardView_Loaded event.  
@@ -129,6 +180,15 @@ public partial class DashboardViewModel : BaseViewModel
     public void Terminate()
     {
        
+    }
+
+    private async Task UpdateDashboardAsync()
+    {
+        //await SetSeriesHeatMap(SelectedHeatMapIndex);
+        await RefreshHeatMapPoints();
+        await GetTop5();
+        GetValueGains();
+        
     }
 
     [RelayCommand]
@@ -181,26 +241,19 @@ public partial class DashboardViewModel : BaseViewModel
         try
         {
             Logger.Information("Showing DashboardSettings Dialog");
-            var dialog = new DashboardSettingsDialog(this)
-            {
-                XamlRoot = DashboardView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
 
-            if (result == ContentDialogResult.Primary)
-            {
-                // maybe do something
-            }
+            await _dialogService.ShowAsync<DashboardSettingsDialog, bool>();
+
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to show DashboardSettings Dialog");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_DashboardSettingsDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
-    }
+    }   
 
 
     private void ReloadAffectedControls()
@@ -209,20 +262,20 @@ public partial class DashboardViewModel : BaseViewModel
         ReloadGraph();
     }
 
-    public async Task RefreshRsiBubbles()
+    public async Task RefreshRsiBubblesAsync()
     {
         RsiRbContent = $"1D RSI({AppSettings.RsiPeriod})";
-        await _dashboardService.CalculateRsiAllCoins();
+        await _dashboardService.RecalculateRsiAllCoins();
         if (SelectedHeatMapIndex == 1) 
         { 
             await RefreshHeatMapPoints(); 
         }
     }
 
-    public async Task RefreshMaBubbles()
+    public async Task RefreshMaBubblesAsync()
     {
         MaRbContent = $"1D {AppSettings.MaType}({AppSettings.MaPeriod})";
-        await _dashboardService.CalculateMaAllCoins();
+        await _dashboardService.RecalculateMaAllCoins();
         if (SelectedHeatMapIndex == 2)
         {
             //SetCustomSeparatorsMa();
@@ -239,7 +292,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
     }
 
-    public void RefreshPortfolioPie()
+    public async Task RefreshPortfolioPieAsync()
     {
         var portfolioPie = PieChartControls?.FirstOrDefault(p => string.Equals(p?.Name, "PortfolioPie", StringComparison.OrdinalIgnoreCase));
         if (portfolioPie is not null)
@@ -248,17 +301,32 @@ public partial class DashboardViewModel : BaseViewModel
         }
     }
 
-    public async Task RefreshTargetBubbles()
+    public async Task RefreshTargetBubblesAsync()
     {
         //RsiRbContent = $"1D RSI({AppSettings.RsiPeriod})";
         if (SelectedHeatMapIndex == 0) 
         {
             //SetCustomSeparatorsTarget();
-            await _dashboardService.EvaluatePriceLevels();
+            //await _dashboardService.EvaluatePriceLevels();
             await SetSeriesHeatMap(SelectedHeatMapIndex);
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

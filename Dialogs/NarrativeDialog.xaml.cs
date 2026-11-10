@@ -1,21 +1,21 @@
 namespace CryptoPortfolioTracker.Dialogs;
 
-public sealed partial class NarrativeDialog : ContentDialog
+public sealed partial class NarrativeDialog : BaseDialog, IDialog<Narrative>
 {
+    public Narrative Result { get; private set;}
     public readonly NarrativesViewModel _viewModel;
     public Narrative? newNarrative;
     private readonly Narrative? _narrativeToEdit;
 
-    private readonly ILocalizer loc = Localizer.Get();
     private readonly DialogAction _dialogAction;
 
-    public NarrativeDialog(NarrativesViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Narrative? NarrativeToEdit = null)
+    public NarrativeDialog(NarrativesViewModel viewModel, NarrativeDialogParameters parameters)
     {
         InitializeComponent();
         _viewModel = viewModel;
-        _narrativeToEdit = NarrativeToEdit;
-        SetDialogTitleAndButtons(dialogAction);
-        _dialogAction = dialogAction;
+        _narrativeToEdit = parameters.narrative;
+        SetDialogTitleAndButtons(parameters.dialogAction);
+        _dialogAction = parameters.dialogAction;
     }
 
     private void SetDialogTitleAndButtons(DialogAction dialogAction)
@@ -46,39 +46,38 @@ public sealed partial class NarrativeDialog : ContentDialog
             About = DescriptionText.Text,
         };
         newNarrative = Narrative;
+        Result = Narrative;
     }
 
     private void NarrativeName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
     {
         IsPrimaryButtonEnabled = txtNarrativeName.Text.Length > 0;
     }
-    
-
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
-    }
 
     private void NarrativeName_LosingFocus(Microsoft.UI.Xaml.UIElement sender, Microsoft.UI.Xaml.Input.LosingFocusEventArgs args)
     {
         var doesExist = _viewModel._narrativeService.DoesNarrativeNameExist(txtNarrativeName.Text);
 
-        if (doesExist && _dialogAction == DialogAction.Edit)
+        bool notAllowed = txtNarrativeName.Text.Contains("stablecoin", StringComparison.OrdinalIgnoreCase);
+
+        if (notAllowed)
+        {
+            txtNarrativeName.Text = string.Empty;
+            txtNarrativeName.PlaceholderText = loc.GetLocalizedString("NarrativeDialog_NarrativeNotAllowed");
+        }
+        else if (doesExist && _dialogAction == DialogAction.Edit)
         {
             if (_narrativeToEdit?.Name.ToLower() != txtNarrativeName.Text.ToLower())
             {
                 txtNarrativeName.Text = string.Empty;
-                txtNarrativeName.PlaceholderText = loc.GetLocalizedString("AccountDialog_AccountNameExists");
+                txtNarrativeName.PlaceholderText = loc.GetLocalizedString("NarrativeDialog_NarrativeNameExists");
             }
 
         }
         else if (doesExist && _dialogAction == DialogAction.Add)
         {
             txtNarrativeName.Text = string.Empty;
-            txtNarrativeName.PlaceholderText = loc.GetLocalizedString("AccountDialog_AccountNameExists");
+            txtNarrativeName.PlaceholderText = loc.GetLocalizedString("NarrativeDialog_NarrativeNameExists");
         }
 
     }

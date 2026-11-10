@@ -1,23 +1,28 @@
 ﻿
-using System;
-using System.Threading.Tasks;
+using ABI.Microsoft.UI.Xaml.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
 using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
+using LanguageExt;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Serilog;
 using Serilog.Core;
-using WinUI3Localizer;
+using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyChanged
+public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyChanged, IRecipient<UpdatePricesMessage>
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AccountsViewModel Current;
@@ -25,28 +30,28 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
     public IAccountService _accountService {  get; private set; }
     public IAssetService _assetService { get; private set; }
-    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
 
-    [ObservableProperty] public string portfolioName = string.Empty;
-    [ObservableProperty] public Portfolio currentPortfolio;
+    private readonly IAppState _appState;
 
-    partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
-    {
-        PortfolioName = newValue.Name;
-    }
+    public Settings AppSettings => base._appSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+
+    public string PortfolioName => _appState.CurrentPortfolio?.Name ?? string.Empty;
+    //[ObservableProperty] public string portfolioName = string.Empty;
+    //[ObservableProperty] public Portfolio currentPortfolio;
+
+    //partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    //{
+    //    PortfolioName = newValue.Name;
+    //}
 
 
     private SortingOrder currentSortingOrder;
-    private Func<AssetTotals, object> currentSortFunc;
+    private Func<AssetTotalsDisplay, object> currentSortFunc;
 
 
     [ObservableProperty] private string sortGroup;
     
-    //[ObservableProperty]
-    //[NotifyCanExecuteChangedFor(nameof(HideZeroBalancesCommand))]
-    //private bool isHidingZeroBalances;
-
-    public Account? selectedAccount = null;
+    public AccountDisplay? SelectedAccount { get; set; } = null;
 
     [ObservableProperty] private string glyphPrivacy = "\uE890";
 
@@ -58,8 +63,11 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
 
         AppSettings.AreValuesMasked = value;
 
-        _accountService.ReloadValues();
-        _assetService.ReloadValues();
+        //*** force a repaint of the UI to (un)mask values
+        MaskRelatedUiRefresh();
+
+        //_accountService.ReloadValues();
+        //_assetService.ReloadValues();
 
     }
 
@@ -68,15 +76,29 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     public partial bool IsExtendedView { get; set; } = false;
 
     [ObservableProperty] public partial bool IsAssetsExtendedView { get; set; } = false;
+    [ObservableProperty] public partial string ExplainerText { get; set; }
+    [ObservableProperty] public partial string ViewTitle { get; set; }
+    [ObservableProperty] public partial ObservableCollection<AccountDisplay> ListAccounts { get; set; } = new();
+    [ObservableProperty] public partial ObservableCollection<AssetTotalsDisplay>? ListAssetTotals { get; set; } = new ObservableCollection<AssetTotalsDisplay>();
+    [ObservableProperty] public partial int AccountsCount { get; set; }
+    [ObservableProperty] public partial int? SelectedAccountId { get; set; }
+   
 
-
-    public AccountsViewModel(IAccountService accountService, IAssetService assetService, Settings appSettings) : base(appSettings)
+    public AccountsViewModel(IAccountService accountService, IAssetService assetService, IAppState appState, Settings appSettings, IDialogService dialogService, IMessenger messenger) : base(appSettings, dialogService, messenger)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(AccountsViewModel).Name.PadRight(22));
         Current = this;
         _accountService = accountService;
         _assetService = assetService;
-        CurrentPortfolio = _assetService.GetPortfolio();
+        _appState = appState;
+        _appState.CurrentPortfolioChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(PortfolioName));
+            // reload data if needed
+        };
+        messenger.Register<UpdatePricesMessage>(this);
+
+        //CurrentPortfolio = _appState.CurrentPortfolio;
 
         SortGroup = "Accounts";
         currentSortFunc = x => x.MarketValue;
@@ -86,6 +108,14 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         IsPrivacyMode =AppSettings.AreValuesMasked;
     }
 
+    
+
+    public void Receive(UpdatePricesMessage message)
+    {
+        _ = RefreshAccountsList();
+        _ = RefreshAssetTotalsList();
+        AccountsCount = ListAccounts.Count;
+    }
 
     /// <summary>
     /// Initialize async task is called from the View_Loaded event of the associated View
@@ -94,18 +124,33 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     /// <returns></returns>
     public async Task ViewLoading()
     {
-        CurrentPortfolio = _assetService.GetPortfolio();
-        PortfolioName = CurrentPortfolio.Name;
+        ExplainerText = loc.GetLocalizedString("Accounts_Explainer");
+        ViewTitle = loc.GetLocalizedString("Accounts_Title");
+        //CurrentPortfolio = _appState.CurrentPortfolio;
+        //PortfolioName = CurrentPortfolio.Name;
 
         IsPrivacyMode =AppSettings.AreValuesMasked;
-        await _accountService.PopulateAccountsList();
+        await PopulateAccountsList();
+        
+    }
+
+    private void MaskRelatedUiRefresh()
+    {
+        var tempListAccounts = ListAccounts;
+        ListAccounts = null;
+        ListAccounts = tempListAccounts;
+
+        var tempListAssetTotals = ListAssetTotals;
+        ListAssetTotals = null;
+        ListAssetTotals = tempListAssetTotals;
     }
 
     public void Terminate()
     {
         _accountService.ClearAccountsList();
         _accountService.ClearAccountsByAssetList();
-        selectedAccount = null;
+        ListAccounts.Clear();
+        SelectedAccount = null;
         IsExtendedView = false;
     }
 
@@ -113,59 +158,71 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     [RelayCommand]
     public void SortOnName(SortingOrder sortingOrder)
     {
-        Sort(sortingOrder, x => x.Coin.Name);
+        SortList(sortingOrder, x => x.Coin.Name);
     }
 
     [RelayCommand]
     public void SortOn24Hour(SortingOrder sortingOrder)
     {
-        Sort(sortingOrder, x => x.Coin.Change24Hr);
+        SortList(sortingOrder, x => x.Coin.Change24Hr);
     }
 
     [RelayCommand]
     public void SortOn1Month(SortingOrder sortingOrder)
     {
-        Sort(sortingOrder, x => x.Coin.Change1Month);
+        SortList(sortingOrder, x => x.Coin.Change1Month);
     }
 
     [RelayCommand]
     public void SortOnMarketValue(SortingOrder sortingOrder)
     {
-        Sort(sortingOrder, x => x.MarketValue);
+        SortList(sortingOrder, x => x.MarketValue);
     }
 
     [RelayCommand]
     public void SortOnCostBase(SortingOrder sortingOrder)
     {
-        Sort(sortingOrder, x => x.CostBase);
+        SortList(sortingOrder, x => x.CostBase);
     }
 
     [RelayCommand]
     public void SortOnPnL(SortingOrder sortingOrder)
     {
-        Sort(sortingOrder, x => x.ProfitLoss);
+        SortList(sortingOrder, x => x.ProfitLoss);
     }
 
     [RelayCommand]
     public void SortOnPnLPerc(SortingOrder sortingOrder)
     {
-        Sort(sortingOrder, x => x.ProfitLossPerc);
+        SortList(sortingOrder, x => x.ProfitLossPerc);
     }
 
-    private void Sort(SortingOrder sortingOrder, Func<AssetTotals, object> sortFunc)
-    {
-        currentSortFunc = sortFunc;
-        currentSortingOrder = sortingOrder;
-        _assetService.SortList(sortingOrder, sortFunc);
-    }
+    
     [RelayCommand]
     public static void SortOnNetInvestment(SortingOrder sortingOrder)
     {
         //*** disabled in AccountsView
     }
 
-  
-    
+    private void SortList(SortingOrder sortingOrder, Func<AssetTotalsDisplay, object> sortFunc)
+    {
+        if (ListAssetTotals is null || !ListAssetTotals.Any()) return;
+
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
+
+        if (currentSortingOrder == SortingOrder.Ascending)
+        {
+            ListAssetTotals = new ObservableCollection<AssetTotalsDisplay>(ListAssetTotals.OrderBy(currentSortFunc));
+        }
+        else
+        {
+            ListAssetTotals = new ObservableCollection<AssetTotalsDisplay>(ListAssetTotals.OrderByDescending(currentSortFunc));
+        }
+
+    }
+
+
     [RelayCommand(CanExecute = nameof(CanShowAccountDialogToAdd))]
     public async Task ShowAccountDialogToAdd()
     {
@@ -174,22 +231,17 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         try
         {
             Logger.Information("Showing AccountDialog for Adding");
-            var dialog = new AccountDialog(Current, DialogAction.Add)
-            {
-                XamlRoot = AccountsView.Current.XamlRoot
-            };
-            
-            var result = await App.ShowContentDialogAsync(dialog);
 
-            if (result == ContentDialogResult.Primary)
+            var newAccount = await _dialogService.ShowAsync<AccountDialog, Account>(new AccountDialogParameters(DialogAction.Add, null));
+
+            if (newAccount != null)
             {
-                var accountName = dialog.newAccount is not null ? dialog.newAccount.Name : string.Empty;
-                Logger.Information("Adding Account ({0})", accountName);
-                await (await _accountService.CreateAccount(dialog.newAccount))
-                    .Match(Succ: succ => _accountService.AddToListAccounts(dialog.newAccount),
+                Logger.Information("Adding Account ({0})", newAccount.Name);
+                await (await _accountService.CreateAccount(newAccount))
+                    .Match(Succ: async succ => await AddToListAccounts(newAccount),
                         Fail: async err =>
                         {
-                            await ShowMessageDialog(
+                            await _dialogService.ShowMessageAsync(
                             loc.GetLocalizedString("Messages_AccountAddFailed_Title"),
                             err.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
@@ -200,7 +252,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         catch (Exception ex)
         {
             Logger.Error(ex, "Showing Account Dialog failed");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_AccountDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
@@ -213,27 +265,24 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     }
 
     [RelayCommand]
-    public async Task ShowAccountDialogToEdit(Account account)
+    public async Task ShowAccountDialogToEdit(AccountDisplay account)
     {
       
         var loc = Localizer.Get();
         try
         {
             Logger.Information("Showing Account Dialog for Editing");
-            var dialog = new AccountDialog(Current, DialogAction.Edit, account)
-            {
-                XamlRoot = AccountsView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
+            var domainAccount = ModelMapper.MapToDomain(account);
+            var newAccount = await _dialogService.ShowAsync<AccountDialog, Account>(new AccountDialogParameters(DialogAction.Edit, domainAccount));
 
-            if (result == ContentDialogResult.Primary && dialog.newAccount is not null)
+            if (newAccount != null)
             {
                 Logger.Information("Editing Account ({0})", account.Name);
-                await (await _accountService.EditAccount(dialog.newAccount, account))
-                    .Match(Succ: succ => _accountService.UpdateListAccounts(account),
+                await (await _accountService.EditAccount(newAccount, domainAccount))
+                    .Match(Succ: async succ => await UpdateListAccounts(domainAccount),
                         Fail: async err =>
                         {
-                            await ShowMessageDialog(
+                            await _dialogService.ShowMessageAsync(
                             loc.GetLocalizedString("Messages_AccountUpdateFailed_Title"),
                             err.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
@@ -244,7 +293,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to show Account Dialog");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_AccountDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
@@ -253,7 +302,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteAccount))]
-    public async Task DeleteAccount(Account account)
+    public async Task DeleteAccount(AccountDisplay account)
     {
         var loc = Localizer.Get();
         // *** Delete option normally never available when an Account contains assets
@@ -268,10 +317,10 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
             {
                 Logger.Information("Deleting Account");
                 await (await _accountService.RemoveAccount(account.Id))
-                    .Match(Succ: s => _accountService.RemoveFromListAccounts(account.Id),
+                    .Match(Succ: s => RemoveFromListAccounts(account.Id),
                         Fail: async err =>
                         {
-                            await ShowMessageDialog(
+                            await _dialogService.ShowMessageAsync(
                             loc.GetLocalizedString("Messages_AccountDeleteFailed_Title"),
                             err.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
@@ -282,7 +331,7 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
             {
                 Logger.Information("Deleting Account not allowed");
 
-                await ShowMessageDialog(
+                await _dialogService.ShowMessageAsync(
                     loc.GetLocalizedString("Messages_AccountDeleteNotAllowd_Title"),
                     loc.GetLocalizedString("Messages_AccountDeleteNotAllowed_Msg"),
                     loc.GetLocalizedString("Common_CloseButton"));
@@ -291,68 +340,189 @@ public sealed partial class AccountsViewModel : BaseViewModel, INotifyPropertyCh
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to delete Account");
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_AccountDeleteFailed_Title"),
                             ex.Message,
                             loc.GetLocalizedString("Common_CloseButton"));
         }
        
     }
-    private bool CanDeleteAccount(Account account)
+    private bool CanDeleteAccount(AccountDisplay account)
     {
-        return !_accountService.IsAccountHoldingAssets(account);   
+        var item = ListAccounts.FirstOrDefault(x => x.Id == account.Id);
+        return item != null ? item.IsHoldingAsset ? false : true : false;
     }
 
     [RelayCommand]
-    public async Task AccountItemClicked(Account clickedAccount)
+    public async Task AccountItemClicked(AccountDisplay clickedAccount)
     {
         //Clicked a new Account.... -> Resize Account ListView to small and Show Assets for this Account
-        if (selectedAccount == null || selectedAccount != clickedAccount)
+        if (SelectedAccount == null || SelectedAccount.Id != clickedAccount.Id)
         {
             IsExtendedView = true;
             await ShowAssets(clickedAccount);
+            SelectedAccount = clickedAccount;
         }
         //clicked the already selected Account.... ->
-        if (selectedAccount != null && selectedAccount == clickedAccount)
+        else if (SelectedAccount != null && SelectedAccount.Id == clickedAccount.Id)
         {
             // if Assets are not shown -> Decrease Account Listview to small and show assets for this account
             if (!IsExtendedView)
             {
                 IsExtendedView = true;
                 await ShowAssets(clickedAccount);
+                SelectedAccount = clickedAccount;
             }
             else //if Assets are shown -> close Assets List and resize Accounts Listview to full-size
             {
-                _assetService.ClearAssetTotalsList();
+                //_assetService.ClearAssetTotalsList();
+                ListAssetTotals?.Clear();
                 IsExtendedView = false;
+                SelectedAccount = null;
             }
         }
-        selectedAccount = clickedAccount;
+        
     }
 
     [RelayCommand]
-    public void HideZeroBalances(bool param)
+    public async Task HideZeroBalances(bool param)
     {
         _assetService.IsHidingZeroBalances = param;
-        _assetService.PopulateAssetTotalsByAccountList(selectedAccount, currentSortingOrder, currentSortFunc);
-
+        //_assetService.PopulateAssetTotalsByNarrativeList(selectedNarrative, currentSortingOrder, currentSortFunc);
+        await ShowAssets(SelectedAccount);
     }
 
     [RelayCommand]
-    public static void AssetItemClicked(AssetTotals clickedAsset)
+    public static void AssetItemClicked(AssetTotalsDisplay clickedAsset)
     {
         //In the AccountsView we ignore this command. The AssetsListViewControl is used in the AssetsView as well.
     }
 
-    public async Task ShowAssets(Account clickedAccount)
-    {
-        await _assetService.PopulateAssetTotalsByAccountList(clickedAccount, currentSortingOrder, currentSortFunc);
-    }
 
     [RelayCommand]
     private void TogglePrivacyMode()
     {
         IsPrivacyMode = !IsPrivacyMode;
     }
+
+
+
+    private async Task PopulateAccountsList()
+    {
+        var list = (await _accountService.PopulateAccountsList())
+            .Select(ModelMapper.MapToDisplay)
+            .ToList();
+
+        ListAccounts = new ObservableCollection<AccountDisplay>(list);
+        AccountsCount = ListAccounts.Count;
+    }
+
+
+    private async Task UpdateListAccounts(Account account)
+    {
+        var selectedAccount = SelectedAccountId;
+        var UpdatedAccounts = (await _accountService.UpdateListAccounts(account))
+            .Select(ModelMapper.MapToDisplay)
+            .ToList();
+
+        ReplaceOrAddUpdatedItems(ListAccounts, UpdatedAccounts, x => x.Id);
+        AccountsCount = ListAccounts.Count;
+        if (selectedAccount.HasValue)
+        {
+            var selectedItem = ListAccounts.FirstOrDefault(x => x.Id == selectedAccount.Value);
+            SelectedAccountId = selectedItem?.Id;
+        }
+    }
+
+    private async Task AddToListAccounts(Account account)
+    {
+        var result = await _accountService.AddToListAccounts(account);
+        if (result)
+        {
+            ListAccounts.Add(ModelMapper.MapToDisplay(account));
+            AccountsCount = ListAccounts.Count;
+        }
+    }
+
+    private async Task RemoveFromListAccounts(int accountId)
+    {
+        var result = await _accountService.RemoveFromListAccounts(accountId);
+        if (result)
+        {
+            var accountToRemove = ListAccounts.FirstOrDefault(x => x.Id == accountId);
+            if (accountToRemove != null)
+            {
+                ListAccounts.Remove(accountToRemove);
+                AccountsCount = ListAccounts.Count;
+            }
+        }
+    }
+
+    private async Task ShowAssets(AccountDisplay clickedAccount)
+    {
+        var list = (await _assetService.PopulateAssetTotalsByAccountList(ModelMapper.MapToDomain(clickedAccount)))
+            .Select(ModelMapper.MapToDisplay)
+            .ToList();
+
+        var sorted = currentSortingOrder == SortingOrder.Ascending
+            ? list.OrderBy(currentSortFunc).ToList()
+            : list.OrderByDescending(currentSortFunc).ToList();
+
+        ListAssetTotals = new ObservableCollection<AssetTotalsDisplay>(sorted);
+    }
+
+    private async Task RefreshAssetTotalsList()
+    {
+        if (ListAssetTotals == null || ListAssetTotals.Count == 0) { return; }
+
+        var selectedAccount = ListAccounts.FirstOrDefault(x => x.Id == SelectedAccountId.Value);
+
+        var refreshedList = (await _assetService.PopulateAssetTotalsByAccountList(ModelMapper.MapToDomain(selectedAccount)))
+            .Select(ModelMapper.MapToDisplay)
+            .ToList();
+
+        foreach (var item in refreshedList)
+        {
+            // Find the corresponding item in the existing collection and update its properties
+            var existingItem = ListAssetTotals?.FirstOrDefault(x => x.Coin.Id == item.Coin.Id);
+            if (existingItem != null)
+            {
+                existingItem.Coin.Price = item.Coin.Price;
+                existingItem.Coin.Change1Month = item.Coin.Change1Month;
+                existingItem.Coin.Change24Hr = item.Coin.Change24Hr;
+
+                existingItem.MarketValue = item.MarketValue;
+                existingItem.ProfitLoss = item.ProfitLoss;
+                existingItem.ProfitLossPerc = item.ProfitLossPerc;
+                existingItem.NetProfitLossPerc = item.NetProfitLossPerc;
+            }
+        }
+        var copy = new List<AssetTotalsDisplay>(ListAssetTotals);
+        var sorted = currentSortingOrder == SortingOrder.Ascending
+            ? copy.OrderBy(currentSortFunc).ToList()
+            : copy.OrderByDescending(currentSortFunc).ToList();
+
+        CollectionReorderHelper.ApplyOrderedSequence(ListAssetTotals, sorted, x => x.Coin.Id);
+    }
+
+    private async Task RefreshAccountsList()
+    {
+        if (ListAccounts == null || ListAccounts.Count == 0) { return; }
+        var refreshedList = await _accountService.PopulateAccountsList();
+        foreach (var item in refreshedList)
+        {
+            // Find the corresponding item in the existing collection and update its properties
+            var existingItem = ListAccounts?.FirstOrDefault(x => x.Id == item.Id);
+            if (existingItem != null)
+            {
+                existingItem.TotalValue = item.TotalValue;
+            }
+        }
+    }
+
+
+
+
+
 }
 

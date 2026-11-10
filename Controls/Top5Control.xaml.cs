@@ -39,43 +39,11 @@ public partial class Top5Control : UserControl, INotifyPropertyChanged
        // _viewModel.Top5ControlUnloaded();
     }
 
-
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-
-    private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-    {
-        // Log the exception details (optional)
-       
-        // Prevent the application from crashing
-        e.Handled = true;
-
-        // Show a user-friendly message
-        ShowErrorMessage(e.Message);
-    }
-
-    public void ShowErrorMessage(string message)
-    {
-        // Ensure execution on the UI thread
-        MainPage.Current.DispatcherQueue.TryEnqueue(async () =>
-        {
-            var dialog = new ContentDialog
-            {
-                Title = "An error occurred",
-                Content = message,
-                CloseButtonText = "OK",
-                XamlRoot = MainPage.Current.XamlRoot
-            };
-
-            await dialog.ShowAsync();
-        });
-    }
-
     
 }

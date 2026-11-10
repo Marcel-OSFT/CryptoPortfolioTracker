@@ -1,23 +1,22 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CryptoPortfolioTracker.Enums;
 using CryptoPortfolioTracker.Services;
+using LiveChartsCore.Themes;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System.IO;
-using System.Threading.Tasks;
 using System;
-using WinUI3Localizer;
-using System.Net.Http;
 using System.Diagnostics;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public partial class AboutDialog : ContentDialog
+public sealed partial class AboutDialog : BaseDialog, IDialog<bool>
 {
-    private readonly ILocalizer loc = Localizer.Get();
-    private readonly ElementTheme _theme;
-
+    public bool Result { get; private set; }
     [ObservableProperty] private string imagePath;
     [ObservableProperty] private string btcImage;
     [ObservableProperty] private string ethImage;
@@ -28,7 +27,7 @@ public partial class AboutDialog : ContentDialog
     [ObservableProperty] private string usdcArbAddress;
     [ObservableProperty] private string usdcBscAddress;
 
-    public AboutDialog(ElementTheme theme)
+    public AboutDialog()
     {
         ImagePath = AppConstants.AppPath + "\\Assets\\CryptoPortfolioTracker.ico";
         BtcImage = AppConstants.AppPath + "\\Assets\\bitcoin.png";
@@ -41,17 +40,7 @@ public partial class AboutDialog : ContentDialog
         UsdcBscAddress = string.Empty;
         InitializeComponent();
         DataContext = this;
-        _theme = theme;
         SetDialogTitleAndButtons();
-    }
-
-    private async void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _theme)
-        {
-            sender.RequestedTheme = _theme;
-        }
-        await GetCryptoAddresses();
     }
 
     private void SetDialogTitleAndButtons()
@@ -61,6 +50,10 @@ public partial class AboutDialog : ContentDialog
         IsPrimaryButtonEnabled = true;
     }
 
+    private async void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
+        await GetCryptoAddresses();
+    }
 
     public async Task GetCryptoAddresses()
     {
@@ -104,4 +97,10 @@ public partial class AboutDialog : ContentDialog
         }
     }
 
+    private void PrimaryButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs e)
+    {
+        Result = true;
+    }
+
 }
+

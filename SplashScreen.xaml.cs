@@ -1,6 +1,7 @@
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Windows.UI;
 using WinUIEx;
 
 namespace CryptoPortfolioTracker;
@@ -13,7 +14,6 @@ public sealed partial class SplashScreen : Window
         Title = string.Empty;
         
         var versionParts = AppConstants.ProductVersion.Split('.');
-
 
         versionTxt.Text = versionParts[0] + "." + versionParts[1]+ "." + versionParts[2];
 
@@ -31,11 +31,14 @@ public sealed partial class SplashScreen : Window
         }
         appW.IsShownInSwitchers = false;
         appW.Resize(new Windows.Graphics.SizeInt32 { Width = 500, Height = 300 });
+        
+        
+
 
 #if !DEBUG
         this.CenterOnScreen();
 #endif
-        
+
     }
     
 }

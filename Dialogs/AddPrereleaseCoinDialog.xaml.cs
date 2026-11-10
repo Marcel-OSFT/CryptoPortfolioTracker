@@ -1,22 +1,23 @@
+using CryptoPortfolioTracker.Infrastructure.Response.Coins;
+
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public sealed partial class AddPrereleaseCoinDialog : ContentDialog
+public sealed partial class AddPrereleaseCoinDialog : BaseDialog, IDialog<Coin?>
 {
-    public readonly CoinLibraryViewModel _viewModel;
-
+    public Coin? Result { get; private set; }
+    //public readonly CoinLibraryViewModel _viewModel;
+    private readonly INarrativeService _narrativeService;
     public Coin? newCoin;
-    private readonly ILocalizer loc = Localizer.Get();
 
     [ObservableProperty] private string decimalSeparator;
-    
 
-
-    public AddPrereleaseCoinDialog(CoinLibraryViewModel viewModel)
+    public AddPrereleaseCoinDialog(Settings settings, INarrativeService narrativeService)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        DecimalSeparator = _viewModel.AppSettings.NumberFormat.NumberDecimalSeparator;
+       // _viewModel = viewModel;
+        _narrativeService = narrativeService;
+        DecimalSeparator = settings.NumberFormat.NumberDecimalSeparator;
         SetDialogTitleAndButtons();
     }
 
@@ -38,8 +39,18 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
             .CurrentPriceAt(Convert.ToDouble(CoinPrice.Text))
             .WithImage(AppConstants.AppPath + "\\Assets\\QuestionMarkBlue.png")
             .MarketCapRankAt(999999)
-            .OfNarrative(_viewModel._narrativeService.GetDefaultNarrative())
+            .WithPriceLevel(priceLevel => priceLevel
+                .OfType(PriceLevelType.TakeProfit))
+            .WithPriceLevel(priceLevel => priceLevel
+                .OfType(PriceLevelType.Buy))
+            .WithPriceLevel(priceLevel => priceLevel
+                .OfType(PriceLevelType.Stop))
+            .WithPriceLevel(priceLevel => priceLevel
+                .OfType(PriceLevelType.Ema))
+            .OfNarrative(_narrativeService.GetDefaultNarrative())
             .Build();
+
+        Result = newCoin;
     }
 
     private void CoinName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
@@ -55,13 +66,4 @@ public sealed partial class AddPrereleaseCoinDialog : ContentDialog
         IsPrimaryButtonEnabled = CoinName.Text.Length > 0 && CoinSymbol.Text.Length > 0 && CoinPrice.IsEntryValid;
     }
 
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
-    }
-
-    
 }

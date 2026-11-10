@@ -1,65 +1,61 @@
+using CommunityToolkit.Mvvm.Messaging;
+using Newtonsoft.Json.Linq;
+
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public partial class DashboardSettingsDialog : ContentDialog
+public partial class DashboardSettingsDialog : BaseDialog, IDialog<bool>
 {
-    private readonly ILocalizer loc = Localizer.Get();
+    public record DashboardSettingsSnapshot
+    {
+        public int RsiPeriod { get; init; }
+        public int MaPeriod { get; init; }
+        public string MaType { get; init; }
+        public int WithinRangePerc { get; init; }
+        public int CloseToPerc { get; init; }
+
+        public int MaxPieCoins { get; init; }
+        public bool IsScrollBarsExpanded { get; init; }
+
+    }
+
+    public bool Result { get; private set; }
     private readonly DashboardViewModel _viewModel;
+    private readonly IMessenger _messenger;
+    private readonly Settings _settings;
+    private DashboardSettingsSnapshot originalSettings; // to compare changes on unload
     [ObservableProperty] bool isCardExpanded;
     [ObservableProperty] bool isCardEnabled;
 
-    [ObservableProperty]
-    private bool isScrollBarsExpanded;
+    [ObservableProperty] private bool isScrollBarsExpanded;
     partial void OnIsScrollBarsExpandedChanged(bool value) => _viewModel.AppSettings.IsScrollBarsExpanded = value;
-
-    [ObservableProperty]
-    private int withinRangePerc;
-    partial void OnWithinRangePercChanged(int value)
-    {
-        _viewModel.AppSettings.WithinRangePerc = value;
-        DashboardViewModel.Current?.RefreshTargetBubbles();
-    }
-
-    [ObservableProperty]
-    private int closeToPerc;
+    [ObservableProperty] private int closeToPerc;
     partial void OnCloseToPercChanged(int value) => _viewModel.AppSettings.CloseToPerc = value;
 
-    [ObservableProperty]
-    private int maxPieCoins;
-    partial void OnMaxPieCoinsChanged(int value)
-    {
-        _viewModel.AppSettings.MaxPieCoins = value;
-        DashboardViewModel.Current?.RefreshPortfolioPie();
+    //*** when below properties change then a DashboardSettingsChangedMessage will be sent on dialog unload
+    [ObservableProperty] private int withinRangePerc;
 
-    }
-        [ObservableProperty]
-    private int rsiPeriod;
-    async partial void OnRsiPeriodChanged(int value)
-    {
-        _viewModel.AppSettings.RsiPeriod = value;
-        // update dashboard viewmodel display if available
-        await DashboardViewModel.Current?.RefreshRsiBubbles();
-    }
+    [ObservableProperty] private int maxPieCoins;
+    
+    [ObservableProperty] private int rsiPeriod;
 
-    [ObservableProperty]
-    private int maPeriod;
-   async partial void OnMaPeriodChanged(int value)
-    {
-        _viewModel.AppSettings.MaPeriod = value;
-        await DashboardViewModel.Current?.RefreshMaBubbles();
-    }
+    [ObservableProperty] private int maPeriod;
 
-    [ObservableProperty]
-    private int maTypeIndex;
-    partial void OnMaTypeIndexChanged(int value)
-    {
-        SetMaTypeByIndex(value);
-        DashboardViewModel.Current?.RefreshMaBubbles();
-    }
+    [ObservableProperty] private int maTypeIndex;
 
-    public DashboardSettingsDialog(DashboardViewModel viewModel)
+    public DashboardSettingsDialog(DashboardViewModel viewModel, IMessenger messenger, Settings settings)
     {
         _viewModel = viewModel;
+        _messenger = messenger;
+        _settings = settings;
+        originalSettings = new DashboardSettingsSnapshot
+        {
+            WithinRangePerc = settings.WithinRangePerc,
+            MaxPieCoins = settings.MaxPieCoins,
+            RsiPeriod = settings.RsiPeriod,
+            MaPeriod = settings.MaPeriod,
+            MaType = settings.MaType,
+        };
         InitializeComponent();
         DataContext = this;
         isCardExpanded = true;
@@ -67,16 +63,6 @@ public partial class DashboardSettingsDialog : ContentDialog
         SetDialogTitleAndButtons();
         InitializeFields();
     }
-
-    private async void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        var theme = _viewModel.AppSettings.AppTheme;
-        if (sender.ActualTheme != theme)
-        {
-            sender.RequestedTheme = theme ;
-        }
-    }
-
     private void InitializeFields()
     {
         var numberFormat = _viewModel.AppSettings.NumberFormat;
@@ -97,11 +83,24 @@ public partial class DashboardSettingsDialog : ContentDialog
         };
     }
 
+    private string GetMaTypeByIndex(int index)
+    {
+        return index switch
+        {
+            0 => "SMA",
+            1 => "EMA",
+            2 => "WMA",
+            3 => "VWMA",
+            _ => "SMA",
+        };
+    }
+
     private void SetDialogTitleAndButtons()
     {
         Title = loc.GetLocalizedString("DashboardSettingsDialog_Title");
         PrimaryButtonText = loc.GetLocalizedString("Common_CloseButton");
         IsPrimaryButtonEnabled = true;
+        Result = true;
     }
 
     private void SetMaTypeByIndex(int index)
@@ -117,5 +116,41 @@ public partial class DashboardSettingsDialog : ContentDialog
         _viewModel.AppSettings.MaType = value;
     }
 
+    private void Dialog_Unloaded(object sender, RoutedEventArgs e)
+    {
+        var changed = new List<string>();
 
+        if (RsiPeriod != originalSettings.RsiPeriod) // placeholder: compare with original copy
+        {
+            _settings.RsiPeriod = RsiPeriod;
+            changed.Add(nameof(Settings.RsiPeriod));
+        }
+
+        if (MaPeriod != originalSettings.MaPeriod)
+        {
+            _settings.MaPeriod = MaPeriod;
+            changed.Add(nameof(Settings.MaPeriod));
+        }
+
+        var maType = GetMaTypeByIndex(MaTypeIndex);
+        if (maType != originalSettings.MaType)
+        {
+            _settings.MaType = maType;
+            changed.Add(nameof(Settings.MaType));
+        }
+
+        if (WithinRangePerc != originalSettings.WithinRangePerc)
+        {
+            _settings.WithinRangePerc = WithinRangePerc;
+            changed.Add(nameof(Settings.WithinRangePerc));
+        }
+       
+        if (MaxPieCoins != originalSettings.MaxPieCoins)
+        {
+            _settings.MaxPieCoins = MaxPieCoins;
+            changed.Add(nameof(Settings.MaxPieCoins));
+        }
+
+        _messenger.Send(new DashboardSettingsChangedMessage(changed));
+    }
 }

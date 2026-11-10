@@ -33,9 +33,9 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] double yearToDatePerc;
     [ObservableProperty] double costBase;
     [ObservableProperty] double costBasePerc;
-
-
     [ObservableProperty] double netCapitalFlow;
+
+
     [ObservableProperty] public ObservableCollection<ISeries> seriesCapFlow = new();
     [ObservableProperty] Axis[] xAxesCapitalFlow = Array.Empty<Axis>();
     [ObservableProperty] public double legendTextSizeCapitalFlow = 12;
@@ -63,16 +63,29 @@ public partial class DashboardViewModel : BaseViewModel
                     SKFontStyle = new SKFontStyle(SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
                 },
 
-                Labeler = labelerYAxis,
+                //Labeler = labelerYAxis,
             }
         };
 
-public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
+
+
+
+
+    public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
         new SolidColorPaint
         {
             Color = SKColors.DarkGoldenrod,
             SKTypeface = SKTypeface.FromFamilyName("Times New Roman")
         };
+
+    public void SetLabelerYAxisCapitalFlow(Func<double, string> labeler)
+    {
+        if (YAxesCapitalFlow?.FirstOrDefault() is Axis yAxis)
+        {
+            yAxis.Labeler = labeler;
+        }
+    }
+
 
     /// <summary>   
     /// This method is called by the ValueGainsControl_Loaded event.  
@@ -80,9 +93,23 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
     public async Task ValueGainsControlLoaded()
     {
         GetValueGains();
-        await GetCapitalFlowData();
+        await GetYearlyCapitalFlowData();
     }
 
+
+    private async Task ForceUiUpdateAsync()
+    {
+        OnPropertyChanged(nameof(TotalValue));
+        OnPropertyChanged(nameof(CostBase));
+        OnPropertyChanged(nameof(DayPerc));
+        OnPropertyChanged(nameof(WeekPerc));
+        OnPropertyChanged(nameof(MonthPerc));
+        OnPropertyChanged(nameof(YearPerc));
+        OnPropertyChanged(nameof(YearToDatePerc));
+        OnPropertyChanged(nameof(CostBasePerc));
+        NetCapitalFlow = _capitalFlowService.GetNetFlowForCurrency();
+        await GetYearlyCapitalFlowData();
+    }
 
     public void GetValueGains()
     {
@@ -115,40 +142,37 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
             YearToDatePerc = yearToDateDataPoint != null && yearToDateDataPoint.Value.HasValue ? 100 * (TotalValue - yearToDateDataPoint.Value.Value) / yearToDateDataPoint.Value.Value : double.NegativeInfinity;
 
             CostBasePerc = 100 * (TotalValue - CostBase) / CostBase;
+            NetCapitalFlow = _capitalFlowService.GetNetFlowForCurrency();
 
-
-}
+            
+        }
         catch (Exception ex)
         {
             Logger.Error(ex, "An error occurred while calculating value gains.");
         }
     }
 
-    public async Task GetCapitalFlowData()
+    public async Task GetYearlyCapitalFlowData()
     {
-        ObservableCollection<CapitalFlowPoint> deposits =
-            new(await _dashboardService.GetYearlyMutationsByTransactionKind(TransactionKind.Deposit));
+        
+        ObservableCollection<YearlyFlow> deposits = new ObservableCollection<YearlyFlow>(_capitalFlowService.GetYearlyInFlowForCurrency());
 
-        ObservableCollection<CapitalFlowPoint> withdrawals =
-            new(await _dashboardService.GetYearlyMutationsByTransactionKind(TransactionKind.Withdraw));
-
-        NetCapitalFlow = deposits.Sum(point => point.Value)
-            - withdrawals.Sum(point => point.Value);
+        ObservableCollection<YearlyFlow> withdrawals = new ObservableCollection<YearlyFlow>(_capitalFlowService.GetYearlyOutFlowForCurrency());
 
         List<string> years = deposits
-            .Select(point => point.Year)
-            .Concat(withdrawals.Select(point => point.Year))
+            .Select(point => point.Year.ToString())
+            .Concat(withdrawals.Select(point => point.Year.ToString()))
             .Distinct()
             .OrderBy(year => year)
             .ToList();
 
         ObservableCollection<double> depositValues = new(
             years.Select(year =>
-                deposits.FirstOrDefault(point => point.Year == year)?.Value ?? 0));
+                deposits.FirstOrDefault(point => point.Year.ToString() == year)?.Value ?? 0));
 
         ObservableCollection<double> withdrawalValues = new(
             years.Select(year =>
-                withdrawals.FirstOrDefault(point => point.Year == year)?.Value ?? 0));
+                withdrawals.FirstOrDefault(point => point.Year.ToString() == year)?.Value ?? 0));
 
         XAxesCapitalFlow =
         [
@@ -232,7 +256,8 @@ public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
         if (YAxesCapitalFlow is null) return;
         foreach (var axis in YAxesCapitalFlow)
         {
-            axis.Labeler = labelerYAxis;
+            //axis.Labeler = labelerYAxis;
+            axis.Labeler = labelerYAxis;    
         }
         OnPropertyChanged("YAxisCapitalFlow");
         

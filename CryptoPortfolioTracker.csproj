@@ -31,59 +31,61 @@
     <PackageReference Include="AK.Toolkit.WinUI3.ScrollBarExtensions" Version="1.0.5" />
     <PackageReference Include="CoinGeckoFluentApi.Client" Version="1.0.0-preview.1" />
     <PackageReference Include="ColorCode.WinUI" Version="2.0.15" />
-    <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="CommunityToolkit.WinUI" Version="7.1.2" />
-    <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.Common" Version="8.4.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.1.240916" />
+    <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240916" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240916" />
-    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
-    <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
-    <PackageReference Include="CommunityToolkit.WinUI.UI.Animations" Version="7.1.2" />
-    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240916" />
+	  <PackageReference Include="CommunityToolkit.WinUI.Helpers" Version="8.1.240916" />
+	  <PackageReference Include="CommunityToolkit.WinUI.Triggers" Version="8.1.240916" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="2.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="EntityFramework" Version="6.5.1" />
-    <PackageReference Include="LanguageExt.Core" Version="4.4.8" />
+    <PackageReference Include="EntityFramework" Version="6.5.2" />
+    <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
     <PackageReference Include="LiveChartsCore" Version="2.0.0-rc4.5" />
     <PackageReference Include="LiveChartsCore.Behaviours" Version="2.0.0-rc4.5" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-rc4.5" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc4.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="7.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.15">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.20">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="8.0.1">
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="8.0.33">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.4" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.241107002" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Polly.Core" Version="8.3.0" />
-    <PackageReference Include="QuestPDF" Version="2025.7.3" />
-    <PackageReference Include="Serilog" Version="4.2.1-dev-02337" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.6.4" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.9169" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Polly.Core" Version="8.9.0" />
+    <PackageReference Include="QuestPDF" Version="2026.9.1" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
     <PackageReference Include="Serilog.Expressions" Version="5.1.0-dev-00186" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1-dev-02308" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.MemorySink" Version="0.1.1-alpha" />
     <PackageReference Include="Serilog.Sinks.WinUi3" Version="0.2.1-alpha" />
     <PackageReference Include="Serilog.Sinks.WinUi3.LogViewModels" Version="0.2.1-alpha" />
-    <PackageReference Include="System.Diagnostics.EventLog" Version="9.0.2" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.2" />
-    <PackageReference Include="TaskScheduler" Version="2.11.0" />
-    <PackageReference Include="WinUI3Localizer" Version="2.2.0" />
-    <PackageReference Include="WinUIEx" Version="2.2.0" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.14" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="10.0.14" />
+    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
+    <PackageReference Include="TaskScheduler" Version="2.12.2" />
+    <PackageReference Include="WinUI3Localizer" Version="2.3.0" />
+    <PackageReference Include="WinUIEx" Version="2.6.0" />
     <PackageReference Include="WinUIEx.TestTools" Version="1.0.0" />
     <PackageReference Include="WinUIEx.TestTools.MSTest" Version="1.0.0" />
     <Manifest Include="$(ApplicationManifest)" />
@@ -186,6 +188,9 @@
     <Content Update="Assets\CryptoPortfolioTracker.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="Assets\MarketChart_ExchangeRates.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\ninegrid.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -219,6 +224,12 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Dialogs\PortfolioSettingsDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Dialogs\AuthenticationDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Controls\PortfolioHeaderControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <None Update="Fonts\Segoe Fluent Icons.ttf">
@@ -331,6 +342,10 @@
 	  <None Remove="Migrations\Coin\**" />
 	  <Page Remove="Migrations\Coin\**" />
 	  <PRIResource Remove="Migrations\Coin\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Controls\PortfolioHeaderControl.xaml" />
+	  <None Remove="Dialogs\AuthenticationDialog.xaml" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Migrations\20240618132839_AddTargetLevelsToCoinEntity.cs">

@@ -6,8 +6,10 @@ using System.IO.Compression;
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public sealed partial class RestorePortfolioDialog :  ContentDialog
+public sealed partial class RestorePortfolioDialog :  BaseDialog, IDialog<RestorePortfolioDialogResult>
 {
+    public RestorePortfolioDialogResult Result { get; private set; }
+
     public Portfolio? Portfolio;
 
     [ObservableProperty] private string portfolioName;
@@ -16,7 +18,6 @@ public sealed partial class RestorePortfolioDialog :  ContentDialog
 
 
     private readonly PortfolioService _portfolioService;
-    private readonly ILocalizer loc = Localizer.Get();
     private readonly AdminViewModel _viewModel;
 
     public RestorePortfolioDialog(AdminViewModel viewModel, PortfolioService portfolioService)
@@ -117,18 +118,11 @@ public sealed partial class RestorePortfolioDialog :  ContentDialog
         IsPrimaryButtonEnabled = false;
         Explanation = string.Empty;
         txtName.Visibility = Visibility.Collapsed;
-    }
-
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
+        FileName = loc.GetLocalizedString("RestorePortfolioDialog_FileNamePlaceholder");
     }
 
     private void Button_Click_Accept(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-
+        Result = new RestorePortfolioDialogResult(Portfolio, FileName);
     }
 }

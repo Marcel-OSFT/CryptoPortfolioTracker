@@ -94,7 +94,7 @@ namespace CryptoPortfolioTracker.Migrations
                 ('Real Yield', 'Real Yield focuses on generating sustainable returns through staking, lending, and other DeFi activities with real-world asset backing.'),
                 ('RWA', 'RWA (Real World Assets) are physical assets like real estate or commodities tokenized on the blockchain for easier trading and investment.'),
                 ('CEX', 'CEX (Centralized Exchange) refers to traditional cryptocurrency exchanges where trades are managed by a central entity.'),
-                ('Stablecoins', 'Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility.'),
+                ('Stablecoin', 'Stablecoins are cryptocurrencies pegged to stable assets like fiat currencies to minimize price volatility.'),
                 ('Others', 'Narrative for coins that you do not want to assign a specific Narrative.')");
         }
 

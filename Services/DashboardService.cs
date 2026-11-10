@@ -20,6 +20,19 @@ using System.Diagnostics;
 
 namespace CryptoPortfolioTracker.Services;
 
+public interface IDashboardService
+{
+    public Coin GetPriceLevelsFromContext(Coin coin);
+    public Task<ObservableCollection<PiePoint>> GetPiePoints(string pieChartName);
+    Task<List<Coin>> GetTopWinners();
+    Task<List<Coin>> GetTopLosers();
+    double GetPortfolioValue();
+    double GetCostBase();
+    Task<List<CapitalFlowPoint>> GetYearlyMutationsByTransactionKind(TransactionKind transactionKind);
+    Portfolio GetPortfolio();
+    Task RecalculateRsiAllCoins();
+    Task RecalculateMaAllCoins();
+}
 
 public partial class DashboardService : ObservableObject, IDashboardService
 {
@@ -27,45 +40,47 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
     private readonly IIndicatorService _indicatorService;
     private readonly Settings _appSettings;
-    private readonly PortfolioService _portfolioService;
     private readonly IAssetService _assetService;
     private readonly INarrativeService _narrativeService;
+    private readonly IPriceLevelService _priceLevelService;
     private readonly IAccountService _accountService;
 
-    public DashboardService(PortfolioService portfolioService, 
+    private readonly IAppState _appState;
+
+    private PortfolioContext Context => _appState.Context;
+
+    private Portfolio CurrentPortfolio => _appState.CurrentPortfolio;
+
+
+    public DashboardService(IAppState appState, 
                         IAssetService assetService, 
                         INarrativeService narrativeService, 
                         IAccountService accountService, 
                         Settings appSettings,
-                        IIndicatorService indicatorService)
+                        IIndicatorService indicatorService,
+                        IPriceLevelService priceLevelService)
     {
         _indicatorService = indicatorService;
         _appSettings = appSettings;
-        _portfolioService = portfolioService;
         _assetService = assetService;
         _accountService = accountService;
         _narrativeService = narrativeService;
-    }
-
-    public PortfolioContext GetContext()
-    {
-        return _portfolioService.Context;
-    }
-
-    public async Task CalculateIndicatorsAllCoins()
-    {
-        var coins = _portfolioService.Context.Coins.ToList();
-
-        foreach (var coin in coins)
+        _priceLevelService = priceLevelService;
+        _appState = appState;
+        _appState.ContextChanged += (_, _) =>
         {
-            await _indicatorService.CalculateRsiAsync(coin);
-            await _indicatorService.CalculateMaAsync(coin);
-            await Task.Delay(10);
-        }
+            OnPropertyChanged(nameof(Context));
+        };
+
+        _appState.CurrentPortfolioChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(CurrentPortfolio));
+        };
     }
-    public async Task CalculateRsiAllCoins()
+        
+    public async Task RecalculateRsiAllCoins()
     {
-        var coins = _portfolioService.Context.Coins.ToList();
+        var coins = Context.Coins.ToList();
 
         foreach (var coin in coins)
         {
@@ -73,9 +88,9 @@ public partial class DashboardService : ObservableObject, IDashboardService
             await Task.Delay(10);
         }
     }
-    public async Task CalculateMaAllCoins()
+    public async Task RecalculateMaAllCoins()
     {
-        var coins = _portfolioService.Context.Coins.ToList();
+        var coins = Context.Coins.ToList();
 
         foreach (var coin in coins)
         {
@@ -89,7 +104,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
     {
         try
         {
-            var context = _portfolioService.Context;
+            var context = Context;
             
             var coins = await context.Assets
                 .AsNoTracking()
@@ -116,7 +131,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
     {
         try
         {
-            var context = _portfolioService.Context;
+            var context = Context;
 
             var coins = await context.Assets
                 .AsNoTracking()
@@ -147,20 +162,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
         return coin;
     }
 
-    public async Task EvaluatePriceLevels()
-    {
-        var coins = _portfolioService.Context.Coins
-            .AsNoTracking()
-            .ToList();
-
-        foreach (var coin in coins)
-        {
-            _indicatorService.EvaluatePriceLevels(coin, coin.Price);
-        }
-    }
-
-
-
+    
     public double GetPortfolioValue()
     {
         return _assetService.GetTotalsAssetsValue();
@@ -174,7 +176,6 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
     public async Task<ObservableCollection<PiePoint>> GetPiePoints(string pieChartName)
     {
-        // var values = new ObservableCollection<ObservablePoint>();
         int index = 0;
 
         var piePoints = new ObservableCollection<PiePoint>();
@@ -293,7 +294,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
     public async Task<List<CapitalFlowPoint>> GetYearlyMutationsByTransactionKind(TransactionKind transactionKind)
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         var dataPoints = new List<CapitalFlowPoint>();
 
         var mut1 = await context.Mutations
@@ -329,7 +330,7 @@ public partial class DashboardService : ObservableObject, IDashboardService
 
     public Portfolio GetPortfolio()
     {
-        return _portfolioService.CurrentPortfolio;
+        return CurrentPortfolio;
     }
 }
 

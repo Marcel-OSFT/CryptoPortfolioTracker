@@ -23,6 +23,7 @@ namespace CryptoPortfolioTracker.Converters;
 public class Functions
 {
     private static readonly Settings? _settings = App.Container.GetService<Settings>();
+    private static readonly IExchangeRateService? _exchangeRateService = App.Container.GetService<IExchangeRateService>();
 
     public static Visibility TrueToVisible(bool value)
     {
@@ -101,12 +102,32 @@ public class Functions
             return value.ToString();
         }
 
+        if (double.IsInfinity((double)value))
+        {
+            return "-";
+        }
+
         var ci = new CultureInfo(_settings.AppCultureLanguage);
         ci.NumberFormat = _settings.NumberFormat;
 
-        var isValueAsterix = _settings.AreValuesMasked;
+        if (value is double number && format == "$ {0:0.########}")
+        {
+            long integerPartLength = Math.Abs((long)number).ToString().Length;
+            int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
+            decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
+            format = "$ {0:F" + decimalPlaces.ToString() + "}";
+        }
+        return string.Format(ci, format, value);
+    }
+    public static string FormatQuantityToString(double value, string format)
+    {
+        if (format == null || format == string.Empty)
+        {
+            return value.ToString();
+        }
 
-        if (isValueAsterix && !format.Contains("%"))
+        var isValueAsterix = _settings.AreValuesMasked;
+        if (isValueAsterix)
         {
             return "********";
         }
@@ -116,13 +137,170 @@ public class Functions
             return "-";
         }
 
-        if (value is double number && format == " $ {0:0.########}")
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
+
+        if (value is double number && format == "$ {0:0.########}")
         {
             long integerPartLength = Math.Abs((long)number).ToString().Length;
             int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
             decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
             format = "$ {0:F" + decimalPlaces.ToString() + "}";
-            // '$ {0:F5}'
+        }
+        return string.Format(ci, format, value);
+    }
+
+    public static string FormatCurrencyToString(double value, string format)
+    {
+        //*** Currency is always in USD, so we need to convert to EUR if needed
+        if (format == null || format == string.Empty)
+        {
+            return value.ToString();
+        }
+
+        var isValueAsterix = _settings.AreValuesMasked;
+        if (isValueAsterix)
+        {
+            return "********";
+        }
+
+        if (double.IsInfinity((double)value))
+        {
+            return "-";
+        }
+
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
+
+        var symbol = _settings.Currency == "eur" ? "€" : "$";
+        var rate = symbol == "€" ? _exchangeRateService.EurUsdRate : 1.0;
+
+        if (value is double number && format == "{0:0.########}")
+        {
+            long integerPartLength = Math.Abs((long)number).ToString().Length;
+            int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
+            decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
+            format = "{0:F" + decimalPlaces.ToString() + "}";
+        }
+        return string.Format(ci, symbol + " " + format, value / rate);
+    }
+
+    public static string FormatMarketCapToString(double value, string format)
+    {
+        //*** Currency is always in USD, so we need to convert to EUR if needed
+        if (string.IsNullOrEmpty(format))
+        {
+            return value.ToString();
+        }
+
+        var isValueAsterix = _settings.AreValuesMasked;
+        if (isValueAsterix)
+        {
+            return "********";
+        }
+
+        if (double.IsInfinity(value))
+        {
+            return "-";
+        }
+
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
+
+        var symbol = _settings.Currency == "eur" ? "€" : "$";
+        var rate = symbol == "€" ? _exchangeRateService.EurUsdRate : 1.0;
+
+        var convertedValue = value / rate;
+
+        // compact format for large numbers
+        if (Math.Abs(convertedValue) >= 1_000)
+        {
+            string suffix;
+            double scaledValue;
+
+            if (Math.Abs(convertedValue) >= 1_000_000_000_000)
+            {
+                suffix = "T";
+                scaledValue = convertedValue / 1_000_000_000_000;
+            }
+            else if (Math.Abs(convertedValue) >= 1_000_000_000)
+            {
+                suffix = "B";
+                scaledValue = convertedValue / 1_000_000_000;
+            }
+            else if (Math.Abs(convertedValue) >= 1_000_000)
+            {
+                suffix = "M";
+                scaledValue = convertedValue / 1_000_000;
+            }
+            else
+            {
+                suffix = "K";
+                scaledValue = convertedValue / 1_000;
+            }
+
+            return $"{symbol} {scaledValue.ToString("0.##", ci)}{suffix}";
+        }
+
+        if (value is double number && format == "{0:0.########}")
+        {
+            long integerPartLength = Math.Abs((long)number).ToString().Length;
+            int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
+            decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
+            format = "{0:F" + decimalPlaces.ToString() + "}";
+        }
+
+        return string.Format(ci, symbol + " " + format, convertedValue);
+    }
+
+    public static string FormatCapitalFlowToString(double value, string format)
+    {
+        //*** CapitalFlow is always in AppCurrency, so no need to convert to USD or EUR ***/
+        // Only set the correct currency symbol based on the app settings.
+        if (format == null || format == string.Empty)
+        {
+            return value.ToString();
+        }
+
+        var isValueAsterix = _settings.AreValuesMasked;
+        if (isValueAsterix)
+        {
+            return "********";
+        }
+
+        if (double.IsInfinity((double)value))
+        {
+            return "-";
+        }
+
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
+
+        var symbol = _settings.Currency == "eur" ? "€" : "$";
+
+        if (value is double number && format == "{0:0.########}")
+        {
+            long integerPartLength = Math.Abs((long)number).ToString().Length;
+            int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
+            decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
+            format = "{0:F" + decimalPlaces.ToString() + "}";
+        }
+        return string.Format(ci, symbol + " " + format, value);
+    }
+
+    public static string FormatPercentToString(double value, string format)
+    {
+        if (format == null || format == string.Empty)
+        {
+            return value.ToString();
+        }
+
+        var ci = new CultureInfo(_settings.AppCultureLanguage);
+        ci.NumberFormat = _settings.NumberFormat;
+
+        if (double.IsInfinity((double)value))
+        {
+            return "-";
         }
         return string.Format(ci, format, value);
     }
@@ -137,31 +315,12 @@ public class Functions
         var ci = new CultureInfo(_settings.AppCultureLanguage);
         ci.NumberFormat = _settings.NumberFormat;
 
-        var isValueAsterix = _settings.AreValuesMasked;
-
-        if (isValueAsterix && !format.Contains("%"))
-        {
-            return "********";
-        }
-
         if (double.IsInfinity((double)value))
         {
             return "∞";
         }
-
-        if (value is double number && format == " $ {0:0.########}")
-        {
-            long integerPartLength = Math.Abs((long)number).ToString().Length;
-            int decimalPlaces = Math.Max(0, 9 - (int)integerPartLength);
-            decimalPlaces = decimalPlaces == 1 ? 2 : decimalPlaces;
-            format = "$ {0:F" + decimalPlaces.ToString() + "}";
-            // '$ {0:F5}'
-        }
         return string.Format(ci, format, value);
     }
-
-
-
 
     public static SolidColorBrush DoubleToColour(double value, string parameter = "")
     {
@@ -286,7 +445,7 @@ public class Functions
         }
         return string.Format(ci, format, value);
     }
-    public static SolidColorBrush PriceLevelTypeToColor(ICollection<PriceLevel> value)
+    public static SolidColorBrush PriceLevelTypeToColor(ICollection<PriceLevelDisplay> value)
     {
         bool isDarkTheme = _settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
 
@@ -295,7 +454,7 @@ public class Functions
         SolidColorBrush atStopColor = isDarkTheme ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.DarkRed);
         SolidColorBrush baseColor = isDarkTheme ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
 
-        if (value is List<PriceLevel> levels)
+        if (value is List<PriceLevelDisplay> levels)
         {
             foreach (var level in levels)
             {
@@ -314,11 +473,11 @@ public class Functions
 
         return baseColor;
     }
-    public static string GetAndFormatAssetAverageCost(ICollection<Asset> value, string parameter)
+    public static string GetAndFormatAssetAverageCost(ICollection<AssetDisplay> value, string parameter)
     {
         double avgCost = 0;
 
-        if (value is List<Asset> assets && assets.Any())
+        if (value is List<AssetDisplay> assets && assets.Any())
         {
             double totalQty = 0;
             double totalCost = 0;
@@ -352,10 +511,10 @@ public class Functions
 
     }
 
-    public static ICollection<Coin> FilterAssetCoins(ICollection<Coin> value)
+    public static ICollection<CoinDisplay> FilterAssetCoins(ICollection<CoinDisplay> value)
     {
         //*** TotalValue is taken into account to avoid rare layoutCycle error in case of Coin is an Asset (has mutations) but TotalValue of Narrative is 0.
-        ICollection<Coin> assetCoins = new List<Coin>();
+        ICollection<CoinDisplay> assetCoins = new List<CoinDisplay>();
 
         if (value is null || !value.Any()) return assetCoins; 
         
@@ -369,7 +528,7 @@ public class Functions
         return assetCoins;
     }
 
-    public static SolidColorBrush PriceLevelToColor(ICollection<PriceLevel> value1, int index, string parameter)
+    public static SolidColorBrush PriceLevelToColor(ICollection<PriceLevelDisplay> value1, int index, string parameter)
     {
         var baseColor = new SolidColorBrush(Colors.White);
         var grayedOutColor = new SolidColorBrush(Colors.Gray);
@@ -377,7 +536,7 @@ public class Functions
         SolidColorBrush closeToColor;
 
         if (index > value1.Count - 1) return grayedOutColor;
-        var value = (value1 as List<PriceLevel>)[index].DistanceToValuePerc;
+        var value = (value1 as List<PriceLevelDisplay>)[index].DistanceToValuePerc;
 
         bool isDarkTheme = _settings.AppTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
 
@@ -428,10 +587,10 @@ public class Functions
 
         return baseColor;
     }
-    public static string FormatDistanceToLevelToString(ICollection<PriceLevel> value1, int index, string format)
+    public static string FormatDistanceToLevelToString(ICollection<PriceLevelDisplay> value1, int index, string format)
     {
         if (index > value1.Count - 1) return "-";
-        var value = (value1.ElementAt(index) as PriceLevel).DistanceToValuePerc;
+        var value = (value1.ElementAt(index) as PriceLevelDisplay).DistanceToValuePerc;
         
         if (format == null || format == string.Empty)
         {
@@ -454,11 +613,11 @@ public class Functions
         }
         return string.Format(ci, format, value);
     }
-    public static string FormatPriceLevelToString(ICollection<PriceLevel> value1, int index, string format)
+    public static string FormatPriceLevelToString(ICollection<PriceLevelDisplay> value1, int index, string format)
     {
         if (index > value1.Count - 1) return "-";
 
-        var value = (value1.ElementAt(index) as PriceLevel).Value;
+        var value = (value1.ElementAt(index) as PriceLevelDisplay).Value;
 
 
         if (format == null || format == string.Empty)

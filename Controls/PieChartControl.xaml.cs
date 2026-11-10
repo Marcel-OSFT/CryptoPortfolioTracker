@@ -66,7 +66,7 @@ public partial class PieChartControl : UserControl, INotifyPropertyChanged
         _viewModel.PieControlLoaded(this);
     }
 
-    private void Pie_UpdateStarted(IChartView<SkiaSharpDrawingContext> chart)
+    private void Pie_UpdateStarted(IChartView chart)
     {
         if (!isFillSet) SetFill();
     }

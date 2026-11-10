@@ -1,62 +1,90 @@
-﻿
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using CryptoPortfolioTracker.Controls;
-using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Dialogs;
 using CryptoPortfolioTracker.Enums;
-using System.Collections.ObjectModel;
-using System;
-using CommunityToolkit.Mvvm.ComponentModel;
+using CryptoPortfolioTracker.Helpers;
 using CryptoPortfolioTracker.Infrastructure;
-using System.Linq;
-using System.Threading.Tasks;
-using LanguageExt.Common;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using LiveChartsCore.Defaults;
-using System.Diagnostics;
+using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.ViewModels;
 using CryptoPortfolioTracker.Views;
-using CommunityToolkit.Mvvm.Messaging;
-using System.Data.SqlClient;
-using CryptoPortfolioTracker.Dialogs;
-using WinRT;
-using CryptoPortfolioTracker.Helpers;
 using LanguageExt;
+using LanguageExt.Common;
+using LiveChartsCore.Defaults;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.UI;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using WinRT;
 using WinRT.CryptoPortfolioTrackerGenericHelpers;
 
 namespace CryptoPortfolioTracker.Services;
 
+public interface IPriceLevelService
+{
+    ObservableCollection<Coin> ListCoins { get; set; }
+    public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
+    public bool IsCoinsListEmpty();
+    public Task<ObservableCollection<Coin>> PopulateCoinsList();
+    public Task<Result<List<Coin>>> GetCoinsFromContext();
+    public Task<Either<Error, Coin>> ResetPriceLevels(Coin coin);
+    public Task<Either<Error, Coin>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels);
+    Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(BubbleMap bubbleMap);
+    void SortListString(SortingOrder sortingOrder, Func<Coin, object> sortFunc);
+    Portfolio GetPortfolio();
+    Task<ObservableCollection<Coin>> UpdateCoinsList(Coin coin);
+    void ClearCoinsList();
+    bool ListCoinsHasAny();
+    Task<ObservableCollection<Coin>> PopulateCoinsListAsync();
+    Task EvaluatePriceLevelsAsync(Coin coin);
+}
+
 public partial class PriceLevelService : ObservableObject, IPriceLevelService
 {
     private readonly IMessenger _messenger;
+    private readonly Settings _settings;
+    private readonly IAppState _appState;
+
+    private PortfolioContext Context => _appState.Context;
+
+    private Portfolio CurrentPortfolio => _appState.CurrentPortfolio;
 
     private HeatMap heatMap;
     private readonly IIndicatorService _indicatorService;
-    private readonly PortfolioService _portfolioService;
     private readonly IAssetService _assetService;
     [ObservableProperty] public partial ObservableCollection<Coin> ListCoins { get; set; } = new();
     private SortingOrder currentSortingOrder;
     private Func<Coin, object> currentSortFunc;
 
-    public PriceLevelService(PortfolioService portfolioService, IAssetService assetService, IMessenger messenger, IIndicatorService indicatorService)
+    public PriceLevelService(IAppState appState, IAssetService assetService, IMessenger messenger, IIndicatorService indicatorService, Settings settings)
     {
         _indicatorService = indicatorService;
-        _portfolioService = portfolioService;
         _assetService= assetService;
         _messenger = messenger;
+        _settings = settings;
         currentSortFunc = x => x.Rank;
         currentSortingOrder = SortingOrder.Ascending;
 
         heatMap = new HeatMap();
+        _appState = appState;
+        _appState.ContextChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(Context));
+        };
+
+        _appState.CurrentPortfolioChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(CurrentPortfolio));
+        };
+
     }
 
-    public void UpdateHeatMap()
-    {
-        MainPage.Current.DispatcherQueue.TryEnqueue(() =>
-        {
-            _messenger.Send(new UpdateDashboardMessage());
-        });
-        
-    }
+
 
     public void SortList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
     {
@@ -82,17 +110,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return !ListCoins.Any();
     }
 
-    //public async Task<ObservableCollection<Coin>> PopulateCoinsList()
-    //{
-    //    var getResult = await GetCoinsFromContext();
-    //    ListCoins = getResult.Match(
-    //        list => new ObservableCollection<Coin>(SortedList(list)),
-    //        err => ListCoins = new());
-
-    //    return ListCoins;
-    //}
-
-    public async Task PopulateCoinsList()
+    public async Task<ObservableCollection<Coin>> PopulateCoinsListAsync()
     {
         var getResult = await GetCoinsFromContext();
         ListCoins = getResult.Match(
@@ -114,51 +132,63 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 }
             },
             err => new());
+        return ListCoins;
     }
 
-
-
-    //public async Task<ObservableCollection<Coin>> PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object> sortFunc)
-    public async Task PopulateCoinsList(SortingOrder sortingOrder, Func<Coin, object>? sortFunc)
+    public async Task<ObservableCollection<Coin>> PopulateCoinsList()
     {
-        var getResult = await GetCoinsFromContext();
-        ListCoins = getResult.Match(
-            list =>
-            {
-                //*** extract the Infinity values from the collection
-                //*** so that they appended at the end of the sorted collection
-                var infinityValues = list.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
-                var valuesList = list.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
-
-                return new ObservableCollection<Coin>(SortedList(valuesList, sortingOrder, sortFunc).Concat(infinityValues));
-            },
-            err => new());
-    }
-
-    public async Task UpdateCoinsList(Coin coin, Coin updatedCoin)
-    {
-        if (ListCoins is null || !ListCoins.Any() || coin is null || updatedCoin is null) { return; }
         try
         {
-            //var context = _portfolioService.Context;
+            var getResult = await GetCoinsFromContext();
+            ListCoins = getResult.Match(
+                list =>
+                {
+                    //*** extract the Infinity values from the collection
+                    //*** so that they appended at the end of the sorted collection
+                    var infinityValues = new List<Coin>(); //list.Where(x => double.IsInfinity((double)sortFunc(x))).ToList();
+                    var valuesList = list; //.Where(x => !double.IsInfinity((double)sortFunc(x))).ToList();
 
-            updatedCoin.Ema = await _indicatorService.CalculateMaAsync(updatedCoin);
-            _indicatorService.EvaluatePriceLevels(updatedCoin, updatedCoin.Price);
+                    return new ObservableCollection<Coin>(valuesList.Concat(infinityValues));
+                },
+                err => new());
 
-            var coinToUpdateIndex = ListCoins.IndexOf(coin);
-            //var updatedCoin = context.Coins.AsNoTracking()
-            //    .Where(x => x.Id == coin.Id)
-            //    .SingleOrDefault();
+        }
+        catch (Exception ex)
+        {
+            //*** Log the exception and return an empty collection
+        }
+        return ListCoins;
+    }
 
-            ListCoins.RemoveAt(coinToUpdateIndex);
-            ListCoins.Insert(coinToUpdateIndex, updatedCoin);
+    public async Task<ObservableCollection<Coin>> UpdateCoinsList(Coin coin)
+    {
+        var updated = new ObservableCollection<Coin>();
+
+        if (ListCoins is null || !ListCoins.Any() || coin is null) { return new ObservableCollection<Coin>(); }
+        try
+        {
+            await UpdatePriceLevelEma(coin);
+            await EvaluatePriceLevelsAsync(coin);
+
+            var context = Context;
+
+            var coinToUpdate = ListCoins.Where(x => x.Id == coin.Id).Single();
+            var updatedCoin = context.Coins.AsNoTracking()
+                .Include(x => x.PriceLevels)
+                .Include(x => x.Narrative)
+                .Where(x => x.Id == coin.Id)
+                .SingleOrDefault();
+
+            var index = ListCoins.IndexOf(coinToUpdate);
+            ListCoins[index] = updatedCoin;
+            updated.Add(updatedCoin);
         }
         catch (Exception ex) 
         { 
-            Task.FromResult(false); 
+            return new ObservableCollection<Coin>();
         }
 
-        return;
+        return updated;
     }
 
     public bool ListCoinsHasAny()
@@ -170,26 +200,38 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     private List<Coin> SortedList(List<Coin> list, SortingOrder sortingOrder = SortingOrder.None, Func<Coin, object>? sortFunc = null)
     {
-        if (sortingOrder != SortingOrder.None && sortFunc != null)
+        var sortedList = new List<Coin>();
+        try
         {
-            currentSortFunc = sortFunc;
-            currentSortingOrder = sortingOrder;
+            if (sortingOrder != SortingOrder.None && sortFunc != null)
+            {
+                currentSortFunc = sortFunc;
+                currentSortingOrder = sortingOrder;
+            }
+            sortedList = currentSortingOrder == SortingOrder.Ascending
+                ? new List<Coin>(list.OrderBy(currentSortFunc))
+                : new List<Coin>(list.OrderByDescending(currentSortFunc));
         }
-        return currentSortingOrder == SortingOrder.Ascending
-            ? new List<Coin>(list.OrderBy(currentSortFunc))
-            : new List<Coin>(list.OrderByDescending(currentSortFunc));
+        catch (Exception ex)
+        {
+            //*** Log the exception and return the original list
+            return list;
+        } 
+
+
+        return sortedList;
     }
 
     public async Task<Result<List<Coin>>> GetCoinsFromContext()
     {
-        var context = _portfolioService.Context;
+        var context = Context;
+        var stablecoinNarrative = await context.Narratives.Where(x => x.Name.ToLower() == "stablecoin").FirstOrDefaultAsync();
         List<Coin>? coinList = null;
         try
         {
-            //coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
             coinList = await context.Coins
                 .AsNoTracking()
-                .Where(x => x.Name.Length <= 12 || (x.Name.Length > 12 && x.Name.Substring(x.Name.Length - 12) != "_pre-listing"))
+                .Where(x => (x.Name.Length <= 12 || (x.Name.Length > 12 && x.Name.Substring(x.Name.Length - 12) != "_pre-listing")) && x.Narrative != stablecoinNarrative)
                 .Include(x => x.PriceLevels)
                 .Include(x => x.Narrative)
                 .Include(x => x.Assets)
@@ -199,8 +241,9 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
             foreach (var coin in coinList)
             {
-                coin.Ema = await _indicatorService.CalculateMaAsync(coin);
-                _indicatorService.EvaluatePriceLevels(coin, coin.Price);
+                //coin.Ema = await _indicatorService.CalculateMaAsync(coin);
+                await UpdatePriceLevelEma(coin);
+                await EvaluatePriceLevelsAsync(coin);
             }
         }
         catch (Exception ex)
@@ -209,40 +252,76 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         }
         return coinList is not null ? coinList : new List<Coin>();
     }
-    public async Task<Result<Coin>> GetCoinFromContext(Coin coin)
-    {
-        var context = _portfolioService.Context;
-        Coin? _coin;
-        try
-        {
-            //coinList = await context.Coins.OrderBy(x => x.Rank).ToListAsync();
-            _coin = await context.Coins
-                .AsNoTracking()
-                .Where(x => x.ApiId == coin.ApiId)
-                .Include(x => x.PriceLevels)
-                .Include(x => x.Narrative)
-                .Include(x => x.Assets)
-                .ThenInclude(x => x.Account)
-                .OrderBy(x => x.Rank)
-                .FirstAsync();
 
-            _coin.Ema = await _indicatorService.CalculateMaAsync(_coin);
-            _indicatorService.EvaluatePriceLevels(_coin, _coin.Price);
-            
-        }
-        catch (Exception ex)
+    private async Task UpdatePriceLevelEma(Coin coin)
+    {
+        var priceLevelEma = coin.PriceLevels.FirstOrDefault(p => p.Type == PriceLevelType.Ema);
+        var emaValue = _indicatorService.GetEma(coin);
+        if (priceLevelEma != null)
         {
-            return new Result<Coin>(ex);
+            priceLevelEma.Value = emaValue;
+            if (priceLevelEma.Value != 0)
+                priceLevelEma.DistanceToValuePerc = (100 * (coin.Price - priceLevelEma.Value) / priceLevelEma.Value);
         }
-        return _coin is not null ? _coin : new Coin();
+        else
+        {
+            var newPriceLevel = new PriceLevel
+            {
+                Type = PriceLevelType.Ema,
+                Value = emaValue,
+                Coin = coin,
+                DistanceToValuePerc = emaValue != 0 ? (100 * (coin.Price - emaValue) / emaValue) : 0
+            };
+            coin.PriceLevels.Add(newPriceLevel);
+        }
+    }
+
+    public async Task EvaluatePriceLevelsAsync(Coin coin)
+    {
+        if (coin is null) throw new ArgumentNullException(nameof(coin));
+        var newValue = coin.Price;
+        if (newValue == 0) return;
+
+        var withinRangePerc = _settings.WithinRangePerc;
+        var closeToPerc = _settings.CloseToPerc;
+
+        foreach (var level in coin.PriceLevels)
+        {
+            if (level.Value == 0) continue;
+
+            var dist = (100 * (newValue - level.Value) / level.Value);
+            level.DistanceToValuePerc = dist;
+
+            if ((level.Type == PriceLevelType.TakeProfit && newValue >= level.Value) ||
+                (level.Type == PriceLevelType.Buy && newValue <= level.Value) ||
+                (level.Type == PriceLevelType.Stop && newValue <= level.Value) ||
+                (level.Type == PriceLevelType.Ema && newValue <= level.Value))
+            {
+                level.Status = PriceLevelStatus.TaggedPrice;
+                continue;
+            }
+
+            if (dist >= -1 * closeToPerc)
+            {
+                level.Status = PriceLevelStatus.CloseToPrice;
+                continue;
+            }
+
+            if (dist >= -1 * withinRangePerc)
+            {
+                level.Status = PriceLevelStatus.WithinRange;
+                continue;
+            }
+
+            level.Status = PriceLevelStatus.NotWithinRange;
+        }
     }
 
     public async Task<Either<Error,Coin>> ResetPriceLevels(Coin coin)
     {
         if (coin == null) return Error.New("Coin is null"); ;
 
-       // await App.UpdateSemaphore.WaitAsync();
-        var context = _portfolioService.Context;
+        var context = Context;
         context.ChangeTracker?.Clear();
         bool result;
 
@@ -271,7 +350,6 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         finally
         {
             context.ChangeTracker?.Clear();
-            //App.UpdateSemaphore.Release();
         }
 
         return coinToReset;
@@ -279,17 +357,14 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public async Task<Either<Error,Coin>> UpdatePriceLevels(Coin coin, ICollection<PriceLevel> priceLevels)
     {
-        //await App.UpdateSemaphore.WaitAsync();
         Debug.WriteLine("PriceLevels Locked");
 
-        var context = _portfolioService.Context;
+        var context = Context;
         context.ChangeTracker?.Clear();
-        //bool result;
 
         Coin coinToUpdate;
         if (coin == null || priceLevels == null || priceLevels.Count == 0)
         {
-            //App.UpdateSemaphore.Release();
             return Error.New("Coin is null");
         }
         try
@@ -313,7 +388,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             //}
             coinToUpdate.PriceLevels = priceLevels;
 
-            _indicatorService.EvaluatePriceLevels(coinToUpdate, coinToUpdate.Price);
+            await EvaluatePriceLevelsAsync(coinToUpdate);
 
             context.Coins.Update(coinToUpdate);
             await context.SaveChangesAsync();
@@ -333,7 +408,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     private void RejectChanges()
     {
-        var context = _portfolioService.Context;
+        var context = Context;
         foreach (var entry in context.ChangeTracker.Entries())
         {
             switch (entry.State)
@@ -350,53 +425,30 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         }
     }
 
-    public async Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(int selectedHeatMapIndex)
+    private async Task EvaluatePriceLevels()
     {
-        var heatMapPoints = new ObservableCollection<HeatMapPoint>();
+        var coins = Context.Coins
+            .AsNoTracking()
+            .ToList();
 
-        try
+        foreach (var coin in coins)
         {
-            var assets = (await _assetService.PopulateAssetTotalsList()).Where(x => x.MarketValue > 0).OrderBy(x => x.Coin.Rank).ToList();
-            var sumMarketValue = assets.Sum(x => x.MarketValue);
-            int index = 0;
-
-            foreach (var asset in assets)
-            {
-                if (selectedHeatMapIndex == 0)
-                {
-                    index = AddHeatMapPointTarget(index, heatMapPoints, sumMarketValue, asset);
-                }
-                else if (selectedHeatMapIndex == 1)
-                {
-
-                    index = AddHeatMapPointRsi(index, heatMapPoints, sumMarketValue, asset);
-                }
-                else if (selectedHeatMapIndex == 2)
-                {
-                    // Add other heat map points if needed
-                    index = AddHeatMapPointEma(index, heatMapPoints, sumMarketValue, asset);
-                }
-                else if (selectedHeatMapIndex == 3)
-                {
-                    // Add other heat map points if needed
-                    index = AddHeatMapPointBreakEven(index, heatMapPoints, sumMarketValue, asset);
-                }
-            }
+            await EvaluatePriceLevelsAsync(coin);
         }
-        catch (Exception)
-        {
-            throw;
-        }
-
-        return heatMapPoints;
     }
+
     public async Task<ObservableCollection<HeatMapPoint>> GetHeatMapPoints(BubbleMap bubbleMap)
     {
         var heatMapPoints = new ObservableCollection<HeatMapPoint>();
 
         try
         {
-            var assets = (await _assetService.PopulateAssetTotalsList()).Where(x => x.MarketValue > 0).OrderBy(x => x.Coin.Rank).ToList();
+            var context = Context;
+            var scNarrative = context.Narratives.Where(x => x.Name == "Stablecoin").FirstOrDefault();
+            //*** Get all assets with MarketValue > 0 and not Stablecoins, ordered by Rank
+            //*** exclude also the pre-listing coins from the heatmap, as they are not tradable yet
+            var assets = (await _assetService.PopulateAssetTotalsList()).Where(x => x.MarketValue > 0 && x.Coin.Narrative != scNarrative && !x.Coin.Name.EndsWith("pre-listing")).OrderBy(x => x.Coin.Rank).ToList();
+
             var sumMarketValue = assets.Sum(x => x.MarketValue);
             int index = 0;
 
@@ -404,6 +456,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             {
                 if (bubbleMap.Type == BubbleMapType.Target)
                 {
+                    await EvaluatePriceLevels();
                     index = AddHeatMapPointTarget(index, heatMapPoints, sumMarketValue, asset);
                 }
                 else if (bubbleMap.Type == BubbleMapType.Rsi)
@@ -414,6 +467,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 else if (bubbleMap.Type == BubbleMapType.Ma)
                 {
                     // Add other heat map points if needed
+                    await EvaluatePriceLevels();
                     index = AddHeatMapPointEma(index, heatMapPoints, sumMarketValue, asset);
                 }
                 else if (bubbleMap.Type == BubbleMapType.BreakEven)
@@ -431,9 +485,14 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return heatMapPoints;
     }
 
-    private static int AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    private int AddHeatMapPointRsi(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
-        var rsi = asset.Coin.Rsi;
+
+        if (asset is null)
+        {
+            return index;
+        }
+        var rsi = _indicatorService.GetRsi(asset.Coin);
 
         var weight = 100 * asset.MarketValue / sumMarketValue;
 
@@ -453,19 +512,16 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     private static int AddHeatMapPointTarget(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
-        if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0)
+        if (asset?.Coin?.PriceLevels is null || asset.Coin.PriceLevels.Count == 0)
         {
             return index;
         }
-
 
         var priceLevel = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First();
 
         priceLevel.DistanceToValuePerc = (100 * (asset.Coin.Price - priceLevel.Value) / priceLevel.Value);
 
         var perc = priceLevel.DistanceToValuePerc;
-        //var perc = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.TakeProfit).First().DistanceToValuePerc;
-
 
         var weight = 100 * asset.MarketValue / sumMarketValue;
 
@@ -475,7 +531,6 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
             {
                 X = index += 1,
                 Y = perc,
-                // Y = -1 * perc,
                 Weight = weight,
                 Label = asset.Coin.Symbol
             };
@@ -485,7 +540,7 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
     }
     private static int AddHeatMapPointBreakEven(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
-        if (asset is null || asset.NetInvestment <= 0 || asset.Coin.Symbol == "USDT" || asset.Coin.Symbol == "USDC")
+        if (asset is null || asset.NetInvestment <= 0)
         {
             return index;
         }
@@ -503,7 +558,6 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
                 // limit calculated distance to BE to a maximum of -1050. This because the Bubble map axis is limited as well
                 Y = Math.Max(-1050,breakEvenPerc),
                 RealYValue = breakEvenPerc,
-                // Y = -1 * perc,
                 Weight = weight,
                 Label = asset.Coin.Symbol
             };
@@ -512,33 +566,25 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
         return index;
     }
 
-    private static int AddHeatMapPointEma(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
+    private int AddHeatMapPointEma(int index, ObservableCollection<HeatMapPoint> heatMapPoints, double sumMarketValue, AssetTotals? asset)
     {
-        if (asset.Coin.PriceLevels is null || asset.Coin.PriceLevels.Count == 0)
+        if (asset is null || asset.Coin is null)
         {
             return index;
         }
 
-        var priceLevel = asset.Coin.PriceLevels.Where(x => x.Type == PriceLevelType.Ema).FirstOrDefault();
+        var ema = _indicatorService.GetEma(asset.Coin);
 
-        if (priceLevel == null)
-        {
-            return index;
-        }
-
-        priceLevel.DistanceToValuePerc = (100 * (asset.Coin.Price - priceLevel.Value) / priceLevel.Value);
-
-        var perc = priceLevel.DistanceToValuePerc;
+        var distanceToEmaPerc = (100 * (asset.Coin.Price - ema) / ema);
 
         var weight = 100 * asset.MarketValue / sumMarketValue;
 
-        if (!double.IsInfinity(perc))
+        if (!double.IsInfinity(distanceToEmaPerc))
         {
             var hmPoint = new HeatMapPoint
             {
                 X = index += 1,
-                Y = perc,
-                // Y = -1 * perc,
+                Y = distanceToEmaPerc,
                 Weight = weight,
                 Label = asset.Coin.Symbol
             };
@@ -549,12 +595,11 @@ public partial class PriceLevelService : ObservableObject, IPriceLevelService
 
     public Portfolio GetPortfolio()
     {
-        return _assetService.GetPortfolio();
+        return CurrentPortfolio;
     }
 
     public void ClearCoinsList()
     {
-        //ListCoins?.Clear();
         ListCoins = null;
         OnPropertyChanged(nameof(ListCoins));
     }

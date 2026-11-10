@@ -1,28 +1,30 @@
 namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
-public sealed partial class AssignNarrativeDialog : ContentDialog
+public sealed partial class AssignNarrativeDialog : BaseDialog, IDialog<Narrative>
 {
+    public Narrative? Result { get; private set; }
     private readonly CoinLibraryViewModel _viewModel;
 
-    private readonly ILocalizer loc = Localizer.Get();
-
-    [ObservableProperty] private List<Narrative> narratives;
-    [ObservableProperty] private Narrative initialNarrative = new();
-    public Narrative? selectedNarrative;
     private Coin _coin;
+    [ObservableProperty] private List<Narrative> narratives;
+    [ObservableProperty] private Narrative selectedNarrative;
+    [ObservableProperty] private string about;
 
-
-    public AssignNarrativeDialog(Coin coin, CoinLibraryViewModel viewModel)
+    partial void OnSelectedNarrativeChanged(Narrative? oldValue, Narrative newValue)
     {
-        _coin = coin;
+        About = newValue?.About ?? string.Empty;
+    }
+
+    public AssignNarrativeDialog(CoinLibraryViewModel viewModel, AssignNarrativeDialogParameters parameters)
+    {
+        _coin = parameters.coin;
         _viewModel = viewModel;
-        Narratives = _viewModel.narratives ?? new List<Narrative>();
-        InitialNarrative = Narratives.Where(x => x.Name == coin.Narrative.Name).FirstOrDefault();
+        Narratives = parameters.narratives ?? new List<Narrative>();
+        SelectedNarrative = Narratives.Where(x => x.Name == _coin.Narrative.Name).FirstOrDefault();
 
         InitializeComponent();
         SetDialogTitleAndButtons();
-
     }
 
     private void SetDialogTitleAndButtons()
@@ -35,18 +37,9 @@ public sealed partial class AssignNarrativeDialog : ContentDialog
 
     private void Button_Click_AcceptNarrative(ContentDialog sender, ContentDialogButtonClickEventArgs e)
     {
-        selectedNarrative = cbNarratives.SelectedItem as Narrative;
+        //selectedNarrative = cbNarratives.SelectedItem as Narrative;
+        Result = SelectedNarrative;
     }
 
-
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
-    }
-
-    
 }
 

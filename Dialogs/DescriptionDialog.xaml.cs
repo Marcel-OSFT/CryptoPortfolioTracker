@@ -2,26 +2,22 @@ using Microsoft.UI.Xaml.Documents;
 
 namespace CryptoPortfolioTracker.Dialogs;
 
-public sealed partial class DescriptionDialog : ContentDialog
+public sealed partial class DescriptionDialog : BaseDialog, IDialog<bool>
 {
-    private readonly ILocalizer loc = Localizer.Get();
+    public bool Result { get; private set; }
     private readonly CoinLibraryViewModel _viewModel;
 
-    public DescriptionDialog(Coin coin, CoinLibraryViewModel viewModel)
+    public DescriptionDialog(CoinLibraryViewModel viewModel, DescriptionDialogParameters parameters)
     {
         _viewModel = viewModel;
         InitializeComponent();
         var run = new Run
         {
-            //TODO Pull Coin Description from the Web API in a localized way 
-
-            // currently the 'About' is stored in the database and never refreshed
-            // we could pull it from the Web Api in a localized way
-            Text = coin.About
+            Text = parameters.coin.About
         };
         par.Inlines.Clear();
         par.Inlines.Add(run);
-        SetDialogTitleAndButtons(coin);
+        SetDialogTitleAndButtons(parameters.coin);
     }
 
     private void SetDialogTitleAndButtons(Coin coin)
@@ -29,13 +25,7 @@ public sealed partial class DescriptionDialog : ContentDialog
         Title = loc.GetLocalizedString("DescriptionDialog_Title") + " " + coin.Name; ;
         CloseButtonText = loc.GetLocalizedString("DescriptionDialog_CloseButton");
         IsPrimaryButtonEnabled = false;
+        Result = true;
     }
 
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
-    }
 }

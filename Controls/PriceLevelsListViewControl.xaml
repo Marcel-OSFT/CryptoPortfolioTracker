@@ -179,12 +179,12 @@
         </StackPanel>
 
         <Rectangle Grid.Row="1" Grid.ColumnSpan="8" Fill="#eebc3f" Height="2" Margin="15,0,8,0"/>
-        <ListView x:Name="PriceLevelsListView" Grid.Row="2" Grid.ColumnSpan="8" x:FieldModifier="public" ItemsSource="{Binding _priceLevelService.ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
+        <ListView x:Name="PriceLevelsListView" Grid.Row="2" Grid.ColumnSpan="8" x:FieldModifier="public" ItemsSource="{Binding ListCoins}" BorderBrush="Transparent" BorderThickness="1"                           
                             IsItemClickEnabled="True" SelectionMode="None" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}"
                             ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                             CanReorderItems="False" AllowDrop="false" Margin="10,0,0,0" >
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Coin">
+                <DataTemplate x:DataType="models:CoinDisplay">
                     <UserControl >
                         <Grid AutomationProperties.Name="{x:Bind ApiId}">
                             <SwipeControl x:Name="CoinListHoverSwipeContainer" >
@@ -221,7 +221,7 @@
                                         <Border Grid.Column="2" Margin="10"  VerticalAlignment="Center" HorizontalAlignment="Right">
                                             <RelativePanel >
                                                 <TextBlock Name="txtPrice" 
-                                                        Text="{x:Bind converters:Functions.FormatValueToString(Price,'$ {0:0.########}'), Mode=OneWay}" 
+                                                        Text="{x:Bind converters:Functions.FormatCurrencyToString(Price,'{0:0.########}'), Mode=OneWay}" 
                                                         FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" TextWrapping="Wrap" RelativePanel.AlignRightWithPanel="True"
                                                                Foreground="{x:Bind converters:Functions.PriceLevelTypeToColor(PriceLevels), Mode=OneWay}"/>
                                                 <TextBlock Name="txtAvgCost" 
@@ -282,7 +282,7 @@
                                                     <FontIcon  Glyph="&#xE70B;" FontWeight="Normal"  />
                                                 </AppBarButton>
 
-                                                <AppBarButton l:Uids.Uid="PriceLevelsLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.DeletePriceLevelsCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
+                                                <AppBarButton l:Uids.Uid="PriceLevelsLV_Delete" Icon="Delete" x:Name="HoverButtonDel" Visibility="Visible" Command="{Binding DataContext.DataContext.ResetPriceLevelsCommand, ElementName=proxy}" CommandParameter="{x:Bind }"/>
                                             </CommandBar.SecondaryCommands>
                                         </CommandBar>
                                     </RelativePanel>

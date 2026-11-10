@@ -1,17 +1,23 @@
-﻿using System;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI.UI;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
+using LanguageExt;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Serilog;
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
-public partial class BaseViewModel : ObservableObject
+public partial class BaseViewModel : ObservableObject, IRecipient<FontSizeChangedMessage>
 {
     private protected ILogger Logger { get; set; }
-    
+    protected readonly ILocalizer loc = Localizer.Get();
 
     [ObservableProperty] private double? fontLevel1;
     [ObservableProperty] private double? fontLevel2;
@@ -19,21 +25,32 @@ public partial class BaseViewModel : ObservableObject
 
     [ObservableProperty]
     protected bool isScrollBarsExpanded;
-    protected Settings AppSettings { get; }
+    protected readonly IDialogService _dialogService;
+
+    protected readonly Settings _appSettings;
 
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public BaseViewModel(Settings appSettings)
+    public BaseViewModel(Settings appSettings, IDialogService dialogService, IMessenger messenger)
     {
-        AppSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-        IsScrollBarsExpanded = AppSettings.IsScrollBarsExpanded;
+        _dialogService = dialogService; 
+        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+        IsScrollBarsExpanded = _appSettings.IsScrollBarsExpanded;
+        messenger.Register<FontSizeChangedMessage>(this);
         SetFontLevels();
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-    private void SetFontLevels()
+    public void Receive(FontSizeChangedMessage message)
     {
-        switch (AppSettings.FontSize.ToString())
+        SetFontLevels();
+    }
+
+
+
+    protected void SetFontLevels()
+    {
+        switch (_appSettings.FontSize.ToString())
         {
             case "Small":
                 {
@@ -60,20 +77,33 @@ public partial class BaseViewModel : ObservableObject
         }
     }
 
-    public async Task<ContentDialogResult> ShowMessageDialog(string title, string message, string primaryButtonText = "OK", string closeButtonText = "")
+
+    protected void ReplaceOrAddUpdatedItems<T>(ObservableCollection<T> collection, IEnumerable<T> updatedItems, Func<T, int> keySelector)
     {
-        var dialog = new ContentDialog()
+        var updatedList = updatedItems.ToList();
+
+        foreach (var updated in updatedList)
         {
-            Title = title,
-            XamlRoot = MainPage.Current.XamlRoot,
-            Content = message,
-            PrimaryButtonText = primaryButtonText,
-            CloseButtonText = closeButtonText,
-            RequestedTheme = AppSettings.AppTheme,
-        };
-       
-        var result = await App.ShowContentDialogAsync(dialog);
-        return result;
+            var key = keySelector(updated);
+
+            var existingIndex = collection
+                .Select((item, index) => new { item, index })
+                .FirstOrDefault(x => keySelector(x.item) == key)?.index;
+
+            if (existingIndex.HasValue)
+            {
+                collection[existingIndex.Value] = updated;
+            }
+            else
+            {
+                collection.Add(updated);
+            }
+        }
     }
+
+    
+
+    
+
 
 }

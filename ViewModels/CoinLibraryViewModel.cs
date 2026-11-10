@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,257 +12,318 @@ using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
 using CryptoPortfolioTracker.Services;
 using CryptoPortfolioTracker.Views;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
-using Serilog.Core;
 using WinUI3Localizer;
 
 namespace CryptoPortfolioTracker.ViewModels;
 
 public partial class CoinLibraryViewModel : BaseViewModel
 {
-    private readonly CoinLibraryViewModel _viewModel;
-    public Settings AppSettings => base.AppSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
+    private readonly ILibraryService _libraryService;
+    private readonly INarrativeService _narrativeService;
+    private readonly IAppState _appState;
 
+    public static CoinLibraryViewModel Current { get; private set; }
 
-    public ILibraryService _libraryService { get; private set; }
-    public readonly INarrativeService _narrativeService;
-    [ObservableProperty] public string portfolioName = string.Empty;
-    [ObservableProperty] public Portfolio currentPortfolio;
+    public Settings AppSettings => _appSettings;
+    //private readonly List<Narrative> _narratives = new();
+    public List<Narrative> Narratives { get; private set;  } = new();
 
-    partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
-    {
-        PortfolioName = newValue.Name;
-    }
+    public List<string> SearchListGecko { get; private set; } = new();
+    public List<CoinList> CoinListGecko { get; private set; } = new();
+    [ObservableProperty] public partial ObservableCollection<CoinDisplay> CoinsList { get; set; } = new();
+
+    public string PortfolioName => _appState.CurrentPortfolio?.Name ?? string.Empty;
+
+    [ObservableProperty] public partial int? SelectedCoinId { get; set; }
+
+    private Func<CoinDisplay, object> currentSortFunc = x => x.Rank;
+    private SortingOrder currentSortingOrder = SortingOrder.Ascending;
+
+    //[ObservableProperty]
+    //private Portfolio currentPortfolio;
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ShowAddCoinDialogCommand))]
     private bool isAllCoinDataRetrieved;
 
-   // [ObservableProperty] private ObservableCollection<Coin> listCoins = new();
+    [ObservableProperty]
+    private string sortGroup = "Library";
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public AddCoinDialog? dialog;
-    public AddPrereleaseCoinDialog? preListingDialog;
-    public static CoinLibraryViewModel Current;
-    public List<string> searchListGecko;
-    public List<CoinList> coinListGecko;
-    [ObservableProperty] private string sortGroup;
-    private SortingOrder initialSortingOrder;
-    private Func<Coin, object> initialSortFunc;
-    public List<Narrative> narratives;
-    [ObservableProperty] public partial long CoinsCount { get; set; }
+    [ObservableProperty]
+    private long coinsCount;
 
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    [ObservableProperty]
+    private string explainerText = string.Empty;
 
-    public CoinLibraryViewModel(ILibraryService libraryService, INarrativeService narrativeService, Settings appSettings) : base(appSettings)
+    [ObservableProperty]
+    private string viewTitle = string.Empty;
+
+    public CoinLibraryViewModel(
+        ILibraryService libraryService,
+        INarrativeService narrativeService,
+        Settings appSettings,
+        IAppState appState,
+        IDialogService dialogService,
+        IMessenger messenger)
+        : base(appSettings, dialogService, messenger)
     {
         Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(CoinLibraryViewModel).Name.PadRight(22));
         Current = this;
-        IsAllCoinDataRetrieved = false;
+
         _libraryService = libraryService;
         _narrativeService = narrativeService;
-        _viewModel = this;
+        _appState = appState;
+        _appState.CurrentPortfolioChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(PortfolioName));
+            // reload data if needed
+        };
 
-        CurrentPortfolio = _libraryService.GetPortfolio();
-
-        sortGroup = "Library";
-        initialSortFunc = x => x.Rank;
-        initialSortingOrder = SortingOrder.Ascending;
-
-        searchListGecko = new List<string>();
-        coinListGecko = new List<CoinList>();
-        narratives = new List<Narrative>();
+        //CurrentPortfolio = _libraryService.GetPortfolio();
+        SortGroup = "Library";
+        IsAllCoinDataRetrieved = false;
     }
+
+    //partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    //{
+    //    if (newValue != null)
+    //    {
+    //        PortfolioName = newValue.Name;
+    //    }
+    //}
+
     public async Task ViewLoading()
     {
-        CurrentPortfolio = _libraryService.GetPortfolio();
-        PortfolioName = CurrentPortfolio.Name;
+        ExplainerText = loc.GetLocalizedString("Library_Explainer");
+        ViewTitle = loc.GetLocalizedString("Library_Title");
+        await PopulateNarratives();
+        await PopulateCoinsList();
 
-        await _libraryService.PopulateCoinsList(initialSortingOrder, initialSortFunc);
-        CoinsCount = _libraryService.ListCoins.Count;
+        await RetrieveCoinSearchList();
+
+    }
+
+    private async Task PopulateNarratives()
+    {
+        var narrativesResult = await _narrativeService.GetNarratives();
+        narrativesResult.IfSucc(list =>
+        {
+            Narratives = new List<Narrative>(list);
+        });
     }
 
     public void Terminate()
     {
-        //Current = null;
-        searchListGecko = MkOsft.NullList<string>(searchListGecko);
-        coinListGecko = MkOsft.NullList<CoinList>(coinListGecko);
-
-       _libraryService.ClearCoinsList();
+        SearchListGecko = MkOsft.NullList(SearchListGecko);
+        CoinListGecko = MkOsft.NullList(CoinListGecko);
+        Narratives = MkOsft.NullList(Narratives);
+        CoinsList.Clear();
+        _libraryService.ClearCoinsList();
     }
 
-    public async Task RetrieveAllCoinData()
+    public async Task RetrieveCoinSearchList()
     {
         Logger.Information("Retrieved Coin List from CoinGecko");
 
-        (await _libraryService.GetCoinListFromGecko())
-            .IfSucc(list =>
-            {
-                coinListGecko = list;
-                IsAllCoinDataRetrieved = coinListGecko.Count > 0;
-                searchListGecko = BuildSearchList(list);
-            });
+        var result = await _libraryService.GetCoinListFromGecko();
+
+        result.IfSucc(list =>
+        {
+            CoinListGecko = list;
+            IsAllCoinDataRetrieved = CoinListGecko.Count > 0;
+            SearchListGecko = BuildSearchList(list);
+        });
     }
+
     private static List<string> BuildSearchList(List<CoinList> list)
     {
         var searchList = new List<string>();
         foreach (var coin in list)
         {
-            searchList.Add(coin.Name + ", " + coin.Symbol.ToUpper() + ", " + coin.Id); 
+            searchList.Add($"{coin.Name}, {coin.Symbol.ToUpper()}, {coin.Id}");
         }
+
         return searchList;
     }
 
     [RelayCommand]
     private void SortOnName(SortingOrder sortingOrder)
     {
-        Func<Coin, string> sortFunc = x => x.Name;
-        _libraryService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Name);
     }
+
     [RelayCommand]
     private void SortOnNarrative(SortingOrder sortingOrder)
     {
-        Func<Coin, string> sortFunc = x => x.Narrative.Name;
-        _libraryService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Narrative.Name);
     }
 
     [RelayCommand]
     public void SortOn24HrChange(SortingOrder sortingOrder)
     {
-        Func<Coin, object> sortFunc = x => x.Change24Hr;
-        _libraryService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Change24Hr);
     }
 
     [RelayCommand]
     public void SortOn52WeekChange(SortingOrder sortingOrder)
     {
-        Func<Coin, object> sortFunc = x => x.Change52Week;
-        _libraryService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Change52Week);
     }
 
     [RelayCommand]
     public void SortOn30DayChange(SortingOrder sortingOrder)
     {
-        Func<Coin, object> sortFunc = x => x.Change1Month;
-        _libraryService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Change1Month);
     }
 
     [RelayCommand]
     public void SortOnAth(SortingOrder sortingOrder)
     {
-        Func<Coin, object> sortFunc = x => x.Ath;
-        _libraryService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Ath);
     }
 
     [RelayCommand]
     public void SortOnMarketCap(SortingOrder sortingOrder)
     {
-        Func<Coin, object> sortFunc = x => x.MarketCap;
-        _libraryService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.MarketCap);
     }
 
     [RelayCommand]
     public void SortOnRank(SortingOrder sortingOrder)
     {
-        Func<Coin, object> sortFunc = x => x.Rank;
-        _libraryService.SortList(sortingOrder, sortFunc);
+        SortList(sortingOrder, x => x.Rank);
     }
+
+    private void SortList(SortingOrder sortingOrder, Func<CoinDisplay, object> sortFunc)
+    {
+        if (CoinsList is null || !CoinsList.Any()) return;
+
+        currentSortFunc = sortFunc;
+        currentSortingOrder = sortingOrder;
+
+        if (currentSortingOrder == SortingOrder.Ascending)
+        {
+            CoinsList = new ObservableCollection<CoinDisplay>(CoinsList.OrderBy(currentSortFunc));
+        }
+        else
+        {
+            CoinsList = new ObservableCollection<CoinDisplay>(CoinsList.OrderByDescending(currentSortFunc));
+        }
+    }
+
 
     [RelayCommand(CanExecute = nameof(CanShowAddCoinDialog))]
     public async Task ShowAddCoinDialog()
     {
-        (await _narrativeService.GetNarratives())
-            .IfSucc(list => narratives = list);
-
+        //var narrativesResult = await _narrativeService.GetNarratives();
+        //narrativesResult.IfSucc(list =>
+        //{
+        //    Narratives.Clear();
+        //    Narratives.AddRange(list);
+        //});
 
         Logger.Information("Showing Coin Dialog");
-       
+
         var loc = Localizer.Get();
+
         try
         {
-            dialog = new AddCoinDialog(Current, Enums.DialogAction.Add, App.Container.GetService<IMessenger>())
-            {
-                XamlRoot = CoinLibraryView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
+            var coin = await _dialogService.ShowAsync<AddCoinDialog, Coin>( new AddCoinDialogParameters(DialogAction.Add, SearchListGecko, Narratives));
 
-            if (result == ContentDialogResult.Primary)
+            if (coin == null)
             {
-                var coinName = dialog.selectedCoin is not null ? dialog.selectedCoin.Name : string.Empty;
-                Logger.Information("Adding Coin to Library  - {0}", coinName);
-                await (await _libraryService.CreateCoin(dialog.selectedCoin))
-                    .Match(Succ: succ => _libraryService.AddToCoinsList(dialog.selectedCoin),
-                    Fail: async err =>
-                    {
-                        await ShowMessageDialog(
-                            loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
-                            err.Message,
-                             loc.GetLocalizedString("Common_CloseButton"));
-                        Logger.Error(err, "Adding Coin to Library Failed");
-                    });
+                return;
             }
+
+            var coinName = coin.Name;
+            Logger.Information("Adding Coin to Library - {0}", coinName);
+
+            var createResult = await _libraryService.CreateCoin(coin);
+
+            await createResult.Match(
+                Succ: async _ => await AddToCoinsList(coin),
+                Fail: async err =>
+                {
+                    await _dialogService.ShowMessageAsync(
+                        loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
+                        err.Message,
+                        loc.GetLocalizedString("Common_CloseButton"));
+
+                    Logger.Error(err, "Adding Coin to Library Failed");
+                });
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to show Coin Dialog");
 
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_CoinDialogFailed_Title"),
                 ex.Message,
-                 loc.GetLocalizedString("Common_CloseButton"));
+                loc.GetLocalizedString("Common_CloseButton"));
         }
     }
+
     private bool CanShowAddCoinDialog()
     {
         return IsAllCoinDataRetrieved;
     }
 
     [RelayCommand(CanExecute = nameof(CanMergePreListingCoin))]
-    public async Task MergePreListingCoin(Coin preListingCoin)
+    public async Task MergePreListingCoin(CoinDisplay preListingCoin)
     {
-        (await _narrativeService.GetNarratives())
-            .IfSucc(list => narratives = list);
+        //var narrativesResult = await _narrativeService.GetNarratives();
+        //narrativesResult.IfSucc(list =>
+        //{
+        //    Narratives.Clear();
+        //    Narratives.AddRange(list);
+        //});
 
         Logger.Information("Showing Coin Dialog");
-        
+
         var loc = Localizer.Get();
+
         try
         {
-            dialog = new AddCoinDialog(Current, Enums.DialogAction.Merge, App.Container.GetService<IMessenger>())
-            {
-                XamlRoot = CoinLibraryView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
+            var coin = await _dialogService.ShowAsync<AddCoinDialog, Coin>(new AddCoinDialogParameters(DialogAction.Merge, SearchListGecko, Narratives));
 
-            if (result == ContentDialogResult.Primary)
+            if (coin == null)
             {
-                var coinName = dialog.selectedCoin is not null ? dialog.selectedCoin.Name : string.Empty;
-                Logger.Information("Merging Coin in Library  - {0}", coinName);
-                await (await _libraryService.MergeCoin(preListingCoin, dialog.selectedCoin))
-                    .Match(Succ: succ => UpdateListCoinsAfterMerge(preListingCoin, dialog.selectedCoin),
-                    Fail: async err =>
-                    {
-                        await ShowMessageDialog(
-                            loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
-                            err.Message,
-                             loc.GetLocalizedString("Common_CloseButton"));
-                        Logger.Error(err, "Merging Coin in Library Failed");
-                    });
+                return;
             }
+
+            var coinName = coin.Name;
+            Logger.Information("Merging Coin in Library - {0}", coinName);
+
+            var domainPreListingCoin = ModelMapper.MapToDomain(preListingCoin);
+            var mergeResult = await _libraryService.MergeCoin(domainPreListingCoin, coin);
+
+            await mergeResult.Match(
+                Succ: _ => UpdateListCoins(domainPreListingCoin.Id),
+                Fail: async err =>
+                {
+                    await _dialogService.ShowMessageAsync(
+                        loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
+                        err.Message,
+                        loc.GetLocalizedString("Common_CloseButton"));
+
+                    Logger.Error(err, "Merging Coin in Library Failed");
+                });
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to show Coin Dialog");
 
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_CoinDialogFailed_Title"),
                 ex.Message,
-                 loc.GetLocalizedString("Common_CloseButton"));
+                loc.GetLocalizedString("Common_CloseButton"));
         }
     }
 
-    private bool CanMergePreListingCoin(Coin coin)
+    private bool CanMergePreListingCoin(CoinDisplay coin)
     {
         return coin.Name.Contains("_pre-listing");
     }
@@ -270,186 +332,239 @@ public partial class CoinLibraryViewModel : BaseViewModel
     public async Task ShowAddPreListingCoinDialog()
     {
         Logger.Information("Showing Pre-Listing Coin Dialog");
-        
+
         var loc = Localizer.Get();
+
         try
         {
-            var dialog = new AddPrereleaseCoinDialog(Current)
-            {
-                XamlRoot = CoinLibraryView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
+            var coin = await _dialogService.ShowAsync<AddPrereleaseCoinDialog, Coin?>();
 
-            if (result == ContentDialogResult.Primary)
+            if (coin == null)
             {
-                var coinName = dialog.newCoin is not null ? dialog.newCoin.Name : string.Empty;
-                Logger.Information("Adding Pre-Listing Coin to Library  - {0}", coinName);
-                await (await _libraryService.CreateCoin(dialog.newCoin))
-                    .Match(Succ: succ =>_libraryService.AddToCoinsList(dialog.newCoin),
-                    Fail: async err =>
-                    {
-                        await ShowMessageDialog(
-                            loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
-                            err.Message,
-                             loc.GetLocalizedString("Common_CloseButton"));
-                        Logger.Error(err, "Adding Pre-Listing Coin to Library Failed");
-                    });
+                return;
             }
+
+            var coinName = coin.Name;
+            Logger.Information("Adding Pre-Listing Coin to Library - {0}", coinName);
+
+            var createResult = await _libraryService.CreateCoin(coin);
+
+            await createResult.Match(
+                Succ: _ => AddToCoinsList(coin),
+                Fail: async err =>
+                {
+                    await _dialogService.ShowMessageAsync(
+                        loc.GetLocalizedString("Messages_CoinAddFailed_Title"),
+                        err.Message,
+                        loc.GetLocalizedString("Common_CloseButton"));
+
+                    Logger.Error(err, "Adding Pre-Listing Coin to Library Failed");
+                });
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to show Pre-Listing Coin Dialog");
 
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_CoinDialogFailed_Title"),
                 ex.Message,
-                 loc.GetLocalizedString("Common_CloseButton"));
+                loc.GetLocalizedString("Common_CloseButton"));
         }
     }
 
     [RelayCommand]
-    public async Task ShowAddNoteDialog(Coin coin)
+    public async Task ShowAddNoteDialog(CoinDisplay coin)
     {
         var loc = Localizer.Get();
         Logger.Information("Showing Note Dialog");
+
         try
         {
-            var dialog = new AddNoteDialog(coin, this)
+            var domainCoin = ModelMapper.MapToDomain(coin);
+            var note = await _dialogService.ShowAsync<AddNoteDialog, string>(new AddNoteDialogParameters(domainCoin));
+
+            if (note == "canceled")
             {
-                XamlRoot = CoinLibraryView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
-            if (result == ContentDialogResult.Primary)
-            {
-                Logger.Information("Adding Note for {0}", coin.Name);
-                await (await _libraryService.UpdateNote(coin, dialog.newNote))
-                    .Match(Succ: succ => _libraryService.UpdateCoinsList(coin),
-                    Fail: async err =>
-                    {
-                        await ShowMessageDialog(
+                return;
+            }
+
+            Logger.Information("Adding Note for {0}", coin.Name);
+
+            var updateResult = await _libraryService.UpdateNote(domainCoin, note);
+
+            await updateResult.Match(
+                Succ: _ => UpdateListCoins(coin.Id),
+                Fail: async err =>
+                {
+                    await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_NoteAddFailed_Title"),
                         err.Message,
                         loc.GetLocalizedString("Common_CloseButton"));
 
-                        Logger.Error(err, "Adding Note failed");
-                    });
-            }
+                    Logger.Error(err, "Adding Note failed");
+                });
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Showing Note Dialog failed");
 
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_NoteDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
     }
-    [RelayCommand]
-    public async Task AssignNarrativeToCoin(Coin coin)
+
+    [RelayCommand(CanExecute = nameof(CanShowAssignNarrative))]
+    public async Task ShowAssignNarrativeDialog(CoinDisplay coin)
     {
         var loc = Localizer.Get();
         Logger.Information("Showing AssignNarrative Dialog");
+
         try
         {
-            (await _narrativeService.GetNarratives())
-                .IfSucc(list => narratives = list);
+            var domainCoin = ModelMapper.MapToDomain(coin);
+            //var narrativesResult = await _narrativeService.GetNarratives();
+            //narrativesResult.IfSucc(list =>
+            //{
+            //    Narratives.Clear();
+            //    Narratives.AddRange(list);
+            //});
 
-            var dialog = new AssignNarrativeDialog(coin, _viewModel)
-            {
-                XamlRoot = CoinLibraryView.Current.XamlRoot
-            };
-            var result = await App.ShowContentDialogAsync(dialog);
-            if (result == ContentDialogResult.Primary)
-            {
-                Logger.Information("Assigning Narrative {0} to {1}", dialog.selectedNarrative.Name, coin.Name);
-                await (await _narrativeService.AssignNarrative(coin, dialog.selectedNarrative))
-                    .Match(Succ: succ => _libraryService.UpdateCoinsList(coin),
-                    Fail: async err =>
-                    {
-                        await ShowMessageDialog(
-                       loc.GetLocalizedString("Messages_AssignNarrativeFailed_Title"),
-                       err.Message,
-                       loc.GetLocalizedString("Common_CloseButton"));
+            var selectedNarrative = await _dialogService.ShowAsync<AssignNarrativeDialog, Narrative>(new AssignNarrativeDialogParameters(domainCoin, Narratives));
 
-                        Logger.Error(err, "Assigning Narrative failed");
-                    });
+            if (selectedNarrative == null)
+            {
+                return;
             }
+
+            Logger.Information("Assigning Narrative {0} to {1}", selectedNarrative.Name, coin.Name);
+
+            var assignResult = await _narrativeService.AssignNarrative(domainCoin, selectedNarrative);
+
+            await assignResult.Match(
+                Succ: _ => UpdateListCoins(coin.Id),
+                Fail: async err =>
+                {
+                    await _dialogService.ShowMessageAsync(
+                        loc.GetLocalizedString("Messages_AssignNarrativeFailed_Title"),
+                        err.Message,
+                        loc.GetLocalizedString("Common_CloseButton"));
+
+                    Logger.Error(err, "Assigning Narrative failed");
+                });
         }
         catch (Exception ex)
         {
             Logger.Error(ex, "Showing AssignNarrative Dialog failed");
 
-            await ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_AssignNarrativeDialogFailed_Title"),
                 ex.Message,
                 loc.GetLocalizedString("Common_CloseButton"));
         }
     }
 
+    private bool CanShowAssignNarrative(CoinDisplay coin)
+    {
+        //*** prevent Stablecoins to get another narrative assigned
+        var item = CoinsList.FirstOrDefault(x => x.Id == coin.Id);
+        return item != null ? !coin.Narrative.Name.Contains("Stablecoin", StringComparison.OrdinalIgnoreCase) : false;
+    }
+
     [RelayCommand(CanExecute = nameof(CanDeleteCoin))]
-    public async Task DeleteCoin(Coin coin)
+    public async Task DeleteCoin(CoinDisplay coin)
     {
         Logger.Information("Deleting coin {0}", coin.Name);
+
         var loc = Localizer.Get();
-        await (await _libraryService.RemoveCoin(coin))
-           .Match(Succ: s => _libraryService.RemoveFromCoinsList(coin),
-                   Fail: async err =>
-                   {
-                       await ShowMessageDialog(
-                          loc.GetLocalizedString("Messages_CoinDeleteFailed_Title"),
-                          err.Message,
-                          loc.GetLocalizedString("Common_CloseButton"));
-                       Logger.Error(err, "Deleting coin failed");
-                   });
+        var domainCoin = ModelMapper.MapToDomain(coin);
+        var removeResult = await _libraryService.RemoveCoin(domainCoin);
+
+        await removeResult.Match(
+            Succ: _ => RemoveFromCoinsList(domainCoin),
+            Fail: async err =>
+            {
+                await _dialogService.ShowMessageAsync(
+                    loc.GetLocalizedString("Messages_CoinDeleteFailed_Title"),
+                    err.Message,
+                    loc.GetLocalizedString("Common_CloseButton"));
+
+                Logger.Error(err, "Deleting coin failed");
+            });
     }
-    private bool CanDeleteCoin(Coin coin)
+
+    private bool CanDeleteCoin(CoinDisplay coin)
     {
-        var result = false;
-        try
-        {
-            //result = !ListCoins.Where(x => x.ApiId.ToLower() == coin.ApiId.ToLower()).Single().IsAsset;
-            result = _libraryService.IsNotAsset(coin); 
-        }
-        catch (Exception)
-        {
-            //Element just removed from the list...
-        }
-        return result;
+        var item = CoinsList.FirstOrDefault(x => x.Id == coin.Id);
+        return item != null ? item.IsAsset ? false : true : false;
     }
 
     [RelayCommand]
-    public async Task ShowDescription(Coin coin)
+    public async Task ShowDescription(CoinDisplay coin)
     {
-        Logger.Information("Showing Description Dialog for {0}}", coin.Name);
+        Logger.Information("Showing Description Dialog for {0}", coin.Name);
+
         if (coin != null)
         {
-            var dialog = new DescriptionDialog(coin, this)
-            {
-                XamlRoot = CoinLibraryView.Current.XamlRoot
-            };
-            await App.ShowContentDialogAsync(dialog);
+            await _dialogService.ShowAsync<DescriptionDialog, bool>(new DescriptionDialogParameters(ModelMapper.MapToDomain(coin)));
+        }
+    }
+    private async Task PopulateCoinsList()
+    {
+        var list = (await _libraryService.PopulateCoinsList())
+            .Select(ModelMapper.MapToDisplay)
+            .ToList();
+
+        var sorted = currentSortingOrder == SortingOrder.Ascending
+            ? list.OrderBy(currentSortFunc).ToList()
+            : list.OrderByDescending(currentSortFunc).ToList();
+
+        CoinsList = new ObservableCollection<CoinDisplay>(sorted);
+        CoinsCount = CoinsList.Count;
+    }
+
+    private async Task UpdateListCoins(int coinId)
+    {
+        var selectedCoinId = SelectedCoinId; // store the selected asset API ID before updating the list
+        var updated = (await _libraryService.UpdateCoinsList(coinId))
+            .Select(ModelMapper.MapToDisplay)
+            .ToList();
+
+        ReplaceOrAddUpdatedItems(CoinsList, updated, x => x.Id);
+        CoinsCount = CoinsList.Count;
+        
+        if (selectedCoinId.HasValue)
+        {
+            var selectedItem = CoinsList.FirstOrDefault(x => x.Id == selectedCoinId);
+            SelectedCoinId = selectedItem?.Id;
         }
     }
 
-    private Task UpdateListCoinsAfterMerge(Coin prelistingCoin, Coin? newCoin)
+    private async Task AddToCoinsList(Coin coin)
     {
-        //if (newCoin == null || prelistingCoin == null) { return Task.FromResult(false); }
-        //try
-        //{
-        //    var plCoin = ListCoins.Where(x => x.ApiId.ToLower() == prelistingCoin.ApiId.ToLower()).Single();
-        //    plCoin.ApiId = newCoin.ApiId;
-        //    plCoin.Name = newCoin.Name;
-        //    plCoin.Symbol = newCoin.Symbol;
-        //    plCoin.About = newCoin.About;
-
-           
-        //}
-        //catch (Exception ex)
-        //{
-        //    return Task.FromResult(false); ;
-        //}
-        return Task.FromResult(true);
+        var result = await _libraryService.AddToCoinsList(coin);
+        if (result)
+        {
+            CoinsList.Add(ModelMapper.MapToDisplay(coin));
+            CoinsCount = CoinsList.Count;
+        }
     }
-}
 
+    private async Task RemoveFromCoinsList(Coin coin)
+    {
+        var result = await _libraryService.RemoveFromCoinsList(coin);
+        if (result)
+        {
+            var itemToRemove = CoinsList.FirstOrDefault(x => x.Id == coin.Id);
+            if (itemToRemove != null)
+            {
+                CoinsList.Remove(itemToRemove);
+                CoinsCount = CoinsList.Count;
+            }
+        }
+    }
+
+
+
+}

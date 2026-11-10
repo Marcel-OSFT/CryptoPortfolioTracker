@@ -148,6 +148,7 @@ namespace CryptoPortfolioTracker.Views
             var flyout = appBarBtn.Flyout;
             flyout.Hide();
         }
+        
 
     }
 }

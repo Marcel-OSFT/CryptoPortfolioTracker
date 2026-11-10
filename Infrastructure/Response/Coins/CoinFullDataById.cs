@@ -43,6 +43,11 @@ public class CoinFullDataById
     {
         get; set;
     }
+    [JsonProperty("categories")]
+    public string[] Categories
+    {
+        get; set;
+    }
 }
 
 public class MarketData

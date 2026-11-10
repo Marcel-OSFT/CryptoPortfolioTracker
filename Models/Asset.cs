@@ -15,14 +15,14 @@ public partial class Asset : BaseModel
         Mutations = new List<Mutation>();
     }
 
-    [ObservableProperty] private int id;
-    [ObservableProperty] private double qty;
-    [ObservableProperty] private double averageCostPrice;
-    [ObservableProperty] private double realizedPnL;
+    public int Id { get; set; }
+    public double Qty { get; set; }
+    public double AverageCostPrice { get; set; }
+    public double RealizedPnL { get; set; }
 
     //******* Navigation Properties
-    [ObservableProperty] private Coin coin;
-    [ObservableProperty] private Account account;
+    public Coin Coin { get; set; }
+    public Account Account { get; set; }
     public ICollection<Mutation> Mutations { get; set; }
 
     

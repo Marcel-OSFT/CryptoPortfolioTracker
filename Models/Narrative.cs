@@ -20,25 +20,22 @@ public partial class Narrative : BaseModel
     [Key]
     public int Id { get; set; }
 
-    [ObservableProperty] private string name;
-    [ObservableProperty] private string about;
+    public string Name { get; set; }
+    public string About { get; set; }
 
     //*** Set To NotMapped in EntityTypeBuilder
-    [ObservableProperty] [NotMapped] private bool isHoldingCoins;
+    [NotMapped] public bool IsHoldingCoins { get; set; }
     //*** Set To NotMapped in EntityTypeBuilder
     [ObservableProperty] private double totalValue;
     //*** Set To NotMapped in EntityTypeBuilder
     [ObservableProperty] private double costBase;
     //*** Set To NotMapped in EntityTypeBuilder
-    [ObservableProperty] private double profitLoss;
+    public double ProfitLoss { get; set; }
     //*** Set To NotMapped in EntityTypeBuilder
-    [ObservableProperty] private double profitLossPerc;
+    public double ProfitLossPerc { get; set; }
 
     //*** Navigation property
-    [ObservableProperty] private ICollection<Coin> coins;
-
-
-
+    public ICollection<Coin> Coins { get; set; }
 
 
     partial void OnCostBaseChanged(double value)

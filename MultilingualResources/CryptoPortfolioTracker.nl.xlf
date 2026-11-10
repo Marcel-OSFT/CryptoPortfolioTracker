@@ -1888,7 +1888,12 @@ Bouw uw portefeuille op door transacties toe te voegen via de knop 'Transactie T
           <source>Distance to Break-Even Level [%]</source>
           <target state="translated">Afstand tot break-even [%]</target>
         </trans-unit>
-      </group>
+		<trans-unit id="NarrativeDialog_NarrativeNotAllowed" translate="yes" xml:space="preserve">
+          <source>The narrative name is not allowed</source>
+          <target state="final">De narratiefnaam is niet toegestaan</target>
+        </trans-unit>
+
+	  </group>
     </body>
   </file>
 </xliff>

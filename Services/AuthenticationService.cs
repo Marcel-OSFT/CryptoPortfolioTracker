@@ -11,6 +11,7 @@ public class AuthenticationService
 {
     private readonly Settings _appSettings;
     private readonly byte[] _keyBytes;
+    private readonly IDialogService _dialogService;
     private const int MaxFailedAttempts = 5;
     private const int LockoutMinutes = 15;
 
@@ -18,10 +19,11 @@ public class AuthenticationService
     private const int KeySize = 32;  // 256 bit
     private const int Iterations = 100_000;
 
-    public AuthenticationService(byte[] keyBytes, Settings appSettings)
+    public AuthenticationService(byte[] keyBytes, Settings appSettings, IDialogService dialogService)
     {
         _appSettings = appSettings;
         _keyBytes = keyBytes;
+        _dialogService = dialogService;
     }
 
     public async Task<bool> AuthenticateUserAsync(Window? splash)
@@ -41,7 +43,7 @@ public class AuthenticationService
         {
             var remaining = state.LockoutUntil.Value - now;
             //await App.ShowErrorMessage($"Too many failed attempts. Please try again in {remaining.Minutes:D2}:{remaining.Seconds:D2} minutes.");
-            await App.ShowMessageDialog(
+            await _dialogService.ShowMessageAsync(
                 loc.GetLocalizedString("Messages_Authentication_Attempts_Title"),
                 loc.GetLocalizedString("Messages_Authentication_Attempts_MsgPrefix") + $" {remaining.Minutes:D2}:{ remaining.Seconds:D2} " + loc.GetLocalizedString("Messages_Authentication_Attempts_MsgSuffix"),
                 loc.GetLocalizedString("Common_OkButton"));
@@ -91,28 +93,18 @@ public class AuthenticationService
             Process.Start(new ProcessStartInfo(mailto) { UseShellExecute = true });
         };
 
-        var stackPanel = new StackPanel();
-        stackPanel.Children.Add(passwordBox);
-        stackPanel.Children.Add(forgotPasswordLink);
-
-        var dialog = new ContentDialog
-        {
-            Title = loc.GetLocalizedString("Messages_Authentication_Required"), // "Authentication Required",
-            Content = stackPanel,
-            PrimaryButtonText = loc.GetLocalizedString("Common_OkButton"), //"OK",
-            CloseButtonText = loc.GetLocalizedString("Common_CancelButton"), //"Cancel",
-            DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = splash?.Content.XamlRoot,
-            RequestedTheme = _appSettings.AppTheme
-        };
+       
+        var titleText = loc.GetLocalizedString("Messages_Authentication_Required");
 
         while (true)
         {
-            var result = await dialog.ShowAsync();
-            if (result != ContentDialogResult.Primary)
+            //var result = await dialog.ShowAsync();
+            var result = await _dialogService.ShowAsync<AuthenticationDialog, AuthenticationDialogResult>(titleText);
+
+            if (result == null || result.Action != AuthenticationDialogAction.Authenticated)
                 return false;
 
-            string entered = passwordBox.Password ?? string.Empty;
+            string entered = result.Password ?? string.Empty;
 
             if (!string.IsNullOrEmpty(passwordHash) && VerifyPassword(entered, passwordHash))
             {
@@ -151,7 +143,7 @@ public class AuthenticationService
                     {
                         vault.Remove(duressCredential);
                     }
-                    await App.ShowMessageDialog(
+                    await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_Authentication_PasswordReset_Title"),
                         loc.GetLocalizedString("Messages_Authentication_PasswordReset_Msg"),
                         loc.GetLocalizedString("Common_OkButton"));
@@ -159,7 +151,7 @@ public class AuthenticationService
                 }
                 else
                 {
-                    await App.ShowMessageDialog(
+                    await _dialogService.ShowMessageAsync(
                         loc.GetLocalizedString("Messages_Authentication_InvalidCode_Title"),
                         loc.GetLocalizedString("Messages_Authentication_InvalidCode_Msg"),
                         loc.GetLocalizedString("Common_OkButton"));
@@ -171,7 +163,7 @@ public class AuthenticationService
             {
                 state.LockoutUntil = DateTime.UtcNow.AddMinutes(LockoutMinutes);
                 SaveAuthState(state);
-                await App.ShowMessageDialog(
+                await _dialogService.ShowMessageAsync(
                     loc.GetLocalizedString("Messages_Authentication_Attempts_Title"),
                     loc.GetLocalizedString("Messages_Authentication_Attempts_MsgPrefix1") + $" {LockoutMinutes} " + loc.GetLocalizedString("Messages_Authentication_Attempts_MsgSuffix"),
                     loc.GetLocalizedString("Common_OkButton"));
@@ -181,7 +173,7 @@ public class AuthenticationService
             else
             {
                 SaveAuthState(state);
-                dialog.Title = loc.GetLocalizedString("Messages_Authentication_Failed") + $" ({state.FailedAttempts}/{MaxFailedAttempts})"; 
+                titleText = loc.GetLocalizedString("Messages_Authentication_Failed") + $" ({state.FailedAttempts}/{MaxFailedAttempts})"; 
                 passwordBox.Password = string.Empty;
             }
         }

@@ -1,22 +1,21 @@
 namespace CryptoPortfolioTracker.Dialogs;
 
-public sealed partial class AccountDialog : ContentDialog
+public sealed partial class AccountDialog : BaseDialog, IDialog<Account>
 {
+    public Account? Result { get; private set; }
     public readonly AccountsViewModel _viewModel;
     public Account? newAccount;
     private readonly Account? _accountToEdit;
 
-    private readonly ILocalizer loc = Localizer.Get();
-
     private readonly DialogAction _dialogAction;
 
-    public AccountDialog(AccountsViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Account? accountToEdit = null)
+    public AccountDialog(AccountsViewModel viewModel, AccountDialogParameters parameters)
     {
         InitializeComponent();
         _viewModel = viewModel;
-        _accountToEdit = accountToEdit;
-        SetDialogTitleAndButtons(dialogAction);
-        _dialogAction = dialogAction;
+        _accountToEdit = parameters.account;
+        SetDialogTitleAndButtons(parameters.dialogAction);
+        _dialogAction = parameters.dialogAction;
         
     }
 
@@ -48,6 +47,7 @@ public sealed partial class AccountDialog : ContentDialog
             About = DescriptionText.Text,
         };
         newAccount = account;
+        Result = account;
     }
 
     private void AccountName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
@@ -55,14 +55,6 @@ public sealed partial class AccountDialog : ContentDialog
         IsPrimaryButtonEnabled = txtAccountName.Text.Length > 0;
     }
     
-
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme !=  _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
-    }
 
     private void AccountName_LosingFocus(Microsoft.UI.Xaml.UIElement sender, Microsoft.UI.Xaml.Input.LosingFocusEventArgs args)
     {

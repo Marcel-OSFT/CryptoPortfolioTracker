@@ -10,8 +10,10 @@ public partial class AssetsView : Page, IDisposable
 {
     public AssetsViewModel _viewModel;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public static AssetsView Current;
+    //private static AssetsView Current;
+
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public static AssetsView Current { get; private set; }
 
     public AssetsView(AssetsViewModel viewModel)// ** DI of viewModel into View
     {

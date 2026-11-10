@@ -1,0 +1,42 @@
+<local:BaseDialog
+    x:Class="CryptoPortfolioTracker.Dialogs.AuthenticationDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CryptoPortfolioTracker.Dialogs"
+    Title="{x:Bind TitleText, Mode=OneWay}"
+    PrimaryButtonText="{x:Bind OkButtonText, Mode=OneWay}"
+    CloseButtonText="{x:Bind CancelButtonText, Mode=OneWay}"
+    DefaultButton="Primary"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    CloseButtonClick="ContentDialog_CloseButtonClick">
+
+    <StackPanel
+        Width="400"
+        Spacing="14">
+
+        <!-- Password -->
+        <Border
+            Padding="16"
+            CornerRadius="8"
+            BorderThickness="1"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+            <PasswordBox
+                x:Name="PasswordInput"
+                Header="{x:Bind PasswordLabel, Mode=OneWay}"
+                PlaceholderText="{x:Bind PasswordPlaceholder, Mode=OneWay}"
+                PasswordRevealMode="Peek"
+                PasswordChanged="PasswordInput_PasswordChanged" />
+        </Border>
+
+        <!-- Forgot password -->
+        <HyperlinkButton
+            Content="{x:Bind ForgotPasswordText, Mode=OneWay}"
+            HorizontalAlignment="Left"
+            Padding="0"
+            Click="ForgotPasswordLink_Click" />
+
+    </StackPanel>
+</local:BaseDialog>
+

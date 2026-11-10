@@ -10,9 +10,11 @@ namespace CryptoPortfolioTracker.Dialogs;
 
 [ObservableObject]
 [ObservableRecipient]
-public partial class AddCoinDialog : ContentDialog
+public partial class AddCoinDialog : BaseDialog, IDialog<Coin>, IRecipient<ShowBePatienceMessage>
 {
+    public Coin? Result { get; private set; }
     public readonly CoinLibraryViewModel _viewModel;
+    private readonly ILibraryService _libraryService;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static AddCoinDialog Current;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -20,7 +22,6 @@ public partial class AddCoinDialog : ContentDialog
     public Coin? selectedCoin;
     
     private readonly DialogAction _dialogAction;
-    private readonly ILocalizer loc = Localizer.Get();
     
     [ObservableProperty] private Visibility bePatientVisibility;
     [ObservableProperty] private List<string> coinList;
@@ -30,24 +31,35 @@ public partial class AddCoinDialog : ContentDialog
     [ObservableProperty] private Narrative initialNarrative = new();
 
 
-    public AddCoinDialog(CoinLibraryViewModel viewModel, DialogAction dialogAction, IMessenger messenger)
+    public AddCoinDialog(CoinLibraryViewModel viewModel, ILibraryService libraryService, IMessenger messenger, AddCoinDialogParameters parameters)
     {
         _viewModel = viewModel;
+        _libraryService = libraryService;
         CoinName = "";
         Current = this;
-        _dialogAction = dialogAction;
-        CoinList = _viewModel.searchListGecko ?? new List<string>();
-        Narratives = _viewModel.narratives ?? new List<Narrative>();
+        _dialogAction = parameters.dialogAction;
+        CoinList = parameters.searchList ?? new List<string>();
+        Narratives = parameters.narratives ?? new List<Narrative>();
         InitialNarrative = Narratives.Where(x => x.Name == "- Not Assigned -").FirstOrDefault();
         InitializeComponent();
+        Loaded += (_, _) =>
+        {
+            // use dispatcher to ensure the dialog is fully loaded
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                ASBox.FocusSearchBox();
+            });
+        };
         BePatientVisibility = Visibility.Collapsed;
         SetDialogTitleAndButtons();
-        messenger.Register<ShowBePatienceMessage>(this, (r, m) =>
+        messenger.Register<ShowBePatienceMessage>(this);
+    }
+
+    public void Receive(ShowBePatienceMessage message)
+    {
+        MainPage.Current.DispatcherQueue.TryEnqueue(() =>
         {
-            MainPage.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                BePatientVisibility = Visibility.Visible;
-            });
+            BePatientVisibility = Visibility.Visible;
         });
     }
 
@@ -97,15 +109,13 @@ public partial class AddCoinDialog : ContentDialog
     {
         if (busy)
         {
-            DetailsStack1.Opacity = 0.1;
-            DetailsStack2.Opacity = 0.1;
+            DetailsContent.Opacity = 0.1;
             TheProgressRing.IsActive = true;
         }
         else
         {
             TheProgressRing.IsActive = false;
-            DetailsStack1.Opacity = 1;
-            DetailsStack2.Opacity = 1;
+            DetailsContent.Opacity = 1;
             BePatientVisibility = Visibility.Collapsed;
         }
     }
@@ -160,7 +170,11 @@ public partial class AddCoinDialog : ContentDialog
         {
             var msgbox = new MessageDialog(loc.GetLocalizedString("Messages_AddingCoinFailed" + ex.Message));
         }
-        finally { Current = null!; }
+        finally 
+        { 
+            Current = null!;
+            Result = selectedCoin;
+        }
     }
 
     public async Task<CoinFullDataById> GetCoinDetails(string coinId)
@@ -171,15 +185,17 @@ public partial class AddCoinDialog : ContentDialog
         
         try
         {
-            var coinFullDataByIdResult = await _viewModel._libraryService.GetCoinDetails(coinId);
+            var coinFullDataByIdResult = await _libraryService.GetCoinDetails(coinId);
             await coinFullDataByIdResult.Match(async details =>
             {
                 DisplayCoinInfo(details);
+                ForceNarrativeToStableCoinIfNeeded(details.Categories);
 
                 if (await IsCoinAlreadyInLibrary(details.Id))
                 {
                     PrimaryButtonText = loc.GetLocalizedString("CoinDialog_PrimaryButton_CoinExists");
                     IsPrimaryButtonEnabled = false;
+                    ASBox.MyText = string.Empty;
                 }
                 else
                 {
@@ -205,6 +221,26 @@ public partial class AddCoinDialog : ContentDialog
             parId.Inlines.Add(run);
         }
         return coinDetails;
+    }
+
+    private void ForceNarrativeToStableCoinIfNeeded(string[] categories)
+    {
+        // Check if the coin is a stablecoin based on its categories
+        // if it is set InitialNarrative to the StableCoin narrative and disable the ComboBox
+        if (categories.Any(c => c.ToLower().Contains("stablecoin")))
+        {
+            var stableCoinNarrative = Narratives.FirstOrDefault(n => n.Name.ToLower() == "stablecoin");
+            if (stableCoinNarrative != null)
+            {
+                cbNarratives.SelectedItem = stableCoinNarrative;
+                cbNarratives.IsEnabled = false;
+            }
+        }
+        else
+        {
+            cbNarratives.SelectedItem = InitialNarrative;
+            cbNarratives.IsEnabled = true;
+        }
     }
 
     private void DisplayCoinInfo(CoinFullDataById details)
@@ -247,22 +283,16 @@ public partial class AddCoinDialog : ContentDialog
         };
         parPrice.Inlines.Clear();
         parPrice.Inlines.Add(run);
+
     }
 
     public async Task<bool> IsCoinAlreadyInLibrary(string coinId)
     {
-        var getCoinResult = await _viewModel._libraryService.GetCoin(coinId);
+        var getCoinResult = await _libraryService.GetCoin(coinId);
         return getCoinResult.Match(Succ: s => true, Fail: f => false);
     }
 
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
-    }
-
+   
     
 
 }

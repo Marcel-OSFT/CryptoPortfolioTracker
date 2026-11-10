@@ -19,6 +19,7 @@
                 <ResourceDictionary x:Key="Light">
                     <LinearGradientBrush x:Name="BackgroundGradient" StartPoint="0.5,0" EndPoint="0.5,1">
                         <GradientStop Offset="0.0" Color="#CED8E4" />
+                        <GradientStop Offset="0.30" Color="#CED8E4" />
                         <GradientStop Offset="1.0" Color="#D5DBE3" />
                     </LinearGradientBrush>
                 </ResourceDictionary>

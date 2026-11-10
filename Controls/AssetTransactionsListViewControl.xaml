@@ -44,13 +44,13 @@
         <!--Rectangle Fill="#eebc3f" Grid.Row="0"  Height="1" Margin="5,0,8,0"/-->
 
 
-        <ListView x:Name="AssetTransactionListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding _transactionService.ListAssetTransactions}" BorderBrush="Transparent" BorderThickness="1"                             
+        <ListView x:Name="AssetTransactionListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:FieldModifier="public" ItemsSource="{Binding ListAssetTransactions}" BorderBrush="Transparent" BorderThickness="1"                             
                         IsItemClickEnabled="True" SelectionMode="None"
                         ItemContainerStyle="{StaticResource HorizontalSwipe}" ScrollViewer.VerticalScrollBarVisibility="Visible"
                         CanReorderItems="false" AllowDrop="false" Margin="10,0,0,10" toolkit:ScrollBarExtensions.KeepVerticalExpanded="{Binding IsScrollBarsExpanded}" >
 
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Transaction" >
+                <DataTemplate x:DataType="models:TransactionDisplay" >
                     <UserControl PointerEntered="ListViewItem_PointerEntered" PointerExited="ListViewItem_PointerExited">
                         <Grid >
                             <VisualStateManager.VisualStateGroups>
@@ -103,7 +103,7 @@
                                         <Border Grid.Row="0" Grid.Column="2"  Margin="0,0,0,0"  VerticalAlignment="Center" >
                                             <RelativePanel HorizontalAlignment="Right">
                                                 <TextBlock Name="txtQtyA"  
-                                                    Text="{x:Bind converters:Functions.FormatValueToString(Details.QtyA,'{0:0.########}'), Mode=OneWay}" 
+                                                    Text="{x:Bind converters:Functions.FormatQuantityToString(Details.QtyA,'{0:0.########}'), Mode=OneWay}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}"
                                                     RelativePanel.LeftOf="txtCoinA"/>
                                                 <TextBlock Name="txtCoinA"  
@@ -119,7 +119,7 @@
                                         <Border Grid.Row="0" Grid.Column="3"  Margin="5,0,0,0"  VerticalAlignment="Center" HorizontalAlignment="Stretch" >
                                             <RelativePanel x:Name="PanelFrom" HorizontalAlignment="Right">
                                                 <TextBlock Name="txtValueA"  
-                                                    Text="{x:Bind converters:Functions.FormatValueToString(Details.ValueA,'$ {0:N0}'), Mode=OneWay}" 
+                                                    Text="{x:Bind converters:Functions.FormatCurrencyToString(Details.ValueA,'{0:N0}'), Mode=OneWay}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" Margin="0,-2,0,0"
                                                      RelativePanel.AlignRightWithPanel="True"/>
                                                 <TextBlock Name="txtPricePrefixA"  Text="{x:Bind converters:Functions.AddPrefixAndSuffixToString(Details.CoinASymbol,'\(1 ',' = $ '), Mode=OneWay}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0" 
@@ -145,7 +145,7 @@
                                         <Border Grid.Row="0" Grid.Column="5"  Margin="10,0,0,0"  VerticalAlignment="Center">
                                             <RelativePanel Visibility="{x:Bind converters:Functions.TransactionKindToVisibility(Details.TransactionType), Mode=OneWay}" HorizontalAlignment="Right">
                                                 <TextBlock Name="txtQtyB"  
-                                                    Text="{x:Bind converters:Functions.FormatValueToString(Details.QtyB,'{0:0.########}'), Mode=OneWay}" 
+                                                    Text="{x:Bind converters:Functions.FormatQuantityToString(Details.QtyB,'{0:0.########}'), Mode=OneWay}" 
                                                     FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" 
                                                     RelativePanel.LeftOf="txtCoinB"/>
                                                 <TextBlock Name="txtCoinB"  Text="{Binding Details.CoinBSymbol}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel1, ElementName=proxy}" Margin="5,0,0,0" 
@@ -161,7 +161,7 @@
                                             <StackPanel>
                                                 <RelativePanel x:Name="PanelTo" Visibility="{x:Bind converters:Functions.TransactionKindToVisibility(Details.TransactionType), Mode=OneWay}" HorizontalAlignment="Right" >
                                                     <TextBlock Name="txtValueB"  
-                                                        Text="{x:Bind converters:Functions.FormatValueToString(Details.ValueB,'$ {0:N0}'), Mode=OneWay}" 
+                                                        Text="{x:Bind converters:Functions.FormatCurrencyToString(Details.ValueB,'{0:N0}'), Mode=OneWay}" 
                                                         FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel2, ElementName=proxy}" Margin="0,-2,0,0"
                                                         RelativePanel.AlignRightWithPanel="True"/>
                                                     <TextBlock Name="txtPricePrefixB"  Text="{x:Bind converters:Functions.AddPrefixAndSuffixToString(Details.CoinBSymbol,'\(1 ',' = '), Mode=OneWay}" FontWeight="Normal" FontSize="{Binding DataContext.DataContext.FontLevel3, ElementName=proxy}" Margin="5,0,0,0" 

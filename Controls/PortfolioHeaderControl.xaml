@@ -1,0 +1,184 @@
+<UserControl
+    x:Class="CryptoPortfolioTracker.Controls.PortfolioHeaderControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:l="using:WinUI3Localizer"
+     xmlns:viewmodels="using:CryptoPortfolioTracker.ViewModels"
+     xmlns:converters="using:CryptoPortfolioTracker.Converters"
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+     xmlns:controls="using:CryptoPortfolioTracker.Controls">
+
+
+    <Grid x:Name="HeaderGrid" Height="250" VerticalAlignment="Top">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <!--<RowDefinition Height="100"/>-->
+            <!--<RowDefinition Height="110"/>-->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Existing background image -->
+        <controls:HomePageHeaderImage
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Height="265"
+            Opacity="1"
+            VerticalAlignment="Top"
+            />
+            <!--Grid.RowSpan="2"-->
+
+        <!-- Left side: application and view identification -->
+        <Grid Grid.Column="0"
+              Margin="35,12,10,12"
+              VerticalAlignment="Stretch">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Spacing="1">
+                <TextBlock
+                    Text="Crypto Portfolio Tracker"
+                    Foreground="DarkGoldenrod"
+                    Style="{StaticResource TitleTextBlockStyle}"/>
+
+                <TextBlock
+                    x:Name="txtPortfolio"
+                    Text="{x:Bind PortfolioName, Mode=OneWay}"
+                    Foreground="DarkGoldenrod"
+                    Style="{StaticResource SubSampleHeaderTextStyle}">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform x:Name="TextBlockTransform" x:FieldModifier="public"/>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        Margin="0,5,0,0"
+                        VerticalAlignment="Center">
+
+                <TextBlock
+                    Text="{x:Bind ViewTitle, Mode=OneWay}"
+                    Foreground="DarkGoldenrod"
+                    Style="{StaticResource SampleHeaderTextStyle}"
+                    VerticalAlignment="Center"/>
+
+                <TextBlock
+                    Text="{x:Bind ItemCountText, Mode=OneWay}"
+                    Foreground="DarkGoldenrod"
+                    Style="{StaticResource SubSampleHeaderTextStyle}"
+                    VerticalAlignment="Center"/>
+
+                <!-- Privacy button -->
+                <Button
+                    x:Name="PrivacyButton"
+                    Width="30"
+                    Height="30"
+                    Background="Transparent"
+                    Foreground="Black"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Padding="2"
+                    Visibility="Collapsed"
+                    Command="{x:Bind PrivacyCommand, Mode=OneWay}"
+                    ToolTipService.ToolTip="Toggle privacy">
+
+                    <FontIcon
+                        Glyph="{x:Bind PrivacyGlyph, Mode=OneWay}"
+                        FontSize="18"/>
+                </Button>
+
+                <!-- Settings button -->
+                <Button
+                    x:Name="SettingsButton"
+                    Width="30"
+                    Height="30"
+                    Background="Transparent"
+                    Foreground="Black"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Padding="2"
+                    Visibility="Collapsed"
+                    Command="{x:Bind SettingsCommand, Mode=OneWay}"
+                    ToolTipService.ToolTip="Portfolio Settings">
+
+                    <FontIcon
+                        Glyph="&#xE713;"
+                        FontSize="18"/>
+                </Button>
+
+                <!-- Information button -->
+                <Button
+                    x:Name="InfoButton"
+                    Width="30"
+                    Height="30"
+                    Background="Transparent"
+                    Foreground="Black"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Padding="2"
+                    Visibility="Collapsed"
+                    ToolTipService.ToolTip="Information">
+
+                    <FontIcon
+                        Glyph="&#xE946;"
+                        FontSize="18"/>
+
+                    <Button.Flyout>
+                        <Flyout Placement="Bottom">
+                            <ScrollViewer
+                                MaxHeight="300"
+                                
+                                VerticalScrollBarVisibility="Auto">
+
+                                <TextBlock
+                                    Text="{x:Bind ExplainerText, Mode=OneWay}"
+                                    TextWrapping="Wrap"
+                                    MaxWidth="420"
+                                    FontSize="14"
+                                    Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+
+                            </ScrollViewer>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+            </StackPanel>
+        </Grid>
+
+        <!-- Right side: optional portfolio totals -->
+        <StackPanel
+            x:Name="PortfolioTotalsPanel"
+            Grid.Column="1"
+            Margin="10,15,25,15"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Visibility="Collapsed"
+            Spacing="4">
+
+            <TextBlock
+                Text="{x:Bind TotalPortfolioValue, Mode=OneWay}"
+                Foreground="DarkGoldenrod"
+                Style="{StaticResource ValueHeaderTextStyle}"
+                HorizontalAlignment="Right"/>
+
+            <TextBlock
+                Text="{x:Bind ProfitLossPercentage, Mode=OneWay}"
+                Foreground="DarkGoldenrod"
+                Style="{StaticResource PercHeaderTextStyle}"
+                HorizontalAlignment="Right"/>
+
+        </StackPanel>
+
+    </Grid>
+</UserControl>

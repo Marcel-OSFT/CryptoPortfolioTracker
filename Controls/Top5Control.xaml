@@ -74,7 +74,7 @@
                                         
 
                                         <TextBlock x:Name="txtPerc" 
-                                            Text="{x:Bind converters:Functions.FormatValueToString(Change24Hr,'{0:0.00} %'), Mode=OneWay}"
+                                            Text="{x:Bind converters:Functions.FormatPercentToString(Change24Hr,'{0:0.00} %'), Mode=OneWay}"
                                             Foreground="DarkGoldenrod"
                                             FontWeight="SemiBold"
                                             Margin="0,0,2,0"
@@ -83,7 +83,7 @@
                                             RelativePanel.AlignRightWithPanel="True" />
 
                                         <TextBlock Name="txtPrice" 
-                                            Text="{x:Bind converters:Functions.FormatValueToString(Price,'$ {0:0.########}'), Mode=OneWay}"
+                                            Text="{x:Bind converters:Functions.FormatCurrencyToString(Price,'{0:0.########}'), Mode=OneWay}"
                                             Foreground="DarkGoldenrod"
                                             FontWeight="Normal"
                                             Margin="0,0,2,2"
@@ -140,7 +140,7 @@
                                         </Viewbox>
                                         
                                         <TextBlock x:Name="txtPerc" 
-                                            Text="{x:Bind converters:Functions.FormatValueToString(Change24Hr,'{0:0.00} %'), Mode=OneWay}"
+                                            Text="{x:Bind converters:Functions.FormatPercentToString(Change24Hr,'{0:0.00} %'), Mode=OneWay}"
                                             Foreground="DarkGoldenrod"
                                             FontWeight="SemiBold"
                                             Margin="0,0,2,0"
@@ -149,7 +149,7 @@
                                             RelativePanel.AlignRightWithPanel="True" />
 
                                         <TextBlock Name="txtPrice" 
-                                            Text="{x:Bind converters:Functions.FormatValueToString(Price,'$ {0:0.########}'), Mode=OneWay}"
+                                            Text="{x:Bind converters:Functions.FormatCurrencyToString(Price,'{0:0.########}'), Mode=OneWay}"
                                             Foreground="DarkGoldenrod"
                                             FontWeight="Normal"
                                             Margin="0,0,2,2"

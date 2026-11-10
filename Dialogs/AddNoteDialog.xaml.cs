@@ -1,17 +1,18 @@
 namespace CryptoPortfolioTracker.Dialogs;
 
-public sealed partial class AddNoteDialog : ContentDialog
+public sealed partial class AddNoteDialog : BaseDialog, IDialog<string>
 {
+    public string? Result { get; private set; }
     public string newNote = string.Empty;
-    private readonly ILocalizer loc = Localizer.Get();
     private readonly CoinLibraryViewModel _viewModel;
 
-    public AddNoteDialog(Coin coin, CoinLibraryViewModel viewModel)
+    public AddNoteDialog(CoinLibraryViewModel viewModel, AddNoteDialogParameters parameters)
     {
         _viewModel = viewModel;
         InitializeComponent();
-        NoteText.Text = coin.Note;
-        SetDialogTitleAndButtons(coin);
+        NoteText.Text = parameters.coin.Note;
+        SetDialogTitleAndButtons(parameters.coin);
+        Result = "canceled";
     }
 
     private void SetDialogTitleAndButtons(Coin coin)
@@ -24,15 +25,10 @@ public sealed partial class AddNoteDialog : ContentDialog
     private void Button_Click_AcceptNote(ContentDialog sender, ContentDialogButtonClickEventArgs e)
     {
         newNote = NoteText.Text;
+        Result = newNote;
     }
 
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
-    }
+    
 }
 
 

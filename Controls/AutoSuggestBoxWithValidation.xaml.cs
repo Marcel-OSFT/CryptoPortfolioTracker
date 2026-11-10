@@ -167,6 +167,13 @@ public sealed partial class AutoSuggestBoxWithValidation : UserControl
     private void InnerASBox_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
         innerASBox.IsEnabled = true;
+
+        // only open on actual user click, not programmatic focus
+        if (FocusManager.GetFocusedElement() == innerASBox)
+        {
+            return;
+        }
+
         innerASBox.IsSuggestionListOpen = true;
     }
 
@@ -246,15 +253,20 @@ public sealed partial class AutoSuggestBoxWithValidation : UserControl
     }
     private void SetBorderColor()
     {
-        if (IsEntryMatched)
-        {
-            innerASBox.BorderBrush = new SolidColorBrush(Colors.Green);
-        }
-        else
-        {
-            innerASBox.BorderBrush = new SolidColorBrush(Colors.Red);
-        }
+        var color = IsEntryMatched ? Colors.Green : Colors.Red;
+        var brush = new SolidColorBrush(color) { Opacity = 0.5 }; // Set opacity to 50%
+        innerASBox.BorderBrush = brush;
     }
-    
 
+    public void FocusSearchBox()
+    {
+        // focus the real input control, not the wrapper UserControl
+        innerASBox.Focus(FocusState.Programmatic);
+        innerASBox.IsSuggestionListOpen = false;
+    }
+
+    public void CloseSuggestions()
+    {
+        innerASBox.IsSuggestionListOpen = false;
+    }
 }

@@ -1,23 +1,22 @@
 namespace CryptoPortfolioTracker.Dialogs;
 
-public sealed partial class PortfolioDialog : ContentDialog
+public sealed partial class PortfolioDialog : BaseDialog, IDialog<Portfolio>
 {
+    public Portfolio Result { get; private set; }
     private Portfolio? _portfolioToEdit;
     public Portfolio? newPortfolio;
 
     public readonly AdminViewModel _viewModel;
 
-    private readonly ILocalizer loc = Localizer.Get();
-
     private readonly DialogAction _dialogAction;
 
-    public PortfolioDialog(AdminViewModel viewModel, DialogAction dialogAction = DialogAction.Add, Portfolio? portfolioToEdit = null)
+    public PortfolioDialog(AdminViewModel viewModel, PortfolioDialogParameters parameters)
     {
         this.InitializeComponent();
         _viewModel = viewModel;
-        _portfolioToEdit = portfolioToEdit;
-        SetDialogTitleAndButtons(dialogAction);
-        _dialogAction = dialogAction;
+        _portfolioToEdit = parameters.portfolio;
+        SetDialogTitleAndButtons(parameters.dialogAction);
+        _dialogAction = parameters.dialogAction;
     }
 
 
@@ -50,20 +49,12 @@ public sealed partial class PortfolioDialog : ContentDialog
             
         };
         newPortfolio = portfolio;
+        Result = portfolio;
     }
 
     private void PortfolioName_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
     {
         IsPrimaryButtonEnabled = txtName.Text.Length > 0;
-    }
-
-
-    private void Dialog_Loading(Microsoft.UI.Xaml.FrameworkElement sender, object args)
-    {
-        if (sender.ActualTheme != _viewModel.AppSettings.AppTheme)
-        {
-            sender.RequestedTheme = _viewModel.AppSettings.AppTheme;
-        }
     }
 
     private void PortfolioName_LosingFocus(Microsoft.UI.Xaml.UIElement sender, Microsoft.UI.Xaml.Input.LosingFocusEventArgs args)

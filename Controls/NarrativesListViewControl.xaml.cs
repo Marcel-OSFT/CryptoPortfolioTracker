@@ -157,7 +157,7 @@ public partial class NarrativesListViewControl : UserControl, INotifyPropertyCha
     {
         if (sender is FrameworkElement frameworkElement && frameworkElement.Parent is FrameworkElement parentElement)
         {
-            var narrative = parentElement.Tag as Narrative;
+            var narrative = parentElement.Tag as NarrativeDisplay;
             if (narrative != null)
             {
                 await _viewModel.NarrativeItemClicked(narrative);
