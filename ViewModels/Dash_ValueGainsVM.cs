@@ -68,9 +68,6 @@ public partial class DashboardViewModel : BaseViewModel
         };
 
 
-
-
-
     public SolidColorPaint LegendTextPaintCapitalFlow { get; set; } =
         new SolidColorPaint
         {

@@ -24,6 +24,9 @@ namespace CryptoPortfolioTracker.ViewModels;
 [ObservableRecipient]
 public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSettingsChangedMessage>, IRecipient<UpdateDashboardMessage>, IRecipient<UpdateProgressValueMessage>, IRecipient<GraphUpdatedMessage>, IRecipient<CurrencyChangedMessage>
 {
+    private readonly IAppState _appState;
+
+    public Portfolio? CurrentPortfolio => _appState.CurrentPortfolio;
     public static DashboardViewModel? Current;
     private static ILocalizer loc = Localizer.Get();
     public readonly IDashboardService _dashboardService;
@@ -32,18 +35,18 @@ public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSet
     private readonly ICapitalFlowService _capitalFlowService;
     public Settings AppSettings => base._appSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
 
-    [ObservableProperty] public string portfolioName = string.Empty;
-    [ObservableProperty] public Portfolio currentPortfolio;
+    //[ObservableProperty] public string portfolioName = string.Empty;
+    //[ObservableProperty] public Portfolio currentPortfolio;
 
-    async partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
-    {
-        if (oldValue is not null && newValue is not null && oldValue.Signature != newValue.Signature)
-        {
-            //await _dashboardService.CalculateIndicatorsAllCoins();
-            await UpdateDashboardAsync();
-            PortfolioName = newValue.Name;
-        }
-    }
+    //async partial void OnCurrentPortfolioChanged(Portfolio? oldValue, Portfolio newValue)
+    //{
+    //    if (oldValue is not null && newValue is not null && oldValue.Signature != newValue.Signature)
+    //    {
+    //        //await _dashboardService.CalculateIndicatorsAllCoins();
+    //        //await UpdateDashboardAsync();
+    //        //PortfolioName = newValue.Name;
+    //    }
+    //}
 
     [ObservableProperty] private string glyph = "\uEE47";
     [ObservableProperty] private string glyphPrivacy = "\uE890";
@@ -58,16 +61,17 @@ public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSet
     private Func<double, string> labelerYAxis;
 
     [ObservableProperty] private bool isPrivacyMode;
+    private string currentGraphSignature;
 
     partial void OnIsPrivacyModeChanged(bool value)
     {
         GlyphPrivacy = value ? "\uED1A" : "\uE890";
-        UpdateCapitalFlowAxisFormatting();
+        ApplyPrivacyModeToYAxis();
         AppSettings.AreValuesMasked = value;
-        ReloadAffectedControls();
+        ApplyPrivacyModeToControls();
     }
 
-    private void UpdateCapitalFlowAxisFormatting()
+    private void ApplyPrivacyModeToYAxis()
     {
         labelerYAxis = IsPrivacyMode
             ? _ => "****"
@@ -79,24 +83,14 @@ public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSet
         SetLabelerYAxisCapitalFlow(labelerYAxis);
     }
 
-    //[ObservableProperty] bool needUpdateDashboard = false;
-    //async partial void OnNeedUpdateDashboardChanged(bool oldValue, bool newValue)
-    //{
-    //    if (newValue)
-    //    {
-    //        await UpdateDashboardAsync();
-
-    //        NeedUpdateDashboard = false;
-    //    };
-    //}
-
-
+    
     public DashboardViewModel(IDashboardService dashboardService, 
                                 IGraphService graphService, 
                                 IPriceLevelService priceLevelService, 
                                 IMessenger messenger,
                                 ICapitalFlowService capitalFlowService,
-                                Settings appSettings, 
+                                Settings appSettings,
+                                IAppState appState,
                                 IDialogService dialogService) : base(appSettings, dialogService, messenger)
     {
         Current = this;
@@ -107,12 +101,18 @@ public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSet
         messenger.Register<GraphUpdatedMessage>(this);
         messenger.Register<CurrencyChangedMessage>(this);
         messenger.Register<DashboardSettingsChangedMessage>(this); //this works with IRecipient<DashboardSettingsChangedMessage> at the top of the class, which is a better way to handle messages than the previous approach of using a lambda expression
+        _appState = appState;
+        _appState.CurrentPortfolioChanged += async (_, _) =>
+        {
+            OnPropertyChanged(nameof(CurrentPortfolio));
+            
+        };
 
         _dashboardService = dashboardService;
         _graphService = graphService;
         _priceLevelService = priceLevelService;
         IsPrivacyMode = AppSettings.AreValuesMasked;
-        CurrentPortfolio = _dashboardService.GetPortfolio();
+        //CurrentPortfolio = _dashboardService.GetPortfolio();
         _capitalFlowService = capitalFlowService;
         NetCapitalFlow = _capitalFlowService.GetNetFlowForCurrency();
         labelerYAxis = value => string.Format("{0} {1:N0}", string.Equals(AppSettings.Currency, "eur", StringComparison.OrdinalIgnoreCase) ? "€" : "$", value);
@@ -122,17 +122,22 @@ public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSet
     public void Receive(UpdateDashboardMessage message)
     {
         if (message is null) return;
+        Logger.Information("Received UpdateDashBoard Message");
         _ = UpdateDashboardAsync();
     }
     public void Receive(UpdateProgressValueMessage message)
     {
         if (message is null) return;
+        Logger.Information("Received UpdateProgressValue Message");
+
         ProgressValueGraph = message.ProgressValue;
     }
 
     public void Receive(GraphUpdatedMessage message)
     {
         if (message is null) return;
+        Logger.Information("Received GraphUpdated Message");
+
         SetValuesGraph();
     }
 
@@ -171,10 +176,8 @@ public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSet
     /// </summary>  
     public void ViewLoading()
     {
-        CurrentPortfolio = _dashboardService.GetPortfolio();
-        PortfolioName = CurrentPortfolio.Name;
-
         IsPrivacyMode = AppSettings.AreValuesMasked;
+        
     }
 
     public void Terminate()
@@ -184,7 +187,6 @@ public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSet
 
     private async Task UpdateDashboardAsync()
     {
-        //await SetSeriesHeatMap(SelectedHeatMapIndex);
         await RefreshHeatMapPoints();
         await GetTop5();
         GetValueGains();
@@ -256,7 +258,7 @@ public partial class DashboardViewModel : BaseViewModel, IRecipient<DashboardSet
     }   
 
 
-    private void ReloadAffectedControls()
+    private void ApplyPrivacyModeToControls()
     {
         ReloadValueGains();
         ReloadGraph();

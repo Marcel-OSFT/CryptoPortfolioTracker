@@ -110,27 +110,6 @@ public partial class DashboardViewModel : BaseViewModel
         MaBubbleMap.Configure(withinRangePerc);
     }
 
-    //private void SetCustomSeparatorsTarget()
-    //{
-    //    TargetBubbleMap.Configure(AppSettings.WithinRangePerc);
-    //}
-
-    //private void SetCustomSeparatorsBreakEven()
-    //{
-    //    BreakEvenBubbleMap.Configure(AppSettings.WithinRangePerc);
-    //}
-
-    //private void SetCustomSeparatorsRsi()
-    //{
-    //    RsiBubbleMap.Configure(AppSettings.WithinRangePerc);
-    //}
-
-    //private void SetCustomSeparatorsMa()
-    //{
-    //    MaBubbleMap.Configure(AppSettings.WithinRangePerc);
-    //}
-
-
     /// <summary>   
     /// This method is called by the HeatMapControl_Loaded event.  
     /// </summary>
@@ -160,11 +139,7 @@ public partial class DashboardViewModel : BaseViewModel
         SetMinMaxY(bubbleMap, out ObservableCollection<HeatMapPoint> dummyPoints);
 
         HeatMapPoints = new ObservableCollection<HeatMapPoint>(await _priceLevelService.GetHeatMapPoints(bubbleMap));
-        //if (SeriesHeatMap is null || !SeriesHeatMap.Any())
-        //{
-        //    await SetSeriesHeatMap(bubbleMap.Index);
-        //    return;
-        //}
+       
         SeriesHeatMap[0].Values = HeatMapPoints;
         SeriesHeatMap[1].Values = dummyPoints;
 

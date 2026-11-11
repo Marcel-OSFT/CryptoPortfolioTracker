@@ -21,6 +21,7 @@ namespace CryptoPortfolioTracker.Services;
 public interface IGraphService
 {
     bool IsLoadingFromJson { get; set; }
+
     public Task LoadGraphFromJson(string portfolioSignature);
     public Task SaveGraphToJson(string portfolioSignature);
     public Task RegisterModification(Transaction transactionA, Transaction? transactionB = null);
@@ -43,17 +44,31 @@ public interface IGraphService
     bool HasHistoricalDataBuffer();
     DataPoint GetLatestDataPointInFlow();
     DataPoint GetLatestDataPointOutFlow();
+    string GetSignature();
 }
 
 public partial class GraphService : ObservableObject, IGraphService
 {
+    private readonly IAppState _appState;
+
+    private string Currency => _appState.Currency;
     private Graph PortfolioGraph { get; set; } = new();
     private static ILogger Logger { get; set; } = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(GraphService).Name.PadRight(22));
+
+    private readonly IExchangeRateService _exchangeRateService;
+
     private List<HistoricalDataByIdRev> HistoricalDataByIdsBufferList { get; set; } = new();
+
     [ObservableProperty] private bool isLoadingFromJson;
     
-    public GraphService() 
+    public GraphService(IExchangeRateService exchangeRateService, IAppState appState) 
     {
+        _appState = appState;
+        _appState.CurrencyChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(Currency));
+        };
+        _exchangeRateService = exchangeRateService;
         HistoricalDataByIdsBufferList = new();
     }
 
@@ -72,14 +87,7 @@ public partial class GraphService : ObservableObject, IGraphService
                 Logger.Information("Graph data de-serialized successfully ({0} data points)", PortfolioGraph.DataPointsPortfolio.Count);
             });
 
-            //await LoadGraphDataAsync(Path.Combine(graphPath, "HistoryBuffer.json"), async stream =>
-            //{
-            //    HistoricalDataByIdsBufferList = await JsonSerializer.DeserializeAsync<List<HistoricalDataByIdRev>>(stream);
-            //    if (HistoricalDataByIdsBufferList?.Count > 0)
-            //    {
-            //        CheckValidityHistoricalDataBuffer(graphPath);
-            //    }
-            //});
+
             HistoricalDataByIdsBufferList = new();
 
             if (PortfolioGraph == null)
@@ -90,7 +98,6 @@ public partial class GraphService : ObservableObject, IGraphService
             {
                 await CleanUpGraph(portfolioSignature);
             }
-            
         }
         catch (Exception ex)
         {
@@ -146,18 +153,7 @@ public partial class GraphService : ObservableObject, IGraphService
         Logger.Error("No backup graph available");
         return new Result<bool>(false);
     }
-    //private void CheckValidityHistoricalDataBuffer(string path)
-    //{
-    //    if (HistoricalDataByIdsBufferList?.Count > 0 && PortfolioGraph?.DataPointsPortfolio?.Count > 0)
-    //    {
-    //        if (GetHistoricalDataBufferOldestDate() != GetLatestDataPointDate().AddDays(1))
-    //        {
-    //            ClearHistoricalDataBuffer(path);
-    //        }
-    //    }
-    //}
-
-
+    
    public async Task SaveGraphToJson(string portfolioSignature)
     {
         try
@@ -179,22 +175,7 @@ public partial class GraphService : ObservableObject, IGraphService
         }
     }
 
-    //public async Task SaveHistoricalDataBufferToJson(string portfolioSignature)
-    //{
-    //    if (HistoricalDataByIdsBufferList.Count > 0)
-    //    {
-    //        var fileName = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
-    //        try
-    //        {
-    //            await using FileStream createStream = File.Create(fileName);
-    //            await JsonSerializer.SerializeAsync(createStream, HistoricalDataByIdsBufferList);
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            Logger.Error(ex, "Failed to serialize HistoricalDataBuffer data");
-    //        }
-    //    }
-    //}
+   
     private async Task CleanUpGraph(string portfolioSignature)
     {
         // Remove duplicate entries
@@ -203,13 +184,13 @@ public partial class GraphService : ObservableObject, IGraphService
         PortfolioGraph.DataPointsPortfolio = RemoveDuplicates(PortfolioGraph.DataPointsPortfolio);
 
         // Remove leading zeros
-        var firstValuePoint = PortfolioGraph.DataPointsPortfolio.FirstOrDefault(x => x.Value > 0);
+        var firstValuePoint = PortfolioGraph.DataPointsPortfolio.FirstOrDefault(x => x.ValueUsd > 0);
 
         if (firstValuePoint != null)
         {
             var date = firstValuePoint.Date;
-            var sumInFlow = PortfolioGraph.DataPointsInFlow.Where(x => x.Date < date).Sum(x => x.Value);
-            var sumOutFlow = PortfolioGraph.DataPointsOutFlow.Where(x => x.Date < date).Sum(x => x.Value);
+            var sumInFlow = PortfolioGraph.DataPointsInFlow.Where(x => x.Date < date).Sum(x => x.ValueUsd);
+            var sumOutFlow = PortfolioGraph.DataPointsOutFlow.Where(x => x.Date < date).Sum(x => x.ValueUsd);
 
             PortfolioGraph.DataPointsPortfolio = RemoveLeadingZeros(PortfolioGraph.DataPointsPortfolio, date, sumInFlow - sumOutFlow);
             PortfolioGraph.DataPointsInFlow = RemoveLeadingZeros(PortfolioGraph.DataPointsInFlow, date, sumInFlow);
@@ -222,32 +203,20 @@ public partial class GraphService : ObservableObject, IGraphService
     private static List<DataPoint> RemoveDuplicates(List<DataPoint> dataPoints)
     {
         return dataPoints
-            .GroupBy(x => new { x.Date, x.Value })
+            .GroupBy(x => new { x.Date, x.ValueUsd })
             .Select(g => g.First())
             .ToList();
     }
 
-    private static List<DataPoint> RemoveLeadingZeros(List<DataPoint> dataPoints, DateOnly date, double initialValue)
+    private List<DataPoint> RemoveLeadingZeros(List<DataPoint> dataPoints, DateOnly date, double initialValue)
     {
         var filteredDataPoints = dataPoints.Where(x => x.Date >= date).ToList();
-        filteredDataPoints.Add(new DataPoint { Date = date.AddDays(-1), Value = initialValue });
+        filteredDataPoints.Add(new DataPoint { Date = date.AddDays(-1), ValueUsd = initialValue, ValueEur = initialValue / (_exchangeRateService.TryGetDailyRate(date, out var rate) ? rate : 1) });
         return filteredDataPoints.OrderBy(x => x.Date).ToList();
     }
 
-    //public void ClearHistoricalDataBuffer(string portfolioSignature)
-    //{
-    //    HistoricalDataByIdsBufferList.Clear();
-
-    //    var historyBufferFile = Path.Combine(AppConstants.PortfoliosPath, portfolioSignature, "HistoryBuffer.json");
-    //    if (File.Exists(historyBufferFile))
-    //    {
-    //        File.Delete(historyBufferFile);
-    //    }
-    //}
-
     public void ClearHistoricalDataBuffer()
     {
-        //HistoricalDataByIdsBufferList.Clear();
         HistoricalDataByIdsBufferList = new();
     }
 
@@ -323,7 +292,7 @@ public partial class GraphService : ObservableObject, IGraphService
 
         foreach (var dataPoint in PortfolioGraph.DataPointsPortfolio)
         {
-            var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.Value);
+            var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.GetValue(_appState.Currency));
             values.Add(dateTimePoint);
         }
         return values;
@@ -336,7 +305,7 @@ public partial class GraphService : ObservableObject, IGraphService
 
         foreach (var dataPoint in PortfolioGraph.DataPointsInFlow)
         {
-            var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.Value);
+            var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.GetValue(_appState.Currency));
             values.Add(dateTimePoint);
         }
         return values;
@@ -349,7 +318,7 @@ public partial class GraphService : ObservableObject, IGraphService
 
         foreach (var dataPoint in PortfolioGraph.DataPointsOutFlow)
         {
-            var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.Value);
+            var dateTimePoint = new DateTimePoint(dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")), dataPoint.GetValue(_appState.Currency));
             values.Add(dateTimePoint);
         }
         return values;
@@ -358,6 +327,11 @@ public partial class GraphService : ObservableObject, IGraphService
     public bool IsModificationRequested()
     {
         return PortfolioGraph?.IsModificationRequested ?? false;
+    }
+
+    public string GetSignature()
+    {
+        return PortfolioGraph != null ? PortfolioGraph.Signature : string.Empty;
     }
 
     public DateOnly GetModifyFromDate()

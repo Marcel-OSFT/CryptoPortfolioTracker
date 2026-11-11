@@ -2,6 +2,7 @@
 using CryptoPortfolioTracker.Infrastructure;
 using CryptoPortfolioTracker.Infrastructure.Response.Coins;
 using CryptoPortfolioTracker.Models;
+using CryptoPortfolioTracker.Models.Legacy;
 using CryptoPortfolioTracker.ViewModels;
 using LanguageExt;
 using LanguageExt.Common;
@@ -36,7 +37,7 @@ public interface IGraphUpdateService
     public void Start();
     public void Stop();
     public void Pause(bool isDisconnecting = false);
-    public void Resume();
+    public Task Resume();
 }
 
 public class GraphUpdateService : IGraphUpdateService
@@ -87,6 +88,7 @@ public class GraphUpdateService : IGraphUpdateService
         currentContext = UpdateContext;
         timerTask = DoWorkAsync();
     }
+
     private async Task DoWorkAsync()
     {
         try
@@ -151,7 +153,7 @@ public class GraphUpdateService : IGraphUpdateService
         Logger.Information("GraphUpdateService Paused");
     }
 
-    public void Resume()
+    public async Task Resume()
     {
         IsPauseRequested = false;
         if (currentContext != UpdateContext)
@@ -160,6 +162,7 @@ public class GraphUpdateService : IGraphUpdateService
             {
                 Logger.Information("GraphUpdateService continued with new context");
                 currentContext = UpdateContext;
+                await _exchangeRateService.LoadDailyExchangeRates(await GetOldestTransaction());
                 await _graphService.LoadGraphFromJson(PortfolioSignature);
             });
         }
@@ -311,9 +314,11 @@ public class GraphUpdateService : IGraphUpdateService
 
             foreach (var deposit in deposits)
             {
+                var date = DateOnly.FromDateTime(deposit.Date);
                 var dataPoint = new DataPoint();
-                dataPoint.Date = DateOnly.FromDateTime(deposit.Date);
-                dataPoint.Value = deposit.InFlow;
+                dataPoint.Date = date;
+                dataPoint.ValueUsd = deposit.InFlow;
+                dataPoint.ValueEur = deposit.InFlow / (_exchangeRateService.TryGetDailyRate(date, out var rate) ? rate : 1);
                 _graphService.AddDataPointInFlow(dataPoint);
             }
         }
@@ -368,10 +373,11 @@ public class GraphUpdateService : IGraphUpdateService
 
             foreach (var withdraw in withdraws)
             {
+                var date = DateOnly.FromDateTime(withdraw.Date);
                 var dataPoint = new DataPoint();
-                dataPoint.Date = DateOnly.FromDateTime(withdraw.Date);
-                dataPoint.Value = withdraw.OutFlow;
-
+                dataPoint.Date = date;
+                dataPoint.ValueUsd = withdraw.OutFlow;
+                dataPoint.ValueEur = withdraw.OutFlow / (_exchangeRateService.TryGetDailyRate(date, out var rate) ? rate : 1);
                 _graphService.AddDataPointOutFlow(dataPoint);
             }
         }
@@ -464,7 +470,8 @@ public class GraphUpdateService : IGraphUpdateService
                     var price = (double)(dataSetChart[i - dateShift][1] ?? 0);
                     var historicalQty = await GetHistoricalQtyByDate(date, asset);
                     point.Date = date;
-                    point.Value = price * historicalQty;
+                    point.ValueUsd = price * historicalQty;
+                    //point.ValueEur = price * historicalQty / (_exchangeRateService.TryGetDailyRate(date, out var rate) ? rate : 1);
 
                     //*** if GraphUpdate has been postponed into one of the next days, then it could be that a certain 
                     //*** datapoint has already been entered into the list
@@ -480,7 +487,8 @@ public class GraphUpdateService : IGraphUpdateService
                 {
                     var point = new DataPoint();
                     point.Date = expectedDate;
-                    point.Value = 0;
+                    point.ValueUsd = 0;
+                    //point.ValueEur = 0;
                     dateShift++;
                     //*** if GraphUpdate has been postponed into one of the next days, then it could be that a certain 
                     //*** datapoint has already been entered into the list
@@ -525,12 +533,13 @@ public class GraphUpdateService : IGraphUpdateService
                 var totalValueByDate = dataByIds
                     .SelectMany(x => x.DataPoints)
                     .Where(dp => dp.Date == date)
-                    .Sum(dp => dp.Value);
+                    .Sum(dp => dp.ValueUsd);
 
                 var dataPoint = new DataPoint
                 {
                     Date = date,
-                    Value = totalValueByDate
+                    ValueUsd = totalValueByDate,
+                    ValueEur = totalValueByDate / (_exchangeRateService.TryGetDailyRate(date, out var rate) ? rate : 1)
                 };
 
                 _graphService.AddDataPointPortfolio(dataPoint);
@@ -806,15 +815,18 @@ public class GraphUpdateService : IGraphUpdateService
                 .Include(t => t.Transaction)
                 .Sum(x => x.Qty * x.Price);
 
-            var sumWithDraws = context.Mutations
+            var sumWithdraws = context.Mutations
                 .AsNoTracking()
                 .Where(x => x.Type == Enums.TransactionKind.Withdraw && x.Transaction.TimeStamp.Date < beforeDate)
                 .Include(t => t.Transaction)
                 .Sum(x => x.Qty * x.Price);
 
-            _graphService.AddDataPointInFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits });
-            _graphService.AddDataPointOutFlow(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumWithDraws });
-            _graphService.AddDataPointPortfolio(new DataPoint { Date = DateOnly.FromDateTime(beforeDate), Value = sumDeposits - sumWithDraws });
+            var date = DateOnly.FromDateTime(beforeDate);
+            var dailyRate = _exchangeRateService.TryGetDailyRate(date, out var rate) ? rate : 1;
+
+            _graphService.AddDataPointInFlow(new DataPoint { Date = date, ValueUsd = sumDeposits, ValueEur = sumDeposits / dailyRate });
+            _graphService.AddDataPointOutFlow(new DataPoint { Date = date, ValueUsd = sumWithdraws, ValueEur = sumWithdraws / dailyRate });
+            _graphService.AddDataPointPortfolio(new DataPoint { Date = date, ValueUsd = sumDeposits - sumWithdraws, ValueEur = (sumDeposits - sumWithdraws) / dailyRate });
 
         }
         catch (Exception ex)

@@ -34,7 +34,7 @@ public class MarketChartById
             if (Prices[i][0].HasValue && Prices[i][1].HasValue)
             {
                 var date = DateTime.UnixEpoch.AddMilliseconds((double)Prices[i][0]!.Value).Date;
-                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = (double)Prices[i][1]!.Value };
+                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), ValueUsd = (double)Prices[i][1]!.Value };
                 list.Add(dataPoint);
             }
         }
@@ -54,7 +54,7 @@ public class MarketChartById
         foreach (var dataPoint in sortedList)
         {
             var date = dataPoint.Date.ToDateTime(TimeOnly.Parse("01:00 AM")).Date;
-            var price = dataPoint.Value;
+            var price = dataPoint.ValueUsd;
             Prices = Prices.Append(new decimal?[] { (decimal)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds, (decimal)price }).ToArray();
         }
         return Prices;
@@ -183,10 +183,10 @@ public class MarketChartById
 
                 if (adjacent is not null)
                 {
-                    value = adjacent.Value;
+                    value = adjacent.ValueUsd;
                 }
                 
-                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), Value = value };
+                var dataPoint = new DataPoint { Date = DateOnly.FromDateTime(date), ValueUsd = value };
                 priceList.Add(dataPoint);
             }
         }

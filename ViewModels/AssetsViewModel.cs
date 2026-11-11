@@ -141,8 +141,8 @@ public sealed partial class AssetsViewModel : BaseViewModel, IRecipient<UpdatePr
     public void Receive(PortfolioConnectionChangedMessage message)
     {
         if (message is null) return;
-        OnPropertyChanged(nameof(PortfolioName)); // gets portfolioname again in case Portfolio has switched.
-        _ = LoadViewDataAsync();
+        OnPropertyChanged(nameof(PortfolioName)); // Refreshes portfolioName in case Portfolio has switched.
+    
     }
 
     public void Receive(CurrencyChangedMessage message)

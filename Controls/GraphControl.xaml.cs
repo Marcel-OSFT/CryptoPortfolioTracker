@@ -43,8 +43,8 @@ public partial class GraphControl : UserControl, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    private async void Control_Loaded(object sender, RoutedEventArgs e)
+    private void Control_Loaded(object sender, RoutedEventArgs e)
     {
-        await _viewModel.GraphControlLoaded();
+        _viewModel.GraphControlLoaded();
     }
 }

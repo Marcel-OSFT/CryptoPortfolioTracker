@@ -6,20 +6,42 @@ namespace CryptoPortfolioTracker.Configuration
     public interface IAppState
     {
         Portfolio? CurrentPortfolio { get; set; }
-        event EventHandler? CurrentPortfolioChanged;
-
         PortfolioContext? Context { get; set; }
-        event EventHandler? ContextChanged;
         UpdateContext? UpdateContext { get; set; }
-        event EventHandler? UpdateContextChanged;
+        string? Currency { get; set; }
 
+        event EventHandler? CurrentPortfolioChanged;
+        event EventHandler? ContextChanged;
+        event EventHandler? UpdateContextChanged;
+        event EventHandler? CurrencyChanged;
     }
 
     public class AppState : ObservableObject, IAppState
     {
-        //*** Portfolio CurrentPortfolio
-        private Portfolio? _currentPortfolio;
+        //*** AppSettings Currency
+        public event EventHandler? CurrencyChanged;
+        private string? _currency;
+        public string? Currency
+        {
+            get => _currency;
+            set
+            {
+                if (_currency != value)
+                {
+                    _currency = value;
+                    OnPropertyChanged();
+                    CurrencyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
 
+
+
+
+
+        //*** Portfolio CurrentPortfolio
+        public event EventHandler? CurrentPortfolioChanged;
+        private Portfolio? _currentPortfolio;
         public Portfolio? CurrentPortfolio
         {
             get => _currentPortfolio;
@@ -34,11 +56,10 @@ namespace CryptoPortfolioTracker.Configuration
             }
         }
 
-        public event EventHandler? CurrentPortfolioChanged;
 
         //**** PortfolioService Context
+        public event EventHandler? ContextChanged;
         private PortfolioContext? _context;
-
         public PortfolioContext? Context
         {
             get => _context;
@@ -53,11 +74,10 @@ namespace CryptoPortfolioTracker.Configuration
             }
         }
 
-        public event EventHandler? ContextChanged;
 
         //**** PortfolioService UpdateContext
+        public event EventHandler? UpdateContextChanged;
         private UpdateContext? _updateContext;
-
         public UpdateContext? UpdateContext
         {
             get => _updateContext;
@@ -72,7 +92,6 @@ namespace CryptoPortfolioTracker.Configuration
             }
         }
 
-        public event EventHandler? UpdateContextChanged;
 
 
     }

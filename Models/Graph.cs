@@ -18,11 +18,14 @@ public partial class Graph
         GraphStatus = GraphStatus.Idle;
     }
 
+    public int Version { get; set; }
     public List<DataPoint> DataPointsPortfolio { get; set; }
     public List<DataPoint> DataPointsInFlow {  get; set; }
     public List<DataPoint> DataPointsOutFlow { get; set; }
     public GraphStatus GraphStatus { get; set; }
     public bool IsModificationRequested { get; set; }
+
+    public string Signature { get; set; }
 
     private DateOnly modifyFromDate;
     public DateOnly ModifyFromDate
@@ -37,6 +40,4 @@ public partial class Graph
             }
         }
     }
-
-    
 }

@@ -10,11 +10,13 @@ public partial class Settings : ObservableObject
 {
     private readonly IPreferenceStore _store;
     private readonly IMessenger _messenger;
+    private readonly IAppState _appState;
 
-    public Settings(IPreferenceStore store, IMessenger messenger)
+    public Settings(IPreferenceStore store, IMessenger messenger, IAppState appState)
     {
         _store = store;
         _messenger = messenger;
+        _appState = appState;
     }
 
     public ElementTheme AppTheme
@@ -45,11 +47,17 @@ public partial class Settings : ObservableObject
     }
     public string Currency
     {
-        get => _store.Get("Currency", "usd");
+        get
+        {
+            var _currency = _store.Get("Currency", "usd");
+            _appState.Currency = _currency;
+            return _currency;
+        }
         set
         {
             _store.Set("Currency", value.ToLower());
             OnPropertyChanged(nameof(Currency));
+            _appState.Currency = Currency;
             MainPage.Current.DispatcherQueue.TryEnqueue(() =>
             {
                 _messenger.Send(new CurrencyChangedMessage());

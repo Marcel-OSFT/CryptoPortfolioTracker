@@ -8,6 +8,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public static SettingsViewModel Current;
+
     public Settings AppSettings => base._appSettings; // expose AppSettings publicly so that it can be used in dialogs called by this ViewModel
 
 
@@ -70,6 +71,28 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     [ObservableProperty]
     private bool isDuressPasswordSet;
 
+    
+
+    public SettingsViewModel(Settings appSettings, IDialogService dialogService, IMessenger messenger) : base(appSettings, dialogService, messenger)
+    {
+        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
+        Current = this;
+        InitializeFields();
+    }
+
+    private void InitializeFields()
+    {
+        IsCheckForUpdate = AppSettings.IsCheckForUpdate;
+        FontSize = (double)AppSettings.FontSize;
+        IsScrollBarsExpanded = AppSettings.IsScrollBarsExpanded;
+        AppTheme = AppSettings.AppTheme;
+        NumberFormatIndex = AppSettings.NumberFormat.NumberDecimalSeparator == "," ? 0 : 1;
+        AppCultureIndex = AppSettings.AppCultureLanguage[..2].ToLower() == "nl" ? 0 : 1;
+        CurrencyIndex = AppSettings.Currency == "usd" ? 0 : 1;
+
+        CheckPasswordCredentials();
+    }
+
     /// <summary>
     /// Checks if credentials exist in the Windows Credential Locker and sets IsPasswordSet/IsDuressPasswordSet accordingly.
     /// Call this from InitializeFields or when loading the SettingsView.
@@ -101,28 +124,6 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
         }
     }
 
-    public SettingsViewModel(Settings appSettings, IDialogService dialogService, IMessenger messenger) : base(appSettings, dialogService, messenger)
-    {
-        Logger = Log.Logger.ForContext(Constants.SourceContextPropertyName, typeof(SettingsViewModel).Name.PadRight(22));
-        Current = this;
-
-        InitializeFields();
-    }
-
-    private void InitializeFields()
-    {
-        IsCheckForUpdate = AppSettings.IsCheckForUpdate;
-        FontSize = (double)AppSettings.FontSize;
-        IsScrollBarsExpanded = AppSettings.IsScrollBarsExpanded;
-        AppTheme = AppSettings.AppTheme;
-        NumberFormatIndex = AppSettings.NumberFormat.NumberDecimalSeparator == "," ? 0 : 1;
-        AppCultureIndex = AppSettings.AppCultureLanguage[..2].ToLower() == "nl" ? 0 : 1;
-        CurrencyIndex = AppSettings.Currency == "usd" ? 0 : 1;
-
-        CheckPasswordCredentials();
-    }
-
-    
     private void SetCulturePreferenceFromIndex(int index)
     {
         string language = index == 0 ? "nl" : "en-US";
@@ -133,6 +134,7 @@ public partial class SettingsViewModel : BaseViewModel, INotifyPropertyChanged
     {
         string currency = index == 0 ? "usd" : "eur";
         AppSettings.Currency = currency;
+
     }
 
     private void SetNumberSeparatorsFromIndex(int index)

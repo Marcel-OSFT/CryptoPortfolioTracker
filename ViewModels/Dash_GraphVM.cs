@@ -72,19 +72,26 @@ public partial class DashboardViewModel : BaseViewModel
         var ci = new CultureInfo(loc.GetCurrentLanguage());
         try
         {
-            await WaitForJsonToLoad();
-            
-            if (_graphService.HasDataPoints())
+            //*** check if graph needs initialisation or
+            //*** check if portfolio has switched and has a new graph data loaded.
+            if (string.IsNullOrEmpty(currentGraphSignature) || currentGraphSignature != _graphService.GetSignature())
             {
-                SetSeriesGraph();
-            }
-            // re-set the labels because language settings might have changed
-            XAxesGraph[0].Labeler = value => value.AsDate().ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci);
-            YAxesGraph[0].Name = loc.GetLocalizedString("GraphicView_PortfolioSeriesTitle");
-        }
-        catch (Exception)
-        {
+                await WaitForJsonToLoad();
             
+                if (_graphService.HasDataPoints())
+                {
+                    SetSeriesGraph();
+                }
+                // re-set the labels because language settings might have changed
+                XAxesGraph[0].Labeler = value => value.AsDate().ToString(loc.GetLocalizedString("GraphicView_DateFormat"), ci);
+                YAxesGraph[0].Name = loc.GetLocalizedString("GraphicView_PortfolioSeriesTitle");
+                Logger.Information("Graph data populated");
+                currentGraphSignature = _graphService.GetSignature();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("error while populating graph data");
         }
     }
 
@@ -114,10 +121,6 @@ public partial class DashboardViewModel : BaseViewModel
 
         GetValuesGraph();
 
-        //if (SeriesGraph is not null) 
-        //{ 
-        //    SeriesGraph.Clear();
-        //}
         SeriesGraph = new ObservableCollection<ISeries>
         {
             new LineSeries<DateTimePoint>
@@ -156,6 +159,7 @@ public partial class DashboardViewModel : BaseViewModel
         valuesPortfolio = new ObservableCollection<DateTimePoint>(_graphService.GetPortfolioValues());
         valuesInFlow = new ObservableCollection<DateTimePoint>(_graphService.GetInFlowValues());
         valuesOutFlow = new ObservableCollection<DateTimePoint>(_graphService.GetOutFlowValues());
+        
     }
 
     private void SetValuesGraph()

@@ -45,7 +45,6 @@ public partial class App : Application
         AppConstants.GetAppEnvironmentals();
         Container = RegisterServices();
         
-        _appSettings = Container.GetRequiredService<Settings>();
     }
 
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
@@ -54,6 +53,7 @@ public partial class App : Application
         Splash.Activate();
         await Task.Delay(1000);
 
+        _appSettings = Container.GetRequiredService<Settings>();
         // initialize the dialogService and set its XamlRoot to the splash screen's XamlRoot
         _dialogService = Container.GetRequiredService<IDialogService>();
         _dialogService.XamlRoot = Splash.Content.XamlRoot;
@@ -249,6 +249,7 @@ public partial class App : Application
 
         //Dialogs
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IMigrationService, MigrationService>();
 
         services.AddTransient<TransactionDialog>();
 

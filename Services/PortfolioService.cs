@@ -40,6 +40,7 @@ namespace CryptoPortfolioTracker.Services
         [ObservableProperty] private UpdateContext? updateContext;
         private IMessenger _messenger;
         private readonly IAppState _appState;
+        private readonly IMigrationService _migrationService;
         [ObservableProperty] private Portfolio? currentPortfolio;
         private ObservableCollection<Portfolio> Portfolios = new();
 
@@ -59,13 +60,14 @@ namespace CryptoPortfolioTracker.Services
 
         public bool IsInitialPortfolioLoaded { get; private set; } = false;
 
-        public PortfolioService(IPortfolioContextFactory contextFactory, IUpdateContextFactory updateContextFactory, IMessenger messenger, Settings appSettings, IAppState appState)
+        public PortfolioService(IPortfolioContextFactory contextFactory, IUpdateContextFactory updateContextFactory, IMigrationService migrationService, IMessenger messenger, Settings appSettings, IAppState appState)
         {
             _appSettings =  appSettings;
             _contextFactory = contextFactory;
             _updateContextFactory = updateContextFactory;
             _messenger = messenger;
             _appState = appState;
+            _migrationService = migrationService;
         }
 
         /// <summary>
@@ -83,6 +85,14 @@ namespace CryptoPortfolioTracker.Services
                 Portfolios = new ObservableCollection<Portfolio>();
                 IsInitialPortfolioLoaded = await LoadInitialPortfolio();
             }
+
+            //*** here is the location to add migrations
+            //*** database related migrations goes inside CheckDatabase()
+            AddSuffixToMarketChartsIfNeeded();
+            await _migrationService.MigrateGraphIfNeeded(CurrentPortfolio.Signature);
+
+
+            //*** start services
             _graphUpdateService = App.Container.GetService<IGraphUpdateService>();
            
             _priceUpdateService = App.Container.GetService<IPriceUpdateService>();
@@ -94,16 +104,21 @@ namespace CryptoPortfolioTracker.Services
         public async Task<Result<bool>> SwitchPortfolio(Portfolio portfolio)
         {
             var result = await ConnectPortfolioDatabase(portfolio);
-            return result.Match(
-                Succ: succ =>
+            return await result.Match(
+                Succ: async succ =>
                 {
                     Logger?.Information($"Switched to Database {portfolio.Signature}");
+                    //*** here is the location to add migrations
+                    //*** database related migrations goes inside CheckDatabase()
+                    await _migrationService.MigrateGraphIfNeeded(CurrentPortfolio.Signature);
                     return new Result<bool>(true);
+
                 },
-                Fail: err =>
+                Fail: async err =>
                 {
                     Logger?.Error(err, $"Failed to switch to Database {portfolio.Signature}");
-                    return new Result<bool>(err);
+                    return new Result<bool>(err); ;
+
                 });
         }
 
@@ -244,7 +259,10 @@ namespace CryptoPortfolioTracker.Services
                 UpdateContext = _updateContextFactory.Create($"Data Source=|DataDirectory|{relativePath}");
                 
                 await CheckDatabase(portfolio.Signature);
-                AddSuffixToMarketChartsIfNeeded();
+                ////*** here is the location to add migrations
+                ////*** database related migrations goes inside CheckDatabase()
+                //AddSuffixToMarketChartsIfNeeded();
+                //await _migrationService.MigrateGraphIfNeeded(portfolio.Signature);
                 return true;
             }
             catch (Exception ex)
@@ -252,6 +270,8 @@ namespace CryptoPortfolioTracker.Services
                 return Error.New(ex);
             }
         }
+
+        
 
         private void AddSuffixToMarketChartsIfNeeded()
         {
@@ -309,161 +329,19 @@ namespace CryptoPortfolioTracker.Services
 
             CreateRestorePoint(portfolioSignature);
 
-            var pendingMigrations = await Context.Database.GetPendingMigrationsAsync();
-            var initPriceLevelsEntity = pendingMigrations.Any(m => m.Contains("AddPriceLevelsEntity"));
-            var initNarrativesEntity = pendingMigrations.Any(m => m.Contains("AddNarrativesEntity"));
+            await _migrationService.ApplyDatabaseMigrations(Context);
 
-            pendingMigrations = null;
-
-            await Context.Database.MigrateAsync();
-
-            var appliedMigrations = await Context.Database.GetAppliedMigrationsAsync();
-            foreach (var migration in appliedMigrations)
-            {
-                Logger?.Information("Applied Migrations {0}", migration);
-            }
 
             //*** location to implement a kind of HealthCheck/Cleanup for the database
             //*** The IsAsset status is not used properly for a while causing faulty settings. For the Narratives Overview it is important to be correct.
-            await RepairCoinIsAssetStatus();
-            // await AddPriceLevelsEmaToDatabase();
+            await _migrationService.RepairCoinIsAssetStatus(Context);
+            // await _migrationService.AddPriceLevelsEmaToDatabase();
             // from version 1.4.1 -> 1.4.2 the narrative "Stablecoins" was renamed to "Stablecoin" and is a reserved name. This is a one-time migration to rename it in the database if it exists.
-            await RenameNarrative("Stablecoins", "Stablecoin");
-            await CheckAvailableStablecoins();
+            await _migrationService.RenameNarrative(Context, "Stablecoins", "Stablecoin");
+            await _migrationService.CheckAvailableStablecoins(Context);
 
         }
 
-        private async Task CheckAvailableStablecoins()
-        {
-            var stablecoins = new[]
-            {
-                new { Name = "Tether", Symbol = "USDT", ApiId = "tether", ImageUri = "https://coin-images.coingecko.com/coins/images/325/small/Tether.png?1696501661", 
-                    About = "Tether (USDT) is a cryptocurrency with a value meant to mirror the value of the U.S. dollar. The idea was to create a stable cryptocurrency that can be used like digital dollars. Coins that serve this purpose of being a stable dollar substitute are called “stable coins.” Tether is the most popular stable coin and even acts as a dollar replacement on many popular exchanges! According to their site, Tether converts cash into digital currency, to anchor or “tether” the value of the coin to the price of national currencies like the US dollar, the Euro, and the Yen. Like other cryptos it uses blockchain. Unlike other cryptos, it is [according to the official Tether site] “100% backed by USD” (USD is held in reserve). The primary use of Tether is that it offers some stability to the otherwise volatile crypto space and offers liquidity to exchanges who can’t deal in dollars and with banks (for example to the sometimes controversial but leading exchange <a href=\"https://www.coingecko.com/en/exchanges/bitfinex\">Bitfinex</a>).\r\n\r\nThe digital coins are issued by a company called Tether Limited that is governed by the laws of the British Virgin Islands, according to the legal part of its website. It is incorporated in Hong Kong. It has emerged that Jan Ludovicus van der Velde is the CEO of cryptocurrency exchange Bitfinex, which has been accused of being involved in the price manipulation of bitcoin, as well as tether. Many people trading on exchanges, including Bitfinex, will use tether to buy other cryptocurrencies like bitcoin. Tether Limited argues that using this method to buy virtual currencies allows users to move fiat in and out of an exchange more quickly and cheaply. Also, exchanges typically have rocky relationships with banks, and using Tether is a way to circumvent that.\r\n\r\nUSDT is fairly simple to use. Once on exchanges like <a href=\"https://www.coingecko.com/en/exchanges/poloniex\">Poloniex</a> or Bittrex, it can be used to purchase Bitcoin and other cryptocurrencies. It can be easily transferred from an exchange to any Omni Layer enabled wallet. Tether has no transaction fees, although external wallets and exchanges may charge one. In order to convert USDT to USD and vise versa through the Tether.to Platform, users must pay a small fee. Buying and selling Tether for Bitcoin can be done through a variety of exchanges like the ones mentioned previously or through the Tether.to platform, which also allows the conversion between USD to and from your bank account." },
-                new { Name = "USD Coin", Symbol = "USDC", ApiId = "usd-coin", ImageUri = "https://coin-images.coingecko.com/coins/images/6319/small/USDC.png?1769615602", 
-                    About = "USDC is a fully collateralized US dollar stablecoin. USDC is the bridge between dollars and trading on cryptocurrency exchanges. The technology behind CENTRE makes it possible to exchange value between people, businesses and financial institutions just like email between mail services and texts between SMS providers. We believe by removing artificial economic borders, we can create a more inclusive global economy." },
-                new { Name = "Euro Coin", Symbol = "EURC", ApiId = "euro-coin", ImageUri = "https://coin-images.coingecko.com/coins/images/26045/small/EURC.png?1769615705" , 
-                    About = "Euro Coin is a stablecoin issued by Circle under the same reserve model as USD Coin (USDC). It is designed to be stable and 100% backed by euros held in euro denominated banking accounts. An Euro Coin (EUROC) will be redeemable 1:1 for the euro currency." },
-                new { Name = "Euro CoinVertible", Symbol = "EURCV", ApiId = "societe-generale-forge-eurcv", ImageUri = "https://coin-images.coingecko.com/coins/images/33415/small/eurcv_%281%29.png?1701752017", 
-                    About = "EUR CoinVertible (EURCV) is a euro-pegged stablecoin issued by Société Générale–FORGE, designed to maintain a 1:1 value with the euro. It is a MiCA-compliant e-money token backed by segregated euro-denominated reserves."},
-                new { Name = "EURI", Symbol = "EURI", ApiId = "euri", ImageUri = "https://example.com/euri.png", 
-                    About = "" },
-                new { Name = "EURE", Symbol = "EURE", ApiId = "eure", ImageUri = "https://example.com/eure.png", 
-                    About = "" },
-                new { Name = "EUROP", Symbol = "EUROP", ApiId = "europ", ImageUri = "https://example.com/europ.png", 
-                    About = "" }
-            };
-            var context = Context;
-            if (context == null) return;
-
-            var scNarrative = await context.Narratives.FirstOrDefaultAsync(n => n.Name == "Stablecoin");
-
-            foreach (var sc in stablecoins)
-            {
-                var coin = await context.Coins.FirstOrDefaultAsync(c => c.Symbol == sc.Symbol);
-                if (coin == null)
-                {
-                    // Only add required stablecoins
-                    if (sc.Symbol == "USDT" || sc.Symbol == "USDC" || sc.Symbol == "EURC" || sc.Symbol == "EURCV")
-                    {
-                        coin = new Coin
-                        {
-                            Name = sc.Name,
-                            Symbol = sc.Symbol,
-                            ApiId = sc.ApiId,
-                            IsAsset = false,
-                            Narrative = scNarrative,
-                            About = sc.About
-                        };
-                        context.Coins.Add(coin);
-                    }
-                }
-                else
-                {
-                    if (coin.Narrative != scNarrative)
-                    {
-                        coin.Narrative = scNarrative;
-                        context.Coins.Update(coin);
-                    }
-                }
-            }
-            await context.SaveChangesAsync();
-        }
-
-        private async Task RenameNarrative(string oldName, string newName)
-        {
-            var context = Context;
-            if (context == null) return;
-
-            var narrative = await context.Narratives.FirstOrDefaultAsync(n => n.Name == oldName);
-            if (narrative != null)
-            {
-                narrative.Name = newName;
-                await context.SaveChangesAsync();
-            }
-        }
-
-        private async Task AddPriceLevelsEmaToDatabase()
-        {
-            var context = Context;
-            if (context == null) return;
-            context.ChangeTracker.Clear();
-
-            try
-            {
-                var coinsWithoutEma = await context.Coins
-                    .Where(coin => !coin.PriceLevels.Any(pl => pl.Type == PriceLevelType.Ema))
-                    .ToListAsync();
-                
-                if (!coinsWithoutEma.Any()) return;
-
-                foreach (var coin in coinsWithoutEma)
-                {
-                    var priceLevel = new PriceLevel
-                    {
-                        Coin = coin,
-                        Type = PriceLevelType.Ema,
-                        Value = 0,
-                        Note = string.Empty,
-                        Status = PriceLevelStatus.NotWithinRange
-                    };
-                    coin.PriceLevels.Add(priceLevel);
-                    context.Coins.Update(coin);
-                }
-                await Context.SaveChangesAsync();
-            }
-            finally
-            {
-                context.ChangeTracker.Clear();
-            }
-        }
-
-        private async Task RepairCoinIsAssetStatus()
-        {
-            var context = Context;
-            if (context == null) return;
-            context.ChangeTracker.Clear();
-
-            try
-            {
-                var coins = await context.Coins.ToListAsync();  
-
-                foreach (var coin in coins)
-                {
-                    var isAsset = Context.Assets.Any(a => a.Coin.ApiId == coin.ApiId);
-                    if (coin.IsAsset != isAsset)
-                    {
-                        coin.IsAsset = isAsset;
-                        Context.Update(coin);
-                    }
-                }
-                await Context.SaveChangesAsync();
-            }
-            finally
-            {
-                context.ChangeTracker.Clear();
-            }
-
-        }
 
         private static void CreateRestorePoint(string portfolioSignature)
         {
@@ -897,11 +775,6 @@ namespace CryptoPortfolioTracker.Services
             {
                 return Either<Error, bool>.Left(Error.New(ex));
             }
-
-
-
-
-
         }
 
         internal async Task PauseUpdateServices(bool isDisconnecting = false)
